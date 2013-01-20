@@ -10,6 +10,7 @@
 #	$UsageRule:
 #		ruby template.rb <arg1> <arg2>
 #		  arg1	 : ˆø” 1
+#		  arg2	 : ˆø” 2
 #	
 #	$Note:
 #		
