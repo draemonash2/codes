@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="ja-JP">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=<%= page_charset() %>">
+  <meta http-equiv="Content-Language" content="ja-JP">
+  <% if auto_reload? %><meta http-equiv="refresh" content="3600; url=<%= cgi_url() %>?cmd=gdiff&amp;org=cookie&amp;reload=on"><% end %>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" type="text/css" href="<%= css_url() %>">
+  <title>Diff from <%= format_time(origin_time()) %></title>
+</head>
+<body>
+
+.include menu
+
+<h1><%= logo_url() %>Diff from <%= format_time(origin_time()) %></h1>
+
+<p><a href="<%= cgi_url() %>?cmd=gdiff;org=cookie">[Diff from my last visit]</a></p>
+
+<% diffs().each do |log| %>
+<h2><a href="<%= view_url(log.page_name) %>"><%= escape_html(log.page_name) %></a></h2>
+<p class="minimenu">
+<a href="<%= cgi_url() %>?cmd=edit;name=<%= escape_html(log.page_name) %>">[edit]</a>
+<% if log.rev2 > 1 %>
+<a href="<%= cgi_url() %>?cmd=diff;rev1=<%= log.rev2 - 1 %>;rev2=<%= log.rev2 %>;name=<%= escape_html(log.page_name) %>">[diff]</a>
+<% else %>
+[diff]
+<% end %>
+<a href="<%= cgi_url() %>?cmd=annotate;name=<%= escape_html(log.page_name) %>">[ann]</a>
+<a href="<%= cgi_url() %>?cmd=history;name=<%= escape_html(log.page_name) %>">[hist]</a>
+</p>
+<p>
+<span class="removedline">--- rev<%= log.rev1 %>  <%= format_time(log.time1) %></span><br>
+<span class="addedline">+++ rev<%= log.rev2 %>  <%= format_time(log.time2) %></span>
+</p>
+<pre class="diff"><%=
+  log.diff.map {|line|
+    case line
+    when /\A\-/
+      %Q[<span class="removedline">#{escape_html(line.rstrip)}</span>\n]
+    when /\A\+/
+      %Q[<span class="addedline">#{escape_html(line.rstrip)}</span>\n]
+    else
+      escape_html(line)
+    end
+  }.join('')
+%></pre>
+<% end %>
+<% unless auto_reload? %>
+<p><a href="<%= cgi_url() %>?cmd=gdiff;org=cookie;reload=on">[Turn on auto reload]</a></p>
+<% end %>
+
+.include systeminfo
+
+</body>
+</html>

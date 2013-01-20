@@ -1,0 +1,11 @@
+<div class="revlinks">
+<p>Related Pages:
+<%
+    show_max = 10
+    ordered_revlinks()[0, show_max].each do |page|
+%><a href="<%= view_url(page.name) %>"><%= escape_html(page.name) %></a>
+<%
+    end
+%>
+</p>
+</div>

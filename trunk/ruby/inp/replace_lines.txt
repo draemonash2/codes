@@ -1,0 +1,6 @@
+#	$Brief	$
+#	
+#	$Date::                           $
+#	$Rev: 25 $
+#	$Author: TatsuyaEndo $
+#	$HeadURL: file:///C:/Repo/trunk/ruby/%E2%98%85Template%E2%98%85.rb $
