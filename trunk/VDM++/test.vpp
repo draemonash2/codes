@@ -1,0 +1,29 @@
+class test
+
+values
+public –kŠC“¹ : set of seq of char = {"–kŠC“¹"};
+public “Œ–k :set of seq of char = {"ÂX","H“c","Šâè","RŒ`","‹{é","•Ÿ“‡"};
+public ŠÖ“Œ :set of seq of char = {"ˆïé","“È–Ø","ŒQ”n","é‹Ê","ç—t","“Œ‹","_“Şì"};
+public ’†•” :set of seq of char = {"VŠƒ","•xR","Îì","•Ÿˆä","R—œ","’·–ì","Ã‰ª","Šò•Œ"};
+public ‹ß‹E :set of seq of char = {"Od"," ‰ê","‹“s","‘åã","•ºŒÉ","“Ş—Ç","˜a‰ÌR"};
+public ’†‘ :set of seq of char = {"’¹æ","“‡ª","‰ªR","L“‡","RŒû"};
+public l‘ :set of seq of char = {"“¿“‡","ì","ˆ¤•Q","‚’m"};
+public ‹ãB :set of seq of char = {"•Ÿ‰ª","²‰ê","’·è","ŒF–{","‘å•ª","‹{è","­™“‡","‰«“ê"};
+
+instance variables
+private –kŠC“¹‚ÌW‡ : set of seq of char := {};
+private –kŠC“¹‚Ì•¶š—ñ : seq of char := "–kŠC“¹F";
+
+operations
+public static print : seq of char ==> ()
+print (ˆø”) == 
+		(
+		def - = new IO().writeval[seq of char](ˆø”) in skip;
+		);
+
+public static main : set of seq of char ==> ()
+main (ˆø”) == (
+		–kŠC“¹‚ÌW‡ := –kŠC“¹‚ÌW‡ union ˆø”;
+		if –kŠC“¹‚ÌW‡ <> {} then  print(–kŠC“¹‚Ì•¶š—ñ);
+		);
+end test
