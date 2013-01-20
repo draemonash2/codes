@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">HelloAndroid23</string>
+    <string name="hello_world">Hello world!!!!</string>
+    <string name="menu_settings">Settingsuuu</string>
+    <string name="title_activity_main">MainActivity</string>
+
+</resources>

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+	<head>
+		<meta charset = "UTF-8">
+		<script type = "text/javascript">
+			function ImageLoad() {
+				var img = new Image();
+				var file = document.getElementById("btnFile").files[0];
+				//alert(file.name);
+				var reader = new FileReader();
+				reader.onload = function(re){
+					alert(re.target.result);
+					img.src = re.target.result;
+					img.onload = function(){
+						var canvas = document.getElementById("canvas");
+						var cotx = canvas.getContext("2d");
+						cotx.drawImage(img, 0, 0);
+					}
+				}
+				reader.readAsDataURL(file);
+			}
+			function dialog(){
+				document.getElementById("btnFile").click();
+			}
+		</script>
+	</head>
+	<body>
+		<form>
+			<input type="file" id="btnFile" onchange="ImageLoad()" onclick="alert('押した')" style="visibility:hidden">
+			<input type="button" onclick="dialog()" value="ダイアログ表示">
+		</form>
+		<canvas id="canvas" width="400" height="200" style="background-color:#000000"></canvas>
+	</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--表示する要素-->
+	<head>
+		<meta charset = "UTF-8">
+		<script type = "text/javascript">
+			function ImageLoad() {
+				//イメージオブジェクトを生成
+				var img = new Image();
+				//イメージオブジェクトを生成：変数に今選択されている情報をfileっていう配列の[0]に格納
+				//document=何でもやさん
+				//getElementById=要素を取得する
+				var file = document.getElementById("btnFile").files[0];
+				//alert(file.name);
+				//ファイルを操作するためのクラスを生成
+				//※fileREaderはHTMLのクラス(Javaではない)
+				var reader = new FileReader();
+				
+				reader.onload = function(re){
+					alert(re.target.result);
+					img.src = re.target.result;
+					img.onload = function(){
+						var canvas = document.getElementById("canvas1");
+						var cotx = canvas.getContext("2d");
+						cotx.drawImage(img, 0, 0);
+					}
+				}
+				//ファイルオブジェクトをURLファイルとして動かす
+				reader.readAsDataURL(file);
+			}
+		</script>
+	</head>
+	<!--表示する要素-->
+	<body>
+		<form>
+			<!--ファイルを選択するダイアログ-->
+			<!--onchange：選択されているファイルが変わるときのイベント-->
+			<!--onclick：クリックされたときのイベント-->
+			<input type="file" id="btnFile" onchange="ImageLoad()" onclick="alert('押した')">
+		</form>
+		<!--写真を表示の大きさ、背景を表示-->
+		<canvas id="canvas1" width="400" height="400" style="background-color:#000000"></canvas>
+	</body>
+</html>
