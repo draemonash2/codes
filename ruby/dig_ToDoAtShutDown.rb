@@ -47,3 +47,9 @@ end
 # =================================
 # RightsNetworkMediaPlugIn を削除する
 delete_RightsNetworkMediaPlugIn()
+
+# Vim Setting コミット & プッシュ
+push_automaticGithub(strDirPath)
+
+# X-Finder Setting コミット & プッシュ
+push_automaticGithub()
