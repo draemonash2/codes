@@ -14,7 +14,7 @@ require "irb/slex"
 require "irb/ruby-token"
 
 class RubyLex
-  @RCS_ID='-$Id: ruby-lex.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+  @RCS_ID='-$Id: ruby-lex.rb 24 2012-11-23 10:13:10Z  $-'
 
   extend Exception2MessageMapper
   def_exception(:AlreadyDefinedToken, "Already defined token(%s)")

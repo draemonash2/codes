@@ -11,7 +11,7 @@ require "readline"
 module IRB
   module InputCompletor
 
-    @RCS_ID='-$Id: completion.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+    @RCS_ID='-$Id: completion.rb 24 2012-11-23 10:13:10Z  $-'
 
     ReservedWords = [
       "BEGIN", "END",

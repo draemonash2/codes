@@ -2,7 +2,7 @@
 
   vm_insnhelper.c - instruction helper functions.
 
-  $Author: TatsuyaEndo $
+  $Author:  $
 
   Copyright (C) 2007 Koichi Sasada
 

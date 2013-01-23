@@ -1,6 +1,6 @@
 /*
- * $Id: ossl_bio.h 24 2012-11-23 10:13:10Z TatsuyaEndo $
  * 'OpenSSL for Ruby' team members
+ * 
  * Copyright (C) 2003
  * All rights reserved.
  */

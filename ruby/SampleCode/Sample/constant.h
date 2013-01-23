@@ -2,7 +2,7 @@
 
   constant.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Sun Nov 15 00:09:33 2009
 
   Copyright (C) 2009 Yusuke Endoh

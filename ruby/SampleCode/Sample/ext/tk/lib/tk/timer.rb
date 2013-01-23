@@ -1,7 +1,7 @@
 #
 #   tk/timer.rb : methods for Tcl/Tk after command
 #
-#   $Id: timer.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+#   $Id: timer.rb 24 2012-11-23 10:13:10Z  $
 #
 require 'tk'
 

@@ -1,6 +1,6 @@
 # -*- coding: us-ascii; mode: ruby; ruby-indent-level: 4; tab-width: 4 -*-
 #												vim:sw=4:ts=4
-# $Id: test_yaml.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: test_yaml.rb 24 2012-11-23 10:13:10Z  $
 #
 require 'psych/helper'
 require 'ostruct'

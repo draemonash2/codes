@@ -21,7 +21,7 @@ require "shell/process-controller"
 
 # Shell implements an idiomatic Ruby interface for common UNIX shell commands.
 class Shell
-  @RCS_ID='-$Id: shell.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+  @RCS_ID='-$Id: shell.rb 24 2012-11-23 10:13:10Z  $-'
 
   include Error
   extend Exception2MessageMapper

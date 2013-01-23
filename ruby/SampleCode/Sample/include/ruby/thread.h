@@ -2,7 +2,7 @@
 
   thread.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Tue Jul 10 17:35:43 JST 2012
 
   Copyright (C) 2007 Yukihiro Matsumoto

@@ -2,7 +2,7 @@
 
   internal.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Tue May 17 11:42:20 JST 2011
 
   Copyright (C) 2011 Yukihiro Matsumoto

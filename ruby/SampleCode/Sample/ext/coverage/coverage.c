@@ -2,7 +2,7 @@
 
   coverage.c -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
 
   Copyright (c) 2008 Yusuke Endoh
 

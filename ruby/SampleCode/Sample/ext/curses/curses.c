@@ -1,5 +1,5 @@
 /* -*- C -*-
- * $Id: curses.c 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: curses.c 24 2012-11-23 10:13:10Z  $
  *
  * ext/curses/curses.c
  *

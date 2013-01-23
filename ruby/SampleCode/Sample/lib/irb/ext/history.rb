@@ -48,7 +48,7 @@ module IRB
   end
 
   class History
-    @RCS_ID='-$Id: history.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+    @RCS_ID='-$Id: history.rb 24 2012-11-23 10:13:10Z  $-'
 
     def initialize(size = 16)
       @size = size

@@ -3,7 +3,7 @@
 #                       Date: 2000/11/27 09:23:36
 #                       by Yukihiro Matsumoto <matz@caelum.co.jp>
 #
-#                       $Id: tkclass.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+#                       $Id: tkclass.rb 24 2012-11-23 10:13:10Z  $
 
 require "tk"
 

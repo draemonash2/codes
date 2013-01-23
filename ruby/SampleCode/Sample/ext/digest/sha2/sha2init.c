@@ -1,5 +1,5 @@
 /* $RoughId: sha2init.c,v 1.3 2001/07/13 20:00:43 knu Exp $ */
-/* $Id: sha2init.c 24 2012-11-23 10:13:10Z TatsuyaEndo $ */
+/* $Id: sha2init.c 24 2012-11-23 10:13:10Z  $ */
 
 #include "digest.h"
 #if defined(SHA2_USE_OPENSSL)

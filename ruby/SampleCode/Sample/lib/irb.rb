@@ -22,7 +22,7 @@ require "irb/locale"
 STDOUT.sync = true
 
 module IRB
-  @RCS_ID='-$Id: irb.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+  @RCS_ID='-$Id: irb.rb 24 2012-11-23 10:13:10Z  $-'
 
   class Abort < Exception;end
 

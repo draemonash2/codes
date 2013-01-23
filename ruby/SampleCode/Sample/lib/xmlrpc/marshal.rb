@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2001, 2002, 2003 by Michael Neumann (mneumann@ntecs.de)
 #
-# $Id: marshal.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: marshal.rb 24 2012-11-23 10:13:10Z  $
 #
 
 require "xmlrpc/parser"

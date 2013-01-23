@@ -2,7 +2,7 @@
 
   ruby.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Sun 10 12:06:15 Jun JST 2007
 
   Copyright (C) 2007-2008 Yukihiro Matsumoto

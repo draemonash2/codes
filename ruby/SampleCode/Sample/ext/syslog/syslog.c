@@ -5,7 +5,7 @@
  * Documented by mathew <meta@pobox.com>
  *
  * $RoughId: syslog.c,v 1.21 2002/02/25 12:21:17 knu Exp $
- * $Id: syslog.c 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: syslog.c 24 2012-11-23 10:13:10Z  $
  */
 
 #include "ruby/ruby.h"

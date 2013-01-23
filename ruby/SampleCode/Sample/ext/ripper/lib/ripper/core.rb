@@ -1,6 +1,4 @@
 #
-# $Id: core.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
-#
 # Copyright (c) 2003-2005 Minero Aoki
 #
 # This program is free software.

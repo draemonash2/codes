@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE. This file is part of the uIP TCP/IP stack. Author: Adam Dunkels
- * <adam@sics.se> $Id: httpd.c 11 2012-08-15 05:27:05Z TatsuyaEndo $
+ * <adam@sics.se> $Id: httpd.c 11 2012-08-15 05:27:05Z  $
  */
 #include "uip.h"
 #include "httpd.h"

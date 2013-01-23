@@ -4,7 +4,7 @@
 #	
 #	$Date:: 2013-01-07 00:30:23 +0900#$
 #	$Rev: 28 $
-#	$Author: TatsuyaEndo $
+#	$Author:  $
 #	$HeadURL: file:///C:/Repo/trunk/ruby/cre_studyPlan.rb $
 #	
 #	$UsageRule:

@@ -1,5 +1,5 @@
 /*
- * $Id: ossl_pkcs5.c 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: ossl_pkcs5.c 24 2012-11-23 10:13:10Z  $
  * Copyright (C) 2007 Technorama Ltd. <oss-ruby@technorama.net>
  */
 #include "ossl.h"

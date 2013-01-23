@@ -14,7 +14,7 @@ require "thread"
 module IRB
   # job management class
   class JobManager
-    @RCS_ID='-$Id: multi-irb.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+    @RCS_ID='-$Id: multi-irb.rb 24 2012-11-23 10:13:10Z  $-'
 
     def initialize
       # @jobs = [[thread, irb],...]

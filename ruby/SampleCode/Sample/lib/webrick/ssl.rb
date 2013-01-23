@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2003 GOTOU Yuuzou All rights reserved.
 #
-# $Id: ssl.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: ssl.rb 24 2012-11-23 10:13:10Z  $
 
 require 'webrick'
 require 'openssl'

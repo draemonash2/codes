@@ -13,7 +13,7 @@ require "irb"
 require "irb/frame"
 
 class XMP
-  @RCS_ID='-$Id: xmp.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+  @RCS_ID='-$Id: xmp.rb 24 2012-11-23 10:13:10Z  $-'
 
   def initialize(bind = nil)
     IRB.init_config(nil)

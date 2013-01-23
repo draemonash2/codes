@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 # -*- mode: ruby -*-
-# $Id: bm_so_array.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: bm_so_array.rb 24 2012-11-23 10:13:10Z  $
 # http://www.bagley.org/~doug/shootout/
 # with help from Paul Brannan and Mark Hubbart
 

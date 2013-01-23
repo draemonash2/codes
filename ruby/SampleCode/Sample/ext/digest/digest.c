@@ -2,14 +2,14 @@
 
   digest.c -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Fri May 25 08:57:27 JST 2001
 
   Copyright (C) 1995-2001 Yukihiro Matsumoto
   Copyright (C) 2001-2006 Akinori MUSHA
 
   $RoughId: digest.c,v 1.16 2001/07/13 15:38:27 knu Exp $
-  $Id: digest.c 24 2012-11-23 10:13:10Z TatsuyaEndo $
+  $Id: digest.c 24 2012-11-23 10:13:10Z  $
 
 ************************************************/
 

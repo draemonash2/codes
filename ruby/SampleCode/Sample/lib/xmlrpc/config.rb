@@ -1,5 +1,5 @@
 #
-# $Id: config.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: config.rb 24 2012-11-23 10:13:10Z  $
 # Configuration file for XML-RPC for Ruby
 #
 

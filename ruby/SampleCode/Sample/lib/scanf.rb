@@ -3,8 +3,8 @@
 #--
 # $Release Version: 1.1.2 $
 # $Revision: 24 $
-# $Id: scanf.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
-# $Author: TatsuyaEndo $
+# $Id: scanf.rb 24 2012-11-23 10:13:10Z  $
+# $Author:  $
 #++
 #
 # == Description

@@ -1,5 +1,5 @@
 /*
- * $Id: ossl_bn.c 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: ossl_bn.c 24 2012-11-23 10:13:10Z  $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Technorama team <oss-ruby@technorama.net>
  * All rights reserved.

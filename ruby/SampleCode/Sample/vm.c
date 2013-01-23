@@ -2,7 +2,7 @@
 
   vm.c -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
 
   Copyright (C) 2004-2007 Koichi Sasada
 

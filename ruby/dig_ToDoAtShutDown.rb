@@ -4,7 +4,7 @@
 #	
 #	$Date:: 2013-01-07 00:30:23 +0900#$
 #	$Rev: 28 $
-#	$Author: TatsuyaEndo $
+#	$Author:  $
 #	$HeadURL: file:///C:/Repo/trunk/ruby/dig_ToDoAtShutDown.rb $
 #	
 #	$UsageRule:
@@ -42,6 +42,14 @@ def delete_RightsNetworkMediaPlugIn()
 	}
 end
 
+# コミット & プッシュ
+def push_automaticGithub(strDirPath, strPushDir)
+#	git add # 設定ファイルはファイルが増えることがないため add しない
+#	TODO カレントディレクトリ変更処理追加
+	system("git commit -m \"自動コミット\"")
+	system("git push #{strPushDir}")
+end
+
 # =================================
 # 本処理
 # =================================
@@ -49,7 +57,7 @@ end
 delete_RightsNetworkMediaPlugIn()
 
 # Vim Setting コミット & プッシュ
-push_automaticGithub(strDirPath)
+push_automaticGithub(strDirPath, strPushDir)
 
 # X-Finder Setting コミット & プッシュ
-push_automaticGithub()
+push_automaticGithub(strDirPath, strPushDir)

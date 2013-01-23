@@ -10,7 +10,7 @@
 #
 module IRB
   class Locale
-    @RCS_ID='-$Id: locale.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+    @RCS_ID='-$Id: locale.rb 24 2012-11-23 10:13:10Z  $-'
 
     LOCALE_NAME_RE = %r[
       (?<language>[[:alpha:]]{2,3})

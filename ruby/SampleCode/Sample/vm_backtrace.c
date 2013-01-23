@@ -2,7 +2,7 @@
 
   vm_backtrace.c -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Sun Jun 03 00:14:20 2012
 
   Copyright (C) 1993-2012 Yukihiro Matsumoto

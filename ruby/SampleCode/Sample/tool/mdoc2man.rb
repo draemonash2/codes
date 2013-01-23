@@ -39,7 +39,7 @@
 ###  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ###  SUCH DAMAGE.
 ###
-### $Id: mdoc2man.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+### $Id: mdoc2man.rb 24 2012-11-23 10:13:10Z  $
 ###
 
 class Mdoc2Man

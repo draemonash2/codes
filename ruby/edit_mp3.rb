@@ -4,7 +4,7 @@
 #	
 #	$Date:: 2013-01-11 21:00:09 +0900#$
 #	$Rev: 29 $
-#	$Author: TatsuyaEndo $
+#	$Author:  $
 #	$HeadURL: file:///C:/Repo/trunk/ruby/edit_mp3.rb $
 #	
 #	$UsageRule:

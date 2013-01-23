@@ -1,5 +1,5 @@
 #
-# $Id: webrick_fcgi.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: webrick_fcgi.rb 24 2012-11-23 10:13:10Z  $
 #
 # Copyright (C) 2003,2004 Minero Aoki
 #

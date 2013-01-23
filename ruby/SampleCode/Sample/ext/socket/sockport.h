@@ -2,7 +2,6 @@
 
   sockport.h -
 
-  $Author: TatsuyaEndo $
   created at: Fri Apr 30 23:19:34 JST 1999
 
 ************************************************/

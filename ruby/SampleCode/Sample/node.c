@@ -2,7 +2,7 @@
 
   node.c - ruby node tree
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: 09/12/06 21:23:44 JST
 
   Copyright (C) 2009 Yusuke Endoh

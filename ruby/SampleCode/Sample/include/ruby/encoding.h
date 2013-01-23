@@ -2,7 +2,7 @@
 
   encoding.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
   created at: Thu May 24 11:49:41 JST 2007
 
   Copyright (C) 2007 Yukihiro Matsumoto

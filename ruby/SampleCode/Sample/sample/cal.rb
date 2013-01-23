@@ -1,7 +1,7 @@
 #! /usr/bin/env ruby
 
 # cal.rb: Written by Tadayoshi Funaba 1998-2004,2006,2008
-# $Id: cal.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: cal.rb 24 2012-11-23 10:13:10Z  $
 
 require 'date'
 

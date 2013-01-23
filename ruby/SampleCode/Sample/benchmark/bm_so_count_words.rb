@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
 # -*- mode: ruby -*-
-# $Id: bm_so_count_words.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
 # http://www.bagley.org/~doug/shootout/
 # with help from Paul Brannan
 

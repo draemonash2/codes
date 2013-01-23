@@ -1,5 +1,5 @@
 /*
- * $Id: ossl_ssl.h 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: ossl_ssl.h 24 2012-11-23 10:13:10Z  $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.

@@ -15,7 +15,7 @@
 # NOTE: You can find Japanese version of this document at:
 # http://www.ruby-lang.org/ja/man/html/net_pop.html
 #
-#   $Id: pop.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+#   $Id: pop.rb 24 2012-11-23 10:13:10Z  $
 #
 # See Net::POP3 for documentation.
 #

@@ -12,7 +12,6 @@ module IRB
   module ExtendCommand
     class Nop
 
-      @RCS_ID='-$Id: nop.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
 
       def self.execute(conf, *opts)
 	command = new(conf)

@@ -1,5 +1,5 @@
 /* $RoughId: rmd160init.c,v 1.3 2001/07/13 20:00:43 knu Exp $ */
-/* $Id: rmd160init.c 24 2012-11-23 10:13:10Z TatsuyaEndo $ */
+/* $Id: rmd160init.c 24 2012-11-23 10:13:10Z  $ */
 
 #include "digest.h"
 #if defined(HAVE_OPENSSL_RIPEMD_H)

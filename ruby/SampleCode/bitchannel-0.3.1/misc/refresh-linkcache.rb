@@ -1,7 +1,4 @@
 #!/usr/bin/env ruby
-#
-# $Id: refresh-linkcache.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
-#
 
 require 'getopts'
 

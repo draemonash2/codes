@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
 # -*- mode: ruby -*-
-# $Id: bm_so_concatenate.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
 # http://www.bagley.org/~doug/shootout/
 # based on code from Aristarkh A Zagorodnikov and Dat Nguyen
 

@@ -2,7 +2,7 @@
  *
  * nkf.h - Header file for nkf
  *
- * $Id: nkf.h 24 2012-11-23 10:13:10Z TatsuyaEndo $
+ * $Id: nkf.h 24 2012-11-23 10:13:10Z  $
  */
 
 #ifndef NKF_H

@@ -1,6 +1,4 @@
 #
-# $Id: en.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
-#
 # Copyright (C) 2003,2004 Minero Aoki
 #
 # This program is free software.

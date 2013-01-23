@@ -2,7 +2,7 @@
 #
 # Author:: Akira Yamada <akira@ruby-lang.org>
 # License:: You can redistribute it and/or modify it under the same term as Ruby.
-# Revision:: $Id: generic.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# Revision:: $Id: generic.rb 24 2012-11-23 10:13:10Z  $
 #
 # See URI for general documentation
 #

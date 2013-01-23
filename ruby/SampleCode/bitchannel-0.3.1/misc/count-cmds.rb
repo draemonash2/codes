@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# $Id: count-cmds.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $
+# $Id: count-cmds.rb 24 2012-11-23 10:13:10Z  $
 #
 # count bitchannel commands from Apache's access.log
 #

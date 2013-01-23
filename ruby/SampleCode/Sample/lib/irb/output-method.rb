@@ -16,7 +16,7 @@ module IRB
   #   StdioOutputMethod
 
   class OutputMethod
-    @RCS_ID='-$Id: output-method.rb 24 2012-11-23 10:13:10Z TatsuyaEndo $-'
+    @RCS_ID='-$Id: output-method.rb 24 2012-11-23 10:13:10Z  $-'
 
     def print(*opts)
       IRB.fail NotImplementedError, "print"

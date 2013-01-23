@@ -41,7 +41,7 @@
  *
  * This file is part of the uIP TCP/IP stack.
  *
- * $Id: httpd-cgi.c 11 2012-08-15 05:27:05Z TatsuyaEndo $
+ * $Id: httpd-cgi.c 11 2012-08-15 05:27:05Z  $
  *
  */
 

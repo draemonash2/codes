@@ -2,7 +2,6 @@
 
   rubysig.h -
 
-  $Author: TatsuyaEndo $
   $Date:: 2013-01-07 00:30:23 +0900#$
   created at: Wed Aug 16 01:15:38 JST 1995
 

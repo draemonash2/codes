@@ -2,7 +2,7 @@
 
   addr2line.h -
 
-  $Author: TatsuyaEndo $
+  $Author:  $
 
   Copyright (C) 2010 Shinichiro Hamaji
 
