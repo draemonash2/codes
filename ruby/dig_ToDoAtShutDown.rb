@@ -46,7 +46,7 @@ end
 def push_automaticGithub(strDirPath, strPushDir)
 #	git add # 設定ファイルはファイルが増えることがないため add しない
 	Dir::chdir(strDirPath)
-	system("git commit -m \"Auto Commit\"")
+	system("git commit -a -m \"Auto Commit\"")
 #	system("git push #{strPushDir}")
 	system("git push")
 end
