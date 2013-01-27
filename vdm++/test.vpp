@@ -17,13 +17,13 @@ private –kŠC“¹‚Ì•¶š—ñ : seq of char := "–kŠC“¹F";
 operations
 public static print : seq of char ==> ()
 print (ˆø”) == 
-		(
-		def - = new IO().writeval[seq of char](ˆø”) in skip;
-		);
+        (
+        def - = new IO().writeval[seq of char](ˆø”) in skip;
+        );
 
 public static main : set of seq of char ==> ()
 main (ˆø”) == (
-		–kŠC“¹‚ÌW‡ := –kŠC“¹‚ÌW‡ union ˆø”;
-		if –kŠC“¹‚ÌW‡ <> {} then  print(–kŠC“¹‚Ì•¶š—ñ);
-		);
+        –kŠC“¹‚ÌW‡ := –kŠC“¹‚ÌW‡ union ˆø”;
+        if –kŠC“¹‚ÌW‡ <> {} then  print(–kŠC“¹‚Ì•¶š—ñ);
+        );
 end test

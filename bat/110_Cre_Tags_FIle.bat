@@ -10,12 +10,12 @@ pause
 echo ###  Wait for a while...
 cd %DIR_PATH%
    if     %TAG_TYPE% == a (
-	ctags -R
-	gtags -v
+    ctags -R
+    gtags -v
 ) else if %TAG_TYPE% == c (
-	ctags -R
+    ctags -R
 ) else if %TAG_TYPE% == g (
-	gtags -v
+    gtags -v
 ) else (
     echo "###  error! select collect path type!
 )
