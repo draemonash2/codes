@@ -1,5 +1,5 @@
 Attribute VB_Name = "CopyPasteForVisibilityCell"
-Sub test()
+Sub CopyPasteForVisibilityCell()
     Worksheets("Sheet1").Activate
 End Sub
 

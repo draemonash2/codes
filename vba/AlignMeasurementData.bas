@@ -1,5 +1,5 @@
-Attribute VB_Name = "Module1"
-Sub MeasurementData()
+Attribute VB_Name = "AlignMeasurementData"
+Sub AlignMeasurementData()
     Dim ret As String
     Dim strInputCsvPath As String
     Dim strExportSheetName As String
