@@ -45,9 +45,10 @@ end
 # コミット & プッシュ
 def push_automaticGithub(strDirPath, strPushDir)
 #	git add # 設定ファイルはファイルが増えることがないため add しない
-#	TODO カレントディレクトリ変更処理追加
-	system("git commit -m \"自動コミット\"")
-	system("git push #{strPushDir}")
+	Dir::chdir(strDirPath)
+	system("git commit -m \"Auto Commit\"")
+#	system("git push #{strPushDir}")
+	system("git push")
 end
 
 # =================================
@@ -57,7 +58,11 @@ end
 delete_RightsNetworkMediaPlugIn()
 
 # Vim Setting コミット & プッシュ
+strDirPath	= "C:/Users/TatsuyaEndo"
+strPushDir	= ""
 push_automaticGithub(strDirPath, strPushDir)
 
 # X-Finder Setting コミット & プッシュ
+strDirPath	= "C:/prg/xf11-10"
+strPushDir	= ""
 push_automaticGithub(strDirPath, strPushDir)
