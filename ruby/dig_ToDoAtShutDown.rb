@@ -8,12 +8,7 @@
 #	$HeadURL: file:///C:/Repo/trunk/ruby/dig_ToDoAtShutDown.rb $
 #	
 #	$UsageRule:
-#		ruby exe_grepReplaceMultiLine.rb <replace_target_dir_path> <replace_line_num> <search_word> <replace_file_path>
-#			<replace_target_dir_path>	: 置換対象ディレクトリパス
-#			<replace_line_num>			: 置換行数
-#			<search_word>				: 検索文字列
-#			<replace_file_path>			: 置換行ファイルパス
-#			<replace_file_type>			: 置換対象ファイル種別
+#		ruby dig_ToDoAtShutDown.rb
 #	
 #	$Note:
 #		なし
@@ -44,25 +39,19 @@ end
 
 # コミット & プッシュ
 def push_automaticGithub(strDirPath, strPushDir)
-#	git add # 設定ファイルはファイルが増えることがないため add しない
 	Dir::chdir(strDirPath)
-	system("git commit -a -m \"Auto Commit\"")
-#	system("git push #{strPushDir}")
-	system("git push")
+	system("git add -u \.")					# 官吏対象ファイルのみコミット対象とする
+	system("git commit -m \"Auto Commit\"")	# 変更のコミット
+	system("git push #{strPushDir}")
 end
 
 # =================================
 # 本処理
 # =================================
-# RightsNetworkMediaPlugIn を削除する
-delete_RightsNetworkMediaPlugIn()
+	# RightsNetworkMediaPlugIn を削除する
+	delete_RightsNetworkMediaPlugIn()
 
-# Vim Setting コミット & プッシュ
-strDirPath	= "C:/Users/TatsuyaEndo"
-strPushDir	= ""
-push_automaticGithub(strDirPath, strPushDir)
-
-# X-Finder Setting コミット & プッシュ
-strDirPath	= "C:/prg/xf11-10"
-strPushDir	= ""
-push_automaticGithub(strDirPath, strPushDir)
+	# Setting コミット & プッシュ
+	strDirPath	= "C:/prg"
+	strPushDir	= "setting"
+	push_automaticGithub(strDirPath, strPushDir)
