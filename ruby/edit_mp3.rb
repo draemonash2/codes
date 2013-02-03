@@ -36,10 +36,18 @@ JACKET_DIR_PATH     = "D:/200_Pictures/30_CD Jacket"
 # =================================
 # 事前確認処理
 def check_preProcess()
+    puts "下記が完了していることを確認してください。"
+    puts "  01 Desktop に EditMP3Files フォルダ作成、 Mp3 移動"
+    puts "  02 タグ名取得 @Amazon"
+    puts "  03 タグ付け @SuperTagEditor"
+    puts "  04 ジャケット取得 @Amazon"
+    puts "  05 取得したジャケットを各フォルダに格納"
+    STDIN.puts
+    
     # JACKET_DIR_PATH  が存在するか確認
     # EDIT_TARGET_PATH が存在するか確認
     # EDIT_TARGET_PATH 配下のフォルダに 画像ファイルが格納されていることを確認
-    # TODO
+    # TODO : Implements this function
 end
 
 # 画像編集処理
@@ -77,6 +85,7 @@ def edit_downloadJackets()
         File.rename(strOldName, strNewName)
     end
     
+    # TODO : Implements this function
 #   # EDIT_TARGET_PATH 配下に格納された Folder.jpg を FolderXXX.jpg にリネームし、コピー
 #   fixMaxFileNumber += 1
 #   for fixEditJacketPathCnt in 0 .. (arrEditJacketPath.length - 1)
@@ -94,25 +103,27 @@ end
 
 # MP3Gain 実行
 def execute_MP3Gein()
+    # TODO : Implements this function
 end
 
 # =================================
 # 本処理
 # =================================
 
-# Amazonにてジャケット・タグを取得
-# EditMP3Files フォルダに音楽ファイルを移動
-# 取得したジャケットを各フォルダに格納
-# SuperTagEditor にてタグを入れる
+begin
+    # 事前確認処理
+    check_preProcess()
 
-# 事前確認処理
-check_preProcess()
+    # 画像編集処理
+    edit_downloadJackets()
 
-# 画像編集処理
-edit_downloadJackets()
+    # MP3Gain 実行
+    execute_MP3Gein()
 
-# MP3Gain 実行
-execute_MP3Gein()
-
-# Mp3tag 実行
+    # Mp3tag 実行
+rescue
+  # 例外処理
+ensure
+  # 後始末
+end
 
