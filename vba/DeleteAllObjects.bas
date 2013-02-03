@@ -1,4 +1,4 @@
-Attribute VB_Name = "Module2"
+Attribute VB_Name = "DeleteAllObjects"
 Sub DeleteAllObjects()
     Dim i As Long
     Dim j As Long

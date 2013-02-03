@@ -5,7 +5,7 @@ Sub AlignMeasurementData()
     Dim strExportSheetName As String
     Dim strAlignSheetName As String
     
-    strInputCsvPath = "C:\Users\TatsuyaEndo\Desktop\BodyManager\GRAPHV1_dummy\DATA\DATA1.CSV"
+    strInputCsvPath = "D:\TANITA\GRAPHV1\DATA\DATA1.CSV"
     strExportSheetName = "DATA1"
     strAlignSheetName = "‘ª’è•\"
     
