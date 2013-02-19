@@ -2,10 +2,9 @@
 # =================================================
 #   $Brief  ★テンプレートファイル★ $
 #   
-#   $Date:: 2013-01-11 21:00:09 +0900#$
-#   $Rev: 29 $
-#   $Author:  $
-#   $HeadURL: file:///C:/Repo/trunk/ruby/%E2%98%85Template%E2%98%85.rb $
+#   $Date::  $
+#   $Rev:  $
+#   $HeadURL:  $
 #   
 #   $UsageRule:
 #       ruby template.rb <arg1> <arg2>
