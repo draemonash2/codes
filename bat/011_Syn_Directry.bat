@@ -3,12 +3,9 @@ call lib\010_Def_Datetime.bat
 
 set LOGDIR=.\log\%~n0_%datetime%.log
 
-set SRC=D:\
-set DST=E:\
-
 echo ############# Sync Directry! #############
-echo ### Source      Path is %SRC%
-echo ### Destination Path is %DST%
+set /p SRC="### Source      Path [ex. D:\] : "
+set /p DST="### Destination Path [ex. E:\] : "
 set /p ANS="### Please press any key ..."
 echo ### Wait for a while ...
 echo {{{ >> %LOGDIR%
