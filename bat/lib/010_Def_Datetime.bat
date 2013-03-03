@@ -9,6 +9,6 @@ set hh=%time_tmp:~0,2%
 set mi=%time_tmp:~3,2%
 set ss=%time_tmp:~6,2%
 set sss=%time_tmp:~9,2%
-set datetime=%yyyy%%mm%%dd%%hh%%mi%%ss%%sss%
+set datetime=%yyyy%%mm%%dd%-%hh%%mi%%ss%
 set time_tmp=
 set date_tmp=
