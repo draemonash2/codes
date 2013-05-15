@@ -100,3 +100,5 @@
             strTgtPath.gsub!(/.*/, (arrFileName[0] + "_" + format("%03d", fixFileNum) + "." + arrFileName[1]))
             fixFileNum += 1
         end
+    end
+    

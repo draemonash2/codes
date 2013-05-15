@@ -148,13 +148,13 @@
         replace_lines(arrReplaceFor, fixReplaceLine, matchSearchLine, arrReplaceBase)
     end
     
-    begin
-        test()
-    rescue
-        puts "error"
-        # 例外が発生したときの処理
-    else
-        # 例外が発生しなかったときに実行される処理
-    ensure
-        # 例外の発生有無に関わらず最後に必ず実行する処理
-    end
+#   begin
+#       test()
+#   rescue
+#       puts "error"
+#       # 例外が発生したときの処理
+#   else
+#       # 例外が発生しなかったときに実行される処理
+#   ensure
+#       # 例外の発生有無に関わらず最後に必ず実行する処理
+#   end
