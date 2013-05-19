@@ -21,6 +21,7 @@
 # =================================================
 require "./lib/debug.rb"
 require "./lib/input_file.rb"
+require "./lib/output_file.rb"
 require "./lib/arr.rb"
 
 # =================================================
@@ -223,4 +224,4 @@ require "./lib/arr.rb"
     arrOutputArray[0, 1] = [["StartPage", "PageNum", "PageRange"]]
     
     # ”z—ñ‚ğo—Í
-    output_csv(arrOutputArray, strOutPath)
+    output_csv(strOutPath, arrOutputArray, "w")

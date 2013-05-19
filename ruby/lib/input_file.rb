@@ -14,16 +14,16 @@ require "find"
     # ===============================================================
     # @brief    CSVファイルを入力し、二次元配列に格納する
     #
-    # @param    strTgtPath      [in]    String                  入力ファイルパス
+    # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrInputArray   [in]    Array->Array->String    入力データ配列
     # 
     # @retval   なし
     # 
     # @note     なし
     # ===============================================================
-    def input_csv(strTgtPath, arrInputArray)
+    def input_csv(strTargetPath, arrInputArray)
         input_file = $stdin
-        input_file = File.open(strTgtPath, 'r')
+        input_file = File.open(strTargetPath, 'r')
         input = Array.new
         input = input_file.readlines
         
@@ -35,45 +35,43 @@ require "find"
     # ===============================================================
     # @brief    TSVファイルを入力し、二次元配列に格納する
     #
-    # @param    strTgtPath      [in]    String                  入力ファイルパス
+    # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrInputArray   [in]    Array->Array->String    入力データ配列
     # 
     # @retval   なし
     # 
     # @note     なし
     # ===============================================================
-    def input_tsv(strTgtPath)
-        input_file = $stdin
-        input_file = File.open(strTgtPath, 'r')
-        input = Array.new
-        input = input_file.readlines
-        arrInputArray = Array.new
-        
-        for i in 0..input.length - 1
-            arrInputArray << input[i].split("\t")
-        end
-        
-        return arrInputArray
-    end
-
-    # ===============================================================
-    # @brief    TXT ファイルを入力し、配列に格納する
-    #
-    # @param    strTargetPath   [in]    String          入力ファイルパス
-    # @param    arrInputArray   [out]   Array->String   入力データ配列
-    # 
-    # @retval   なし
-    # 
-    # @note     なし
-    # ===============================================================
-    def input_txt(strTargetPath, arrInputArray)
+    def input_tsv(strTargetPath, arrInputArray)
         input_file = $stdin
         input_file = File.open(strTargetPath, 'r')
         input = Array.new
         input = input_file.readlines
         
         for i in 0..input.length - 1
-            arrInputArray << input[i].split(",")
+            arrInputArray << input[i].split("\t")
+        end
+    end
+
+    # ===============================================================
+    # @brief    TXTファイルを入力し、配列に格納する
+    #
+    # @param    strTargetPath   [in]    String          入力ファイルパス
+    # @param    arrInputArray   [out]   Array->String   入力データ配列
+    # 
+    # @retval   なし
+    # 
+    # @note     ・改行文字は削除済
+    #           ・タブ文字は変換しない
+    #           ・strTargetPath の拡張子は確認しない
+    # ===============================================================
+    def input_txt(strTargetPath, arrInputArray)
+        input_file = $stdin
+        input_file = File.open(strTargetPath, 'r')
+        arrInputArray.push(input_file.readlines)
+        arrInputArray.flatten!          # "配列の配列" を "配列" に変換
+        for i in 0 .. (arrInputArray.length - 1)
+            arrInputArray[i].chomp!     # 改行文字の削除
         end
         input_file.close
     end

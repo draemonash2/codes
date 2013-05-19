@@ -142,4 +142,4 @@ extract_file_contents(arrExtFileInfo, arrExtFileContents)
 unite_files(arrExtFileInfo, arrExtFileContents, arrUniteFile)
 
 # ファイル出力
-output_txt(arrOutputArr, strTgtPath)
+output_txt(strTgtPath, arrOutputArr, "w")
