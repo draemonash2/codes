@@ -13,6 +13,8 @@
 #         input_csv_path : 入力する CSV ファイルパス
 #   
 #   $Note:
+#       TODO: 行列反転処理を削除する。
+#       TODO: 入力する CSV に sep_page_num 記述対応
 #       TODO: sep_page_num 付近で分割されるように… (Level 3 を入力させればまだいいけど…)
 # =============================================
 
@@ -77,7 +79,6 @@ require "./lib/arr.rb"
     # @note     なし
     # =====================================================
     def join_inputArray(arrJoinedArray, arrChgedArray)
-
         # 結合
         for i in 0 .. (arrChgedArray.length - 1)
             arrJoinedArray.concat(arrChgedArray[i])
@@ -115,7 +116,7 @@ require "./lib/arr.rb"
         
         fixArrIdx = 0
         fixCurPageNum = fixStartPageNum
-
+        
         # 最初のページ出力
         arrOutputPlan.push(fixCurPageNum)   # 出力
         
@@ -155,7 +156,7 @@ require "./lib/arr.rb"
     # =====================================================
     # @brief    ページ数とページ範囲を付加する
     # 
-    # @param    arrOutputPlan   [out]   array->array->string    分割結果格納領域
+    # @param    arrOutputArray   [out]   array->array->integer    分割結果格納領域
     #
     # @retval   なし
     # 
@@ -163,21 +164,26 @@ require "./lib/arr.rb"
     # =====================================================
     def add_pageInfo!(arrOutputArray)
         
-        arrPageRange = Array.new()
-        arrPageNum   = Array.new()
-        arrPagePart  = Array.new()
+        arrPageStart   = Array.new()
+        arrPageNum     = Array.new()
+        arrPageEnd     = Array.new()
         
         for i in 0 .. (arrOutputArray.length - 2)
-            arrPagePart.push(arrOutputArray[i].to_s)
-            arrPageRange.push("#{arrOutputArray[i]}_#{arrOutputArray[i + 1] - 1}")
-            arrPageNum.push("#{arrOutputArray[i + 1] - arrOutputArray[i]}")
+            if i == 0
+                arrPageStart.push ("StartPage")
+                arrPageEnd.push   ("EndPage")
+                arrPageNum.push   ("PageNum")
+            else
+                arrPageStart.push ("#{arrOutputArray[i]}")
+                arrPageEnd.push   ("#{arrOutputArray[i + 1] - 1}")
+                arrPageNum.push   ("#{arrOutputArray[i + 1] - arrOutputArray[i]}")
+            end
         end
         
         arrOutputArray.clear
-        arrOutputArray.push(arrPagePart)
+        arrOutputArray.push(arrPageStart)
+        arrOutputArray.push(arrPageEnd)
         arrOutputArray.push(arrPageNum)
-        arrOutputArray.push(arrPageRange)
-
     end
 
 # =================================================
@@ -186,8 +192,8 @@ require "./lib/arr.rb"
     
     # 入力
     fixSepPageNum   = ARGV[0].to_i
-    strInpPath      = ARGV[1]
-    strOutPath      = "z_out.csv".gsub("\\", "/")
+    strInpPath      = ARGV[1].gsub("\\", "/")
+    strOutPath      = strInpPath.gsub("input", "output")
     arrInputArray   = Array.new()
     arrJoinedArray  = Array.new()       # 結合後出力
     arrOutputArray  = Array.new()       # 最終出力結果
@@ -220,8 +226,6 @@ require "./lib/arr.rb"
     # 行列反転
     chg_array!(arrOutputArray)
     
-    # 一行目に説明を追記
-    arrOutputArray[0, 1] = [["StartPage", "PageNum", "PageRange"]]
-    
     # 配列を出力
     output_csv(strOutPath, arrOutputArray, "w")
+    
