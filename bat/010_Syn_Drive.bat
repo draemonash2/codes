@@ -1,19 +1,17 @@
 @echo off
 call lib\010_Def_Datetime.bat
 
-set LOGDIR=E:\%~n0_%datetime%.log
+set LOGDIR=D:\%~n0_%datetime%.log
 
-set SRC=D:\
-set DST=E:\BackupFile
+set SRC=Z:\
+set DST=D:\BackupFile
 
 echo ############### Sync Drive! ##############
 echo ### Source      Path is %SRC%
 echo ### Destination Path is %DST%
 set /p ANS="### Please press any key ..."
 echo ### Wait for a while ...
-echo {{{ >> %LOGDIR%
 robocopy %SRC% %DST% /MIR >> %LOGDIR%
-echo }}} >> %LOGDIR%
 echo ############### Finish! ##################
 pause
 

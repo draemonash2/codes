@@ -3,11 +3,9 @@ call lib\010_Def_Datetime.bat
 
 set LOGDIR=.\log\%~n0_%datetime%.log
 
-echo ######### Digest ToDoAtShutDown! #########
+echo ########## Digest ToDoAtBootUP! ##########
 echo ####        Wait for a while ...
-echo {{{ >> %LOGDIR%
-ruby ..\ruby\dig_ToDoAtShutDown.rb >> %LOGDIR%
-echo }}} >> %LOGDIR%
+cd C:\Users\TatsuyaEndo\Desktop
 echo ############### Finish! ##################
 echo.
 

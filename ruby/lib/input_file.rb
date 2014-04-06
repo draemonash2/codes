@@ -16,10 +16,11 @@ require "find"
     #
     # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrInputArray   [in]    Array->Array->String    入力データ配列
+    #                                     arrInputArray[X][Y] (X : 行、Y : 列)
     # 
     # @retval   なし
     # 
-    # @note     なし
+    # @note     配列アクセス時は arrInputArray[X][Y]
     # ===============================================================
     def input_csv(strTargetPath, arrInputArray)
         input_file = $stdin
@@ -37,6 +38,7 @@ require "find"
     #
     # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrInputArray   [in]    Array->Array->String    入力データ配列
+    #                                     arrInputArray[X][Y] (X : 行、Y : 列)
     # 
     # @retval   なし
     # 

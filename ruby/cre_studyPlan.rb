@@ -8,13 +8,28 @@
 #   $HeadURL: file:///C:/Repo/trunk/ruby/cre_studyPlan.rb $
 #   
 #   $UsageRule:
-#       ruby cre_studyPlan.rb <sep_page_num> <input_csv_path>
-#         sep_page_num   : 分割ページ数
-#         input_csv_path : 入力する CSV ファイルパス
+#       ・実行方法
+#         ruby cre_studyPlan.rb <sep_page_num> <input_csv_path>
+#           sep_page_num   : 分割ページ数
+#           input_csv_path : 入力する CSV ファイルパス
+#         
+#       ・入力ファイル形式
+#         | SepPageNum | StartEndPage | Level1 | Level2 | Level3 |
+#         |     10     |      12      |   43   |   12   |   12   |
+#         |            |     435      |   65   |   21   |   15   |
+#         |            |              |   83   |   30   |   20   |
+#         |            |              |   ・   |   ・   |   ・   |
+#         |            |              |   ・   |   ・   |   ・   |
+#         |            |              |   ・   |   ・   |   ・   |
+#         
+#       ・出力ファイル形式
+#         | StartPage  |   12   |   16   |   ・   |   ・   |   ・   |
+#         | EndPage    |   15   |   20   |   ・   |   ・   |   ・   |
+#         | PageNum    |    3   |    4   |   ・   |   ・   |   ・   |
 #   
 #   $Note:
-#       TODO: 行列反転処理を削除する。
-#       TODO: 入力する CSV に sep_page_num 記述対応
+#       TODO: 事前準備の関数化
+#       TODO: 構造体化
 #       TODO: sep_page_num 付近で分割されるように… (Level 3 を入力させればまだいいけど…)
 # =============================================
 
@@ -67,6 +82,9 @@ require "./lib/arr.rb"
             end
         end
     end
+    
+    def execute_pre_process()
+    end
 
     # =====================================================
     # @brief    全ての配列を結合する
@@ -78,10 +96,13 @@ require "./lib/arr.rb"
     # 
     # @note     なし
     # =====================================================
-    def join_inputArray(arrJoinedArray, arrChgedArray)
+    def join_inputArray(arrJoinedArray, arrInputArray, fixSepPageNum, fixStartPageNum, fixLastPageNum )
         # 結合
-        for i in 0 .. (arrChgedArray.length - 1)
-            arrJoinedArray.concat(arrChgedArray[i])
+        for i in 0 .. (arrInputArray.length - 1)
+            arrJoinedArray.concat(arrInputArray[i])
+            arrJoinedArray.push(fixSepPageNum)
+            arrJoinedArray.push(fixStartPageNum)
+            arrJoinedArray.push(fixLastPageNum)
         end
         
         # 重複を排除
@@ -108,11 +129,7 @@ require "./lib/arr.rb"
     # 
     # @note     なし
     # =====================================================
-    def cre_separated_plan(arrOutputPlan, arrJoinedArray, fixSepPageNum)
-        
-        # ページ数算出
-        fixStartPageNum = arrJoinedArray[0]
-        fixLastPageNum  = arrJoinedArray[arrJoinedArray.length - 1]
+    def cre_separated_plan(arrOutputPlan, arrJoinedArray, fixSepPageNum, fixStartPageNum, fixLastPageNum)
         
         fixArrIdx = 0
         fixCurPageNum = fixStartPageNum
@@ -156,7 +173,7 @@ require "./lib/arr.rb"
     # =====================================================
     # @brief    ページ数とページ範囲を付加する
     # 
-    # @param    arrOutputArray   [out]   array->array->integer    分割結果格納領域
+    # @param    arrOutputArray   [in,out]   array->array->integer    分割結果格納領域
     #
     # @retval   なし
     # 
@@ -191,8 +208,7 @@ require "./lib/arr.rb"
 # =================================================
     
     # 入力
-    fixSepPageNum   = ARGV[0].to_i
-    strInpPath      = ARGV[1].gsub("\\", "/")
+    strInpPath      = ARGV[0].gsub("\\", "/")
     strOutPath      = strInpPath.gsub("input", "output")
     arrInputArray   = Array.new()
     arrJoinedArray  = Array.new()       # 結合後出力
@@ -202,7 +218,13 @@ require "./lib/arr.rb"
     input_csv(strInpPath, arrInputArray)
     
     # 入力ファイルチェック
-    chk_inputcsv(arrInputArray)
+#   chk_inputcsv(arrInputArray)
+#   ⇒ TODO : 要改良！
+    
+    # 基本情報入力
+    fixSepPageNum   = arrInputArray[1][0].to_i
+    fixStartPageNum = arrInputArray[1][1].to_i
+    fixLastPageNum  = arrInputArray[2][1].to_i
     
     # 説明行削除
     arrInputArray.delete_at(0)
@@ -210,22 +232,23 @@ require "./lib/arr.rb"
     # 行列反転
     chg_array!(arrInputArray)
     
+    # 分割ページ数、開始終了ページ数 列削除
+    arrInputArray.delete_at(0)
+    arrInputArray.delete_at(0)
+    
     # 全て数値に変換
     conv_array_to_i!(arrInputArray)
     
     # 全ての配列を結合
-    join_inputArray(arrJoinedArray, arrInputArray)
+    join_inputArray(arrJoinedArray, arrInputArray, fixSepPageNum, fixStartPageNum, fixLastPageNum)
     
     # 結合した配列情報をもとに、単位ページで分割
     # 計算結果を配列で返す
-    cre_separated_plan(arrOutputArray, arrJoinedArray, fixSepPageNum)
+    cre_separated_plan(arrOutputArray, arrJoinedArray, fixSepPageNum, fixStartPageNum, fixLastPageNum)
     
     # ページ数、ページ範囲を挿入
     add_pageInfo!(arrOutputArray)
     
-    # 行列反転
-    chg_array!(arrOutputArray)
-    
     # 配列を出力
     output_csv(strOutPath, arrOutputArray, "w")
-    
+   

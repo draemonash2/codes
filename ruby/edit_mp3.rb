@@ -28,63 +28,68 @@ require "find"
 # =================================
 # パラメータ設定
 # =================================
-EDIT_TARGET_PATH	= "#{ENV['USERPROFILE']}/Desktop/EditMP3Files".gsub("\\", "/")
-JACKET_DIR_PATH		= "D:/200_Pictures/30_CDJacket"
+EDIT_TARGET_PATH		= "#{ENV['USERPROFILE']}/Desktop/EditMP3Files".gsub("\\", "/")
+EDIT_TARGET_BAK_PATH	= "#{ENV['USERPROFILE']}/Desktop/EditMP3Files_bak".gsub("\\", "/")
+JACKET_DIR_PATH			= "Z:/200_Pictures/30_CDJacket"
 
 # =================================
 # 実行処理
 # =================================
-# 事前確認処理
-def check_preProcess()
-	puts "以下が完了していることを確認してください。"
-	puts "	01 Desktop に EditMP3Files フォルダ作成、 Mp3 移動"
-	puts "	02 タグ名取得 @Amazon"
-	puts "	03 タグ付け @SuperTagEditor"
-	puts "	04 ジャケット取得 @Amazon"
-	puts "	05 取得したジャケットを各フォルダに格納"
-	STDIN.gets
+# 事前処理
+def execute_preProcess()
+	# 作業フォルダ作成
+	FileUtils.mkdir_p EDIT_TARGET_PATH
 	
-	# JACKET_DIR_PATH  が存在するか確認
-	# TODO : Implements this function
-	
-	# EDIT_TARGET_PATH が存在するか確認
-	# TODO : Implements this function
-	
-	# EDIT_TARGET_PATH 配下のフォルダに 画像ファイルが格納されていることを確認
-	# TODO : Implements this function
+	# フォルダ存在確認
+	if File.exists?(JACKET_DIR_PATH) == false then raise "Directry \"#{JACKET_DIR_PATH}\"is nothing!" end
+	if File.exists?(EDIT_TARGET_PATH) == false then raise "Directry \"#{EDIT_TARGET_PATH}\"is nothing!" end
 end
 
 # 画像編集処理
 def create_folderJPG()
-	# AlbumArt.jpg と Folder.jpg を削除
+	
+	strJacketPath = Array.new()
+	
+	# 説明文表示
+	puts " ********************************************* "
+	puts " **          ジャケット処理開始!!           ** "
+	puts " ********************************************* "
+	puts "以下を確認してください。"
+	puts "	1. 取得したジャケットが各フォルダに格納されていること。 "
+	puts "	  ★親フォルダにのみ格納してください★"
+	STDIN.gets()
+	
+	# ジャケットパス取得
 	Find.find(EDIT_TARGET_PATH) {|strFilePath|
-		if strFilePath =~ /AlbumArt_.*\.jpg/ ||
-		   strFilePath =~ /Folder.*\.jpg/
-			FileUtils.rm(strFilePath)
+		if strFilePath =~ /.*\.jpg/
+			if strFilePath =~ /AlbumArt.*\.jpg/ ||
+			   strFilePath =~ /Folder.*\.jpg/
+				# AlbumArt.jpg と Folder.jpg を削除
+				FileUtils.rm(strFilePath)
+			else
+				# ジャケットパス取得
+				strJacketPath.push(strFilePath)
+			end
 		end
 	}
 	
-	# Folder.jpg にリネーム
-	Find.find(EDIT_TARGET_PATH) {|strFilePath|
-		if File.extname(strFilePath) == ".jpg"
-			File.rename( strFilePath, File.dirname(strFilePath) + "/Folder.jpg")
-		end
-	}
+	# ジャケットのバックアップ
+	FileUtils.mkdir_p(EDIT_TARGET_BAK_PATH)unless FileTest.exist?(EDIT_TARGET_BAK_PATH)
+	for fixJacketPathCnt in 0 .. (strJacketPath.length - 1)
+		FileUtils.cp( strJacketPath[fixJacketPathCnt], EDIT_TARGET_BAK_PATH + "/" + File.basename(strJacketPath[fixJacketPathCnt]))
+	end
 	
-	# Folder.jpg 隠しファイル化
-	Find.find(EDIT_TARGET_PATH) {|strFilePath|
-		if File.extname(strFilePath) == ".jpg"
-			system("attrib \"#{strFilePath}\" +h")
+	# Folder.jpg にリネーム＋ 隠しファイル化
+	for fixJacketPathCnt in 0 .. (strJacketPath.length - 1)
+		File.rename( strJacketPath[fixJacketPathCnt], File.dirname(strJacketPath[fixJacketPathCnt]) + "/Folder.jpg")
+		strJacketPath[fixJacketPathCnt].sub!( File.basename(strJacketPath[fixJacketPathCnt]), "Folder.jpg")
+		system("attrib \"#{strJacketPath[fixJacketPathCnt]}\" +h")
 		end
-	}
-end
-
-# 画像ファイル退避処理
-def copy_toJacketsDir()
+	
 	# JACKET_DIR_PATH から画像ファイルの最終ファイル名を取得
 	fixMaxFileNumber	= 0
 	Find.find(JACKET_DIR_PATH) {|strFilePath|
-			if strFilePath =~ /Folder(...)\.jpg/
+		if strFilePath =~ /Folder(...)\.jpg/
 			if fixMaxFileNumber < $1.to_i
 				fixMaxFileNumber = $1.to_i
 			end
@@ -93,16 +98,21 @@ def copy_toJacketsDir()
 	
 	# EDIT_TARGET_PATH 配下に格納された Folder.jpg を FolderXXX.jpg としてコピー
 	fixMaxFileNumber += 1
-	Find.find(EDIT_TARGET_PATH) {|strFilePath|
-		if strFilePath =~ /Folder.*\.jpg/
-			strSrcFileName	= File.dirname(strFilePath) + "/" + "Folder.jpg"
-			strDstFileName	= JACKET_DIR_PATH			+ "/" + "Folder.jpg"
-			FileUtils.cp(strSrcFileName, strDstFileName)
-			File.rename(strDstFileName, JACKET_DIR_PATH + "/Folder#{format("%3d", fixMaxFileNumber)}.jpg")
-			system("attrib \"#{JACKET_DIR_PATH}/Folder#{format("%3d", fixMaxFileNumber)}.jpg\" -h")
-			fixMaxFileNumber += 1
-		end
-	}
+	for fixJacketPathCnt in 0 .. (strJacketPath.length - 1)
+		strSrcFilePath = strJacketPath[fixJacketPathCnt]
+		strDstFilePath = JACKET_DIR_PATH + "/Folder#{format("%3d", fixMaxFileNumber)}.jpg"
+		FileUtils.cp( strSrcFilePath, strDstFilePath)
+		system("attrib \"#{strDstFilePath}\" -h")
+		fixMaxFileNumber += 1
+	end
+	
+	# 説明文表示
+	puts " ********************************************* "
+	puts " **          ジャケット処理完了!!           ** "
+	puts " ********************************************* "
+	puts " ジャケット格納処理が完了しましたので以下を実施してください。"
+	puts "	1. ★親フォルダにのみ格納したジャケットを各ディスクのフォルダに移動してください。"
+	STDIN.gets()
 end
 
 # MP3Gain 実行
@@ -119,18 +129,23 @@ def execute_MP3Tag()
 	# TODO
 end
 
+# 事後処理
+def execute_postProccess()
+	puts "操作が完了しました。以下を実施してください。"
+	puts "	01 タグ付け @SuperTagEditor"
+	STDIN.gets()
+end
+
 # =================================
 # 本処理
 # =================================
 begin
-	# 事前確認処理
-	check_preProcess()
+	
+	# 事前処理
+	execute_preProcess()
 	
 	# 画像編集処理
 	create_folderJPG()
-	
-	# 画像ファイル退避処理
-	copy_toJacketsDir()
 	
 	# MP3Gain 実行
 	execute_MP3Gein()
@@ -138,8 +153,12 @@ begin
 	# Mp3tag 実行
 	execute_MP3Tag()
 	
-rescue
-  # 例外処理
+	# 事後処理
+	execute_postProccess()
+	
+rescue => error
+	puts error.message
+	puts error.backtrace
 ensure
   # 後始末
 end

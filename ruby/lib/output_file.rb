@@ -15,9 +15,9 @@
     # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrOutputArr    [in]    Array->Array->String    入力データ配列
     # @param    strWriteMode    [in]    String  書き込みモード
-    #               w : 新規作成書き込みモード
+    #               w : 新規作成書込みモード
     #                   既存ファイルを指定した場合、ファイル名に "_XXX" を付与して出力
-    #               a : 追加書き込みモード
+    #               a : 上書きモード
     #                   既存ファイルを指定した場合、上書きする。
     # 
     # @retval   なし
@@ -45,9 +45,9 @@
     # @param    strTargetPath   [in]    String                  入力ファイルパス
     # @param    arrOutputArr    [in]    Array->Array->String    入力データ配列
     # @param    strWriteMode    [in]    String  書き込みモード
-    #               w : 新規作成書き込みモード
+    #               w : 新規作成書込みモード
     #                   既存ファイルを指定した場合、ファイル名に "_XXX" を付与して出力
-    #               a : 追加書き込みモード
+    #               a : 上書きモード
     #                   既存ファイルを指定した場合、上書きする。
     # 
     # @retval   なし
@@ -75,9 +75,9 @@
     # @param    strTargetPath   [in]    String          入力ファイルパス
     # @param    arrOutputArr    [in]    Array->String   入力データ配列
     # @param    strWriteMode    [in]    String          書き込みモード
-    #               w : 新規作成書き込みモード
+    #               w : 新規作成書込みモード
     #                   既存ファイルを指定した場合、ファイル名に "_XXX" を付与して出力
-    #               a : 追加書き込みモード
+    #               a : 上書きモード
     #                   既存ファイルを指定した場合、上書きする。
     # 
     # @retval   なし
@@ -105,9 +105,9 @@
     #
     # @param    strTargetPath   [in]    String  入力ファイルパス
     # @param    strWriteMode    [in]    String  書き込みモード
-    #               w : 新規作成書き込みモード
+    #               w : 新規作成書込みモード
     #                   既存ファイルを指定した場合、ファイル名に "_XXX" を付与して出力
-    #               a : 追加書き込みモード
+    #               a : 上書きモード
     #                   既存ファイルを指定した場合、上書きする。
     # 
     # @retval   なし
