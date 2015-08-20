@@ -11,7 +11,7 @@ echo ### Source      Path is %SRC%
 echo ### Destination Path is %DST%
 set /p ANS="### Please press any key ..."
 echo ### Wait for a while ...
-robocopy %SRC% %DST% /MIR >> %LOGDIR%
+robocopy %SRC% %DST% /MIR /XD "System Volume Information" >> %LOGDIR%
 echo ############### Finish! ##################
 pause
 
