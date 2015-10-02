@@ -9,7 +9,7 @@ Dim asWSArgs
 Dim oSrcStream
 Dim oDstStream
 
-'分割サイズ(byte)
+'★★★ 分割ファイルサイズはここで変更 ★★★
 SPLIT_BYTE_SIZE = 1024000
 
 Set asWSArgs = WScript.Arguments
@@ -21,7 +21,9 @@ End If
 
 Dim sInFileName
 Dim sOutFileName
-Dim oFileSys, bIsFileExist, oFile
+Dim oFileSys
+Dim bIsFileExist
+Dim oFile
 
 sInFileName = asWSArgs(0)
 
