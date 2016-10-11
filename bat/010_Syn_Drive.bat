@@ -1,10 +1,10 @@
 @echo off
 call lib\010_Def_Datetime.bat
 
-set LOGDIR=D:\%~n0_%datetime%.log
+set LOGDIR=X:\101_BackupFile_log\%~n0_%datetime%.log
 
 set SRC=Z:\
-set DST=D:\BackupFile
+set DST=X:\100_BackupFile
 
 echo ############### Sync Drive! ##############
 echo ### Source      Path is %SRC%
