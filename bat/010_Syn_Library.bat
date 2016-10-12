@@ -2,7 +2,7 @@
 call lib\010_Def_Datetime.bat
 
 set SRC=Z:\
-set DSTBASE=X:\100_BackUp_Data
+set DSTBASE=X:\800_BackUp_Library
 
 set DST=%DSTBASE%\data
 set LOG=%DSTBASE%\log\%~n0_%datetime%.log
