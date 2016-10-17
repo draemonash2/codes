@@ -6,6 +6,7 @@ Option Explicit
 Const TRGT_DIR = "Z:\300_Musics"
 Const UPDATE_MOD_DATE = False
 
+Const DEBUG_FUNCVALID_ADDFILES        = True
 Const DEBUG_FUNCVALID_DATEINPUT       = True
 Const DEBUG_FUNCVALID_TRGTLISTUP      = True
 Const DEBUG_FUNCVALID_DIRCMDEXEC      = True
@@ -27,7 +28,7 @@ Call Include( sCurDir & "\lib\iTunes.vbs" )
 Call Include( sCurDir & "\lib\Array.vbs" )
 
 Dim sLogFilePath
-sLogFilePath = sCurDir & "\" & RemoveTailWord( WScript.ScriptName, "." ) & ".log"
+sLogFilePath = TRGT_DIR & "\" & RemoveTailWord( WScript.ScriptName, "." ) & ".log"
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -44,14 +45,51 @@ Call oStpWtch.StartT
 Dim oPrgBar
 Set oPrgBar = New ProgressBar
 
-If DEBUG_FUNCVALID_DATEINPUT Then ' ★Debug★
+' ******************************************
+' * ファイル追加                           *
+' ******************************************
+If DEBUG_FUNCVALID_ADDFILES Then ' ★Debug★
+
+objLogFile.WriteLine "*** ファイル追加 *** "
+oPrgBar.SetMsg( _
+	"⇒・ファイル追加処理" & vbNewLine & _
+	"　・日付入力処理" & vbNewLine & _
+	"　・更新対象ファイル特定処理" & vbNewLine & _
+	"　・タグ更新処理" & vbNewLine & _
+	"" _
+)
+oPrgBar.SetProg( 50 ) '進捗更新
+
+Dim sAnswer
+sAnswer = MsgBox( "iTunes へファイルを追加しますか？" & vbNewLine & _
+				  "  [追加対象フォルダ] " & TRGT_DIR _
+				  , vbYesNoCancel _
+				)
+If sAnswer = vbYes Then
+	MsgBox "iTunes へ " & TRGT_DIR & " を追加します。"
+	WScript.CreateObject("iTunes.Application").LibraryPlaylist.AddFile( TRGT_DIR )
+ElseIf sAnswer = vbNo Then
+	MsgBox "iTunes への追加をスキップします。"
+Else
+	MsgBox "プログラムを中断します。"
+	Call Finish
+	WScript.Quit
+End If
+oPrgBar.SetProg( 100 ) '進捗更新
+
+objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
+objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+End If ' ★Debug★
 
 ' ******************************************
 ' * 日付入力                               *
 ' ******************************************
+If DEBUG_FUNCVALID_DATEINPUT Then ' ★Debug★
+
 objLogFile.WriteLine ""
 objLogFile.WriteLine "*** 日付入力処理 *** "
 oPrgBar.SetMsg( _
+	"　・ファイル追加処理" & vbNewLine & _
 	"⇒・日付入力処理" & vbNewLine & _
 	"　・更新対象ファイル特定処理" & vbNewLine & _
 	"　・タグ更新処理" & vbNewLine & _
@@ -121,14 +159,15 @@ Else ' ★Debug★
 sCmpBaseTime = "2016/10/16 22:50:00"
 End If ' ★Debug★
 
-If DEBUG_FUNCVALID_TRGTLISTUP Then ' ★Debug★
-	
 ' ******************************************
 ' * 更新対象ファイルリスト取得             *
 ' ******************************************
+If DEBUG_FUNCVALID_TRGTLISTUP Then ' ★Debug★
+
 objLogFile.WriteLine ""
 objLogFile.WriteLine "*** 更新対象ファイル特定 *** "
 oPrgBar.SetMsg( _
+	"　・ファイル追加処理" & vbNewLine & _
 	"　・日付入力処理" & vbNewLine & _
 	"⇒・更新対象ファイル特定処理" & vbNewLine & _
 	"　・タグ更新処理" & vbNewLine & _
@@ -276,13 +315,15 @@ Else ' ★Debug★
 '	asTrgtFileList(3) = "Z:\300_Musics\600_HipHop\Artist\$ Other\Control Myself.mp3"
 End If ' ★Debug★
 
-If DEBUG_FUNCVALID_TAGUPDATE Then ' ★Debug★
 ' ******************************************
 ' * タグ更新                               *
 ' ******************************************
+If DEBUG_FUNCVALID_TAGUPDATE Then ' ★Debug★
+	
 objLogFile.WriteLine ""
 objLogFile.WriteLine "*** タグ更新処理 *** "
 oPrgBar.SetMsg( _
+	"　・ファイル追加処理" & vbNewLine & _
 	"　・日付入力処理" & vbNewLine & _
 	"　・更新対象ファイル特定処理" & vbNewLine & _
 	"⇒・タグ更新処理" & vbNewLine & _
