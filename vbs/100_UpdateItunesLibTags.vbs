@@ -6,6 +6,12 @@ Option Explicit
 Const TRGT_DIR = "Z:\300_Musics"
 Const UPDATE_MOD_DATE = False
 
+Const DEBUG_FUNCVALID_DATEINPUT       = True
+Const DEBUG_FUNCVALID_TRGTLISTUP      = True
+Const DEBUG_FUNCVALID_DIRCMDEXEC      = True
+Const DEBUG_FUNCVALID_TAGUPDATE       = True
+Const DEBUG_FUNCVALID_DIRRESULTDELETE = True
+
 '==========================================================
 '= 本処理
 '==========================================================
@@ -23,8 +29,10 @@ Call Include( sCurDir & "\lib\Array.vbs" )
 Dim sLogFilePath
 sLogFilePath = sCurDir & "\" & RemoveTailWord( WScript.ScriptName, "." ) & ".log"
 
+Dim objFSO
+Set objFSO = CreateObject("Scripting.FileSystemObject")
 Dim objLogFile
-Set objLogFile = CreateObject("Scripting.FileSystemObject").OpenTextFile( sLogFilePath, 2, True )
+Set objLogFile = objFSO.OpenTextFile( sLogFilePath, 2, True )
 
 objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
 objLogFile.WriteLine "[更新日時 変更有無] " & UPDATE_MOD_DATE
@@ -36,7 +44,7 @@ Call oStpWtch.StartT
 Dim oPrgBar
 Set oPrgBar = New ProgressBar
 
-If 1 Then ' ★Debug★
+If DEBUG_FUNCVALID_DATEINPUT Then ' ★Debug★
 
 ' ******************************************
 ' * 日付入力                               *
@@ -45,7 +53,6 @@ objLogFile.WriteLine ""
 objLogFile.WriteLine "*** 日付入力処理 *** "
 oPrgBar.SetMsg( _
 	"⇒・日付入力処理" & vbNewLine & _
-	"　・全ファイルリスト取得処理" & vbNewLine & _
 	"　・更新対象ファイル特定処理" & vbNewLine & _
 	"　・タグ更新処理" & vbNewLine & _
 	"" _
@@ -105,87 +112,157 @@ Else
 End If
 On Error Goto 0 '「On Error Resume Next」を解除
 
-
 oPrgBar.SetProg( 100 ) '進捗更新
 
 objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
 objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
 
+Else ' ★Debug★
+sCmpBaseTime = "2016/10/16 22:50:00"
+End If ' ★Debug★
+
+If DEBUG_FUNCVALID_TRGTLISTUP Then ' ★Debug★
+	
 ' ******************************************
-' * 全ファイルリスト取得                   *
-' ******************************************
-objLogFile.WriteLine ""
-objLogFile.WriteLine "*** 全ファイルリスト取得 *** "
-oPrgBar.SetMsg( _
-	"　・日付入力処理" & vbNewLine & _
-	"⇒・全ファイルリスト取得処理" & vbNewLine & _
-	"　・更新対象ファイル特定処理" & vbNewLine & _
-	"　・タグ更新処理" & vbNewLine & _
-	"" _
-)
-oPrgBar.SetProg( 20 ) '進捗更新
-
-Dim asAllFileList 'GetFileList2() の制限によりバリアント型で定義。バリアント型配列として返却される。
-Call GetFileList2(TRGT_DIR, asAllFileList, 1)
-'Call OutputAllElement( asAllFileList ) ' ★Debug★
-
-oPrgBar.SetProg( 100 ) '進捗更新
-
-objLogFile.WriteLine "ファイル数：" & UBound(asAllFileList) + 1
-objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
-
-' ******************************************
-' * 更新対象ファイル特定                   *
+' * 更新対象ファイルリスト取得             *
 ' ******************************************
 objLogFile.WriteLine ""
-objLogFile.WriteLine "*** 更新対象ファイル特定処理 *** "
+objLogFile.WriteLine "*** 更新対象ファイル特定 *** "
 oPrgBar.SetMsg( _
 	"　・日付入力処理" & vbNewLine & _
-	"　・全ファイルリスト取得処理" & vbNewLine & _
 	"⇒・更新対象ファイル特定処理" & vbNewLine & _
 	"　・タグ更新処理" & vbNewLine & _
 	"" _
 )
 oPrgBar.SetProg( 0 ) '進捗更新
 
+On Error Resume Next
+
+'*** Dir コマンド実行 ***
+Dim sTmpFilePath
+Dim sExecCmd
+sTmpFilePath = objWshShell.CurrentDirectory & "\" & replace( WScript.ScriptName, ".vbs", "_TrgtFileList.tmp" )
+If DEBUG_FUNCVALID_DIRCMDEXEC Then ' ★Debug★
+sExecCmd = "Dir """ & TRGT_DIR & """ /s /a:a-d > """ & sTmpFilePath & """"
+With CreateObject("Wscript.Shell")	
+	.Run "cmd /c" & sExecCmd, 7, True
+End With
+End If ' ★Debug★
+
+'*** Dir コマンド結果取得 ***
+Dim objFile
+Dim sTextAll
+If Err.Number = 0 Then
+	Set objFile = objFSO.OpenTextFile( sTmpFilePath, 1 )
+	If Err.Number = 0 Then
+		sTextAll = objFile.ReadAll
+		sTextAll = Left( sTextAll, Len( sTextAll ) - Len( vbNewLine ) ) '末尾に改行が付与されてしまうため、削除
+		objFile.Close
+	Else
+		WScript.Echo "ファイルが開けません: " & Err.Description
+	End If
+	Set objFile = Nothing	'オブジェクトの破棄
+Else
+	WScript.Echo "エラー " & Err.Description
+End If
+On Error Goto 0
+
+oPrgBar.SetProg( 20 ) '進捗更新
+
+'*** 更新日時抽出 ***
+Dim oMatchResult
+Dim sSearchPattern
+Dim oRegExp
+Dim sTargetStr
+Set oRegExp = CreateObject("VBScript.RegExp")
+sSearchPattern = "((\d{4}/\d{1,2}/\d{1,2})\s+(\d{1,2}:\d{1,2})\s+([0-9,]+)\s+(.+)\r)|(\s+(.*)\sのディレクトリ)"
+sTargetStr = sTextAll
+oRegExp.Pattern = sSearchPattern               '検索パターンを設定
+oRegExp.IgnoreCase = True                      '大文字と小文字を区別しない
+oRegExp.Global = True                          '文字列全体を検索
+Set oMatchResult = oRegExp.Execute(sTargetStr) 'パターンマッチ実行
+
+Dim sFileName
+Dim sFilePath
+Dim sFileSize
+Dim sModDate
+Dim sDirName
+Dim iMatchIdx
+Dim sExtName
 Dim asTrgtFileList()
 ReDim asTrgtFileList(-1)
-
-Dim oFileSys
-Set oFileSys = CreateObject("Scripting.FileSystemObject")
-
-Dim sFilePath
-Dim sLastModDate
-Dim sExtName
-Dim lAllFileListIdx
-For lAllFileListIdx = 0 to UBound(asAllFileList)
+Dim lMatchResultCount
+sDirName = ""
+objLogFile.WriteLine "[sFilePath]" & chr(9) & _
+					 "[sDirName]"  & chr(9) & _
+					 "[sFileName]" & chr(9) & _
+					 "[sModDate]"  & chr(9) & _
+					 "[sFileSize]" & chr(9) & _
+					 "[sExtName]"
+lMatchResultCount = oMatchResult.Count
+For iMatchIdx = 0 To lMatchResultCount - 1
 	'進捗更新
-	oPrgBar.SetProg( _
-		oPrgBar.ConvProgRange( _
-			0, _
-			UBound(asAllFileList), _
-			lAllFileListIdx _
-		) _
-	)
-	
-	sExtName = ExtractTailWord( asAllFileList(lAllFileListIdx), "." )
-	sFilePath = asAllFileList(lAllFileListIdx)
-	If LCase(sExtName) = "mp3" Then
-		sLastModDate = oFileSys.GetFile(sFilePath).DateLastModified
-		If DateDiff("s", sCmpBaseTime, sLastModDate ) >= 0  Then
-			ReDim Preserve asTrgtFileList( UBound(asTrgtFileList) + 1 )
-			asTrgtFileList( UBound(asTrgtFileList) ) = sFilePath
-			objLogFile.WriteLine sFilePath
+'	oPrgBar.SetProg( _
+'		oPrgBar.ConvProgRange( _
+'			0, _
+'			oMatchResult.Count - 1, _
+'			iMatchIdx _
+'		) _
+'	)
+	If oMatchResult(iMatchIdx).SubMatches.Count = 7 Then
+		'ファイル名にマッチ
+		If oMatchResult(iMatchIdx).SubMatches(0) <> "" Then
+			sModDate = oMatchResult(iMatchIdx).SubMatches(1) & " " & _
+			           oMatchResult(iMatchIdx).SubMatches(2)
+			sFileSize = oMatchResult(iMatchIdx).SubMatches(3)
+			sFileName = oMatchResult(iMatchIdx).SubMatches(4)
+			sFilePath = sDirName & "\" & sFileName
+			sExtName = ExtractTailWord( sFileName, "." )
+			
+'			objLogFile.WriteLine oMatchResult(iMatchIdx).SubMatches(0) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(1) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(2) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(3) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(4) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(5) & chr(9) & _
+'			                     oMatchResult(iMatchIdx).SubMatches(6)
+			
+			'更新日時比較 ＆ 更新対象選定
+			If LCase(sExtName) = "mp3" Then
+				If DateDiff("s", sCmpBaseTime, sModDate ) >= 0  Then
+					ReDim Preserve asTrgtFileList( UBound(asTrgtFileList) + 1 )
+					asTrgtFileList( UBound(asTrgtFileList) ) = sFilePath
+					objLogFile.WriteLine sFilePath & chr(9) & _
+										 sDirName  & chr(9) & _
+										 sFileName & chr(9) & _
+										 sModDate  & chr(9) & _
+										 sFileSize & chr(9) & _
+										 sExtName
+				Else
+					'Do Nothing
+				End If
+			Else
+				'Do Nothing
+			End If
+			
+		'フォルダ名にマッチ
+		ElseIf oMatchResult(iMatchIdx).SubMatches(5) <> "" Then
+			sDirName = oMatchResult(iMatchIdx).SubMatches(6)
 		Else
-			'Do Nothing
+			MsgBox "エラー！"
 		End If
 	Else
-		'Do Nothing
+		MsgBox "エラー！"
 	End If
 Next
 
-Set oFileSys = Nothing
+oPrgBar.SetProg( 100 ) '進捗更新
+
+If DEBUG_FUNCVALID_DIRRESULTDELETE Then ' ★Debug★
+objFSO.DeleteFile sTmpFilePath, True
+End If ' ★Debug★
+
+Set objFSO = Nothing	'オブジェクトの破棄
 
 objLogFile.WriteLine "ファイル数：" & UBound(asTrgtFileList) + 1
 objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
@@ -199,6 +276,7 @@ Else ' ★Debug★
 '	asTrgtFileList(3) = "Z:\300_Musics\600_HipHop\Artist\$ Other\Control Myself.mp3"
 End If ' ★Debug★
 
+If DEBUG_FUNCVALID_TAGUPDATE Then ' ★Debug★
 ' ******************************************
 ' * タグ更新                               *
 ' ******************************************
@@ -206,7 +284,6 @@ objLogFile.WriteLine ""
 objLogFile.WriteLine "*** タグ更新処理 *** "
 oPrgBar.SetMsg( _
 	"　・日付入力処理" & vbNewLine & _
-	"　・全ファイルリスト取得処理" & vbNewLine & _
 	"　・更新対象ファイル特定処理" & vbNewLine & _
 	"⇒・タグ更新処理" & vbNewLine & _
 	"" _
@@ -281,6 +358,8 @@ Next
 objLogFile.WriteLine "ファイル数：" & UBound(asTrgtFileList) + 1
 objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
 objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+
+End If ' ★Debug★
 
 ' ******************************************
 ' * 終了処理                               *
