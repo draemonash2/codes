@@ -1,11 +1,45 @@
 Option Explicit
 
+'□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
+'□
+'□ iTunes タグ更新ツール v.2.2
+'□
+'□  【概要】
+'□     mp3 ファイルの更新日時を元にタグ更新済みファイルを自動判別し、iTunes の API を
+'□     コマンドラインから実行して、iTunes ライブラリの mp3 タグ情報を更新する。
+'□     
+'□     iTunes 以外のソフトで mp3 タグを更新した場合、iTunes を起動しても古いタグの
+'□     まま表示され、ライブラリは更新されない。この時、該当のファイルを再生するか、
+'□     iTunes 上で何らかのタグを更新すればライブラリ更新されるが、大量のファイルを
+'□     更新した場合、非常に手間がかかる。本ツールは、その手間を省くことを目的として
+'□     作成した。
+'□     
+'□     また、指定フォルダ配下のライブラリ未登録のファイルも自動的に登録できる。
+'□     （登録実行可否は選択可）
+'□     
+'□  【注意事項、特記事項】
+'□     ・本ツールは、mp3 タグ内の未使用のエントリを更新することで、ライブラリを
+'□     更新する。この時、エントリ「作曲者(Composer)」を書き換えるため、
+'□     ここに何らかの情報を埋め込んでいる場合、空白になってしまう。
+'□     ・指定したフォルダ配下に実行結果ログを格納する。
+'□     
+'□  【使用方法】
+'□     (1) 音楽を格納するフォルダのルートフォルダパスを「TRGT_DIR」に記載する。
+'□     (2) 「TRGT_DIR」に記載する。
+'□     (3) 本スクリプトを実行。
+'□     
+'□  【更新履歴】
+'□     v2.2 (2016/10/17)
+'□       ・初版
+'□     
+'□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
+
 '==========================================================
 '= 設定値
 '==========================================================
 Const TRGT_DIR = "Z:\300_Musics"
-Const UPDATE_MOD_DATE = False
 
+Const DEBUG_FUNCVALID_UPDATEMODDATE   = False
 Const DEBUG_FUNCVALID_ADDFILES        = True
 Const DEBUG_FUNCVALID_DATEINPUT       = True
 Const DEBUG_FUNCVALID_TRGTLISTUP      = True
@@ -36,7 +70,6 @@ Dim objLogFile
 Set objLogFile = objFSO.OpenTextFile( sLogFilePath, 2, True )
 
 objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
-objLogFile.WriteLine "[更新日時 変更有無] " & UPDATE_MOD_DATE
 
 Dim oStpWtch
 Set oStpWtch = New StopWatch
@@ -386,7 +419,7 @@ For lTrgtFileListIdx = 0 To lTrgtFileListNum
 	Set objSearchResult = Nothing
 	Set objPlayList = Nothing
 	
-	If UPDATE_MOD_DATE = True Then
+	If DEBUG_FUNCVALID_UPDATEMODDATE = True Then
 		'Do Nothing
 	Else
 		oTrgtFile.ModifyDate = CDate( sTrgtModDate )
