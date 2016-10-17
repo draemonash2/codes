@@ -116,9 +116,8 @@ oPrgBar.SetMsg( _
 )
 oPrgBar.SetProg( 20 ) '進捗更新
 
-Dim asAllFileList()
-ReDim asAllFileList(-1)
-Call GetFileList(TRGT_DIR, asAllFileList, 1)
+Dim asAllFileList 'GetFileList2() の制限によりバリアント型で定義。バリアント型配列として返却される。
+Call GetFileList2(TRGT_DIR, asAllFileList, 1)
 'Call OutputAllElement( asAllFileList ) ' ★Debug★
 
 oPrgBar.SetProg( 100 ) '進捗更新
