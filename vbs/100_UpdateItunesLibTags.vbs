@@ -81,6 +81,7 @@ sDateValue = DateValue(sCmpBaseTime)
 
 oPrgBar.SetProg( 50 ) '進捗更新
 
+'日付チェック
 If Err.Number <> 0 Then
 	MsgBox "日付の形式が不正です！" & vbNewLine & _
 	       "  [入力規則] YYYY/MM/DD HH:MM:SS" & vbNewLine & _
@@ -88,14 +89,22 @@ If Err.Number <> 0 Then
 	MsgBox Err.Description
 	MsgBox "プログラムを中断します！"
 	Err.Clear
-	Call oStpWtch.StopT
-	Call oPrgBar.Quit
-	objLogFile.Close
-	Set oStpWtch = Nothing
-	Set oPrgBar = Nothing
+	Call Finish
 	WScript.Quit
+Else
+	'Do Nothing
+End If
+If DateDiff("s", sCmpBaseTime, Now() ) < 0  Then
+	MsgBox "未来の日時が指定されました！" & vbNewLine & _
+	       "  [入力値] " & sCmpBaseTime
+	MsgBox "プログラムを中断します！"
+	Call Finish
+	WScript.Quit
+Else
+	'Do Nothing
 End If
 On Error Goto 0 '「On Error Resume Next」を解除
+
 
 oPrgBar.SetProg( 100 ) '進捗更新
 
@@ -276,18 +285,7 @@ objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
 ' ******************************************
 ' * 終了処理                               *
 ' ******************************************
-Call oStpWtch.StopT
-Call oPrgBar.Quit
-
-objLogFile.WriteLine ""
-objLogFile.WriteLine "開始時刻               : " & oStpWtch.StartPoint
-objLogFile.WriteLine "終了時刻               : " & oStpWtch.StopPoint
-objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
-objLogFile.Close
-
-Set oStpWtch = Nothing
-Set oPrgBar = Nothing
-
+Call Finish
 MsgBox "プログラムが正常に終了しました。"
 
 '==========================================================
@@ -308,4 +306,16 @@ Function Include( _
 	
 	Set objVbsFile = Nothing
 	Set objFSO = Nothing
+End Function
+
+Function Finish()
+	Call oStpWtch.StopT
+	Call oPrgBar.Quit
+	objLogFile.WriteLine ""
+	objLogFile.WriteLine "開始時刻               : " & oStpWtch.StartPoint
+	objLogFile.WriteLine "終了時刻               : " & oStpWtch.StopPoint
+	objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+	objLogFile.Close
+	Set oStpWtch = Nothing
+	Set oPrgBar = Nothing
 End Function
