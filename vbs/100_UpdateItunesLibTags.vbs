@@ -96,22 +96,29 @@ oPrgBar.SetMsg( _
     "　・ファイル追加処理" & vbNewLine & _
     "　・日付入力処理" & vbNewLine & _
     "　・更新対象ファイル特定処理" & vbNewLine & _
-    "　・タグ更新処理" & vbNewLine & _
+    "　・タグ更新処理" & _
     "" _
 )
 oPrgBar.SetProg( 20 ) '進捗更新
 
 Dim sCurDateTime
 sCurDateTime = Now()
-sCurDateTime = Replace( Replace( Replace( sCurDateTime, " ", "_" ), "/", "" ) , ":", "" )
 
 Dim objItunes
 Set objItunes = WScript.CreateObject("iTunes.Application")
 
+Dim sBackUpDirName
 Dim sBackUpDirPath
 Dim sItuneDirPath
 sItuneDirPath = GetDirPath( objItunes.LibraryXMLPath )
-sBackUpDirPath = sItuneDirPath & "\iTunes Library Backup\" & sCurDateTime
+sBackUpDirName = Year( sCurDateTime ) & _
+                 String( 2 - Len( Month( sCurDateTime ) ), "0" ) & Month( sCurDateTime ) & _
+                 String( 2 - Len( Day( sCurDateTime ) ), "0" ) & Day( sCurDateTime ) & _
+                 "_" & _
+                 String( 2 - Len( Hour( sCurDateTime ) ), "0" ) & Hour( sCurDateTime ) & _
+                 String( 2 - Len( Minute( sCurDateTime ) ), "0" ) & Minute( sCurDateTime ) & _
+                 String( 2 - Len( Second( sCurDateTime ) ), "0" ) & Second( sCurDateTime )
+sBackUpDirPath = sItuneDirPath & "\iTunes Library Backup\" & sBackUpDirName
 
 Set objItunes = Nothing
 
@@ -140,7 +147,7 @@ oPrgBar.SetMsg( _
     "⇒・ファイル追加処理" & vbNewLine & _
     "　・日付入力処理" & vbNewLine & _
     "　・更新対象ファイル特定処理" & vbNewLine & _
-    "　・タグ更新処理" & vbNewLine & _
+    "　・タグ更新処理" & _
     "" _
 )
 oPrgBar.SetProg( 50 ) '進捗更新
@@ -178,7 +185,7 @@ oPrgBar.SetMsg( _
     "　・ファイル追加処理" & vbNewLine & _
     "⇒・日付入力処理" & vbNewLine & _
     "　・更新対象ファイル特定処理" & vbNewLine & _
-    "　・タグ更新処理" & vbNewLine & _
+    "　・タグ更新処理" & _
     "" _
 )
 oPrgBar.SetProg( 0 ) '進捗更新
@@ -257,7 +264,7 @@ oPrgBar.SetMsg( _
     "　・ファイル追加処理" & vbNewLine & _
     "　・日付入力処理" & vbNewLine & _
     "⇒・更新対象ファイル特定処理" & vbNewLine & _
-    "　・タグ更新処理" & vbNewLine & _
+    "　・タグ更新処理" & _
     "" _
 )
 oPrgBar.SetProg( 0 ) '進捗更新
@@ -328,13 +335,15 @@ objLogFile.WriteLine "[sFilePath]" & chr(9) & _
 lMatchResultCount = oMatchResult.Count
 For iMatchIdx = 0 To lMatchResultCount - 1
     '進捗更新
-'   oPrgBar.SetProg( _
-'       oPrgBar.ConvProgRange( _
-'           0, _
-'           oMatchResult.Count - 1, _
-'           iMatchIdx _
-'       ) _
-'   )
+    If iMatchIdx Mod 100 = 0 Then
+        oPrgBar.SetProg( _
+            oPrgBar.ConvProgRange( _
+                0, _
+                oMatchResult.Count - 1, _
+                iMatchIdx _
+            ) _
+        )
+    End If
     If oMatchResult(iMatchIdx).SubMatches.Count = 7 Then
         'ファイル名にマッチ
         If oMatchResult(iMatchIdx).SubMatches(0) <> "" Then
@@ -414,7 +423,7 @@ oPrgBar.SetMsg( _
     "　・ファイル追加処理" & vbNewLine & _
     "　・日付入力処理" & vbNewLine & _
     "　・更新対象ファイル特定処理" & vbNewLine & _
-    "⇒・タグ更新処理" & vbNewLine & _
+    "⇒・タグ更新処理" & _
     "" _
 )
 oPrgBar.SetProg( 0 ) '進捗更新
