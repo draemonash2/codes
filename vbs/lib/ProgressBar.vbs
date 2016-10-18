@@ -5,6 +5,7 @@ Class ProgressBar
 	Dim gsProgMsg
 	Dim glProg100
 	Dim glProg10
+	Dim glStartTime
 	
 	Private Sub Class_Initialize()
 		Dim objWMIService
@@ -26,6 +27,7 @@ Class ProgressBar
 		gsProgMsg = ""
 		glProg100 = 0
 		glProg10 = 0
+		glStartTime = 0
 		
 		Set gobjExplorer = CreateObject("InternetExplorer.Application")
 		gobjExplorer.Navigate "about:blank"
@@ -59,7 +61,7 @@ Class ProgressBar
 		Dim lLineNum
 		'ウィンドウの高さ算出
 		lBrNum = ( Len( sProgMsg ) - Len( Replace( sProgMsg, vbNewLine, "" ) ) ) / 2
-		lLineNum = ( lBrNum + 1 ) + 3
+		lLineNum = ( lBrNum + 1 ) + 4
 		gobjExplorer.Height = ( 28 * lLineNum ) + 65
 		
 		gsProgMsg = sProgMsg
@@ -121,10 +123,18 @@ Class ProgressBar
 		Else
 			sProgMsg = Replace( gsProgMsg, vbNewLine, "<br>" ) & "<br><br>"
 		End If
+		
+		If glStartTime = 0 Then
+			glStartTime = Now()
+		Else
+			'Do Nothing
+		End If
+		
 		gobjExplorer.Document.Body.InnerHTML = _
 			"<font face=""ＭＳ ゴシック"">" & _
 			"<span style=""font-size:18px; line-height:22px;"">" & _
 			sProgMsg & "処理中...<br>" & _
+			DateDiff( "s", glStartTime, Now() ) & " [s] 経過...<br>" & _
 			String( glProg10, "■") & String( 10 - glProg10, "□") & "  " & glProg100 & "% 完了" & _
 			"</span>" & _
 			"</font>" & _
