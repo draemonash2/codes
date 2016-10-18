@@ -52,3 +52,15 @@ Public Function RemoveTailWord( _
         End If
     End If
 End Function
+
+Public Function GetDirPath( _
+    ByVal sFilePath _
+)
+    GetDirPath = RemoveTailWord( sFilePath, "\" )
+End Function
+
+Public Function GetFileName( _
+    ByVal sFilePath _
+)
+    GetFileName = ExtractTailWord( sFilePath, "\" )
+End Function
