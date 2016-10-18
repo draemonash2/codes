@@ -4,6 +4,7 @@ Class ProgressBar
 	Dim gobjExplorer
 	Dim gsProgMsg
 	Dim glProg100
+	Dim glProg10
 	
 	Private Sub Class_Initialize()
 		Dim objWMIService
@@ -22,22 +23,23 @@ Class ProgressBar
 		Set objWMIService = Nothing
 		Set colItems = Nothing
 		
+		gsProgMsg = ""
+		glProg100 = 0
+		glProg10 = 0
+		
 		Set gobjExplorer = CreateObject("InternetExplorer.Application")
 		gobjExplorer.Navigate "about:blank"
 		gobjExplorer.ToolBar = 0
 		gobjExplorer.StatusBar = 0
-		gobjExplorer.Left = (intHorizontal - 400) / 2
-		gobjExplorer.Top = (intVertical - 200) / 2
-		gobjExplorer.Width = 400
-		gobjExplorer.Height = 10
+		gobjExplorer.Width = 450
+		gobjExplorer.Height = ( 28 * 2 ) + 65
+		gobjExplorer.Left = ( intHorizontal - gobjExplorer.Width ) / 2
+		gobjExplorer.Top = ( intVertical - gobjExplorer.Height ) / 2
 		gobjExplorer.Visible = 1
 		
 		Call ActiveIE
 		gobjExplorer.Document.Body.Style.Cursor = "wait"
 		gobjExplorer.Document.Title = "進捗状況"
-		
-		glProg100 = 0
-		gsProgMsg = ""
 		
 		SetProg(0)
 	End Sub
@@ -46,26 +48,43 @@ Class ProgressBar
 		'Do Nothing
 	End Sub
 	
+	' メッセージを指定
+	' ★注意★
+	'   本関数は若干処理時間がかかります。
+	'   一定時間感覚を空けて呼び出すこと。
 	Public Function SetMsg( _
-		ByVal sMessage _
+		ByVal sProgMsg _
 	)
-		gsProgMsg = Replace( sMessage, vbNewLine, "<br>" ) '改行文字を<br>に置換
+		Dim lBrNum
+		Dim lLineNum
+		'ウィンドウの高さ算出
+		lBrNum = ( Len( sProgMsg ) - Len( Replace( sProgMsg, vbNewLine, "" ) ) ) / 2
+		lLineNum = ( lBrNum + 1 ) + 3
+		gobjExplorer.Height = ( 28 * lLineNum ) + 65
+		
+		gsProgMsg = sProgMsg
+		
 		PutProg()
 	End Function
 	
 	' 0 ～ 100 を指定
+	' ★注意★
+	'   本関数は若干処理時間がかかります。
+	'   一定時間感覚を空けて呼び出すこと。
 	Public Function SetProg( _
 		ByVal lProg100 _
 	)
 		If lProg100 > 100 Or lProg100 < 0 Then
-			MsgBox "プログレスバーの進捗に規定値[0-100]外の値が指定されています！" & vbNewLine & _
+			MsgBox "指定されたプログレスバーの進捗が最大最小範囲外の値が指定されています！" & vbNewLine & _
 				   "値：" & lProg100
 			MsgBox "プログラムを中止します！"
 			Call Quit
 			WScript.Quit
 		End If
 		
-		glProg100 = Fix(lProg100)
+		glProg100 = Fix( lProg100 )
+		glProg10 = Fix( lProg100 / 10 )
+		
 		PutProg()
 	End Function
 	
@@ -96,18 +115,20 @@ Class ProgressBar
 	End Function
 	
 	Private Function PutProg()
-		Dim lProg10
-		Dim lLineNum
-		Dim lBrNum
-		lProg10 = Fix( glProg100 / 10 )
-		lBrNum = ( Len(gsProgMsg) - Len(Replace(gsProgMsg, "<br>", "")) ) / 4
-		lLineNum = ( lBrNum + 1 ) + 3
-		gobjExplorer.Height = 5 + ( 40 * lLineNum )
+		Dim sProgMsg
+		If gsProgMsg = "" Then
+			sProgMsg = gsProgMsg
+		Else
+			sProgMsg = Replace( gsProgMsg, vbNewLine, "<br>" ) & "<br><br>"
+		End If
 		gobjExplorer.Document.Body.InnerHTML = _
-			gsProgMsg & "<br>" & _
-			"<br>" & _
-			"処理中..." & "<br>" & _
-			String( lProg10, "■") & String( 10 - lProg10, "□") & "  " & glProg100 & "% 完了"
+			"<font face=""ＭＳ ゴシック"">" & _
+			"<span style=""font-size:18px; line-height:22px;"">" & _
+			sProgMsg & "処理中...<br>" & _
+			String( glProg10, "■") & String( 10 - glProg10, "□") & "  " & glProg100 & "% 完了" & _
+			"</span>" & _
+			"</font>" & _
+			""
 	End Function
 	
 	Public Function Quit()
@@ -118,7 +139,7 @@ Class ProgressBar
 	Private Function ActiveIE()
 		Dim objWshShell
 		Dim intProcID
-	
+		
 		Const strIEexe = "iexplore.exe" 'IEのプロセス名
 		intProcID = GetProcID(strIEexe)
 		
@@ -147,32 +168,40 @@ Class ProgressBar
 End Class
 
 'Call TestCase
-Private Sub TestCase
-	Dim oProgBar
-	Dim lTestCase
-	Dim i
-	
-	lTestCase = 0
-	
-	Set oProgBar = New ProgressBar
-	With oProgBar
-		Select Case lTestCase
-			Case 1
-				.SetMsg( "Test Maggage" )
-				For i = 0 to 100
-					.SetProg( i )
-					WScript.Sleep 50
-				Next
-			Case 2
-				.SetMsg( "Test Maggage" )
-				For i = 100 to 500
-					.SetProg( .ConvProgRange( 100, 500, i ) )
-					WScript.Sleep 10
-				Next
-			Case Else
-				MsgBox .ConvProgRange( 100, 500, 99 )
-		End Select
-		.Quit()
-	End With
-End Sub
+'Private Sub TestCase
+'	Dim oProgBar
+'	Dim lTestCase
+'	Dim i
+'	Dim iBefore
+'	Dim iAfter
+'	
+'	lTestCase = 2
+'	
+'	Set oProgBar = New ProgressBar
+'	With oProgBar
+'		Select Case lTestCase
+'			Case 1
+'				.SetMsg( "Test Maggage" )
+'				iBefore = Timer()
+'				For i = 0 to 100
+'					.SetProg( i )
+'					WScript.Sleep 10
+'				Next
+'				iAfter = Timer()
+'				MsgBox iAfter - iBefore
+'			Case 2
+'				.SetMsg( "Test Maggage" )
+'				iBefore = Timer()
+'				For i = 400 to 500
+'					.SetProg( .ConvProgRange( 400, 500, i ) )
+'					WScript.Sleep 10
+'				Next
+'				iAfter = Timer()
+'				MsgBox iAfter - iBefore
+'			Case Else
+'				
+'		End Select
+'		.Quit()
+'	End With
+'End Sub
 
