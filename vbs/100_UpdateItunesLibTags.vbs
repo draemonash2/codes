@@ -173,6 +173,23 @@ objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]
 objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
 End If ' ★Debug★
 
+sAnswer = MsgBox( "登録済みの曲について iTunes ライブラリのタグを更新しますか？" & vbNewLine & _
+                  "  [更新対象フォルダ] " & TRGT_DIR _
+                  , vbYesNoCancel _
+                )
+If sAnswer = vbYes Then
+    MsgBox TRGT_DIR & " の iTunes ライブラリを更新します。"
+ElseIf sAnswer = vbNo Then
+    MsgBox "iTunes ライブラリを更新しません。"
+    MsgBox "プログラムを終了します。"
+    Call Finish
+    WScript.Quit
+Else
+    MsgBox "プログラムを中断します。"
+    Call Finish
+    WScript.Quit
+End If
+
 ' ******************************************
 ' * 日付入力                               *
 ' ******************************************
@@ -245,8 +262,7 @@ On Error Goto 0 '「On Error Resume Next」を解除
 
 oPrgBar.SetProg( 100 ) '進捗更新
 
-objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+oStpWtch.IntervalTime ' IntervalTime 更新
 
 Else ' ★Debug★
 sCmpBaseTime = "2016/10/16 22:50:00"
@@ -484,9 +500,9 @@ For lTrgtFileListIdx = 0 To lTrgtFileListNum
     Set objPlayList = Nothing
     
     If DEBUG_FUNCVALID_DISABLEUPDATEMODDATE = True Then
-        oTrgtFile.ModifyDate = CDate( sTrgtModDate ) '書き戻し
+        oTrgtFile.ModifyDate = CDate( sTrgtModDate ) '更新日を書き戻し
     Else
-        'Do Nothing
+        '更新日は更新されたまま
     End If
     
     Set oTrgtFile = Nothing
