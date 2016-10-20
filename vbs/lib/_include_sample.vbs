@@ -1,9 +1,9 @@
 '==========================================================
 '= インクルード
 '==========================================================
-Dim objWshShell
-Set objWshShell = WScript.CreateObject( "WScript.Shell" )
-Call Include( objWshShell.CurrentDirectory & "\lib\String.vbs" )
+Dim sMyDirPath
+sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
+Call Include( sMyDirPath & "\lib\String.vbs" )
 
 '==========================================================
 '= 本処理
