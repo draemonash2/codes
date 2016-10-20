@@ -3,7 +3,7 @@
 '==========================================================
 Dim objWshShell
 Set objWshShell = WScript.CreateObject( "WScript.Shell" )
-Call Include( objWshShell.CurrentDirectory & "\String.vbs" )
+Call Include( objWshShell.CurrentDirectory & "\lib\String.vbs" )
 
 '==========================================================
 '= ñ{èàóù
