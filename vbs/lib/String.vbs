@@ -12,7 +12,7 @@ Public Function ExtractTailWord( _
     ByVal sDlmtr _
 )
     Dim asSplitWord
- 
+    
     If Len(sStr) = 0 Then
         ExtractTailWord = ""
     Else
@@ -21,6 +21,20 @@ Public Function ExtractTailWord( _
         ExtractTailWord = asSplitWord(UBound(asSplitWord))
     End If
 End Function
+'   Private Sub Test()
+'       Dim Result
+'       Result = "[Result]"
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "\" )   ' a.txt
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test\a", "\" )       ' a
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test\", "\" )        ' 
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test", "\" )         ' test
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test", "\\" )        ' C:\test
+'       Result = Result & vbNewLine & ExtractTailWord( "a.txt", "\" )           ' a.txt
+'       Result = Result & vbNewLine & ExtractTailWord( "", "\" )                ' 
+'       Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "" )    ' C:\test\a.txt
+'       MsgBox Result
+'   End Sub
+'   Call Test()
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を除去する。
@@ -35,7 +49,7 @@ Public Function RemoveTailWord( _
 )
     Dim sTailWord
     Dim lRemoveLen
- 
+    
     If sStr = "" Then
         RemoveTailWord = ""
     Else
@@ -52,6 +66,20 @@ Public Function RemoveTailWord( _
         End If
     End If
 End Function
+'   Private Sub Test()
+'       Dim Result
+'       Result = "[Result]"
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test\a.txt", "\" )    ' C:\test
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test\a", "\" )        ' C:\test
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test\", "\" )         ' C:\test
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test", "\" )          ' C:
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test", "\\" )         ' C:\test
+'       Result = Result & vbNewLine & RemoveTailWord( "", "\" )                 ' 
+'       Result = Result & vbNewLine & RemoveTailWord( "a.txt", "\" )            ' a.txt（ファイル名かどうかは判断しない）
+'       Result = Result & vbNewLine & RemoveTailWord( "C:\test\a.txt", "" )     ' C:\test\a.txt
+'       MsgBox Result
+'   End Sub
+'   Call Test()
 
 ' ==================================================================
 ' = 概要    指定されたファイルパスからフォルダパスを抽出する
@@ -64,6 +92,10 @@ Public Function GetDirPath( _
 )
     GetDirPath = RemoveTailWord( sFilePath, "\" )
 End Function
+'   Private Sub Test()
+'       'RemoveTailWord() と同等のテストケースのためテストしない
+'   End Sub
+'   Call Test()
 
 ' ==================================================================
 ' = 概要    指定されたファイルパスからファイル名を抽出する
@@ -76,6 +108,77 @@ Public Function GetFileName( _
 )
     GetFileName = ExtractTailWord( sFilePath, "\" )
 End Function
+'   Private Sub Test()
+'       'ExtractTailWord() と同等のテストケースのためテストしない
+'   End Sub
+'   Call Test()
+
+' ==================================================================
+' = 概要    指定されたファイルパスからファイル名（拡張子なし）を抽出する
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        ファイル名（拡張子なし）
+' = 覚書    拡張子が付与されていないファイルも存在する。そのため、
+' =         "." が含まれていない場合も文字列を返却する。
+' ==================================================================
+Public Function GetFileBaseName( _
+    ByVal sFilePath _
+)
+    GetFileBaseName = RemoveTailWord( ExtractTailWord( sFilePath, "\" ), "." )
+End Function
+'   Private Sub Test()
+'       Dim Result
+'       Result = "[Result]"
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test\a.txt" )    ' a
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test\a.t" )      ' a
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test\a." )       ' a
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test\a" )        ' a
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test\" )         ' 
+'       Result = Result & vbNewLine & GetFileBaseName( "C:\test" )          ' test
+'       Result = Result & vbNewLine & GetFileBaseName( "C:" )               ' C:
+'       Result = Result & vbNewLine & GetFileBaseName( "" )                 ' 
+'       Result = Result & vbNewLine & GetFileBaseName( "a.txt" )            ' a
+'       Result = Result & vbNewLine & GetFileBaseName( ".txt" )             ' 
+'       Result = Result & vbNewLine & GetFileBaseName( "a." )               ' a
+'       Result = Result & vbNewLine & GetFileBaseName( "." )                ' 
+'       Result = Result & vbNewLine & GetFileBaseName( "a" )                ' a
+'       MsgBox Result
+'   End Sub
+'   Call Test()
+
+' ==================================================================
+' = 概要    指定されたファイルパスから拡張子を抽出する
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        拡張子
+' = 覚書    "." が含まれていない場合、空文字を返却する
+' ==================================================================
+Public Function GetFileExtName( _
+    ByVal sFilePath _
+)
+    If InStr( sFilePath, "." ) > 0 Then
+        GetFileExtName = ExtractTailWord( sFilePath, "." )
+    Else
+        GetFileExtName = ""
+    End If
+End Function
+'   Private Sub Test()
+'       Dim Result
+'       Result = "[Result]"
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test\a.txt" ) ' txt
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test\a.t" )   ' t
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test\a." )    ' 
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test\a" )     ' 
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test\" )      ' 
+'       Result = Result & vbNewLine & GetFileExtName( "C:\test" )       ' 
+'       Result = Result & vbNewLine & GetFileExtName( "C:" )            ' 
+'       Result = Result & vbNewLine & GetFileExtName( "" )              ' 
+'       Result = Result & vbNewLine & GetFileExtName( "a.txt" )         ' txt
+'       Result = Result & vbNewLine & GetFileExtName( ".txt" )          ' txt
+'       Result = Result & vbNewLine & GetFileExtName( "a." )            ' 
+'       Result = Result & vbNewLine & GetFileExtName( "." )             ' 
+'       Result = Result & vbNewLine & GetFileExtName( "a" )             ' 
+'       MsgBox Result
+'   End Sub
+'   Call Test()
 
 ' ==================================================================
 ' = 概要    指定された文字列の文字列長（バイト数）を返却する
@@ -86,7 +189,7 @@ End Function
 ' =           （例：LenB("ファイルサイズ ") ⇒ 16）
 ' =         そのため、半角文字を１文字としてカウントする本関数を用意。
 ' ==================================================================
-Function LenByte( _
+Public Function LenByte( _
     ByVal sInStr _
 )
     Dim lIdx, sChar
@@ -103,3 +206,18 @@ Function LenByte( _
         Next
     End If
 End Function
+'   Private Sub Test()
+'       Dim Result
+'       Result = "[Result]"
+'       Result = Result & vbNewLine & LenByte( "aaa" )      ' 3
+'       Result = Result & vbNewLine & LenByte( "aaa " )     ' 4
+'       Result = Result & vbNewLine & LenByte( "" )         ' 0
+'       Result = Result & vbNewLine & LenByte( "あああ" )   ' 6
+'       Result = Result & vbNewLine & LenByte( "あああ " )  ' 7
+'       Result = Result & vbNewLine & LenByte( "ああ あ" )  ' 7
+'       Result = Result & vbNewLine & LenByte( Chr(9) )     ' 1
+'       Result = Result & vbNewLine & LenByte( Chr(10) )    ' 1
+'       MsgBox Result
+'   End Sub
+'   Call Test()
+
