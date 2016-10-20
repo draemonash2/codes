@@ -34,14 +34,16 @@ Else
         
         Dim sLogPath
         sLogPath = sDirPath & "\" & Replace(sFileName, ".", "_") & ".txt"
+'        sLogPath = sDirPath & "\" & Replace(Replace(sFileName," ", "_"), ".", "_") & ".txt"
+        
         Dim objFSO
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         
         On Error Resume Next
         Dim objLogFile
-        Set objLogFile = objFSO.OpenTextFile( sLogPath, 2, True, -1) 'Unicode Ç≈äJÇ≠
+        Set objLogFile = objFSO.OpenTextFile( sLogPath, 2, True )
         If Err.Number <> 0 Then
-            MsgBox Err.Description & vbNewLine & _
+            MsgBox Err.Number & "ÅF" & Err.Description & vbNewLine & _
                    sLogPath
             WScript.Quit
         End If
@@ -56,10 +58,8 @@ Else
         
         '*** çÄñ⁄êîÅïçÄñ⁄ï∂éöêîéZèo ***
         Dim lContextLenBMax
-        Dim lContextNum
         Dim lIdx
         lContextLenBMax = 0
-        lContextNum = 0
         For lIdx = 0 to INDEX_MAX
             sContext = objFolder.GetDetailsOf( objFolder.Items, lIdx )
             If sContext = "" Then
@@ -70,28 +70,41 @@ Else
                 Else
                     'Do Nothing
                 End If
-                lContextNum = lContextNum + 1
             End If
         Next
         
         '*** çÄñ⁄èoóÕ ***
-        objLogFile.WriteLine "ÅyçÄñ⁄êîÅz" & lContextNum
         objLogFile.WriteLine "+-----+-" & String( lContextLenBMax , "-" ) & "-+-------------------------------------------------------"
         objLogFile.WriteLine "| idx | çÄñ⁄ñº" & String( lContextLenBMax + 1 - LenByte("çÄñ⁄ñº"), " " ) & "| íl"
         objLogFile.WriteLine "+-----+-" & String( lContextLenBMax , "-" ) & "-+-------------------------------------------------------"
+        
+        Dim lContextNum
+        lContextNum = 0
         For lIdx = 0 to INDEX_MAX
             sContext = objFolder.GetDetailsOf( objFolder.Items, lIdx )
             sItem = objFolder.GetDetailsOf( objFile, lIdx )
             
-            If sContext = "" Then
+            If sContext = "" Or sItem = "" Then
                 'Do Nothing
             Else
-                objLogFile.WriteLine "| " & String( 3 - Len(lIdx), " " ) & lIdx & " | " & _
-                                      sContext & String( lContextLenBMax - LenByte(sContext), " " ) & " | " & _
-                                      sItem
+                On Error Resume Next
+                Do
+                    objLogFile.WriteLine "| " & String( 3 - Len(lIdx), " " ) & lIdx & " | " & _
+                                          sContext & String( lContextLenBMax - LenByte(sContext), " " ) & " | " & _
+                                          sItem
+                    If Err.Number <> 0 Then
+                        sItem = Right( sItem, Len(sItem) - 1 )
+                        Err.Clear
+                    Else
+                        Exit Do
+                    End If
+                Loop While True
+                On Error Goto 0
+                lContextNum = lContextNum + 1
             End If
         Next
         objLogFile.WriteLine "+-----+-" & String( lContextLenBMax , "-" ) & "-+-------------------------------------------------------"
+        objLogFile.WriteLine "ÅyçÄñ⁄êîÅz" & lContextNum
         objLogFile.Close
         
         Set objFolder = Nothing
