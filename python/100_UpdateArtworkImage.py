@@ -27,7 +27,7 @@ else:
 
 log_file_path = ( trgt_dir_path + "/" + os.path.basename(__file__).replace(".py", ".log") ).replace("\\", "/")
 
-if os.path.isdir( log_file_path ) == True:
+if os.path.isdir( trgt_dir_path ) == True:
 	log_file = open( log_file_path , "w")
 else:
 	print "[error] target directory is nothing!"
@@ -62,6 +62,7 @@ for root, dirs, files in os.walk( trgt_dir_path ):
 			else:
 				pass
 	
+	log_file.write( "\n" )
 	log_file.write( ( "[dir] " + root ).replace("\\","/") + "\n" )
 	log_file.write( "[folder_jpg_exist] " + str( folder_jpg_exist ) + "\n" )
 	log_file.write( "[other_jpg_exist] " + str( other_jpg_exist ) + "\n" )
