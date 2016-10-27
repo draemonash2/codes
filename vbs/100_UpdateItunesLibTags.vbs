@@ -2,7 +2,7 @@ Option Explicit
 
 '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
 '□
-'□ iTunes タグ更新ツール v.2.4
+'□ iTunes タグ更新ツール v.2.5
 '□
 '□  【概要】
 '□     mp3 ファイルの更新日時を元にタグ更新済みファイルを自動判別し、iTunes の API を
@@ -29,6 +29,10 @@ Option Explicit
 '□     (3) 本スクリプトを実行。
 '□     
 '□  【更新履歴】
+'□     v2.5 (2016/10/28)
+'□       ・ログファイル出力先変更
+'□       ・処理終了時にログファイルを開く処理を追加
+'□     
 '□     v2.4 (2016/10/27)
 '□       ・処理選択追加
 '□     
@@ -71,21 +75,9 @@ Call Include( sCurDir & "\lib\Array.vbs" )
 ' ******************************************
 ' * 処理選択                               *
 ' ******************************************
-Dim bIsExecBackup
 Dim bIsExecLibAdd
 Dim bIsExecLibMod
 Dim sAnswer
-sAnswer = MsgBox( "iTunes のライブラリをバックアップしますか？" _
-                  , vbYesNoCancel _
-                )
-Select Case sAnswer
-    Case vbYes: bIsExecBackup = True
-    Case vbNo:  bIsExecBackup = False
-    Case Else:
-        MsgBox "処理をキャンセルしました。" & vbNewLine & _
-               "プログラムを終了します。"
-        WScript.Quit
-End Select
 sAnswer = MsgBox( "iTunes へファイルを追加しますか？" & vbNewLine & _
                   "  [追加対象フォルダ] " & TRGT_DIR _
                   , vbYesNoCancel _
@@ -111,7 +103,6 @@ Select Case sAnswer
         WScript.Quit
 End Select
 sAnswer = MsgBox( "実行する処理は以下で問題ありませんか？" & vbNewLine & _
-                  "  ・iTunes ライブラリバックアップ ： " & bIsExecBackup & vbNewLine & _
                   "  ・iTunes ライブラリ追加         ： " & bIsExecLibAdd & vbNewLine & _
                   "  ・iTunes ライブラリ更新         ： " & bIsExecLibMod _
                   , vbYesNo _
@@ -129,22 +120,12 @@ End Select
 ' * 事前処理                               *
 ' ******************************************
 If 1 Then '処理ブロック化のための分岐処理
-    Dim sLogFilePath
-    sLogFilePath = TRGT_DIR & "\" & RemoveTailWord( WScript.ScriptName, "." ) & ".log"
-    
-    Dim objFSO
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim objLogFile
-    Set objLogFile = objFSO.OpenTextFile( sLogFilePath, 2, True )
-    
-    objLogFile.WriteLine "script started."
-    objLogFile.WriteLine ""
-    objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
-    
+    '*** ストップウォッチ起動 ***
     Dim oStpWtch
     Set oStpWtch = New StopWatch
     Call oStpWtch.StartT
     
+    '*** プログレスバー起動 ***
     Dim oPrgBar
     Set oPrgBar = New ProgressBar
 End If
@@ -152,59 +133,71 @@ End If
 ' ******************************************
 ' * iTunes ライブラリバックアップ          *
 ' ******************************************
-if bIsExecBackup = True Then
+If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
+    oPrgBar.SetMsg( _
+        "⇒・iTunes ライブラリ バックアップ" & vbNewLine & _
+        "　・iTunes ライブラリ 追加処理" & vbNewLine & _
+        "　・iTunes ライブラリ 更新処理" & vbNewLine & _
+        "　　- 日付入力処理" & vbNewLine & _
+        "　　- 更新対象ファイル特定処理" & vbNewLine & _
+        "　　- タグ更新処理" & _
+        "" _
+    )
+    oPrgBar.SetProg( 20 ) '進捗更新
     
-    If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
-        objLogFile.WriteLine ""
-        objLogFile.WriteLine "*** iTunes ライブラリバックアップ *** "
-        oPrgBar.SetMsg( _
-            "⇒・iTunes ライブラリ バックアップ" & vbNewLine & _
-            "　・iTunes ライブラリ 追加処理" & vbNewLine & _
-            "　・iTunes ライブラリ 更新処理" & vbNewLine & _
-            "　　- 日付入力処理" & vbNewLine & _
-            "　　- 更新対象ファイル特定処理" & vbNewLine & _
-            "　　- タグ更新処理" & _
-            "" _
-        )
-        oPrgBar.SetProg( 20 ) '進捗更新
-        
-        Dim sCurDateTime
-        sCurDateTime = Now()
-        
-        Dim objItunes
-        Set objItunes = WScript.CreateObject("iTunes.Application")
-        
-        Dim sBackUpDirName
-        Dim sBackUpDirPath
-        Dim sItuneDirPath
-        sItuneDirPath = GetDirPath( objItunes.LibraryXMLPath )
-        sBackUpDirName = Year( sCurDateTime ) & _
-                         String( 2 - Len( Month( sCurDateTime ) ), "0" ) & Month( sCurDateTime ) & _
-                         String( 2 - Len( Day( sCurDateTime ) ), "0" ) & Day( sCurDateTime ) & _
-                         "_" & _
-                         String( 2 - Len( Hour( sCurDateTime ) ), "0" ) & Hour( sCurDateTime ) & _
-                         String( 2 - Len( Minute( sCurDateTime ) ), "0" ) & Minute( sCurDateTime ) & _
-                         String( 2 - Len( Second( sCurDateTime ) ), "0" ) & Second( sCurDateTime )
-        sBackUpDirPath = sItuneDirPath & "\iTunes Library Backup\" & sBackUpDirName
-        
-        Set objItunes = Nothing
-        
-        objFSO.CreateFolder( sBackUpDirPath )
-        objFSO.CopyFile sItuneDirPath & "\iTunes Library Extras.itdb", sBackUpDirPath & "\"
-        objFSO.CopyFile sItuneDirPath & "\iTunes Library Genius.itdb", sBackUpDirPath & "\"
-        objFSO.CopyFile sItuneDirPath & "\iTunes Library.itl        ", sBackUpDirPath & "\"
-        objFSO.CopyFile sItuneDirPath & "\iTunes Music Library.xml  ", sBackUpDirPath & "\"
-        
-        oPrgBar.SetProg( 100 ) '進捗更新
-        
-        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
-    Else
-        'Do Nothing
-    End If ' ★Debug★
+    '*** バックアップフォルダ作成 ***
+    Dim sCurDateTime
+    sCurDateTime = Now()
+    
+    Dim objItunes
+    Set objItunes = WScript.CreateObject("iTunes.Application")
+    
+    Dim sBackUpDirName
+    Dim sBackUpDirPath
+    Dim sItuneDirPath
+    sItuneDirPath = GetDirPath( objItunes.LibraryXMLPath )
+    sBackUpDirName = Year( sCurDateTime ) & _
+                     String( 2 - Len( Month( sCurDateTime ) ), "0" ) & Month( sCurDateTime ) & _
+                     String( 2 - Len( Day( sCurDateTime ) ), "0" ) & Day( sCurDateTime ) & _
+                     "_" & _
+                     String( 2 - Len( Hour( sCurDateTime ) ), "0" ) & Hour( sCurDateTime ) & _
+                     String( 2 - Len( Minute( sCurDateTime ) ), "0" ) & Minute( sCurDateTime ) & _
+                     String( 2 - Len( Second( sCurDateTime ) ), "0" ) & Second( sCurDateTime )
+    sBackUpDirPath = sItuneDirPath & "\iTunes Library Backup\" & sBackUpDirName
+    
+    Set objItunes = Nothing
+    
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    objFSO.CreateFolder( sBackUpDirPath )
+    objFSO.CopyFile sItuneDirPath & "\iTunes Library Extras.itdb", sBackUpDirPath & "\"
+    objFSO.CopyFile sItuneDirPath & "\iTunes Library Genius.itdb", sBackUpDirPath & "\"
+    objFSO.CopyFile sItuneDirPath & "\iTunes Library.itl        ", sBackUpDirPath & "\"
+    objFSO.CopyFile sItuneDirPath & "\iTunes Music Library.xml  ", sBackUpDirPath & "\"
+    
+    '*** ログファイル作成 ***
+    Dim sLogFilePath
+    sLogFilePath = sBackUpDirPath & "\" & Replace( WScript.ScriptName, ".vbs", ".log" )
+    
+    Dim objLogFile
+    Set objLogFile = objFSO.OpenTextFile( sLogFilePath, 2, True )
+    
+    objLogFile.WriteLine "script started."
+    objLogFile.WriteLine ""
+    objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
+    objLogFile.WriteLine ""
+    objLogFile.WriteLine "*** iTunes ライブラリバックアップ *** "
+    objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
+    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
 Else
-    'Do Nothing
-End If
+    sLogFilePath = TRGT_DIR & "\" & Replace( WScript.ScriptName, ".vbs", ".log" )
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objLogFile = objFSO.OpenTextFile( sLogFilePath, 2, True )
+    
+    objLogFile.WriteLine "script started."
+    objLogFile.WriteLine ""
+    objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
+End If ' ★Debug★
 
 ' ******************************************
 ' * ファイル追加                           *
@@ -582,6 +575,7 @@ End If
 ' * 終了処理                               *
 ' ******************************************
 Call Finish
+WScript.CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
 MsgBox "プログラムが正常に終了しました。"
 
 '==========================================================
