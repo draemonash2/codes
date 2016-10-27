@@ -17,7 +17,8 @@ import sys
 import os
 
 if len( sys.argv ) == 1:
-	trgt_dir_path = "C:/Users/draem_000/Desktop/RippingMp3"
+	desktop_path = os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "/Desktop"
+	trgt_dir_path = desktop_path + "/mp3"
 elif len( sys.argv ) == 2:
 	trgt_dir_path = sys.argv[1].replace("\\", "/")
 else:
