@@ -3,8 +3,24 @@ Option Explicit
 
 ' file system library v1.0
 
+Public Enum E_PATH_TYPE
+    PATH_TYPE_FILE
+    PATH_TYPE_DIRECTORY
+End Enum
+ 
+Public Type T_PATH_LIST
+    sPath As String
+    sName As String
+    ePathType As E_PATH_TYPE
+End Type
+ 
+Public Enum T_SYSOBJ_TYPE
+    SYSOBJ_NOT_EXIST
+    SYSOBJ_FILE
+    SYSOBJ_DIRECTORY
+End Enum
+  
 '参照設定「Microsoft ActiveX Data Objects 6.1 Liblary」をチェックすること！
-
 ' ============================================
 ' = 概要    ファイルの内容を配列に読み込む。
 ' = 引数    sFilePath   String   入力するファイルパス
@@ -102,6 +118,68 @@ Public Function CreateDirectry( _
         oFileSys.CreateFolder sDirPath
     End If
  
+    Set oFileSys = Nothing
+End Function
+
+'atPathList() にファイルリストが格納される。
+Public Function GetFileList( _
+    ByVal sTargetDir As String, _
+    ByRef atPathList() As T_PATH_LIST _
+)
+    Dim oFolder As Object
+    Dim oSubFolder As Object
+    Dim oFile As Object
+    Dim lLastIdx As Long
+ 
+    Set oFolder = CreateObject("Scripting.FileSystemObject").GetFolder(sTargetDir)
+ 
+    '*** フォルダ列挙 ***
+    If Sgn(atPathList) = 0 Then
+        ReDim Preserve atPathList(0)
+    Else
+        ReDim Preserve atPathList(UBound(atPathList) + 1)
+    End If
+    lLastIdx = UBound(atPathList)
+    atPathList(lLastIdx).sPath = oFolder.Path
+    atPathList(lLastIdx).sName = oFolder.Name
+    atPathList(lLastIdx).ePathType = PATH_TYPE_DIRECTORY
+ 
+    'フォルダ内のサブフォルダを列挙
+    '（サブフォルダがなければループ内は通らない）
+    For Each oSubFolder In oFolder.SubFolders
+        Call GetFileList(oSubFolder.Path, atPathList) '再帰的呼び出し
+    Next oSubFolder
+ 
+    '*** ファイル列挙 ***
+    For Each oFile In oFolder.Files
+        If Sgn(atPathList) = 0 Then
+            ReDim Preserve atPathList(0)
+        Else
+            ReDim Preserve atPathList(UBound(atPathList) + 1)
+        End If
+        lLastIdx = UBound(atPathList)
+        atPathList(lLastIdx).sPath = oFile.Path
+        atPathList(lLastIdx).sName = oFile.Name
+        atPathList(lLastIdx).ePathType = PATH_TYPE_FILE
+    Next oFile
+End Function
+ 
+Public Function GetFileOrFolder( _
+    ByVal sChkTrgtPath As String _
+) As T_SYSOBJ_TYPE
+    Dim oFileSys As Object
+    Set oFileSys = CreateObject("Scripting.FileSystemObject")
+    If oFileSys.FolderExists(sChkTrgtPath) = True And _
+       oFileSys.FileExists(sChkTrgtPath) = False Then
+        GetFileOrFolder = SYSOBJ_DIRECTORY
+    Else
+        If oFileSys.FolderExists(sChkTrgtPath) = False And _
+           oFileSys.FileExists(sChkTrgtPath) = True Then
+            GetFileOrFolder = SYSOBJ_FILE
+        Else
+            GetFileOrFolder = SYSOBJ_NOT_EXIST
+        End If
+    End If
     Set oFileSys = Nothing
 End Function
 
