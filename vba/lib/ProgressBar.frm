@@ -13,8 +13,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Option Explicit
 
+'ProgressBar v1.3
+'
 '<<Usage Sample>>
 '    Sub test()
 '        Dim oProgBar As New ProgressBar
