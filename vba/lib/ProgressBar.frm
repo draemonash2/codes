@@ -5,7 +5,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ProgressBar
    ClientLeft      =   48
    ClientTop       =   432
    ClientWidth     =   3888
-   OleObjectBlob   =   "ProgressBar_v13.frx":0000
+   OleObjectBlob   =   "ProgressBar.frx":0000
    StartUpPosition =   1  'オーナー フォームの中央
 End
 Attribute VB_Name = "ProgressBar"
@@ -14,6 +14,30 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
+'<<Usage Sample>>
+'    Sub test()
+'        Dim oProgBar As New ProgressBar
+'
+'        'プログレスバー読込＆表示
+'        Load oProgBar
+'        oProgBar.Show vbModeless
+'
+'        Dim lIdx As Long
+'        Dim lMax As Long
+'        lMax = 10
+'        For lIdx = 0 To lMax
+'            oProgBar.Update (lIdx / lMax) '0～1を指定
+'            If oProgBar.IsCanceled = True Then
+'                Exit For
+'            End If
+'            Application.Wait Now + TimeValue("00:00:01")
+'        Next lIdx
+'
+'        'プログレスバー終了
+'        oProgBar.Hide
+'        Unload oProgBar
+'    End Sub
 
 '======================================================
 ' 設定値
