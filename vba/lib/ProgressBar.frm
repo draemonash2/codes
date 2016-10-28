@@ -1,69 +1,155 @@
 VERSION 5.00
-Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} PrgrsBar 
-   Caption         =   "UserForm1"
-   ClientHeight    =   1365
-   ClientLeft      =   45
-   ClientTop       =   375
-   ClientWidth     =   4710
-   OleObjectBlob   =   "PrgrsBar.frx":0000
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ProgressBar 
+   Caption         =   "モードレス表示を使用した進捗表示"
+   ClientHeight    =   1740
+   ClientLeft      =   48
+   ClientTop       =   432
+   ClientWidth     =   2580
+   OleObjectBlob   =   "ProgressBar_v10.frx":0000
    StartUpPosition =   1  'オーナー フォームの中央
 End
-Attribute VB_Name = "PrgrsBar"
+Attribute VB_Name = "ProgressBar"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Dim gsgBlueBarMaxWidth As Single
-Dim gbIsCanceled As Boolean
-Dim glPercentOld As Long
- 
+'======================================================
+' 設定値
+'======================================================
+Private Const REPAINT_TIME As Double = 0.1 '[s]
+
+Private Const LEFT_OFFSET As Long = 10
+Private Const HEIGHT_BAR As Long = 30
+Private Const HEIGHT_SPACE As Long = 10
+Private Const WIDTH_WINDOW As Long = 350
+
+Private Const BAR_COLOR_R As Long = 248
+Private Const BAR_COLOR_G As Long = 150
+Private Const BAR_COLOR_B As Long = 150
+Private Const FONT_NAME As String = "MS ゴシック"
+Private Const FONT_SIZE_LABEL As Long = 14
+Private Const FONT_SIZE_BAR As Long = 15
+
+'======================================================
+' 定数＆変数
+'======================================================
+Private Const HEIGHT_WINDOWTITLE As Long = 20
+
+Private glBarMaxWidth As Long
+Private gdOldTime As Double
+Private glProgMsgLineNum As Long
+
+'======================================================
+' 本処理
+'======================================================
 Private Sub UserForm_Initialize()
-    '### ユーザフォーム本体 ###
     With Me
         .Caption = "進捗状況"
+        
+        With .ProgMsg
+            .Caption = ""
+            .Font.Name = FONT_NAME
+            .Font.Size = FONT_SIZE_LABEL
+        End With
+        With .ProgBarFrame
+            .Caption = ""
+        End With
+        With .ProgBar
+            .Caption = ""
+            .BackColor = RGB(BAR_COLOR_R, BAR_COLOR_G, BAR_COLOR_B)
+        End With
+        With .ProgPer
+            .Caption = ""
+            .Font.Name = FONT_NAME
+            .Font.Size = FONT_SIZE_BAR
+            .BackStyle = fmBackStyleTransparent
+            .TextAlign = fmTextAlignCenter
+        End With
     End With
-    '### ラベル ###
-    With LabelParcent
-        .Caption = ""
-        .Font.Bold = True
-        .Font.Size = 12
-    End With
-    With LabelProcCmnt
-        .Caption = ""
-        .Font.Size = 10
-    End With
-    '### 青棒 ###
-    With BlueBar
-        .Width = 100
-    End With
-    gsgBlueBarMaxWidth = BlueBarFrame.Width - 2
-    gbIsCanceled = False
-    glPercentOld = 0
+    
+    glProgMsgLineNum = 0
+    
+    Call FormResize
+    
+    glBarMaxWidth = Me.ProgBarFrame.Width - 6
+    gdOldTime = Timer
 End Sub
- 
-Private Sub CancelButton_Click()
-    gbIsCanceled = True
+
+Private Sub UserForm_Terminate()
+    'Do Nothing
 End Sub
+
+Public Property Let Title( _
+    ByVal sTitle As String _
+)
+    Me.Caption = sTitle
+End Property
 
 Public Function Update( _
-    ByVal lPercentCur As Long, _
-    Optional ByVal sComment As String _
+    ByVal dProgPer As Double, _
+    Optional ByVal sProgMsg As String _
 )
-    Debug.Assert 0 <= lPercentCur And lPercentCur <= 100
-    If glPercentOld = lPercentCur Then
-        'Do Nothing
+    Debug.Assert 0 <= dProgPer And dProgPer <= 1
+    '行数算出
+    If sProgMsg = "" Then
+        glProgMsgLineNum = 0
     Else
-        LabelParcent.Caption = "処理中：" & lPercentCur & "%"
-        LabelProcCmnt.Caption = sComment
-        BlueBar.Width = gsgBlueBarMaxWidth * (lPercentCur / 100)
-        DoEvents 'キャンセルボタンがない場合は「BackFrame.Repaint」を使用して処理を高速化すること
+        glProgMsgLineNum = (Len(sProgMsg) - Len(Replace(sProgMsg, vbNewLine, ""))) / 2 + 1
     End If
-    glPercentOld = lPercentCur
-End Function
- 
-Public Function IsCanceled() As Boolean
-    IsCanceled = gbIsCanceled
+    Call FormResize
+    
+    'キャプション設定
+    With Me
+        .ProgMsg.Caption = sProgMsg
+        .ProgPer.Caption = Int(dProgPer * 100) & " [%] 完了..."
+        .ProgBar.Width = glBarMaxWidth * dProgPer 'プログレスバーの進捗表示を更新
+    End With
+    
+    '再描画
+    Dim dCurTime As Double
+    dCurTime = Timer
+    If (dCurTime - gdOldTime) > REPAINT_TIME Then
+        DoEvents
+        gdOldTime = dCurTime
+    End If
 End Function
 
+Private Function FormResize()
+    With Me
+        With .ProgMsg
+            .Top = HEIGHT_SPACE
+            .Left = LEFT_OFFSET
+            .Width = Me.Width - (.Left * 2)
+            .Height = .Font.Size * glProgMsgLineNum
+        End With
+        With .ProgBarFrame
+            If glProgMsgLineNum = 0 Then
+                .Top = HEIGHT_SPACE
+            Else
+                .Top = HEIGHT_SPACE + Me.ProgMsg.Height + HEIGHT_SPACE
+            End If
+            .Left = LEFT_OFFSET
+            .Width = WIDTH_WINDOW - (.Left * 2)
+            .Height = HEIGHT_BAR
+        End With
+        With .ProgBar 'Top,Left は .ProgBarFrame からのオフセット
+            .Top = 1
+            .Left = 1
+            .Width = 0
+            .Height = Me.ProgBarFrame.Height - 6
+        End With
+        With .ProgPer 'Top,Left は .ProgBarFrame からのオフセット
+            .Width = Me.ProgBarFrame.Width - 6
+            .Height = .Font.Size
+            .Top = (Me.ProgBarFrame.Height - .Height) / 2 - 2
+            .Left = Me.ProgBar.Left
+        End With
+        
+        .Width = WIDTH_WINDOW
+        .Height = .ProgBarFrame.Top + .ProgBarFrame.Height + HEIGHT_SPACE + HEIGHT_WINDOWTITLE
+        .Top = (Application.Height - .Height) / 2
+        .Left = (Application.Width - .Width) / 2
+    End With
+End Function
