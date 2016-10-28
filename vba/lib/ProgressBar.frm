@@ -1,11 +1,11 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ProgressBar 
    Caption         =   "モードレス表示を使用した進捗表示"
-   ClientHeight    =   1740
+   ClientHeight    =   2316
    ClientLeft      =   48
    ClientTop       =   432
    ClientWidth     =   2580
-   OleObjectBlob   =   "ProgressBar_v10.frx":0000
+   OleObjectBlob   =   "ProgressBar_v11.frx":0000
    StartUpPosition =   1  'オーナー フォームの中央
 End
 Attribute VB_Name = "ProgressBar"
@@ -23,6 +23,8 @@ Private Const REPAINT_TIME As Double = 0.1 '[s]
 Private Const LEFT_OFFSET As Long = 10
 Private Const HEIGHT_BAR As Long = 30
 Private Const HEIGHT_SPACE As Long = 10
+Private Const HEIGHT_CANCELBUTTON As Long = 25
+Private Const WIDTH_CANCELBUTTON As Long = 90
 Private Const WIDTH_WINDOW As Long = 350
 
 Private Const BAR_COLOR_R As Long = 248
@@ -31,6 +33,7 @@ Private Const BAR_COLOR_B As Long = 150
 Private Const FONT_NAME As String = "MS ゴシック"
 Private Const FONT_SIZE_LABEL As Long = 14
 Private Const FONT_SIZE_BAR As Long = 15
+Private Const FONT_SIZE_CANCELBUTTON As Long = 12
 
 '======================================================
 ' 定数＆変数
@@ -40,6 +43,7 @@ Private Const HEIGHT_WINDOWTITLE As Long = 20
 Private glBarMaxWidth As Long
 Private gdOldTime As Double
 Private glProgMsgLineNum As Long
+Private gbIsCanceled As Boolean
 
 '======================================================
 ' 本処理
@@ -67,6 +71,12 @@ Private Sub UserForm_Initialize()
             .BackStyle = fmBackStyleTransparent
             .TextAlign = fmTextAlignCenter
         End With
+        With .CancelButton
+            .Caption = "Cancel"
+            .Font.Name = FONT_NAME
+            .Font.Size = FONT_SIZE_CANCELBUTTON
+            '.TextAlign = fmTextAlignCenter
+        End With
     End With
     
     glProgMsgLineNum = 0
@@ -75,11 +85,20 @@ Private Sub UserForm_Initialize()
     
     glBarMaxWidth = Me.ProgBarFrame.Width - 6
     gdOldTime = Timer
+    gbIsCanceled = False
 End Sub
 
 Private Sub UserForm_Terminate()
     'Do Nothing
 End Sub
+
+Private Sub CancelButton_Click()
+    gbIsCanceled = True
+End Sub
+
+Public Property Get IsCanceled()
+    IsCanceled = gbIsCanceled
+End Property
 
 Public Property Let Title( _
     ByVal sTitle As String _
@@ -146,10 +165,18 @@ Private Function FormResize()
             .Top = (Me.ProgBarFrame.Height - .Height) / 2 - 2
             .Left = Me.ProgBar.Left
         End With
+        With .CancelButton
+            .Width = WIDTH_CANCELBUTTON
+            .Height = HEIGHT_CANCELBUTTON
+            .Top = Me.ProgBarFrame.Top + Me.ProgBarFrame.Height + HEIGHT_SPACE
+            .Left = (WIDTH_WINDOW - .Width) / 2
+            .SetFocus
+        End With
         
         .Width = WIDTH_WINDOW
-        .Height = .ProgBarFrame.Top + .ProgBarFrame.Height + HEIGHT_SPACE + HEIGHT_WINDOWTITLE
+        .Height = .CancelButton.Top + .CancelButton.Height + HEIGHT_SPACE + HEIGHT_WINDOWTITLE
         .Top = (Application.Height - .Height) / 2
         .Left = (Application.Width - .Width) / 2
     End With
 End Function
+
