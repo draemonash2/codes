@@ -256,11 +256,9 @@ Public Function GetDirPath( _
 ) As String
     GetDirPath = RemoveTailWord(sFilePath, "\")
 End Function
-    #If 0 Then
-    Private Sub Test()
+    Private Sub Test_GetDirPath()
         'RemoveTailWordと同等のテストケースのため、テストしない
     End Sub
-    #End If
 
 ' ==================================================================
 ' = 概要    指定されたファイルパスからファイル名を抽出する。
