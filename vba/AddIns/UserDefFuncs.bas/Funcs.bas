@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.1
+' user define functions v1.2
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -39,8 +39,8 @@ Option Explicit
 '* 定数定義
 '********************************************************************************
 Public Enum E_SHIFT_DIRECTiON
-    RIGHT_SHIFT = 0
-    LEFT_SHIFT
+    LEFT_SHIFT = 0
+    RIGHT_SHIFT
 End Enum
 Public Enum E_SHIFT_TYPE
     LOGICAL_SHIFT = 0
@@ -735,6 +735,7 @@ End Function
         Debug.Print BitOrStrBin("01010101", "00010010", 1)      '1
         Debug.Print BitOrStrBin("0101", "001F")                 'エラー 2036
         Debug.Print BitOrStrBin(" 101", "0010")                 'エラー 2036
+        Debug.Print BitOrStrBin("K01", "0010")                  'エラー 2036
         Debug.Print BitOrStrBin("", "0010")                     'エラー 2036
         Debug.Print BitOrStrBin("0101", "")                     'エラー 2036
         Debug.Print "*** test finished! ***"
@@ -742,18 +743,18 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＳＨＩＦＴ演算を行う。（数値）
-' = 引数    cInDecVal   Currency  [in]  入力値（10進数数値）
-' = 引数    lInShiftNum Long      [in]  シフトビット数
-' = 引数    eDirection  Enum      [in]  シフト方向（0:右 1:左）
-' = 引数    eShiftType  Enum      [in]  シフト種別（0:論理 1:算術）
-' = 戻値                Variant         シフト結果（10進数数値）
+' = 引数    cInDecVal       Currency  [in]  入力値（10進数数値）
+' = 引数    lInShiftNum     Long      [in]  シフトビット数
+' = 引数    eInDirection    Enum      [in]  シフト方向（0:左 1:右）
+' = 引数    eInShiftType    Enum      [in]  シフト種別（0:論理 1:算術）
+' = 戻値                    Variant         シフト結果（10進数数値）
 ' = 覚書    ★算術シフトは未実装★
 ' ==================================================================
 Public Function BitShiftVal( _
     ByVal cInDecVal As Currency, _
     ByVal lInShiftNum As Long, _
-    ByVal eDirection As E_SHIFT_DIRECTiON, _
-    ByVal eShiftType As E_SHIFT_TYPE _
+    ByVal eInDirection As E_SHIFT_DIRECTiON, _
+    ByVal eInShiftType As E_SHIFT_TYPE _
 ) As Variant
     If cInDecVal > 4294967295# Then
         BitShiftVal = CVErr(xlErrNum)  'エラー値
@@ -763,11 +764,11 @@ Public Function BitShiftVal( _
         BitShiftVal = CVErr(xlErrNum)  'エラー値
         Exit Function
     End If
-    If eDirection <> RIGHT_SHIFT And eDirection <> LEFT_SHIFT Then
+    If eInDirection <> RIGHT_SHIFT And eInDirection <> LEFT_SHIFT Then
         BitShiftVal = CVErr(xlErrValue)  'エラー値
         Exit Function
     End If
-    If eShiftType <> LOGICAL_SHIFT And eShiftType <> ARITHMETIC_SHIFT Then
+    If eInShiftType <> LOGICAL_SHIFT And eInShiftType <> ARITHMETIC_SHIFT Then
         BitShiftVal = CVErr(xlErrValue)  'エラー値
         Exit Function
     End If
@@ -777,7 +778,7 @@ Public Function BitShiftVal( _
     Dim cInDecValLo As Currency
     Dim sBinVal As String
     Dim cRetVal As Currency
-    If eShiftType = LOGICAL_SHIFT Then
+    If eInShiftType = LOGICAL_SHIFT Then
         On Error Resume Next
         'Dec⇒Hex
         cInDecValHi = Int(cInDecVal / 2 ^ 16)
@@ -787,8 +788,7 @@ Public Function BitShiftVal( _
         'Hex⇒Bin
         sBinVal = Hex2Bin(sHexVal)
         'Shift
-'            sBinVal = BitShiftStrBin(sBinVal, lInShiftNum, eDirection, 32)
-        sBinVal = BitShiftStrBin(sBinVal, lInShiftNum, eDirection, eShiftType, 32)
+        sBinVal = BitShiftStrBin(sBinVal, lInShiftNum, eInDirection, eInShiftType, 32)
         'Bin⇒Hex
         sHexVal = Bin2Hex(sBinVal)
         'Hex⇒Dec
@@ -831,8 +831,8 @@ End Function
         Debug.Print BitShiftVal(&H10&, 28, LEFT_SHIFT, LOGICAL_SHIFT)           '0
         Debug.Print BitShiftVal(&H10&, 29, LEFT_SHIFT, LOGICAL_SHIFT)           '0
         Debug.Print Hex(BitShiftVal(&H7FFFFFFF, 0, LEFT_SHIFT, LOGICAL_SHIFT))  '7FFFFFFF
-       'Debug.Print Hex(BitShiftVal(&H80000000, 0, LEFT_SHIFT, LOGICAL_SHIFT))  '80000000★バグ？
-       'Debug.Print Hex(BitShiftVal(4294967294#, 0, LEFT_SHIFT, LOGICAL_SHIFT)) 'FFFFFFFF★バグ？
+       'Debug.Print BitShiftVal(&H80000000, 0, LEFT_SHIFT, LOGICAL_SHIFT)       '80000000★バグ？
+       'Debug.Print BitShiftVal(4294967294#, 0, LEFT_SHIFT, LOGICAL_SHIFT)      'FFFFFFFF★バグ？
         Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, ARITHMETIC_SHIFT)         'エラー 2042
         Debug.Print BitShiftVal(&H10&, -1, LEFT_SHIFT, LOGICAL_SHIFT)           'エラー 2036
         Debug.Print BitShiftVal(&H10&, 1, 3, LOGICAL_SHIFT)                     'エラー 2015
@@ -842,19 +842,19 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＳＨＩＦＴ演算を行う。（文字列１６進数）
-' = 引数    sInHexVal   String  [in]    入力値（文字列）
-' = 引数    lInShiftNum Long    [in]    シフトビット数
-' = 引数    eDirection  Enum    [in]    シフト方向（0:右 1:左）
-' = 引数    eShiftType  Enum    [in]    シフト種別（0:論理 1:算術）
-' = 引数    lInDigitNum Long    [in]    出力桁数
-' = 戻値                Variant         シフト結果（文字列）
+' = 引数    sInHexVal       String  [in]    入力値（文字列）
+' = 引数    lInShiftNum     Long    [in]    シフトビット数
+' = 引数    eInDirection    Enum    [in]    シフト方向（0:左 1:右）
+' = 引数    eInShiftType    Enum    [in]    シフト種別（0:論理 1:算術）
+' = 引数    lInDigitNum     Long    [in]    出力桁数
+' = 戻値                    Variant         シフト結果（文字列）
 ' = 覚書    ★算術シフトは未実装★
 ' ==================================================================
 Public Function BitShiftStrHex( _
     ByVal sInHexVal As String, _
     ByVal lInShiftNum As Long, _
-    ByVal eDirection As E_SHIFT_DIRECTiON, _
-    ByVal eShiftType As E_SHIFT_TYPE, _
+    ByVal eInDirection As E_SHIFT_DIRECTiON, _
+    ByVal eInShiftType As E_SHIFT_TYPE, _
     Optional ByVal lInDigitNum As Long = 0 _
 ) As Variant
     If sInHexVal = "" Then
@@ -869,15 +869,15 @@ Public Function BitShiftStrHex( _
         BitShiftStrHex = CVErr(xlErrNum) 'エラー値
         Exit Function
     End If
-    If eShiftType <> LOGICAL_SHIFT And eShiftType <> ARITHMETIC_SHIFT Then
+    If eInShiftType <> LOGICAL_SHIFT And eInShiftType <> ARITHMETIC_SHIFT Then
         BitShiftStrHex = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
-    If eDirection <> LEFT_SHIFT And eDirection <> RIGHT_SHIFT Then
+    If eInDirection <> LEFT_SHIFT And eInDirection <> RIGHT_SHIFT Then
         BitShiftStrHex = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
-    If eShiftType = ARITHMETIC_SHIFT Then '算術シフトは未実装のため、暫定エラーとする
+    If eInShiftType = ARITHMETIC_SHIFT Then '算術シフトは未実装のため、暫定エラーとする
         BitShiftStrHex = CVErr(xlErrNA) 'エラー値
         Exit Function
     End If
@@ -905,7 +905,7 @@ Public Function BitShiftStrHex( _
     'ＢＩＮシフト
     Dim sOutBinVar As String
     Dim sTmpBinVar As String
-    sTmpBinVar = BitShiftStrBin(sInBinVar, lInShiftNum, eDirection, eShiftType, lInDigitNum * 4)
+    sTmpBinVar = BitShiftStrBin(sInBinVar, lInShiftNum, eInDirection, eInShiftType, lInDigitNum * 4)
     Dim lModNum As Long
     lModNum = Len(sTmpBinVar) Mod 4
     If lModNum = 0 Then
@@ -932,6 +932,7 @@ End Function
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT)        '2C0
         Debug.Print BitShiftStrHex("B0", 3, LEFT_SHIFT, LOGICAL_SHIFT)        '580
         Debug.Print BitShiftStrHex("B0", 4, LEFT_SHIFT, LOGICAL_SHIFT)        'B00
+        Debug.Print BitShiftStrHex("B0", 120, LEFT_SHIFT, LOGICAL_SHIFT)      'B0 + 0×30個
         Debug.Print BitShiftStrHex("B0", 0, RIGHT_SHIFT, LOGICAL_SHIFT)       'B0
         Debug.Print BitShiftStrHex("B0", 1, RIGHT_SHIFT, LOGICAL_SHIFT)       '58
         Debug.Print BitShiftStrHex("B0", 2, RIGHT_SHIFT, LOGICAL_SHIFT)       '2C
@@ -940,12 +941,14 @@ End Function
         Debug.Print BitShiftStrHex("B0", 7, RIGHT_SHIFT, LOGICAL_SHIFT)       '1
         Debug.Print BitShiftStrHex("B0", 8, RIGHT_SHIFT, LOGICAL_SHIFT)       '0
         Debug.Print BitShiftStrHex("B0", 9, RIGHT_SHIFT, LOGICAL_SHIFT)       '0
+        Debug.Print BitShiftStrHex("B0", 120, RIGHT_SHIFT, LOGICAL_SHIFT)     '0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 0)     '2C0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 1)     '0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 2)     'C0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 3)     '2C0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 4)     '02C0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 10)    '00000002C0
+        Debug.Print BitShiftStrHex("B0", 9, RIGHT_SHIFT, LOGICAL_SHIFT, 8)    '00000000
         Debug.Print BitShiftStrHex("B", 1, LEFT_SHIFT, ARITHMETIC_SHIFT)      'エラー 2042
         Debug.Print BitShiftStrHex("", 2, LEFT_SHIFT, LOGICAL_SHIFT)          'エラー 2000
         Debug.Print BitShiftStrHex(" B", 2, RIGHT_SHIFT, LOGICAL_SHIFT)       'エラー 2015
@@ -958,19 +961,19 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＳＨＩＦＴ演算を行う。（文字列２進数）
-' = 引数    sInBinVal   String  [in]    入力値（文字列）
-' = 引数    lInShiftNum Long    [in]    シフトビット数
-' = 引数    eDirection  Enum    [in]    シフト方向（0:右 1:左）
-' = 引数    eShiftType  Enum    [in]    シフト種別（0:論理 1:算術）
-' = 引数    lInBitLen   Long    [in]    出力ビット数
-' = 戻値                Variant         シフト結果（文字列）
+' = 引数    sInBinVal       String  [in]    入力値（文字列）
+' = 引数    lInShiftNum     Long    [in]    シフトビット数
+' = 引数    eInDirection    Enum    [in]    シフト方向（0:左 1:右）
+' = 引数    eInShiftType    Enum    [in]    シフト種別（0:論理 1:算術）
+' = 引数    lInBitLen       Long    [in]    出力ビット数
+' = 戻値                    Variant         シフト結果（文字列）
 ' = 覚書    ★算術シフトは未実装★
 ' ==================================================================
 Public Function BitShiftStrBin( _
     ByVal sInBinVal As String, _
     ByVal lInShiftNum As Long, _
-    ByVal eDirection As E_SHIFT_DIRECTiON, _
-    ByVal eShiftType As E_SHIFT_TYPE, _
+    ByVal eInDirection As E_SHIFT_DIRECTiON, _
+    ByVal eInShiftType As E_SHIFT_TYPE, _
     Optional ByVal lInBitLen As Long = 0 _
 ) As Variant
     If sInBinVal = "" Then
@@ -985,21 +988,21 @@ Public Function BitShiftStrBin( _
         BitShiftStrBin = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
-    If eShiftType <> LOGICAL_SHIFT And eShiftType <> ARITHMETIC_SHIFT Then
+    If eInShiftType <> LOGICAL_SHIFT And eInShiftType <> ARITHMETIC_SHIFT Then
         BitShiftStrBin = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
-    If eDirection <> LEFT_SHIFT And eDirection <> RIGHT_SHIFT Then
+    If eInDirection <> LEFT_SHIFT And eInDirection <> RIGHT_SHIFT Then
         BitShiftStrBin = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
     
-    Select Case eShiftType
+    Select Case eInShiftType
         Case LOGICAL_SHIFT:
-            BitShiftStrBin = BitShiftLogStrBin(sInBinVal, lInShiftNum, eDirection, lInBitLen)
+            BitShiftStrBin = BitShiftLogStrBin(sInBinVal, lInShiftNum, eInDirection, lInBitLen)
         Case ARITHMETIC_SHIFT:
             BitShiftStrBin = CVErr(xlErrNA) '算術シフトは未実装
-            'BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eDirection, lInBitLen)
+            'BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, lInBitLen)
         Case Else
             BitShiftStrBin = CVErr(xlErrValue) 'エラー値
     End Select
@@ -1021,6 +1024,8 @@ End Function
         Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 3)      '100
         Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 4)      '1100
         Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 10)     '0000101100
+        Debug.Print BitShiftStrBin("1011", 120, LEFT_SHIFT, LOGICAL_SHIFT)       '1011 + 0×120個
+        Debug.Print BitShiftStrBin("1011", 5, RIGHT_SHIFT, LOGICAL_SHIFT, 8)     '00000000
         Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT)      'エラー 2042
         Debug.Print BitShiftStrBin("", 2, LEFT_SHIFT, LOGICAL_SHIFT)             'エラー 2000
         Debug.Print BitShiftStrBin(":1011", 2, LEFT_SHIFT, LOGICAL_SHIFT)        'エラー 2015
@@ -1283,39 +1288,37 @@ End Function
 
 '論理ビットシフト（文字列版）
 Private Function BitShiftLogStrBin( _
-    ByVal sBinVal As String, _
-    ByVal lShiftNum As Long, _
-    ByVal eDirection As E_SHIFT_DIRECTiON, _
-    ByVal lBitLen As Long _
+    ByVal sInBinVal As String, _
+    ByVal lInShiftNum As Long, _
+    ByVal eInDirection As E_SHIFT_DIRECTiON, _
+    ByVal lInBitLen As Long _
 ) As String
-    Debug.Assert sBinVal <> ""
-    Debug.Assert lShiftNum >= 0
-    Debug.Assert Replace(Replace(sBinVal, "1", ""), "0", "") = ""
-    Dim sOutStr As String
-    Select Case eDirection
+    Debug.Assert sInBinVal <> ""
+    Debug.Assert lInShiftNum >= 0
+    Debug.Assert Replace(Replace(sInBinVal, "1", ""), "0", "") = ""
+    Dim sTmpBinVal As String
+    Select Case eInDirection
         Case RIGHT_SHIFT
-            If Len(sBinVal) > lShiftNum Then
-                sOutStr = Left$(sBinVal, Len(sBinVal) - lShiftNum)
-                If lBitLen > Len(sOutStr) Then
-                    BitShiftLogStrBin = String(lBitLen - Len(sOutStr), "0") & sOutStr
-                Else
-                    BitShiftLogStrBin = sOutStr
-                End If
+            If Len(sInBinVal) > lInShiftNum Then
+                sTmpBinVal = Left$(sInBinVal, Len(sInBinVal) - lInShiftNum)
             Else
-                BitShiftLogStrBin = "0"
+                sTmpBinVal = "0"
+            End If
+            If lInBitLen > Len(sTmpBinVal) Then
+                BitShiftLogStrBin = String(lInBitLen - Len(sTmpBinVal), "0") & sTmpBinVal
+            Else
+                BitShiftLogStrBin = sTmpBinVal
             End If
         Case LEFT_SHIFT
-            sOutStr = sBinVal & String(lShiftNum, "0")
-            If lBitLen > Len(sOutStr) Then
-                BitShiftLogStrBin = String(lBitLen - Len(sOutStr), "0") & sOutStr
-            ElseIf lBitLen < Len(sOutStr) Then
-                If lBitLen = 0 Then
-                    BitShiftLogStrBin = sOutStr
-                Else
-                    BitShiftLogStrBin = Right$(sOutStr, lBitLen)
-                End If
+            sTmpBinVal = sInBinVal & String(lInShiftNum, "0")
+            If lInBitLen > Len(sTmpBinVal) Then
+                BitShiftLogStrBin = String(lInBitLen - Len(sTmpBinVal), "0") & sTmpBinVal
             Else
-                BitShiftLogStrBin = sOutStr
+                If lInBitLen = 0 Then
+                    BitShiftLogStrBin = sTmpBinVal
+                Else
+                    BitShiftLogStrBin = Right$(sTmpBinVal, lInBitLen)
+                End If
             End If
         Case Else
             Debug.Assert 0
@@ -1323,6 +1326,15 @@ Private Function BitShiftLogStrBin( _
 End Function
     Private Sub Test_BitShiftLogStrBin()
         Debug.Print "*** test start! ***"
+        Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, 8)      '00000000
+        Debug.Print BitShiftLogStrBin("0", 2, LEFT_SHIFT, 8)      '00000000
+        Debug.Print BitShiftLogStrBin("1", 0, LEFT_SHIFT, 8)      '00000001
+        Debug.Print BitShiftLogStrBin("1", 2, LEFT_SHIFT, 8)      '00000100
+        Debug.Print BitShiftLogStrBin("1", 7, LEFT_SHIFT, 8)      '10000000
+        Debug.Print BitShiftLogStrBin("1", 8, LEFT_SHIFT, 8)      '00000000
+        Debug.Print BitShiftLogStrBin("1", 0, RIGHT_SHIFT, 8)     '00000001
+        Debug.Print BitShiftLogStrBin("1", 1, RIGHT_SHIFT, 8)     '00000000
+        Debug.Print BitShiftLogStrBin("1", 2, RIGHT_SHIFT, 8)     '00000000
         Debug.Print BitShiftLogStrBin("1011", 0, LEFT_SHIFT, 0)   '1011
         Debug.Print BitShiftLogStrBin("1011", 1, LEFT_SHIFT, 0)   '10110
         Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 0)   '101100
@@ -1336,6 +1348,7 @@ End Function
         Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 3)   '100
         Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 4)   '1100
         Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 10)  '0000101100
+        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, 8)  '00000000
        'Debug.Print BitShiftLogStrBin("1011", 1, 5, 10)           'プログラム停止
        'Debug.Print BitShiftLogStrBin("", 2, LEFT_SHIFT, 10)      'プログラム停止
        'Debug.Print BitShiftLogStrBin("1011", -1, LEFT_SHIFT, 10) 'プログラム停止
@@ -1345,36 +1358,36 @@ End Function
 
 '算術ビットシフト（文字列版）★実装中
 Private Function BitShiftAriStrBin( _
-    ByVal sBinVal As String, _
-    ByVal lShiftNum As Long, _
-    ByVal eDirection As E_SHIFT_DIRECTiON, _
-    ByVal lBitLen As Long _
+    ByVal sInBinVal As String, _
+    ByVal lInShiftNum As Long, _
+    ByVal eInDirection As E_SHIFT_DIRECTiON, _
+    ByVal lInBitLen As Long _
 ) As String
-    Debug.Assert sBinVal <> ""
-    Debug.Assert lShiftNum >= 0
-    Debug.Assert Replace(Replace(sBinVal, "1", ""), "0", "") = ""
+    Debug.Assert sInBinVal <> ""
+    Debug.Assert lInShiftNum >= 0
+    Debug.Assert Replace(Replace(sInBinVal, "1", ""), "0", "") = ""
     Dim sOutStr As String
     Dim sOutLogicBit As String
     Dim sSignBit As String
     Dim sLogicBit As String
-    sSignBit = Left$(sBinVal, 1)
-    sLogicBit = Mid$(sBinVal, 2, Len(sBinVal))
-    Select Case eDirection
+    sSignBit = Left$(sInBinVal, 1)
+    sLogicBit = Mid$(sInBinVal, 2, Len(sInBinVal))
+    Select Case eInDirection
         Case RIGHT_SHIFT
-            If lBitLen = 0 Then
-                sOutLogicBit = Left$(sLogicBit, Len(sLogicBit) - lShiftNum)
+            If lInBitLen = 0 Then
+                sOutLogicBit = Left$(sLogicBit, Len(sLogicBit) - lInShiftNum)
                 BitShiftAriStrBin = sSignBit & String(Len(sLogicBit) - Len(sOutLogicBit), "0") & sOutLogicBit
             Else
             End If
         Case LEFT_SHIFT
-            sOutStr = sBinVal & String(lShiftNum, "0")
-            If lBitLen > Len(sOutStr) Then
-                BitShiftAriStrBin = String(lBitLen - Len(sOutStr), "0") & sOutStr
-            ElseIf lBitLen < Len(sOutStr) Then
-                If lBitLen = 0 Then
+            sOutStr = sInBinVal & String(lInShiftNum, "0")
+            If lInBitLen > Len(sOutStr) Then
+                BitShiftAriStrBin = String(lInBitLen - Len(sOutStr), "0") & sOutStr
+            ElseIf lInBitLen < Len(sOutStr) Then
+                If lInBitLen = 0 Then
                     BitShiftAriStrBin = sOutStr
                 Else
-                    BitShiftAriStrBin = Right$(sOutStr, lBitLen)
+                    BitShiftAriStrBin = Right$(sOutStr, lInBitLen)
                 End If
             Else
                 BitShiftAriStrBin = sOutStr
