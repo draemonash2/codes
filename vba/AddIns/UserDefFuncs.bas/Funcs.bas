@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.3
+' user define functions v1.4
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -352,19 +352,19 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＡＮＤ演算を行う。（数値）
-' = 引数    cInVar1   Currency   [in]  入力値 左項（10進数数値）
-' = 引数    cInVar2   Currency   [in]  入力値 右項（10進数数値）
+' = 引数    cInVal1   Currency   [in]  入力値 左項（10進数数値）
+' = 引数    cInVal2   Currency   [in]  入力値 右項（10進数数値）
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitAndVal( _
-    ByVal cInVar1 As Currency, _
-    ByVal cInVar2 As Currency _
+    ByVal cInVal1 As Currency, _
+    ByVal cInVal2 As Currency _
 ) As Variant
-    If (cInVar1 > 2147483647# Or cInVar2 > 2147483647#) Then
+    If (cInVal1 > 2147483647# Or cInVal2 > 2147483647#) Then
         BitAndVal = CVErr(xlErrNum)  'エラー値
     Else
-        BitAndVal = cInVar1 And cInVar2
+        BitAndVal = cInVal1 And cInVal2
     End If
 End Function
     Private Sub Test_BitAndVal()
@@ -381,18 +381,18 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＡＮＤ演算を行う。（文字列１６進数）
-' = 引数    sInHexVar1  String     [in]  入力値 左項（文字列）
-' = 引数    sInHexVar2  String     [in]  入力値 右項（文字列）
+' = 引数    sInHexVal1  String     [in]  入力値 左項（文字列）
+' = 引数    sInHexVal2  String     [in]  入力値 右項（文字列）
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitAndStrHex( _
-    ByVal sInHexVar1 As String, _
-    ByVal sInHexVar2 As String, _
+    ByVal sInHexVal1 As String, _
+    ByVal sInHexVal2 As String, _
     Optional ByVal lInDigitNum As Long = 0 _
 ) As Variant
-    If sInHexVar1 = "" Or sInHexVar2 = "" Then
+    If sInHexVal1 = "" Or sInHexVal2 = "" Then
         BitAndStrHex = CVErr(xlErrNull) 'エラー値
         Exit Function
     End If
@@ -401,55 +401,38 @@ Public Function BitAndStrHex( _
         Exit Function
     End If
     
-    Dim lStrIdx As Long
-    Dim sChar As String
-    Dim sTmpBinStr As String
-    Dim sTmpHexStr As String
-    
     '入力値１のＢＩＮ変換
-    Dim sInBinVar1 As String
-    sInBinVar1 = ""
-    For lStrIdx = 1 To Len(sInHexVar1)
-        sChar = Mid$(sInHexVar1, lStrIdx, 1)
-        sTmpBinStr = Hex2BinMap(sChar)
-        If sTmpBinStr = "error" Then
-            BitAndStrHex = CVErr(xlErrValue) 'エラー値
-            Exit Function
-        Else
-            sInBinVar1 = sInBinVar1 & sTmpBinStr
-        End If
-    Next lStrIdx
-   'Debug.Print "sInBinVar1 : " & sInBinVar1
+    Dim sInBinVal1 As String
+    sInBinVal1 = Hex2Bin(sInHexVal1)
+    If sInBinVal1 = "error" Then
+        BitAndStrHex = CVErr(xlErrValue) 'エラー値
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+   'Debug.Print "sInBinVal1 : " & sInBinVal1
     
     '入力値２のＢＩＮ変換
-    Dim sInBinVar2 As String
-    sInBinVar2 = ""
-    For lStrIdx = 1 To Len(sInHexVar2)
-        sChar = Mid$(sInHexVar2, lStrIdx, 1)
-        sTmpBinStr = Hex2BinMap(sChar)
-        If sTmpBinStr = "error" Then
-            BitAndStrHex = CVErr(xlErrValue) 'エラー値
-            Exit Function
-        Else
-            sInBinVar2 = sInBinVar2 & sTmpBinStr
-        End If
-    Next lStrIdx
-   'Debug.Print "sInBinVar2 : " & sInBinVar2
+    Dim sInBinVal2 As String
+    sInBinVal2 = Hex2Bin(sInHexVal2)
+    If sInBinVal2 = "error" Then
+        BitAndStrHex = CVErr(xlErrValue) 'エラー値
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+   'Debug.Print "sInBinVal2 : " & sInBinVal2
     
-    'ＢＩＮシフト
-    Dim sOutBinVar As String
-    sOutBinVar = BitAndStrBin(sInBinVar1, sInBinVar2, lInDigitNum * 4)
+    'ＢＩＮ ＡＮＤ演算
+    Dim sOutBinVal As String
+    sOutBinVal = BitAndStrBin(sInBinVal1, sInBinVal2, lInDigitNum * 4)
     
     'ＢＩＮ⇒ＨＥＸ変換
-    Dim sOutHexVar As String
-    sOutHexVar = ""
-    For lStrIdx = 1 To Len(sOutBinVar) Step 4
-        sTmpBinStr = Mid$(sOutBinVar, lStrIdx, 4)
-        sTmpHexStr = Bin2HexMap(sTmpBinStr)
-        Debug.Assert sTmpHexStr <> "error"
-        sOutHexVar = sOutHexVar & sTmpHexStr
-    Next lStrIdx
-    BitAndStrHex = sOutHexVar
+    Dim sOutHexVal As String
+    sOutHexVal = Bin2Hex(sOutBinVal, True)
+    Debug.Assert sOutHexVal <> "error"
+    BitAndStrHex = sOutHexVal
+    
 End Function
     Private Sub Test_BitAndStrHex()
         Debug.Print "*** test start! ***"
@@ -466,6 +449,9 @@ End Function
         Debug.Print BitAndStrHex("FFFF0B00", "01010300", 4)     '0300
         Debug.Print BitAndStrHex("FFFF0B00", "01010300", 2)     '00
         Debug.Print BitAndStrHex("FFFF0B00", "01010300", 1)     '0
+        Debug.Print BitAndStrHex("ab", "00FF")                  '00AB
+        Debug.Print BitAndStrHex("cd", "00FF")                  '00CD
+        Debug.Print BitAndStrHex("ef", "00FF")                  '00EF
         Debug.Print BitAndStrHex(" 0B00", "0300")               'エラー 2015
         Debug.Print BitAndStrHex("", "0300")                    'エラー 2000
         Debug.Print BitAndStrHex("0B00", "")                    'エラー 2000
@@ -475,37 +461,37 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＡＮＤ演算を行う。（文字列２進数）
-' = 引数    sInBinVar1  String     [in]  入力値 左項（文字列）
-' = 引数    sInBinVar2  String     [in]  入力値 右項（文字列）
+' = 引数    sInBinVal1  String     [in]  入力値 左項（文字列）
+' = 引数    sInBinVal2  String     [in]  入力値 右項（文字列）
 ' = 引数    lInBitLen   Long       [in]  出力ビット数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitAndStrBin( _
-    ByVal sInBinVar1 As String, _
-    ByVal sInBinVar2 As String, _
+    ByVal sInBinVal1 As String, _
+    ByVal sInBinVal2 As String, _
     Optional ByVal lInBitLen As Long = 0 _
 ) As Variant
-    If sInBinVar1 = "" Or sInBinVar2 = "" Then
+    If sInBinVal1 = "" Or sInBinVal2 = "" Then
         BitAndStrBin = CVErr(xlErrNum) 'エラー値
     Else
         '文字数を合わせる
-        If Len(sInBinVar1) > Len(sInBinVar2) Then
-            sInBinVar2 = String(Len(sInBinVar1) - Len(sInBinVar2), "0") & sInBinVar2
+        If Len(sInBinVal1) > Len(sInBinVal2) Then
+            sInBinVal2 = String(Len(sInBinVal1) - Len(sInBinVal2), "0") & sInBinVal2
         Else
-            sInBinVar1 = String(Len(sInBinVar2) - Len(sInBinVar1), "0") & sInBinVar1
+            sInBinVal1 = String(Len(sInBinVal2) - Len(sInBinVal1), "0") & sInBinVal1
         End If
-        Debug.Assert Len(sInBinVar1) = Len(sInBinVar2)
+        Debug.Assert Len(sInBinVal1) = Len(sInBinVal2)
         
         'OR演算
         Dim lValIdx As Long
         Dim sOutBin As String
         Dim bIsError As Boolean
-        lValIdx = Len(sInBinVar1)
+        lValIdx = Len(sInBinVal1)
         sOutBin = ""
         bIsError = False
         Do
-            Select Case Mid$(sInBinVar1, lValIdx, 1) & Mid$(sInBinVar2, lValIdx, 1)
+            Select Case Mid$(sInBinVal1, lValIdx, 1) & Mid$(sInBinVal2, lValIdx, 1)
                 Case "00": sOutBin = "0" & sOutBin
                 Case "10": sOutBin = "0" & sOutBin
                 Case "01": sOutBin = "0" & sOutBin
@@ -552,20 +538,20 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＯＲ演算を行う。（数値）
-' = 引数    cInVar1   Currency   [in]  入力値 左項（10進数数値）
-' = 引数    cInVar2   Currency   [in]  入力値 右項（10進数数値）
+' = 引数    cInVal1   Currency   [in]  入力値 左項（10進数数値）
+' = 引数    cInVal2   Currency   [in]  入力値 右項（10進数数値）
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitOrVal( _
-    ByVal cInVar1 As Currency, _
-    ByVal cInVar2 As Currency _
+    ByVal cInVal1 As Currency, _
+    ByVal cInVal2 As Currency _
 ) As Variant
     Dim sHexVal As String
-    If (cInVar1 > 2147483647# Or cInVar2 > 2147483647#) Then
+    If (cInVal1 > 2147483647# Or cInVal2 > 2147483647#) Then
         BitOrVal = CVErr(xlErrNum)  'エラー値
     Else
-        BitOrVal = cInVar1 Or cInVar2
+        BitOrVal = cInVal1 Or cInVal2
     End If
 End Function
     Private Sub Test_BitOrVal()
@@ -582,18 +568,18 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＯＲ演算を行う。（文字列１６進数）
-' = 引数    sInHexVar1  String     [in]  入力値 左項（文字列）
-' = 引数    sInHexVar2  String     [in]  入力値 右項（文字列）
+' = 引数    sInHexVal1  String     [in]  入力値 左項（文字列）
+' = 引数    sInHexVal2  String     [in]  入力値 右項（文字列）
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitOrStrHex( _
-    ByVal sInHexVar1 As String, _
-    ByVal sInHexVar2 As String, _
+    ByVal sInHexVal1 As String, _
+    ByVal sInHexVal2 As String, _
     Optional ByVal lInDigitNum As Long = 0 _
 ) As Variant
-    If sInHexVar1 = "" Or sInHexVar2 = "" Then
+    If sInHexVal1 = "" Or sInHexVal2 = "" Then
         BitOrStrHex = CVErr(xlErrNull) 'エラー値
         Exit Function
     End If
@@ -602,55 +588,37 @@ Public Function BitOrStrHex( _
         Exit Function
     End If
     
-    Dim lStrIdx As Long
-    Dim sChar As String
-    Dim sTmpBinStr As String
-    Dim sTmpHexStr As String
-    
     '入力値１のＢＩＮ変換
-    Dim sInBinVar1 As String
-    sInBinVar1 = ""
-    For lStrIdx = 1 To Len(sInHexVar1)
-        sChar = Mid$(sInHexVar1, lStrIdx, 1)
-        sTmpBinStr = Hex2BinMap(sChar)
-        If sTmpBinStr = "error" Then
-            BitOrStrHex = CVErr(xlErrValue) 'エラー値
-            Exit Function
-        Else
-            sInBinVar1 = sInBinVar1 & sTmpBinStr
-        End If
-    Next lStrIdx
-   'Debug.Print "sInBinVar1 : " & sInBinVar1
+    Dim sInBinVal1 As String
+    sInBinVal1 = Hex2Bin(sInHexVal1)
+    If sInBinVal1 = "error" Then
+        BitOrStrHex = CVErr(xlErrValue) 'エラー値
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+   'Debug.Print "sInBinVal1 : " & sInBinVal1
     
     '入力値２のＢＩＮ変換
-    Dim sInBinVar2 As String
-    sInBinVar2 = ""
-    For lStrIdx = 1 To Len(sInHexVar2)
-        sChar = Mid$(sInHexVar2, lStrIdx, 1)
-        sTmpBinStr = Hex2BinMap(sChar)
-        If sTmpBinStr = "error" Then
-            BitOrStrHex = CVErr(xlErrValue) 'エラー値
-            Exit Function
-        Else
-            sInBinVar2 = sInBinVar2 & sTmpBinStr
-        End If
-    Next lStrIdx
-   'Debug.Print "sInBinVar2 : " & sInBinVar2
+    Dim sInBinVal2 As String
+    sInBinVal2 = Hex2Bin(sInHexVal2)
+    If sInBinVal2 = "error" Then
+        BitOrStrHex = CVErr(xlErrValue) 'エラー値
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+   'Debug.Print "sInBinVal2 : " & sInBinVal2
     
-    'ＢＩＮシフト
-    Dim sOutBinVar As String
-    sOutBinVar = BitOrStrBin(sInBinVar1, sInBinVar2, lInDigitNum * 4)
+    'ＢＩＮ ＯＲ演算
+    Dim sOutBinVal As String
+    sOutBinVal = BitOrStrBin(sInBinVal1, sInBinVal2, lInDigitNum * 4)
     
     'ＢＩＮ⇒ＨＥＸ変換
-    Dim sOutHexVar As String
-    sOutHexVar = ""
-    For lStrIdx = 1 To Len(sOutBinVar) Step 4
-        sTmpBinStr = Mid$(sOutBinVar, lStrIdx, 4)
-        sTmpHexStr = Bin2HexMap(sTmpBinStr)
-        Debug.Assert sTmpHexStr <> "error"
-        sOutHexVar = sOutHexVar & sTmpHexStr
-    Next lStrIdx
-    BitOrStrHex = sOutHexVar
+    Dim sOutHexVal As String
+    sOutHexVal = Bin2Hex(sOutBinVal, True)
+    Debug.Assert sOutHexVal <> "error"
+    BitOrStrHex = sOutHexVal
 End Function
     Private Sub Test_BitOrStrHex()
         Debug.Print "*** test start! ***"
@@ -667,6 +635,9 @@ End Function
         Debug.Print BitOrStrHex("FFFF0800", "01010300", 4)     '0B00
         Debug.Print BitOrStrHex("FFFF0800", "01010300", 2)     '00
         Debug.Print BitOrStrHex("FFFF0800", "01010300", 1)     '0
+        Debug.Print BitOrStrHex("ab", "0000")                  '00AB
+        Debug.Print BitOrStrHex("cd", "0000")                  '00CD
+        Debug.Print BitOrStrHex("ef", "0000")                  '00EF
         Debug.Print BitOrStrHex(" 0800", "0300")               'エラー 2015
         Debug.Print BitOrStrHex("", "0300")                    'エラー 2000
         Debug.Print BitOrStrHex("0800", "")                    'エラー 2000
@@ -676,37 +647,37 @@ End Function
 
 ' ==================================================================
 ' = 概要    ビットＯＲ演算を行う。（文字列２進数）
-' = 引数    sInBinVar1  String     [in]  入力値 左項（文字列）
-' = 引数    sInBinVar2  String     [in]  入力値 右項（文字列）
+' = 引数    sInBinVal1  String     [in]  入力値 左項（文字列）
+' = 引数    sInBinVal2  String     [in]  入力値 右項（文字列）
 ' = 引数    lInBitLen   Long       [in]  出力ビット数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' ==================================================================
 Public Function BitOrStrBin( _
-    ByVal sInBinVar1 As String, _
-    ByVal sInBinVar2 As String, _
+    ByVal sInBinVal1 As String, _
+    ByVal sInBinVal2 As String, _
     Optional ByVal lInBitLen As Long = 0 _
 ) As Variant
-    If sInBinVar1 = "" Or sInBinVar2 = "" Then
+    If sInBinVal1 = "" Or sInBinVal2 = "" Then
         BitOrStrBin = CVErr(xlErrNum) 'エラー値
     Else
         '文字数を合わせる
-        If Len(sInBinVar1) > Len(sInBinVar2) Then
-            sInBinVar2 = String(Len(sInBinVar1) - Len(sInBinVar2), "0") & sInBinVar2
+        If Len(sInBinVal1) > Len(sInBinVal2) Then
+            sInBinVal2 = String(Len(sInBinVal1) - Len(sInBinVal2), "0") & sInBinVal2
         Else
-            sInBinVar1 = String(Len(sInBinVar2) - Len(sInBinVar1), "0") & sInBinVar1
+            sInBinVal1 = String(Len(sInBinVal2) - Len(sInBinVal1), "0") & sInBinVal1
         End If
-        Debug.Assert Len(sInBinVar1) = Len(sInBinVar2)
+        Debug.Assert Len(sInBinVal1) = Len(sInBinVal2)
         
         'OR演算
         Dim lValIdx As Long
         Dim sOutBin As String
         Dim bIsError As Boolean
-        lValIdx = Len(sInBinVar1)
+        lValIdx = Len(sInBinVal1)
         sOutBin = ""
         bIsError = False
         Do
-            Select Case Mid$(sInBinVar1, lValIdx, 1) & Mid$(sInBinVar2, lValIdx, 1)
+            Select Case Mid$(sInBinVal1, lValIdx, 1) & Mid$(sInBinVal2, lValIdx, 1)
                 Case "00": sOutBin = "0" & sOutBin
                 Case "10": sOutBin = "1" & sOutBin
                 Case "01": sOutBin = "1" & sOutBin
@@ -807,7 +778,7 @@ Public Function BitShiftVal( _
         'Shift
         sBinVal = BitShiftStrBin(sBinVal, lInShiftNum, eInDirection, eInShiftType, 32)
         'Bin⇒Hex
-        sHexVal = Bin2Hex(sBinVal)
+        sHexVal = Bin2Hex(sBinVal, True)
         'Hex⇒Dec
         cInDecValHi = CCur("&H" & Left$(sHexVal, 4)) * 2 ^ 16
         cInDecValLo = CCur("&H" & Right$(sHexVal, 4))
@@ -850,7 +821,7 @@ End Function
         Debug.Print Hex(BitShiftVal(&H7FFFFFFF, 0, LEFT_SHIFT, LOGICAL_SHIFT))  '7FFFFFFF
        'Debug.Print BitShiftVal(&H80000000, 0, LEFT_SHIFT, LOGICAL_SHIFT)       '80000000★バグ？
        'Debug.Print BitShiftVal(4294967294#, 0, LEFT_SHIFT, LOGICAL_SHIFT)      'FFFFFFFF★バグ？
-        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, ARITHMETIC_SHIFT)         'エラー 2042
+        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE) 'エラー 2042
         Debug.Print BitShiftVal(&H10&, -1, LEFT_SHIFT, LOGICAL_SHIFT)           'エラー 2036
         Debug.Print BitShiftVal(&H10&, 1, 3, LOGICAL_SHIFT)                     'エラー 2015
         Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, 3)                        'エラー 2015
@@ -888,10 +859,6 @@ Public Function BitShiftStrHex( _
         BitShiftStrHex = CVErr(xlErrNum) 'エラー値
         Exit Function
     End If
-    If lInDigitNum < 0 Then
-        BitShiftStrHex = CVErr(xlErrNum) 'エラー値
-        Exit Function
-    End If
     If eInShiftType <> LOGICAL_SHIFT And _
        eInShiftType <> ARITHMETIC_SHIFT_SIGNBITSAVE And _
        eInShiftType <> ARITHMETIC_SHIFT_SIGNBITTRUNC Then
@@ -902,49 +869,39 @@ Public Function BitShiftStrHex( _
         BitShiftStrHex = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
-    
-    Dim lStrIdx As Long
-    Dim sChar As String
-    Dim sTmpBinStr As String
-    Dim sTmpHexStr As String
+    If lInDigitNum < 0 Then
+        BitShiftStrHex = CVErr(xlErrNum) 'エラー値
+        Exit Function
+    End If
     
     '入力値のＨＥＸ⇒ＢＩＮ変換
-    Dim sInBinVar As String
-    sInBinVar = ""
-    For lStrIdx = 1 To Len(sInHexVal)
-        sChar = Mid$(sInHexVal, lStrIdx, 1)
-        sTmpBinStr = Hex2BinMap(sChar)
-        If sTmpBinStr = "error" Then
-            BitShiftStrHex = CVErr(xlErrValue) 'エラー値
-            Exit Function
-        Else
-            sInBinVar = sInBinVar & sTmpBinStr
-        End If
-    Next lStrIdx
-   'Debug.Print "sInBinVar : " & sInBinVar
+    Dim sInBinVal As String
+    sInBinVal = Hex2Bin(sInHexVal)
+    If sInBinVal = "error" Then
+        BitShiftStrHex = CVErr(xlErrValue) 'エラー値
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+   'Debug.Print "sInBinVal : " & sInBinVal
     
     'ＢＩＮシフト
-    Dim sOutBinVar As String
-    Dim sTmpBinVar As String
-    sTmpBinVar = BitShiftStrBin(sInBinVar, lInShiftNum, eInDirection, eInShiftType, lInDigitNum * 4)
+    Dim sOutBinVal As String
+    Dim sTmpBinVal As String
+    sTmpBinVal = BitShiftStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInDigitNum * 4)
     Dim lModNum As Long
-    lModNum = Len(sTmpBinVar) Mod 4
+    lModNum = Len(sTmpBinVal) Mod 4
     If lModNum = 0 Then
-        sOutBinVar = sTmpBinVar
+        sOutBinVal = sTmpBinVal
     Else
-        sOutBinVar = String(4 - lModNum, "0") & sTmpBinVar
+        sOutBinVal = String(4 - lModNum, "0") & sTmpBinVal
     End If
     
     'ＢＩＮ⇒ＨＥＸ変換
-    Dim sOutHexVar As String
-    sOutHexVar = ""
-    For lStrIdx = 1 To Len(sOutBinVar) Step 4
-        sTmpBinStr = Mid$(sOutBinVar, lStrIdx, 4)
-        sTmpHexStr = Bin2HexMap(sTmpBinStr)
-        Debug.Assert sTmpHexStr <> "error"
-        sOutHexVar = sOutHexVar & sTmpHexStr
-    Next lStrIdx
-    BitShiftStrHex = sOutHexVar
+    Dim sOutHexVal As String
+    sOutHexVal = Bin2Hex(sOutBinVal, True)
+    Debug.Assert sOutHexVal <> "error"
+    BitShiftStrHex = sOutHexVal
 End Function
     Private Sub Test_BitShiftStrHex()
         Debug.Print "*** test start! ***"
@@ -970,13 +927,17 @@ End Function
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 4)               '02C0
         Debug.Print BitShiftStrHex("B0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 10)              '00000002C0
         Debug.Print BitShiftStrHex("B0", 9, RIGHT_SHIFT, LOGICAL_SHIFT, 8)              '00000000
-        Debug.Print BitShiftStrHex("B0", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE)   'FFB0
+        Debug.Print BitShiftStrHex("B0", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE)   '160
+        Debug.Print BitShiftStrHex("ab", 8, LEFT_SHIFT)                                 'AB00
+        Debug.Print BitShiftStrHex("cd", 8, LEFT_SHIFT)                                 'CD00
+        Debug.Print BitShiftStrHex("ef", 8, LEFT_SHIFT)                                 'EF00
         Debug.Print BitShiftStrHex("", 2, LEFT_SHIFT, LOGICAL_SHIFT)                    'エラー 2000
         Debug.Print BitShiftStrHex(" B", 2, RIGHT_SHIFT, LOGICAL_SHIFT)                 'エラー 2015
         Debug.Print BitShiftStrHex("K", 2, RIGHT_SHIFT, LOGICAL_SHIFT)                  'エラー 2015
         Debug.Print BitShiftStrHex("B", -1, LEFT_SHIFT, LOGICAL_SHIFT)                  'エラー 2036
         Debug.Print BitShiftStrHex("B", 1, 3, LOGICAL_SHIFT)                            'エラー 2015
         Debug.Print BitShiftStrHex("B", 1, LEFT_SHIFT, 3)                               'エラー 2015
+        Debug.Print BitShiftStrHex("B", 1, LEFT_SHIFT, , -1)                            'エラー 2036
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -1027,6 +988,10 @@ Public Function BitShiftStrBin( _
         BitShiftStrBin = CVErr(xlErrValue) 'エラー値
         Exit Function
     End If
+    If lInBitLen < 0 Then
+        BitShiftStrBin = CVErr(xlErrNum) 'エラー値
+        Exit Function
+    End If
     
     Select Case eInShiftType
         Case LOGICAL_SHIFT:
@@ -1066,6 +1031,7 @@ End Function
         Debug.Print BitShiftStrBin("1011", -1, LEFT_SHIFT, LOGICAL_SHIFT)                       'エラー 2036
         Debug.Print BitShiftStrBin("1011", 2, 3, LOGICAL_SHIFT)                                 'エラー 2015
         Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, 3)                                    'エラー 2015
+        Debug.Print BitShiftStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, -1)                    'エラー 2036
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -1245,35 +1211,97 @@ End Function
 '********************************************************************************
 '* 内部関数定義
 '********************************************************************************
+
+'指定範囲以外の値を指定すると文字列 "error" を返却する。
 Private Function Hex2Bin( _
     ByVal sHexVal As String _
 ) As String
-    Dim sBinVal As String
-    Debug.Assert Len(sHexVal) = 8
-    Do
-        sBinVal = sBinVal & Hex2BinMap(Left$(sHexVal, 1))
-        sHexVal = Mid$(sHexVal, 2)
-    Loop While sHexVal <> ""
-    Hex2Bin = sBinVal
+    Dim sOutBinVal As String
+    Dim sTmpBinVal As String
+    Dim lIdx As Long
+    Dim sChar As String
+    If sHexVal = "" Then
+        sOutBinVal = ""
+    Else
+        sOutBinVal = ""
+        For lIdx = 1 To Len(sHexVal)
+            sChar = Mid$(sHexVal, lIdx, 1)
+            sTmpBinVal = Hex2BinMap(sChar)
+            If sTmpBinVal = "error" Then
+                sOutBinVal = sTmpBinVal
+                Exit For
+            Else
+                sOutBinVal = sOutBinVal & sTmpBinVal
+            End If
+        Next lIdx
+    End If
+    Hex2Bin = sOutBinVal
 End Function
+    Private Sub Test_Hex2Bin()
+        Debug.Print "*** test start! ***"
+        Debug.Print Hex2Bin("0123")      '0000000100100011
+        Debug.Print Hex2Bin("4567")      '0100010101100111
+        Debug.Print Hex2Bin("89AB")      '1000100110101011
+        Debug.Print Hex2Bin("CDEF")      '1100110111101111
+        Debug.Print Hex2Bin("cdef")      '1100110111101111
+        Debug.Print Hex2Bin("c")         '1100
+        Debug.Print Hex2Bin("01234567")  '00000001001000110100010101100111
+        Debug.Print Hex2Bin("")          '
+        Debug.Print Hex2Bin("ab ")       'error
+        Debug.Print Hex2Bin(":cd")       'error
+        Debug.Print "*** test finished! ***"
+    End Sub
 
+'指定範囲以外の値を指定すると文字列 "error" を返却する。
 Private Function Bin2Hex( _
-    ByVal sBinVal As String _
+    ByVal sBinVal As String, _
+    ByVal bIsUcase As Boolean _
 ) As String
-    Dim sHexVal As String
-    Debug.Assert Len(sBinVal) = 32
-    Do
-        sHexVal = sHexVal & Bin2HexMap(Left$(sBinVal, 4))
-        sBinVal = Mid$(sBinVal, 5)
-    Loop While sBinVal <> ""
-    Bin2Hex = sHexVal
+    Dim sExtBinStr As String
+    Dim sTmpHexVal As String
+    Dim sOutHexVal As String
+    Dim lIdx As Long
+    If sBinVal = "" Then
+        sOutHexVal = ""
+    Else
+        If Len(sBinVal) Mod 4 = 0 Then
+            For lIdx = 1 To Len(sBinVal) Step 4
+                sExtBinStr = Mid$(sBinVal, lIdx, 4)
+                sTmpHexVal = Bin2HexMap(sExtBinStr, bIsUcase)
+                If sTmpHexVal = "error" Then
+                    sOutHexVal = "error"
+                    Exit For
+                Else
+                    sOutHexVal = sOutHexVal & sTmpHexVal
+                End If
+            Next lIdx
+        Else
+            sOutHexVal = "error"
+        End If
+    End If
+    Bin2Hex = sOutHexVal
 End Function
+    Private Sub Test_Bin2Hex()
+        Debug.Print "*** test start! ***"
+        Debug.Print Bin2Hex("0000000100100011", True)                   '0123
+        Debug.Print Bin2Hex("0100010101100111", True)                   '4567
+        Debug.Print Bin2Hex("1000100110101011", True)                   '89AB
+        Debug.Print Bin2Hex("1100110111101111", True)                   'CDEF
+        Debug.Print Bin2Hex("1100110111101111", False)                  'cdef
+        Debug.Print Bin2Hex("1100", False)                              'c
+        Debug.Print Bin2Hex("00000001001000110100010101100111", True)   '01234567
+        Debug.Print Bin2Hex("", True)                                   '
+        Debug.Print Bin2Hex("110011011110111", False)                   'error
+        Debug.Print Bin2Hex("010 ", True)                               'error
+        Debug.Print Bin2Hex(":011", True)                               'error
+        Debug.Print "*** test finished! ***"
+    End Sub
 
 '指定範囲以外の値を指定すると文字列 "error" を返却する。
 Private Function Hex2BinMap( _
     ByVal sHexVal As String _
 ) As String
-    Select Case sHexVal
+    Select Case UCase(sHexVal)
         Case "0":  Hex2BinMap = "0000"
         Case "1":  Hex2BinMap = "0001"
         Case "2":  Hex2BinMap = "0010"
@@ -1296,27 +1324,50 @@ End Function
 
 '指定範囲以外の値を指定すると文字列 "error" を返却する。
 Private Function Bin2HexMap( _
-    ByVal sBinVal As String _
+    ByVal sBinVal As String, _
+    ByVal bIsUcase As Boolean _
 ) As String
-    Select Case sBinVal
-        Case "0000": Bin2HexMap = "0"
-        Case "0001": Bin2HexMap = "1"
-        Case "0010": Bin2HexMap = "2"
-        Case "0011": Bin2HexMap = "3"
-        Case "0100": Bin2HexMap = "4"
-        Case "0101": Bin2HexMap = "5"
-        Case "0110": Bin2HexMap = "6"
-        Case "0111": Bin2HexMap = "7"
-        Case "1000": Bin2HexMap = "8"
-        Case "1001": Bin2HexMap = "9"
-        Case "1010": Bin2HexMap = "A"
-        Case "1011": Bin2HexMap = "B"
-        Case "1100": Bin2HexMap = "C"
-        Case "1101": Bin2HexMap = "D"
-        Case "1110": Bin2HexMap = "E"
-        Case "1111": Bin2HexMap = "F"
-        Case Else:   Bin2HexMap = "error"
-    End Select
+    If bIsUcase = True Then
+        Select Case sBinVal
+            Case "0000": Bin2HexMap = "0"
+            Case "0001": Bin2HexMap = "1"
+            Case "0010": Bin2HexMap = "2"
+            Case "0011": Bin2HexMap = "3"
+            Case "0100": Bin2HexMap = "4"
+            Case "0101": Bin2HexMap = "5"
+            Case "0110": Bin2HexMap = "6"
+            Case "0111": Bin2HexMap = "7"
+            Case "1000": Bin2HexMap = "8"
+            Case "1001": Bin2HexMap = "9"
+            Case "1010": Bin2HexMap = "A"
+            Case "1011": Bin2HexMap = "B"
+            Case "1100": Bin2HexMap = "C"
+            Case "1101": Bin2HexMap = "D"
+            Case "1110": Bin2HexMap = "E"
+            Case "1111": Bin2HexMap = "F"
+            Case Else:   Bin2HexMap = "error"
+        End Select
+    Else
+        Select Case sBinVal
+            Case "0000": Bin2HexMap = "0"
+            Case "0001": Bin2HexMap = "1"
+            Case "0010": Bin2HexMap = "2"
+            Case "0011": Bin2HexMap = "3"
+            Case "0100": Bin2HexMap = "4"
+            Case "0101": Bin2HexMap = "5"
+            Case "0110": Bin2HexMap = "6"
+            Case "0111": Bin2HexMap = "7"
+            Case "1000": Bin2HexMap = "8"
+            Case "1001": Bin2HexMap = "9"
+            Case "1010": Bin2HexMap = "a"
+            Case "1011": Bin2HexMap = "b"
+            Case "1100": Bin2HexMap = "c"
+            Case "1101": Bin2HexMap = "d"
+            Case "1110": Bin2HexMap = "e"
+            Case "1111": Bin2HexMap = "f"
+            Case Else:   Bin2HexMap = "error"
+        End Select
+    End If
 End Function
 
 '論理ビットシフト（文字列版）
