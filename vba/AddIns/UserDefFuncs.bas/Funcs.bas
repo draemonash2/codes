@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.4
+' user define functions v1.5
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -361,7 +361,8 @@ Public Function BitAndVal( _
     ByVal cInVal1 As Currency, _
     ByVal cInVal2 As Currency _
 ) As Variant
-    If (cInVal1 > 2147483647# Or cInVal2 > 2147483647#) Then
+    If cInVal1 > 2147483647# Or cInVal1 < -2147483647# Or _
+       cInVal2 > 2147483647# Or cInVal2 < -2147483647# Then
         BitAndVal = CVErr(xlErrNum)  'エラー値
     Else
         BitAndVal = cInVal1 And cInVal2
@@ -369,13 +370,19 @@ Public Function BitAndVal( _
 End Function
     Private Sub Test_BitAndVal()
         Debug.Print "*** test start! ***"
-        Debug.Print Hex(BitAndVal(&HFFFF&, &HFF00&)) 'FF00
-        Debug.Print Hex(BitAndVal(&HFFFF&, &HFF&))   'FF
-        Debug.Print Hex(BitAndVal(&HFFFF&, &HA5A5&)) 'A5A5
-        Debug.Print Hex(BitAndVal(&HA5&, &HA500&))   '0
-        Debug.Print Hex(BitAndVal(&H1&, &H8&))       '0
-        Debug.Print Hex(BitAndVal(&H1&, &HA&))       '0
-        Debug.Print Hex(BitAndVal(&H5&, &HA&))       '0
+        Debug.Print BitAndVal(&HFFFF&, &HFF00&)         '65280 (0xFF00)
+        Debug.Print BitAndVal(&HFFFF&, &HFF&)           '255 (0xFF)
+        Debug.Print BitAndVal(&HFFFF&, &HA5A5&)         '42405 (0xA5A5)
+        Debug.Print BitAndVal(&HA5&, &HA500&)           '0
+        Debug.Print BitAndVal(&H1&, &H8&)               '0
+        Debug.Print BitAndVal(&H1&, &HA&)               '0
+        Debug.Print BitAndVal(&H5&, &HA&)               '0
+        Debug.Print BitAndVal(&H7FFFFFFF, &HFF&)        '255 (0xFF)
+        Debug.Print BitAndVal(&H80000000, &HFF&)        'エラー 2036
+        Debug.Print BitAndVal(2147483648#, &HFF&)       'エラー 2036
+        Debug.Print BitAndVal(2147483647#, &HFF&)       '255 (0xFF)
+        Debug.Print BitAndVal(-2147483647#, &HFF&)      '1
+        Debug.Print BitAndVal(-2147483648#, &HFF&)      'エラー 2036
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -548,7 +555,8 @@ Public Function BitOrVal( _
     ByVal cInVal2 As Currency _
 ) As Variant
     Dim sHexVal As String
-    If (cInVal1 > 2147483647# Or cInVal2 > 2147483647#) Then
+    If cInVal1 > 2147483647# Or cInVal1 < -2147483647# Or _
+       cInVal2 > 2147483647# Or cInVal2 < -2147483647# Then
         BitOrVal = CVErr(xlErrNum)  'エラー値
     Else
         BitOrVal = cInVal1 Or cInVal2
@@ -556,13 +564,19 @@ Public Function BitOrVal( _
 End Function
     Private Sub Test_BitOrVal()
         Debug.Print "*** test start! ***"
-        Debug.Print Hex(BitOrVal(&HFFFF&, &HFF00&)) 'FFFF
-        Debug.Print Hex(BitOrVal(&HFFFF&, &HFF&))   'FFFF
-        Debug.Print Hex(BitOrVal(&HFFFF&, &HA5A5&)) 'FFFF
-        Debug.Print Hex(BitOrVal(&HA5&, &HA500&))   'A5A5
-        Debug.Print Hex(BitOrVal(&H1&, &H8&))       '9
-        Debug.Print Hex(BitOrVal(&H1&, &HA&))       'B
-        Debug.Print Hex(BitOrVal(&H5&, &HA&))       'F
+        Debug.Print BitOrVal(&HFFFF&, &HFF00&)      '65535 (0xFFFF)
+        Debug.Print BitOrVal(&HFFFF&, &HFF&)        '65535 (0xFFFF)
+        Debug.Print BitOrVal(&HFFFF&, &HA5A5&)      '65535 (0xFFFF)
+        Debug.Print BitOrVal(&HA5&, &HA500&)        '42405 (0xA5A5)
+        Debug.Print BitOrVal(&H1&, &H8&)            '9
+        Debug.Print BitOrVal(&H1&, &HA&)            '11 (0xB)
+        Debug.Print BitOrVal(&H5&, &HA&)            '15 (0xF)
+        Debug.Print BitOrVal(&H7FFFFFFF, &HFF&)     '2147483647 (0x7FFFFFFF)
+        Debug.Print BitOrVal(&H80000000, &HFF&)     'エラー 2036
+        Debug.Print BitOrVal(2147483648#, &HFF&)    'エラー 2036
+        Debug.Print BitOrVal(2147483647#, &HFF&)    '2147483647 (0x7FFFFFFF)
+        Debug.Print BitOrVal(-2147483647#, &HFF&)   '-2147483393 (0x800000FF)
+        Debug.Print BitOrVal(-2147483648#, &HFF&)   'エラー 2036
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -734,7 +748,8 @@ End Function
 ' = 引数    eInDirection    Enum      [in]  シフト方向（0:左 1:右）
 ' = 引数    eInShiftType    Enum      [in]  シフト種別（0:論理 1:算術）
 ' = 戻値                    Variant         シフト結果（10進数数値）
-' = 覚書    ★算術シフトは非対応★
+' = 覚書    32ビットのみ対応する。そのため、左シフトの結果が32ビットを
+' =         超える場合、下位32ビットのシフト結果を返却する。
 ' ==================================================================
 Public Function BitShiftVal( _
     ByVal cInDecVal As Currency, _
@@ -742,7 +757,7 @@ Public Function BitShiftVal( _
     ByVal eInDirection As E_SHIFT_DIRECTiON, _
     Optional ByVal eInShiftType As E_SHIFT_TYPE = LOGICAL_SHIFT _
 ) As Variant
-    If cInDecVal > 4294967295# Then
+    If cInDecVal < -2147483648# Or cInDecVal > 4294967295# Then
         BitShiftVal = CVErr(xlErrNum)  'エラー値
         Exit Function
     End If
@@ -761,70 +776,71 @@ Public Function BitShiftVal( _
         Exit Function
     End If
     
-    Dim sHexVal As String
-    Dim cInDecValHi As Currency
-    Dim cInDecValLo As Currency
-    Dim sBinVal As String
-    Dim cRetVal As Currency
-    If eInShiftType = LOGICAL_SHIFT Then
-        On Error Resume Next
-        'Dec⇒Hex
-        cInDecValHi = Int(cInDecVal / 2 ^ 16)
-        cInDecValLo = cInDecVal - (cInDecValHi * 2 ^ 16)
-        sHexVal = UCase(String(4 - Len(Hex(cInDecValHi)), "0") & Hex(cInDecValHi)) & _
-                  UCase(String(4 - Len(Hex(cInDecValLo)), "0") & Hex(cInDecValLo))
-        'Hex⇒Bin
-        sBinVal = Hex2Bin(sHexVal)
-        'Shift
-        sBinVal = BitShiftStrBin(sBinVal, lInShiftNum, eInDirection, eInShiftType, 32)
-        'Bin⇒Hex
-        sHexVal = Bin2Hex(sBinVal, True)
-        'Hex⇒Dec
-        cInDecValHi = CCur("&H" & Left$(sHexVal, 4)) * 2 ^ 16
-        cInDecValLo = CCur("&H" & Right$(sHexVal, 4))
-        cRetVal = cInDecValHi + cInDecValLo
-        If Err.Number <> 0 Then
-            BitShiftVal = CVErr(xlErrNum) 'エラー値
-            Err.Clear
-        Else
-            BitShiftVal = cRetVal
-        End If
-        On Error GoTo 0
-    Else
-        BitShiftVal = CVErr(xlErrNA) '★算術シフトは非対応★
+    'Dec⇒Hex
+    Dim sPreHexVal As String
+    sPreHexVal = Dec2Hex(cInDecVal)
+    If sPreHexVal = "error" Then
+        BitShiftVal = CVErr(xlErrNum) 'エラー値
+        Exit Function
     End If
+    
+    'Hex⇒Bin
+    Dim sPreBinVal As String
+    sPreBinVal = Hex2Bin(sPreHexVal)
+    Debug.Assert sPreBinVal <> "error"
+    
+    'Shift
+    Dim sPostBinVal As String
+    sPostBinVal = BitShiftStrBin(sPreBinVal, lInShiftNum, eInDirection, eInShiftType, 32)
+    Debug.Assert sPostBinVal <> "error"
+    
+    'Bin⇒Hex
+    Dim sPostHexVal As String
+    sPostHexVal = Bin2Hex(sPostBinVal, True)
+    Debug.Assert sPostHexVal <> "error"
+    
+    'Hex⇒Dec
+    Dim vOutDecVal As Variant
+    vOutDecVal = Hex2Dec(sPostHexVal, False)
+    If vOutDecVal = "error" Then
+        BitShiftVal = CVErr(xlErrNum) 'エラー値
+        Exit Function
+    End If
+    
+    BitShiftVal = vOutDecVal
 End Function
     Private Sub Test_BitShiftVal()
         Debug.Print "*** test start! ***"
-        Debug.Print Hex(BitShiftVal(&H10&, 0, RIGHT_SHIFT, LOGICAL_SHIFT))      '10
-        Debug.Print Hex(BitShiftVal(&H10&, 1, RIGHT_SHIFT, LOGICAL_SHIFT))      '8
-        Debug.Print Hex(BitShiftVal(&H10&, 2, RIGHT_SHIFT, LOGICAL_SHIFT))      '4
-        Debug.Print Hex(BitShiftVal(&H10&, 3, RIGHT_SHIFT, LOGICAL_SHIFT))      '2
-        Debug.Print Hex(BitShiftVal(&H10&, 4, RIGHT_SHIFT, LOGICAL_SHIFT))      '1
-        Debug.Print Hex(BitShiftVal(&H10&, 5, RIGHT_SHIFT, LOGICAL_SHIFT))      '0
-        Debug.Print Hex(BitShiftVal(&H10&, 8, RIGHT_SHIFT, LOGICAL_SHIFT))      '0
-        Debug.Print Hex(BitShiftVal(&H10&, 0, LEFT_SHIFT, LOGICAL_SHIFT))       '10
-        Debug.Print Hex(BitShiftVal(&H10&, 1, LEFT_SHIFT, LOGICAL_SHIFT))       '20
-        Debug.Print Hex(BitShiftVal(&H10&, 2, LEFT_SHIFT, LOGICAL_SHIFT))       '40
-        Debug.Print Hex(BitShiftVal(&H10&, 3, LEFT_SHIFT, LOGICAL_SHIFT))       '80
-        Debug.Print Hex(BitShiftVal(&H10&, 8, LEFT_SHIFT, LOGICAL_SHIFT))       '1000
-        Debug.Print Hex(BitShiftVal(&H10&, 12, LEFT_SHIFT, LOGICAL_SHIFT))      '10000
-        Debug.Print Hex(BitShiftVal(&H10&, 16, LEFT_SHIFT, LOGICAL_SHIFT))      '100000
-        Debug.Print Hex(BitShiftVal(&H10&, 20, LEFT_SHIFT, LOGICAL_SHIFT))      '1000000
-        Debug.Print Hex(BitShiftVal(&H10&, 24, LEFT_SHIFT, LOGICAL_SHIFT))      '10000000
-        Debug.Print Hex(BitShiftVal(&H10&, 25, LEFT_SHIFT, LOGICAL_SHIFT))      '20000000
-        Debug.Print Hex(BitShiftVal(&H10&, 26, LEFT_SHIFT, LOGICAL_SHIFT))      '40000000
-       'Debug.Print Hex(BitShiftVal(&H10&, 27, LEFT_SHIFT, LOGICAL_SHIFT))      'エラー（Hex()にてオーバーフロー）
-        Debug.Print BitShiftVal(&H10&, 27, LEFT_SHIFT, LOGICAL_SHIFT)           '2147483648
-        Debug.Print BitShiftVal(&H10&, 28, LEFT_SHIFT, LOGICAL_SHIFT)           '0
-        Debug.Print BitShiftVal(&H10&, 29, LEFT_SHIFT, LOGICAL_SHIFT)           '0
-        Debug.Print Hex(BitShiftVal(&H7FFFFFFF, 0, LEFT_SHIFT, LOGICAL_SHIFT))  '7FFFFFFF
-       'Debug.Print BitShiftVal(&H80000000, 0, LEFT_SHIFT, LOGICAL_SHIFT)       '80000000★バグ？
-       'Debug.Print BitShiftVal(4294967294#, 0, LEFT_SHIFT, LOGICAL_SHIFT)      'FFFFFFFF★バグ？
-        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE) 'エラー 2042
-        Debug.Print BitShiftVal(&H10&, -1, LEFT_SHIFT, LOGICAL_SHIFT)           'エラー 2036
-        Debug.Print BitShiftVal(&H10&, 1, 3, LOGICAL_SHIFT)                     'エラー 2015
-        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, 3)                        'エラー 2015
+        Debug.Print Hex(BitShiftVal(&H10&, 0, RIGHT_SHIFT, LOGICAL_SHIFT))          '10
+        Debug.Print Hex(BitShiftVal(&H10&, 1, RIGHT_SHIFT, LOGICAL_SHIFT))          '8
+        Debug.Print Hex(BitShiftVal(&H10&, 2, RIGHT_SHIFT, LOGICAL_SHIFT))          '4
+        Debug.Print Hex(BitShiftVal(&H10&, 3, RIGHT_SHIFT, LOGICAL_SHIFT))          '2
+        Debug.Print Hex(BitShiftVal(&H10&, 4, RIGHT_SHIFT, LOGICAL_SHIFT))          '1
+        Debug.Print Hex(BitShiftVal(&H10&, 5, RIGHT_SHIFT, LOGICAL_SHIFT))          '0
+        Debug.Print Hex(BitShiftVal(&H10&, 8, RIGHT_SHIFT, LOGICAL_SHIFT))          '0
+        Debug.Print Hex(BitShiftVal(&H10&, 0, LEFT_SHIFT, LOGICAL_SHIFT))           '10
+        Debug.Print Hex(BitShiftVal(&H10&, 1, LEFT_SHIFT, LOGICAL_SHIFT))           '20
+        Debug.Print Hex(BitShiftVal(&H10&, 2, LEFT_SHIFT, LOGICAL_SHIFT))           '40
+        Debug.Print Hex(BitShiftVal(&H10&, 3, LEFT_SHIFT, LOGICAL_SHIFT))           '80
+        Debug.Print Hex(BitShiftVal(&H10&, 8, LEFT_SHIFT, LOGICAL_SHIFT))           '1000
+        Debug.Print Hex(BitShiftVal(&H10&, 12, LEFT_SHIFT, LOGICAL_SHIFT))          '10000
+        Debug.Print Hex(BitShiftVal(&H10&, 16, LEFT_SHIFT, LOGICAL_SHIFT))          '100000
+        Debug.Print Hex(BitShiftVal(&H10&, 20, LEFT_SHIFT, LOGICAL_SHIFT))          '1000000
+        Debug.Print Hex(BitShiftVal(&H10&, 24, LEFT_SHIFT, LOGICAL_SHIFT))          '10000000
+        Debug.Print Hex(BitShiftVal(&H10&, 25, LEFT_SHIFT, LOGICAL_SHIFT))          '20000000
+        Debug.Print Hex(BitShiftVal(&H10&, 26, LEFT_SHIFT, LOGICAL_SHIFT))          '40000000
+       'Debug.Print Hex(BitShiftVal(&H10&, 27, LEFT_SHIFT, LOGICAL_SHIFT))          'エラー（Hex()にてオーバーフロー）
+        Debug.Print BitShiftVal(&H10&, 27, LEFT_SHIFT, LOGICAL_SHIFT)               '2147483648
+        Debug.Print BitShiftVal(&H10&, 28, LEFT_SHIFT, LOGICAL_SHIFT)               '0
+        Debug.Print BitShiftVal(&H10&, 29, LEFT_SHIFT, LOGICAL_SHIFT)               '0
+        Debug.Print Hex(BitShiftVal(&H7FFFFFFF, 0, LEFT_SHIFT, LOGICAL_SHIFT))      '7FFFFFFF
+        Debug.Print BitShiftVal(&H80000000, 0, LEFT_SHIFT, LOGICAL_SHIFT)           '2147483648 (0x80000000)
+        Debug.Print BitShiftVal(4294967294#, 0, LEFT_SHIFT, LOGICAL_SHIFT)          '4294967294 (0xFFFFFFFE)
+        Debug.Print BitShiftVal(&HFFFFFFFE, 0, LEFT_SHIFT, LOGICAL_SHIFT)           '4294967294 (0xFFFFFFFE)
+        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE) '32
+        Debug.Print BitShiftVal(&H10&, -1, LEFT_SHIFT, LOGICAL_SHIFT)               'エラー 2036
+        Debug.Print BitShiftVal(&H10&, 1, 3, LOGICAL_SHIFT)                         'エラー 2015
+        Debug.Print BitShiftVal(&H10&, 1, LEFT_SHIFT, 3)                            'エラー 2015
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -997,7 +1013,6 @@ Public Function BitShiftStrBin( _
         Case LOGICAL_SHIFT:
             BitShiftStrBin = BitShiftLogStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
         Case ARITHMETIC_SHIFT_SIGNBITSAVE:
-            'BitShiftStrBin = CVErr(xlErrNA) '算術シフトは未実装
             BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
         Case ARITHMETIC_SHIFT_SIGNBITTRUNC:
             BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
@@ -1211,6 +1226,149 @@ End Function
 '********************************************************************************
 '* 内部関数定義
 '********************************************************************************
+'Mod 演算子は 2,147,483,647 より大きい数字はオーバーフローする。
+'本関数は上記以上の数値を扱うことができる。
+Private Function ModEx( _
+    ByVal cNum1 As Currency, _
+    ByVal cNum2 As Currency _
+) As Currency
+    ModEx = CDec(cNum1) - Fix(CDec(cNum1) / CDec(cNum2)) * CDec(cNum2)
+End Function
+    Private Sub Test_ModEx()
+        Debug.Print "*** test start! ***"
+        Debug.Print ModEx(12, 2)             '0
+        Debug.Print ModEx(12, 3)             '0
+        Debug.Print ModEx(12, 5)             '2
+        Debug.Print ModEx(2147483647, 5)     '2
+        Debug.Print ModEx(2147483648#, 5)    '3
+        Debug.Print ModEx(2147483649#, 5)    '4
+        Debug.Print ModEx(-2147483647, 5)    '-2
+        Debug.Print ModEx(5, 2147483648#)    '5
+        Debug.Print ModEx(5, 2147483649#)    '5
+        Debug.Print ModEx(0, 5)              '0
+       'Debug.Print ModEx(5, 0)              'プログラム停止
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+'32bit用
+Private Function Dec2Hex( _
+    ByVal cInDecVal As Currency _
+) As String
+    Dim cInDecValHi As Currency
+    Dim cInDecValLo As Currency
+    Dim sOutHexValHi As String
+    Dim sOutHexValLo As String
+    Dim sHexVal As String
+    If cInDecVal < -2147483648# Or cInDecVal > 4294967295# Then
+        Dec2Hex = "error"
+        Exit Function
+    End If
+    
+    If cInDecVal >= 0 Then
+        'Do Nothing
+    Else
+        cInDecVal = cInDecVal + 4294967296#
+    End If
+    cInDecVal = Int(ModEx(cInDecVal, 4294967296#))
+    
+    cInDecValHi = Int(cInDecVal / 65536)
+    cInDecValLo = Int(ModEx(cInDecVal, 65536))
+    sOutHexValHi = UCase(String(4 - Len(Hex(cInDecValHi)), "0") & Hex(cInDecValHi))
+    sOutHexValLo = UCase(String(4 - Len(Hex(cInDecValLo)), "0") & Hex(cInDecValLo))
+    Dec2Hex = sOutHexValHi & sOutHexValLo
+End Function
+    Private Sub Test_Dec2Hex()
+        Debug.Print "*** test start! ***"
+        Debug.Print Dec2Hex(0)              '00000000
+        Debug.Print Dec2Hex(1)              '00000001
+        Debug.Print Dec2Hex(2)              '00000002
+        Debug.Print Dec2Hex(10)             '0000000A
+        Debug.Print Dec2Hex(15)             '0000000F
+        Debug.Print Dec2Hex(16)             '00000010
+        Debug.Print Dec2Hex(4294967296#)    'error
+        Debug.Print Dec2Hex(4294967295#)    'FFFFFFFF
+        Debug.Print Dec2Hex(4294967294#)    'FFFFFFFE
+        Debug.Print Dec2Hex(2147483648#)    '80000000
+        Debug.Print Dec2Hex(2147483647)     '7FFFFFFF
+        Debug.Print Dec2Hex(2147483646)     '7FFFFFFE
+        Debug.Print Dec2Hex(65536)          '00010000
+        Debug.Print Dec2Hex(65535)          '0000FFFF
+        Debug.Print Dec2Hex(65534)          '0000FFFE
+        Debug.Print Dec2Hex(2)              '00000002
+        Debug.Print Dec2Hex(1)              '00000001
+        Debug.Print Dec2Hex(0)              '00000000
+        Debug.Print Dec2Hex(-1)             'FFFFFFFF
+        Debug.Print Dec2Hex(-2)             'FFFFFFFE
+        Debug.Print Dec2Hex(-65534)         'FFFF0002
+        Debug.Print Dec2Hex(-65535)         'FFFF0001
+        Debug.Print Dec2Hex(-65536)         'FFFF0000
+        Debug.Print Dec2Hex(-2147483647)    '80000001
+        Debug.Print Dec2Hex(-2147483648#)   '80000000
+        Debug.Print Dec2Hex(-2147483649#)   'error
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+'32bit用
+Private Function Hex2Dec( _
+    ByVal sInHexVal As String, _
+    ByVal bIsSignEnable As Boolean _
+) As Variant
+    If Len(sInHexVal) <> 8 Then
+        Hex2Dec = "error"
+        Exit Function
+    End If
+    Dim cInDecValHi As Currency
+    Dim cInDecValLo As Currency
+    Dim cOutDecVal As Currency
+    On Error Resume Next
+    cInDecValHi = CCur("&H" & Left$(sInHexVal, 4)) * 65536
+    cInDecValLo = CCur("&H" & Right$(sInHexVal, 4))
+    cOutDecVal = cInDecValHi + cInDecValLo
+    If Err.Number <> 0 Then
+        Hex2Dec = "error"
+        Err.Clear
+    Else
+        If bIsSignEnable = True Then
+            If cOutDecVal > 2147483647 Then
+                Hex2Dec = cOutDecVal - 4294967296#
+            Else
+                Hex2Dec = cOutDecVal
+            End If
+        Else
+            Hex2Dec = cOutDecVal
+        End If
+    End If
+    On Error GoTo 0
+End Function
+    Private Sub Test_Hex2Dec()
+        Debug.Print "*** test start! ***"
+        Debug.Print Hex2Dec("00000000", False) '0
+        Debug.Print Hex2Dec("00000001", False) '1
+        Debug.Print Hex2Dec("00000009", False) '9
+        Debug.Print Hex2Dec("0000000A", False) '10
+        Debug.Print "<<sign>>"
+        Debug.Print Hex2Dec("7FFFFFFF", True)  '2147483647
+        Debug.Print Hex2Dec("7FFFFFFE", True)  '2147483646
+        Debug.Print Hex2Dec("00000002", True)  '2
+        Debug.Print Hex2Dec("00000001", True)  '1
+        Debug.Print Hex2Dec("00000000", True)  '0
+        Debug.Print Hex2Dec("FFFFFFFF", True)  '-1
+        Debug.Print Hex2Dec("FFFFFFFE", True)  '-2
+        Debug.Print Hex2Dec("80000001", True)  '-2147483647
+        Debug.Print Hex2Dec("80000000", True)  '-2147483648
+        Debug.Print "<<unsign>>"
+        Debug.Print Hex2Dec("FFFFFFFF", False) '4294967295
+        Debug.Print Hex2Dec("FFFFFFFE", False) '4294967294
+        Debug.Print Hex2Dec("80000001", False) '2147483649
+        Debug.Print Hex2Dec("80000000", False) '2147483648
+        Debug.Print Hex2Dec("00000001", False) '1
+        Debug.Print Hex2Dec("00000000", False) '0
+        Debug.Print Hex2Dec("0000000", False)  'error
+        Debug.Print Hex2Dec("000000000", False) 'error
+        Debug.Print Hex2Dec("8000000K", False) 'error
+        Debug.Print Hex2Dec("80 00001", False) 'error
+        Debug.Print "*** test finished! ***"
+    End Sub
 
 '指定範囲以外の値を指定すると文字列 "error" を返却する。
 Private Function Hex2Bin( _
