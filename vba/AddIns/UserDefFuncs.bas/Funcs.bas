@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.5
+' user define functions v1.6
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -1011,11 +1011,11 @@ Public Function BitShiftStrBin( _
     
     Select Case eInShiftType
         Case LOGICAL_SHIFT:
-            BitShiftStrBin = BitShiftLogStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
+            BitShiftStrBin = BitShiftLogStrBin(sInBinVal, lInShiftNum, eInDirection, lInBitLen)
         Case ARITHMETIC_SHIFT_SIGNBITSAVE:
-            BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
+            BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, lInBitLen, True, False)
         Case ARITHMETIC_SHIFT_SIGNBITTRUNC:
-            BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, eInShiftType, lInBitLen)
+            BitShiftStrBin = BitShiftAriStrBin(sInBinVal, lInShiftNum, eInDirection, lInBitLen, False, False)
         Case Else
             BitShiftStrBin = CVErr(xlErrValue) 'エラー値
     End Select
@@ -1533,14 +1533,12 @@ Private Function BitShiftLogStrBin( _
     ByVal sInBinVal As String, _
     ByVal lInShiftNum As Long, _
     ByVal eInDirection As E_SHIFT_DIRECTiON, _
-    ByVal eInShiftType As E_SHIFT_TYPE, _
     ByVal lInBitLen As Long _
 ) As String
     Debug.Assert sInBinVal <> ""
     Debug.Assert Replace(Replace(sInBinVal, "1", ""), "0", "") = ""
     Debug.Assert lInShiftNum >= 0
     Debug.Assert eInDirection = LEFT_SHIFT Or RIGHT_SHIFT
-    Debug.Assert eInShiftType = LOGICAL_SHIFT
     Debug.Assert lInBitLen >= 0
     
     'ビットシフト
@@ -1573,37 +1571,34 @@ Private Function BitShiftLogStrBin( _
 End Function
     Private Sub Test_BitShiftLogStrBin()
         Debug.Print "*** test start! ***"
-        Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '00000000
-        Debug.Print BitShiftLogStrBin("0", 2, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '00000000
-        Debug.Print BitShiftLogStrBin("1", 0, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '00000001
-        Debug.Print BitShiftLogStrBin("1", 2, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '00000100
-        Debug.Print BitShiftLogStrBin("1", 7, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '10000000
-        Debug.Print BitShiftLogStrBin("1", 8, LEFT_SHIFT, LOGICAL_SHIFT, 8)      '00000000
-        Debug.Print BitShiftLogStrBin("1", 0, RIGHT_SHIFT, LOGICAL_SHIFT, 8)     '00000001
-        Debug.Print BitShiftLogStrBin("1", 1, RIGHT_SHIFT, LOGICAL_SHIFT, 8)     '00000000
-        Debug.Print BitShiftLogStrBin("1", 2, RIGHT_SHIFT, LOGICAL_SHIFT, 8)     '00000000
-        Debug.Print BitShiftLogStrBin("1011", 0, LEFT_SHIFT, LOGICAL_SHIFT, 0)   '1011
-        Debug.Print BitShiftLogStrBin("1011", 1, LEFT_SHIFT, LOGICAL_SHIFT, 0)   '10110
-        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 0)   '101100
-        Debug.Print BitShiftLogStrBin("1011", 0, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '1011
-        Debug.Print BitShiftLogStrBin("1011", 1, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '101
-        Debug.Print BitShiftLogStrBin("1011", 2, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '10
-        Debug.Print BitShiftLogStrBin("1011", 3, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '1
-        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '0
-        Debug.Print BitShiftLogStrBin("1011", 5, RIGHT_SHIFT, LOGICAL_SHIFT, 0)  '0
-        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 2)   '00
-        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 3)   '100
-        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 4)   '1100
-        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, LOGICAL_SHIFT, 10)  '0000101100
-        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, LOGICAL_SHIFT, 8)  '00000000
-        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, LOGICAL_SHIFT, 8)  '00000000
-       'Debug.Print BitShiftLogStrBin("", 2, LEFT_SHIFT, LOGICAL_SHIFT, 10)       'プログラム停止
-       'Debug.Print BitShiftLogStrBin("101A", 1, LEFT_SHIFT, LOGICAL_SHIFT, 10)   'プログラム停止
-       'Debug.Print BitShiftLogStrBin("1011", -1, LEFT_SHIFT, LOGICAL_SHIFT, 10)  'プログラム停止
-       'Debug.Print BitShiftLogStrBin("1011", 1, 5, LOGICAL_SHIFT, 10)            'プログラム停止
-       'Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  'プログラム停止
-       'Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 8) 'プログラム停止
-       'Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, 3, 8)                   'プログラム停止
+        Debug.Print BitShiftLogStrBin("0", 0, LEFT_SHIFT, 8)       '00000000
+        Debug.Print BitShiftLogStrBin("0", 2, LEFT_SHIFT, 8)       '00000000
+        Debug.Print BitShiftLogStrBin("1", 0, LEFT_SHIFT, 8)       '00000001
+        Debug.Print BitShiftLogStrBin("1", 2, LEFT_SHIFT, 8)       '00000100
+        Debug.Print BitShiftLogStrBin("1", 7, LEFT_SHIFT, 8)       '10000000
+        Debug.Print BitShiftLogStrBin("1", 8, LEFT_SHIFT, 8)       '00000000
+        Debug.Print BitShiftLogStrBin("1", 0, RIGHT_SHIFT, 8)      '00000001
+        Debug.Print BitShiftLogStrBin("1", 1, RIGHT_SHIFT, 8)      '00000000
+        Debug.Print BitShiftLogStrBin("1", 2, RIGHT_SHIFT, 8)      '00000000
+        Debug.Print BitShiftLogStrBin("1011", 0, LEFT_SHIFT, 0)    '1011
+        Debug.Print BitShiftLogStrBin("1011", 1, LEFT_SHIFT, 0)    '10110
+        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 0)    '101100
+        Debug.Print BitShiftLogStrBin("1011", 0, RIGHT_SHIFT, 0)   '1011
+        Debug.Print BitShiftLogStrBin("1011", 1, RIGHT_SHIFT, 0)   '101
+        Debug.Print BitShiftLogStrBin("1011", 2, RIGHT_SHIFT, 0)   '10
+        Debug.Print BitShiftLogStrBin("1011", 3, RIGHT_SHIFT, 0)   '1
+        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, 0)   '0
+        Debug.Print BitShiftLogStrBin("1011", 5, RIGHT_SHIFT, 0)   '0
+        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 2)    '00
+        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 3)    '100
+        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 4)    '1100
+        Debug.Print BitShiftLogStrBin("1011", 2, LEFT_SHIFT, 10)   '0000101100
+        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, 8)   '00000000
+        Debug.Print BitShiftLogStrBin("1011", 4, RIGHT_SHIFT, 8)   '00000000
+       'Debug.Print BitShiftLogStrBin("", 2, LEFT_SHIFT,  10)       'プログラム停止
+       'Debug.Print BitShiftLogStrBin("101A", 1, LEFT_SHIFT,  10)   'プログラム停止
+       'Debug.Print BitShiftLogStrBin("1011", -1, LEFT_SHIFT,  10)  'プログラム停止
+       'Debug.Print BitShiftLogStrBin("1011", 1, 5,  10)            'プログラム停止
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -1612,38 +1607,45 @@ Private Function BitShiftAriStrBin( _
     ByVal sInBinVal As String, _
     ByVal lInShiftNum As Long, _
     ByVal eInDirection As E_SHIFT_DIRECTiON, _
-    ByVal eInShiftType As E_SHIFT_TYPE, _
-    ByVal lInBitLen As Long _
+    ByVal lInBitLen As Long, _
+    ByVal bIsSaveSignBit As Boolean, _
+    ByVal bIsExecAutoAlign As Boolean _
 ) As String
-    '<<E_SHIFT_ARIGN>>
-    '  ARIGN_EIGHTBIT : 出力結果を8ビット境界に揃える
-    '                     ex1) 10101011 を右1ビットシフト
-    '                       ⇒ 11010101
-    '                     ex2) 10101011 を左1ビットシフト
-    '                       ⇒ 1111111101010110
-    '  ARIGN_NO       : 出力結果を8ビット境界に揃えない
-    '                     ex1) 10101011 を右1ビットシフト
-    '                       ⇒  1010101
-    '                     ex2) 10101011 を左1ビットシフト
-    '                       ⇒ 101010110
-    Dim eArignType As E_SHIFT_ARIGN
-    eArignType = ARIGN_NO
-    'eArignType = ARIGN_EIGHTBIT
+    ' <<bIsSaveSignBit>>
+    '   出力桁数が入力値（文字列）の長さよりも小さい場合に、
+    '   符号ビットを保持するか、無視して切り捨てるかを選択する。
+    '     True  : 符号ビットを保持する
+    '               ex1) "AB"(0b10101011) を出力桁数1として右1算術(符号ビット保持)シフト
+    '                 ⇒ "D"(0b1101)
+    '     False : 符号ビットを切り捨てる
+    '               ex2) "AB"(0b10101011) を出力桁数1として右1算術(符号ビット切捨)シフト
+    '                 ⇒ "5"(0b0101)
+    ' <<bIsExecAutoAlign>>
+    '   出力結果を8ビット境界に揃えるかどうかを選択する。
+    '     True  : 揃える
+    '               ex1) 10101011 を右1ビットシフト
+    '                 ⇒ 11010101
+    '               ex2) 10101011 を左1ビットシフト
+    '                 ⇒ 1111111101010110
+    '     False : 揃えない
+    '               ex1) 10101011 を右1ビットシフト
+    '                 ⇒  1010101
+    '               ex2) 10101011 を左1ビットシフト
+    '                 ⇒ 101010110
     
     Debug.Assert sInBinVal <> ""
     Debug.Assert Replace(Replace(sInBinVal, "1", ""), "0", "") = ""
     Debug.Assert lInShiftNum >= 0
     Debug.Assert eInDirection = LEFT_SHIFT Or RIGHT_SHIFT
-    Debug.Assert eInShiftType = ARITHMETIC_SHIFT_SIGNBITSAVE Or ARITHMETIC_SHIFT_SIGNBITTRUNC
     Debug.Assert lInBitLen >= 0
-    If eArignType = ARIGN_EIGHTBIT Then
+    If bIsExecAutoAlign = True Then
         Debug.Assert Len(sInBinVal) = 8
         Debug.Assert lInBitLen Mod 8 = 0
     Else
         'Do Nothing
     End If
     
-    'シフト
+    'ビットシフト
     Dim sTmpBinVal As String
     Dim sOutLogicBit As String
     Dim sInSignBit As String
@@ -1665,9 +1667,9 @@ Private Function BitShiftAriStrBin( _
     sTmpBinVal = sInSignBit & sOutLogicBit
     
     'ビット位置合わせ
-    Dim sPadBit As String
     If lInBitLen = 0 Then
-        If eArignType = ARIGN_EIGHTBIT Then
+        If bIsExecAutoAlign = True Then
+            Dim sPadBit As String
             If ((Len(sOutLogicBit) + 1) Mod 8) = 0 Then
                 sPadBit = ""
             Else
@@ -1681,219 +1683,207 @@ Private Function BitShiftAriStrBin( _
         If lInBitLen > Len(sTmpBinVal) Then
             BitShiftAriStrBin = String(lInBitLen - Len(sTmpBinVal), sInSignBit) & sTmpBinVal
         ElseIf lInBitLen < Len(sTmpBinVal) Then
-            Select Case eInShiftType
-                Case ARITHMETIC_SHIFT_SIGNBITSAVE:
-                    BitShiftAriStrBin = sInSignBit & Right$(sOutLogicBit, lInBitLen - 1)
-                Case ARITHMETIC_SHIFT_SIGNBITTRUNC:
-                    BitShiftAriStrBin = Right$(sTmpBinVal, lInBitLen)
-                Case LOGICAL_SHIFT:
-                    Debug.Assert 0
-                Case Else:
-                    Debug.Assert 0
-            End Select
+            If bIsSaveSignBit = True Then
+                BitShiftAriStrBin = sInSignBit & Right$(sOutLogicBit, lInBitLen - 1)
+            Else
+                BitShiftAriStrBin = Right$(sTmpBinVal, lInBitLen)
+            End If
         Else
             BitShiftAriStrBin = sTmpBinVal
         End If
     End If
 End Function
     Private Sub Test_BitShiftAriStrBin()
-        Dim eArignType As E_SHIFT_ARIGN
-        eArignType = ARIGN_NO
-        'eArignType = ARIGN_EIGHTBIT
-        
         Debug.Print "*** test start! ***"
-        If eArignType = ARIGN_NO Then
-            Debug.Print "<<test 01-01>>"
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '01001011
-            Debug.Print BitShiftAriStrBin("01001011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '0100101
-            Debug.Print BitShiftAriStrBin("01001011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '010010
-            Debug.Print BitShiftAriStrBin("01001011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '01001
-            Debug.Print BitShiftAriStrBin("01001011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '0100
-            Debug.Print BitShiftAriStrBin("01001011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '010
-            Debug.Print BitShiftAriStrBin("01001011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '01
-            Debug.Print BitShiftAriStrBin("01001011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 8, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 9, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10) '0001001011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 5)  '01011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 4)  '0011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 3)  '011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 2)  '01
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 1)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '01001011
-            Debug.Print BitShiftAriStrBin("01001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '010010110
-            Debug.Print BitShiftAriStrBin("01001011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '0100101100
-            Debug.Print BitShiftAriStrBin("01001011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '0100101100000
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)  '0001001011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 5)   '01011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 4)   '0011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 3)   '011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 2)   '01
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 1)   '0
-            Debug.Print "<<test 01-02>>"
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '01001011
-            Debug.Print BitShiftAriStrBin("01001011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '0100101
-            Debug.Print BitShiftAriStrBin("01001011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '010010
-            Debug.Print BitShiftAriStrBin("01001011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '01001
-            Debug.Print BitShiftAriStrBin("01001011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '0100
-            Debug.Print BitShiftAriStrBin("01001011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '010
-            Debug.Print BitShiftAriStrBin("01001011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '01
-            Debug.Print BitShiftAriStrBin("01001011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 8, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 9, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '0
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 10) '0001001011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 5)  '01011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 4)  '1011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 3)  '011
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 2)  '11
-            Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 1)  '1
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '01001011
-            Debug.Print BitShiftAriStrBin("01001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '010010110
-            Debug.Print BitShiftAriStrBin("01001011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '0100101100
-            Debug.Print BitShiftAriStrBin("01001011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '0100101100000
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 10)  '0001001011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 5)   '01011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 4)   '1011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 3)   '011
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 2)   '11
-            Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 1)   '1
-            Debug.Print "<<test 02-01>>"
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '10001011
-            Debug.Print BitShiftAriStrBin("10001011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '1000101
-            Debug.Print BitShiftAriStrBin("10001011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '100010
-            Debug.Print BitShiftAriStrBin("10001011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '10001
-            Debug.Print BitShiftAriStrBin("10001011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '1000
-            Debug.Print BitShiftAriStrBin("10001011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '100
-            Debug.Print BitShiftAriStrBin("10001011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '10
-            Debug.Print BitShiftAriStrBin("10001011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 8, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 9, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10) '1110001011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 5)  '11011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 4)  '1011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 3)  '111
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 2)  '11
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 1)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '10001011
-            Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '100010110
-            Debug.Print BitShiftAriStrBin("10001011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '1000101100
-            Debug.Print BitShiftAriStrBin("10001011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '1000101100000
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)  '1110001011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 5)   '11011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 4)   '1011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 3)   '111
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 2)   '11
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 1)   '1
-            Debug.Print "<<test 02-02>>"
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '10001011
-            Debug.Print BitShiftAriStrBin("10001011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '1000101
-            Debug.Print BitShiftAriStrBin("10001011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '100010
-            Debug.Print BitShiftAriStrBin("10001011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '10001
-            Debug.Print BitShiftAriStrBin("10001011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '1000
-            Debug.Print BitShiftAriStrBin("10001011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '100
-            Debug.Print BitShiftAriStrBin("10001011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '10
-            Debug.Print BitShiftAriStrBin("10001011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 8, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 9, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 10) '1110001011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 5)  '01011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 4)  '1011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 3)  '011
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 2)  '11
-            Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 1)  '1
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '10001011
-            Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '100010110
-            Debug.Print BitShiftAriStrBin("10001011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '1000101100
-            Debug.Print BitShiftAriStrBin("10001011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 0)   '1000101100000
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 10)  '1110001011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 5)   '01011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 4)   '1011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 3)   '011
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 2)   '11
-            Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITTRUNC, 1)   '1
-        '   Debug.Print "<<test 03>>"
-        '   Debug.Print BitShiftAriStrBin("10001011", 1, 5, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)           'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)          'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("10001011", -1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10) 'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)  'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, -1)  'プログラム停止
-        Else
-            Debug.Print "<<test 01>>"
-            Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00101011
-            Debug.Print BitShiftAriStrBin("00101011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00010101
-            Debug.Print BitShiftAriStrBin("00101011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00001010
-            Debug.Print BitShiftAriStrBin("00101011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00000101
-            Debug.Print BitShiftAriStrBin("00101011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00000010
-            Debug.Print BitShiftAriStrBin("00101011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00000001
-            Debug.Print BitShiftAriStrBin("00101011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00000000
-            Debug.Print BitShiftAriStrBin("00101011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '00000000
-            Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 16) '0000000000101011
-            Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00101011
-            Debug.Print BitShiftAriStrBin("00101011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00010101
-            Debug.Print BitShiftAriStrBin("00101011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00001010
-            Debug.Print BitShiftAriStrBin("00101011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00000101
-            Debug.Print BitShiftAriStrBin("00101011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00000010
-            Debug.Print BitShiftAriStrBin("00101011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00000001
-            Debug.Print BitShiftAriStrBin("00101011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00000000
-            Debug.Print BitShiftAriStrBin("00101011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '00000000
-            Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '00101011
-            Debug.Print BitShiftAriStrBin("00101011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '0000000001010110
-            Debug.Print BitShiftAriStrBin("00101011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '0000000010101100
-            Debug.Print BitShiftAriStrBin("00101011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '0000010101100000
-            Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 16)  '0000000000101011
-            Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '00101011
-            Debug.Print BitShiftAriStrBin("00101011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '01010110
-            Debug.Print BitShiftAriStrBin("00101011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '00101100
-            Debug.Print BitShiftAriStrBin("00101011", 3, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '01011000
-            Debug.Print BitShiftAriStrBin("00101011", 4, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '00110000
-            Debug.Print BitShiftAriStrBin("00101011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '01100000
-            Debug.Print BitShiftAriStrBin("00101011", 6, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '01000000
-            Debug.Print BitShiftAriStrBin("00101011", 7, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '00000000
-            Debug.Print "<<test 02>>"
-            Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '10101011
-            Debug.Print BitShiftAriStrBin("10101011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11010101
-            Debug.Print BitShiftAriStrBin("10101011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11101010
-            Debug.Print BitShiftAriStrBin("10101011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11110101
-            Debug.Print BitShiftAriStrBin("10101011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11111010
-            Debug.Print BitShiftAriStrBin("10101011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11111101
-            Debug.Print BitShiftAriStrBin("10101011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11111110
-            Debug.Print BitShiftAriStrBin("10101011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)  '11111111
-            Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 16) '1111111110101011
-            Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '10101011
-            Debug.Print BitShiftAriStrBin("10101011", 1, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11010101
-            Debug.Print BitShiftAriStrBin("10101011", 2, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11101010
-            Debug.Print BitShiftAriStrBin("10101011", 3, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11110101
-            Debug.Print BitShiftAriStrBin("10101011", 4, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11111010
-            Debug.Print BitShiftAriStrBin("10101011", 5, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11111101
-            Debug.Print BitShiftAriStrBin("10101011", 6, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11111110
-            Debug.Print BitShiftAriStrBin("10101011", 7, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)  '11111111
-            Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '10101011
-            Debug.Print BitShiftAriStrBin("10101011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '1111111101010110
-            Debug.Print BitShiftAriStrBin("10101011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '1111111010101100
-            Debug.Print BitShiftAriStrBin("10101011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 0)   '1111010101100000
-            Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 16)  '1111111110101011
-            Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '10101011
-            Debug.Print BitShiftAriStrBin("10101011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '11010110
-            Debug.Print BitShiftAriStrBin("10101011", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '10101100
-            Debug.Print BitShiftAriStrBin("10101011", 3, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '11011000
-            Debug.Print BitShiftAriStrBin("10101011", 4, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '10110000
-            Debug.Print BitShiftAriStrBin("10101011", 5, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '11100000
-            Debug.Print BitShiftAriStrBin("10101011", 6, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '11000000
-            Debug.Print BitShiftAriStrBin("10101011", 7, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '10000000
-            Debug.Print BitShiftAriStrBin("10101011", 8, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   '10000000
-        '   Debug.Print "<<test 03>>"
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 8)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 5)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 4)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 3)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 2)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 1)   'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("10001011", 1, 5, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)           'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("", 2, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)          'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("10001011", -1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10) 'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, 10)  'プログラム停止
-        '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, ARITHMETIC_SHIFT_SIGNBITSAVE, -1)  'プログラム停止
-        End If
+        Debug.Print "<<test 001-01>>"                                                   '<<test 001-01>>
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 0, True, False)       '01001011
+        Debug.Print BitShiftAriStrBin("01001011", 1, RIGHT_SHIFT, 0, True, False)       '0100101
+        Debug.Print BitShiftAriStrBin("01001011", 2, RIGHT_SHIFT, 0, True, False)       '010010
+        Debug.Print BitShiftAriStrBin("01001011", 3, RIGHT_SHIFT, 0, True, False)       '01001
+        Debug.Print BitShiftAriStrBin("01001011", 4, RIGHT_SHIFT, 0, True, False)       '0100
+        Debug.Print BitShiftAriStrBin("01001011", 5, RIGHT_SHIFT, 0, True, False)       '010
+        Debug.Print BitShiftAriStrBin("01001011", 6, RIGHT_SHIFT, 0, True, False)       '01
+        Debug.Print BitShiftAriStrBin("01001011", 7, RIGHT_SHIFT, 0, True, False)       '0
+        Debug.Print BitShiftAriStrBin("01001011", 8, RIGHT_SHIFT, 0, True, False)       '0
+        Debug.Print BitShiftAriStrBin("01001011", 9, RIGHT_SHIFT, 0, True, False)       '0
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 10, True, False)      '0001001011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 5, True, False)       '01011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 4, True, False)       '0011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 3, True, False)       '011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 2, True, False)       '01
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 1, True, False)       '0
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 0, True, False)        '01001011
+        Debug.Print BitShiftAriStrBin("01001011", 1, LEFT_SHIFT, 0, True, False)        '010010110
+        Debug.Print BitShiftAriStrBin("01001011", 2, LEFT_SHIFT, 0, True, False)        '0100101100
+        Debug.Print BitShiftAriStrBin("01001011", 5, LEFT_SHIFT, 0, True, False)        '0100101100000
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 10, True, False)       '0001001011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 5, True, False)        '01011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 4, True, False)        '0011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 3, True, False)        '011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 2, True, False)        '01
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 1, True, False)        '0
+        Debug.Print "<<test 001-02>>"                                                   '<<test 001-02>>
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 0, False, False)      '01001011
+        Debug.Print BitShiftAriStrBin("01001011", 1, RIGHT_SHIFT, 0, False, False)      '0100101
+        Debug.Print BitShiftAriStrBin("01001011", 2, RIGHT_SHIFT, 0, False, False)      '010010
+        Debug.Print BitShiftAriStrBin("01001011", 3, RIGHT_SHIFT, 0, False, False)      '01001
+        Debug.Print BitShiftAriStrBin("01001011", 4, RIGHT_SHIFT, 0, False, False)      '0100
+        Debug.Print BitShiftAriStrBin("01001011", 5, RIGHT_SHIFT, 0, False, False)      '010
+        Debug.Print BitShiftAriStrBin("01001011", 6, RIGHT_SHIFT, 0, False, False)      '01
+        Debug.Print BitShiftAriStrBin("01001011", 7, RIGHT_SHIFT, 0, False, False)      '0
+        Debug.Print BitShiftAriStrBin("01001011", 8, RIGHT_SHIFT, 0, False, False)      '0
+        Debug.Print BitShiftAriStrBin("01001011", 9, RIGHT_SHIFT, 0, False, False)      '0
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 10, False, False)     '0001001011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 5, False, False)      '01011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 4, False, False)      '1011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 3, False, False)      '011
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 2, False, False)      '11
+        Debug.Print BitShiftAriStrBin("01001011", 0, RIGHT_SHIFT, 1, False, False)      '1
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 0, False, False)       '01001011
+        Debug.Print BitShiftAriStrBin("01001011", 1, LEFT_SHIFT, 0, False, False)       '010010110
+        Debug.Print BitShiftAriStrBin("01001011", 2, LEFT_SHIFT, 0, False, False)       '0100101100
+        Debug.Print BitShiftAriStrBin("01001011", 5, LEFT_SHIFT, 0, False, False)       '0100101100000
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 10, False, False)      '0001001011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 5, False, False)       '01011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 4, False, False)       '1011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 3, False, False)       '011
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 2, False, False)       '11
+        Debug.Print BitShiftAriStrBin("01001011", 0, LEFT_SHIFT, 1, False, False)       '1
+        Debug.Print "<<test 001-03>>"                                                   '<<test 001-03>>
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 0, True, False)       '10001011
+        Debug.Print BitShiftAriStrBin("10001011", 1, RIGHT_SHIFT, 0, True, False)       '1000101
+        Debug.Print BitShiftAriStrBin("10001011", 2, RIGHT_SHIFT, 0, True, False)       '100010
+        Debug.Print BitShiftAriStrBin("10001011", 3, RIGHT_SHIFT, 0, True, False)       '10001
+        Debug.Print BitShiftAriStrBin("10001011", 4, RIGHT_SHIFT, 0, True, False)       '1000
+        Debug.Print BitShiftAriStrBin("10001011", 5, RIGHT_SHIFT, 0, True, False)       '100
+        Debug.Print BitShiftAriStrBin("10001011", 6, RIGHT_SHIFT, 0, True, False)       '10
+        Debug.Print BitShiftAriStrBin("10001011", 7, RIGHT_SHIFT, 0, True, False)       '1
+        Debug.Print BitShiftAriStrBin("10001011", 8, RIGHT_SHIFT, 0, True, False)       '1
+        Debug.Print BitShiftAriStrBin("10001011", 9, RIGHT_SHIFT, 0, True, False)       '1
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 10, True, False)      '1110001011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 5, True, False)       '11011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 4, True, False)       '1011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 3, True, False)       '111
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 2, True, False)       '11
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 1, True, False)       '1
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 0, True, False)        '10001011
+        Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, 0, True, False)        '100010110
+        Debug.Print BitShiftAriStrBin("10001011", 2, LEFT_SHIFT, 0, True, False)        '1000101100
+        Debug.Print BitShiftAriStrBin("10001011", 5, LEFT_SHIFT, 0, True, False)        '1000101100000
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 10, True, False)       '1110001011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 5, True, False)        '11011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 4, True, False)        '1011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 3, True, False)        '111
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 2, True, False)        '11
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 1, True, False)        '1
+        Debug.Print "<<test 001-04>>"                                                   '<<test 001-04>>
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 0, False, False)      '10001011
+        Debug.Print BitShiftAriStrBin("10001011", 1, RIGHT_SHIFT, 0, False, False)      '1000101
+        Debug.Print BitShiftAriStrBin("10001011", 2, RIGHT_SHIFT, 0, False, False)      '100010
+        Debug.Print BitShiftAriStrBin("10001011", 3, RIGHT_SHIFT, 0, False, False)      '10001
+        Debug.Print BitShiftAriStrBin("10001011", 4, RIGHT_SHIFT, 0, False, False)      '1000
+        Debug.Print BitShiftAriStrBin("10001011", 5, RIGHT_SHIFT, 0, False, False)      '100
+        Debug.Print BitShiftAriStrBin("10001011", 6, RIGHT_SHIFT, 0, False, False)      '10
+        Debug.Print BitShiftAriStrBin("10001011", 7, RIGHT_SHIFT, 0, False, False)      '1
+        Debug.Print BitShiftAriStrBin("10001011", 8, RIGHT_SHIFT, 0, False, False)      '1
+        Debug.Print BitShiftAriStrBin("10001011", 9, RIGHT_SHIFT, 0, False, False)      '1
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 10, False, False)     '1110001011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 5, False, False)      '01011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 4, False, False)      '1011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 3, False, False)      '011
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 2, False, False)      '11
+        Debug.Print BitShiftAriStrBin("10001011", 0, RIGHT_SHIFT, 1, False, False)      '1
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 0, False, False)       '10001011
+        Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, 0, False, False)       '100010110
+        Debug.Print BitShiftAriStrBin("10001011", 2, LEFT_SHIFT, 0, False, False)       '1000101100
+        Debug.Print BitShiftAriStrBin("10001011", 5, LEFT_SHIFT, 0, False, False)       '1000101100000
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 10, False, False)      '1110001011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 5, False, False)       '01011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 4, False, False)       '1011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 3, False, False)       '011
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 2, False, False)       '11
+        Debug.Print BitShiftAriStrBin("10001011", 0, LEFT_SHIFT, 1, False, False)       '1
+    '   Debug.Print "<<test 001-05>>"                                                   '<<test 001-05>>
+    '   Debug.Print BitShiftAriStrBin("10001011", 1, 5, 10, True, False)                'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("", 2, LEFT_SHIFT, 10, True, False)               'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("10001011", -1, LEFT_SHIFT, 10, True, False)      'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, 10, True, False)       'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, -1, True, False)       'プログラム停止
+        Debug.Print "<<test 002-01>>"                                                   '<<test 002-01>>"
+        Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, 0, True, True)        '00101011
+        Debug.Print BitShiftAriStrBin("00101011", 1, RIGHT_SHIFT, 0, True, True)        '00010101
+        Debug.Print BitShiftAriStrBin("00101011", 2, RIGHT_SHIFT, 0, True, True)        '00001010
+        Debug.Print BitShiftAriStrBin("00101011", 3, RIGHT_SHIFT, 0, True, True)        '00000101
+        Debug.Print BitShiftAriStrBin("00101011", 4, RIGHT_SHIFT, 0, True, True)        '00000010
+        Debug.Print BitShiftAriStrBin("00101011", 5, RIGHT_SHIFT, 0, True, True)        '00000001
+        Debug.Print BitShiftAriStrBin("00101011", 6, RIGHT_SHIFT, 0, True, True)        '00000000
+        Debug.Print BitShiftAriStrBin("00101011", 7, RIGHT_SHIFT, 0, True, True)        '00000000
+        Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, 16, True, True)       '0000000000101011
+        Debug.Print BitShiftAriStrBin("00101011", 0, RIGHT_SHIFT, 8, True, True)        '00101011
+        Debug.Print BitShiftAriStrBin("00101011", 1, RIGHT_SHIFT, 8, True, True)        '00010101
+        Debug.Print BitShiftAriStrBin("00101011", 2, RIGHT_SHIFT, 8, True, True)        '00001010
+        Debug.Print BitShiftAriStrBin("00101011", 3, RIGHT_SHIFT, 8, True, True)        '00000101
+        Debug.Print BitShiftAriStrBin("00101011", 4, RIGHT_SHIFT, 8, True, True)        '00000010
+        Debug.Print BitShiftAriStrBin("00101011", 5, RIGHT_SHIFT, 8, True, True)        '00000001
+        Debug.Print BitShiftAriStrBin("00101011", 6, RIGHT_SHIFT, 8, True, True)        '00000000
+        Debug.Print BitShiftAriStrBin("00101011", 7, RIGHT_SHIFT, 8, True, True)        '00000000
+        Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, 0, True, True)         '00101011
+        Debug.Print BitShiftAriStrBin("00101011", 1, LEFT_SHIFT, 0, True, True)         '0000000001010110
+        Debug.Print BitShiftAriStrBin("00101011", 2, LEFT_SHIFT, 0, True, True)         '0000000010101100
+        Debug.Print BitShiftAriStrBin("00101011", 5, LEFT_SHIFT, 0, True, True)         '0000010101100000
+        Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, 16, True, True)        '0000000000101011
+        Debug.Print BitShiftAriStrBin("00101011", 0, LEFT_SHIFT, 8, True, True)         '00101011
+        Debug.Print BitShiftAriStrBin("00101011", 1, LEFT_SHIFT, 8, True, True)         '01010110
+        Debug.Print BitShiftAriStrBin("00101011", 2, LEFT_SHIFT, 8, True, True)         '00101100
+        Debug.Print BitShiftAriStrBin("00101011", 3, LEFT_SHIFT, 8, True, True)         '01011000
+        Debug.Print BitShiftAriStrBin("00101011", 4, LEFT_SHIFT, 8, True, True)         '00110000
+        Debug.Print BitShiftAriStrBin("00101011", 5, LEFT_SHIFT, 8, True, True)         '01100000
+        Debug.Print BitShiftAriStrBin("00101011", 6, LEFT_SHIFT, 8, True, True)         '01000000
+        Debug.Print BitShiftAriStrBin("00101011", 7, LEFT_SHIFT, 8, True, True)         '00000000
+        Debug.Print "<<test 002-02>>"                                                   '<<test 002-02>>
+        Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, 0, True, True)        '10101011
+        Debug.Print BitShiftAriStrBin("10101011", 1, RIGHT_SHIFT, 0, True, True)        '11010101
+        Debug.Print BitShiftAriStrBin("10101011", 2, RIGHT_SHIFT, 0, True, True)        '11101010
+        Debug.Print BitShiftAriStrBin("10101011", 3, RIGHT_SHIFT, 0, True, True)        '11110101
+        Debug.Print BitShiftAriStrBin("10101011", 4, RIGHT_SHIFT, 0, True, True)        '11111010
+        Debug.Print BitShiftAriStrBin("10101011", 5, RIGHT_SHIFT, 0, True, True)        '11111101
+        Debug.Print BitShiftAriStrBin("10101011", 6, RIGHT_SHIFT, 0, True, True)        '11111110
+        Debug.Print BitShiftAriStrBin("10101011", 7, RIGHT_SHIFT, 0, True, True)        '11111111
+        Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, 16, True, True)       '1111111110101011
+        Debug.Print BitShiftAriStrBin("10101011", 0, RIGHT_SHIFT, 8, True, True)        '10101011
+        Debug.Print BitShiftAriStrBin("10101011", 1, RIGHT_SHIFT, 8, True, True)        '11010101
+        Debug.Print BitShiftAriStrBin("10101011", 2, RIGHT_SHIFT, 8, True, True)        '11101010
+        Debug.Print BitShiftAriStrBin("10101011", 3, RIGHT_SHIFT, 8, True, True)        '11110101
+        Debug.Print BitShiftAriStrBin("10101011", 4, RIGHT_SHIFT, 8, True, True)        '11111010
+        Debug.Print BitShiftAriStrBin("10101011", 5, RIGHT_SHIFT, 8, True, True)        '11111101
+        Debug.Print BitShiftAriStrBin("10101011", 6, RIGHT_SHIFT, 8, True, True)        '11111110
+        Debug.Print BitShiftAriStrBin("10101011", 7, RIGHT_SHIFT, 8, True, True)        '11111111
+        Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, 0, True, True)         '10101011
+        Debug.Print BitShiftAriStrBin("10101011", 1, LEFT_SHIFT, 0, True, True)         '1111111101010110
+        Debug.Print BitShiftAriStrBin("10101011", 2, LEFT_SHIFT, 0, True, True)         '1111111010101100
+        Debug.Print BitShiftAriStrBin("10101011", 5, LEFT_SHIFT, 0, True, True)         '1111010101100000
+        Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, 16, True, True)        '1111111110101011
+        Debug.Print BitShiftAriStrBin("10101011", 0, LEFT_SHIFT, 8, True, True)         '10101011
+        Debug.Print BitShiftAriStrBin("10101011", 1, LEFT_SHIFT, 8, True, True)         '11010110
+        Debug.Print BitShiftAriStrBin("10101011", 2, LEFT_SHIFT, 8, True, True)         '10101100
+        Debug.Print BitShiftAriStrBin("10101011", 3, LEFT_SHIFT, 8, True, True)         '11011000
+        Debug.Print BitShiftAriStrBin("10101011", 4, LEFT_SHIFT, 8, True, True)         '10110000
+        Debug.Print BitShiftAriStrBin("10101011", 5, LEFT_SHIFT, 8, True, True)         '11100000
+        Debug.Print BitShiftAriStrBin("10101011", 6, LEFT_SHIFT, 8, True, True)         '11000000
+        Debug.Print BitShiftAriStrBin("10101011", 7, LEFT_SHIFT, 8, True, True)         '10000000
+        Debug.Print BitShiftAriStrBin("10101011", 8, LEFT_SHIFT, 8, True, True)         '10000000
+    '   Debug.Print "<<test 002-03>>"                                                   '<<test 002-03>>
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 8, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 5, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 4, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 3, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 2, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("0101011", 0, RIGHT_SHIFT, 1, True, True)         'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("10001011", 1, 5, 10, True, True)                 'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("", 2, LEFT_SHIFT, 10, True, True)                'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("10001011", -1, LEFT_SHIFT, 10, True, True)       'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, 10, True, True)        'プログラム停止
+    '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, -1, True, True)        'プログラム停止
         Debug.Print "*** test finished! ***"
     End Sub
 
