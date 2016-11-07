@@ -1,5 +1,10 @@
 @echo off
-call lib\010_Def_Datetime.bat
+if {%MYPATH_CODE_BAT%} == {0} (
+	echo target environment variable is nothing!
+	pause
+	exit /B 0
+)
+call %MYPATH_CODE_BAT%\lib\010_Def_Datetime.bat
 
 set SRC=Z:\
 set DSTBASE=X:\800_BackUp_Library

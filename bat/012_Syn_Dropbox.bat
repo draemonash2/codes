@@ -1,8 +1,13 @@
 @echo off
-call lib\010_Def_Datetime.bat
+if {%MYPATH_CODE_BAT%} == {0} (
+	echo target environment variable is nothing!
+	pause
+	exit /B 0
+)
+call %MYPATH_CODE_BAT%\lib\010_Def_Datetime.bat
 
 set SRC=C:\Users\draem_000\Documents\Dropbox
-set DSTBASE=X:\820_BackUp_Dropbox
+set DSTBASE=\\RASPBERRYPI\pockethdd\820_BackUp_Dropbox
 
 set DST=%DSTBASE%\data
 set LOG=%DSTBASE%\log\%~n0_%datetime%.log
