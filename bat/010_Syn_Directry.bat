@@ -1,12 +1,12 @@
 @echo off
-if {%MYPATH_CODE_BAT%} == {0} (
+if {%MYPATH_CODES%} == {0} (
 	echo target environment variable is nothing!
 	pause
 	exit /B 0
 )
-call %MYPATH_CODE_BAT%\lib\010_Def_Datetime.bat
+call %MYPATH_CODES%\bat\lib\010_Def_Datetime.bat
 
-set LOGDIR=%MYPATH_CODE_BAT%\%~n0_%datetime%.log
+set LOGDIR=%MYPATH_CODES%\bat\%~n0_%datetime%.log
 
 echo ############# Sync Directry! #############
 set /p SRC="### Source      Path [ex. D:\] : "

@@ -12,28 +12,10 @@
 echo add or delete user environment variable?
 set /p ANS="  add=>y, delete=>n : "
 if %ANS% == y (
-	setx MYPATH_CODE_BAT	"C:\codes\bat"
-	setx MYPATH_CODE_C		"C:\codes\c"
-	setx MYPATH_CODE_HTTP	"C:\codes\http"
-	setx MYPATH_CODE_JAVA	"C:\codes\java"
-	setx MYPATH_CODE_PYTHON	"C:\codes\python"
-	setx MYPATH_CODE_RUBY	"C:\codes\ruby"
-	setx MYPATH_CODE_SH		"C:\codes\sh"
-	setx MYPATH_CODE_VBA	"C:\codes\vba"
-	setx MYPATH_CODE_VBS	"C:\codes\vbs"
-	setx MYPATH_CODE_VDM	"C:\codes\vdm++"
+	setx MYPATH_CODES	"C:\codes"
 	echo In order to reflect this setting, please restart the windows!
 ) else if %ANS% == n (
-	reg delete HKCU\Environment /v MYPATH_CODE_BAT
-	reg delete HKCU\Environment /v MYPATH_CODE_C
-	reg delete HKCU\Environment /v MYPATH_CODE_HTTP
-	reg delete HKCU\Environment /v MYPATH_CODE_JAVA
-	reg delete HKCU\Environment /v MYPATH_CODE_PYTHON
-	reg delete HKCU\Environment /v MYPATH_CODE_RUBY
-	reg delete HKCU\Environment /v MYPATH_CODE_SH
-	reg delete HKCU\Environment /v MYPATH_CODE_VBA
-	reg delete HKCU\Environment /v MYPATH_CODE_VBS
-	reg delete HKCU\Environment /v MYPATH_CODE_VDM
+	reg delete HKCU\Environment /v MYPATH_CODES
 	echo In order to reflect this setting, please restart the windows!
 ) else (
 	echo [error] illegal answer!!!
