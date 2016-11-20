@@ -198,3 +198,57 @@ End Function
 '		Set objVbsFile = Nothing
 '		Set objFSO = Nothing
 '	End Function
+
+'指定フォルダパスに含まれるフォルダが空か判定し、空フォルダなら削除する。
+Public Function DeleteEmptyFolder( _
+	ByVal sTrgtDirPath _
+)
+	Dim objFSO
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim sTrgtParentDirPath
+	'objLogFile.WriteLine "[Debug] called! " & sTrgtDirPath
+	If objFSO.FolderExists( sTrgtDirPath ) Then
+		Dim objFolder
+		Set objFolder = objFSO.GetFolder( sTrgtDirPath )
+		
+		Dim bIsFileFolderExists
+		bIsFileFolderExists = False
+		
+		'サブフォルダ精査
+		Dim objSubFolder
+		For Each objSubFolder In objFolder.SubFolders
+			bIsFileFolderExists = True
+		Next
+		
+		'サブファイル精査
+		Dim objFile
+		For Each objFile In objFolder.Files
+			bIsFileFolderExists = True
+		Next
+		
+		'objLogFile.WriteLine "[Debug] " & bIsFileFolderExists & " : " & sTrgtDirPath
+		If bIsFileFolderExists = True Then
+			'Do Nothing
+		Else
+			objFolder.Delete
+			sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtDirPath )
+			Call DeleteEmptyFolder( sTrgtParentDirPath )
+		End If
+		DeleteEmptyFolder = True
+	Else
+		sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtDirPath )
+		Call DeleteEmptyFolder( sTrgtParentDirPath )
+		DeleteEmptyFolder = False
+	End If
+	Set objFSO = Nothing
+End Function
+	Private Sub Test_DeleteEmptyFolder()
+		Dim sOutStr
+		sOutStr = ""
+		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\a\e" )
+		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\b.txt" )
+		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\c.txt" )
+		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\c" )
+		MsgBox sOutStr
+	End Sub
+'	Call Test_DeleteEmptyFolder()
