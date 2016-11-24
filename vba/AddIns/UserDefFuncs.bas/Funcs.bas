@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.6
+' user define functions v1.7
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -80,24 +80,70 @@ Public Function ConcStr( _
     Dim rConcRangeCnt As Range
     Dim sConcTxtBuf As String
     
-    If rConcRange.Rows.Count = 1 Or _
-       rConcRange.Columns.Count = 1 Then
-        For Each rConcRangeCnt In rConcRange
-            sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
-        Next rConcRangeCnt
-        
-        ' 区切り文字判定
-        If sDlmtr <> "" Then
-            ConcStr = Mid$(sConcTxtBuf, Len(sDlmtr) + 1)
-        Else
-            ConcStr = sConcTxtBuf
-        End If
-    Else
+    If rConcRange Is Nothing Then
         ConcStr = CVErr(xlErrRef)  'エラー値
+    Else
+        If rConcRange.Rows.Count = 1 Or _
+           rConcRange.Columns.Count = 1 Then
+            For Each rConcRangeCnt In rConcRange
+                sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
+            Next rConcRangeCnt
+            
+            ' 区切り文字判定
+            If sDlmtr <> "" Then
+                ConcStr = Mid$(sConcTxtBuf, Len(sDlmtr) + 1)
+            Else
+                ConcStr = sConcTxtBuf
+            End If
+        Else
+            ConcStr = CVErr(xlErrRef)  'エラー値
+        End If
     End If
 End Function
     Private Sub Test_ConcStr()
-        'Range型はVBAから入力できないため、テストできない。
+        Dim oTrgtRangePos01 As Range
+        Dim oTrgtRangePos02 As Range
+        Dim oTrgtRangePos03 As Range
+        Dim oTrgtRangeNeg01 As Range
+        Dim oTrgtRangeNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtRangePos01 = .Cells(1, 1)
+            Set oTrgtRangePos02 = .Range(.Cells(1, 1), .Cells(1, 3))
+            Set oTrgtRangePos03 = .Range(.Cells(1, 3), .Cells(1, 1))
+            Set oTrgtRangeNeg01 = .Range(.Cells(1, 1), .Cells(3, 3))
+            Set oTrgtRangeNeg02 = Nothing
+        End With
+        
+        Dim lIdx
+        Dim asStrBefore() As String
+        For lIdx = 0 To oTrgtRangeNeg01.Count
+            ReDim Preserve asStrBefore(lIdx)
+            asStrBefore(lIdx) = oTrgtRangeNeg01.Item(lIdx + 1)
+        Next lIdx
+        
+        Debug.Print "*** test start! ***"
+        oTrgtRangePos01.Item(1) = "aaa"
+        Debug.Print ConcStr(oTrgtRangePos01, "\") 'aaa
+        Debug.Print ConcStr(oTrgtRangePos01, "")  'aaa
+        oTrgtRangePos02.Item(1) = "bbb"
+        oTrgtRangePos02.Item(2) = "ccc"
+        oTrgtRangePos02.Item(3) = "ddd"
+        Debug.Print ConcStr(oTrgtRangePos02, "\")  'bbb\ccc\ddd
+        Debug.Print ConcStr(oTrgtRangePos02, "  ") 'bbb  ccc  ddd
+        Debug.Print ConcStr(oTrgtRangePos02, "")   'bbbcccddd
+        oTrgtRangePos03.Item(1) = "eee"
+        oTrgtRangePos03.Item(2) = "fff"
+        oTrgtRangePos03.Item(3) = "ggg"
+        Debug.Print ConcStr(oTrgtRangePos03, "\")  'eee\fff\ggg
+        Debug.Print ConcStr(oTrgtRangePos03, "  ") 'eee  fff  ggg
+        Debug.Print ConcStr(oTrgtRangePos03, "")   'eeefffggg
+        Debug.Print ConcStr(oTrgtRangeNeg01, "\")  'エラー 2023
+        Debug.Print ConcStr(oTrgtRangeNeg02, "\")  'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        For lIdx = 0 To oTrgtRangeNeg01.Count
+            oTrgtRangeNeg01.Item(lIdx + 1) = asStrBefore(lIdx)
+        Next lIdx
     End Sub
 
 ' ==================================================================
@@ -307,47 +353,173 @@ Public Function GetStrikeExist( _
     End If
 End Function
     Private Sub Test_GetStrikeExist()
-        'Range型はVBAから入力できないため、テストできない。
+        Dim oTrgtRangePos01 As Range
+        Dim oTrgtRangeNeg01 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtRangePos01 = .Cells(1, 1)
+            Set oTrgtRangeNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+        End With
+        
+        Dim lStrkThrghBefore As Long
+        lStrkThrghBefore = oTrgtRangePos01.Font.Strikethrough
+        
+        Debug.Print "*** test start! ***"
+        oTrgtRangePos01.Font.Strikethrough = True
+        Debug.Print GetStrikeExist(oTrgtRangePos01) 'True
+        oTrgtRangePos01.Font.Strikethrough = False
+        Debug.Print GetStrikeExist(oTrgtRangePos01) 'False
+        Debug.Print GetStrikeExist(oTrgtRangeNeg01) 'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtRangePos01.Font.Strikethrough = lStrkThrghBefore
     End Sub
 
 ' ==================================================================
 ' = 概要    フォントカラーを返却する
-' = 引数    rRange   Range     [in]  セル
-' = 戻値             Variant         フォントカラー
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    sColorType  String    [in]  色種別（R or G or B）
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 戻値                Variant         フォント色
 ' = 覚書    なし
 ' ==================================================================
 Public Function GetFontColor( _
-    ByRef rRange As Range _
+    ByRef rTrgtCell As Range, _
+    ByVal sColorType As String, _
+    ByVal bIsHex As Boolean _
 ) As Variant
-    If rRange.Rows.Count = 1 And _
-       rRange.Columns.Count = 1 Then
-        GetFontColor = rRange.Font.Color
+    Dim lColorRGB As Long
+    Dim lColorX As Long
+    
+    If rTrgtCell.Count > 1 Then
+        GetFontColor = CVErr(xlErrRef)
     Else
-        GetFontColor = CVErr(xlErrRef)  'エラー値
+        lColorRGB = rTrgtCell.Font.Color
+        lColorX = ConvRgb2X(lColorRGB, sColorType)
+        If lColorX > 255 Then
+            GetFontColor = CVErr(xlErrValue)
+        Else
+            If bIsHex = True Then
+                GetFontColor = UCase(String(2 - Len(Hex(lColorX)), "0") & Hex(lColorX))
+            Else
+                GetFontColor = lColorX
+            End If
+        End If
     End If
 End Function
     Private Sub Test_GetFontColor()
-        'Range型はVBAから入力できないため、テストできない。
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorBefore As Long
+        lColorBefore = oTrgtCellsPos01.Font.Color
+        
+        Debug.Print "*** test start! ***"
+        oTrgtCellsPos01.Font.Color = RGB(0, 0, 0)
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r", False)  '0
+        Debug.Print GetFontColor(oTrgtCellsPos01, "g", False)  '0
+        Debug.Print GetFontColor(oTrgtCellsPos01, "b", False)  '0
+        oTrgtCellsPos01.Font.Color = RGB(100, 100, 100)
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r", False)  '100
+        Debug.Print GetFontColor(oTrgtCellsPos01, "g", False)  '100
+        Debug.Print GetFontColor(oTrgtCellsPos01, "b", False)  '100
+        oTrgtCellsPos01.Font.Color = RGB(255, 255, 255)
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r", False)  '255
+        Debug.Print GetFontColor(oTrgtCellsPos01, "g", False)  '255
+        Debug.Print GetFontColor(oTrgtCellsPos01, "b", False)  '255
+        oTrgtCellsPos01.Font.Color = RGB(16, 100, 152)
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r", False)  '16
+        Debug.Print GetFontColor(oTrgtCellsPos01, "g", False)  '100
+        Debug.Print GetFontColor(oTrgtCellsPos01, "b", False)  '152
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r", True)   '10
+        Debug.Print GetFontColor(oTrgtCellsPos01, "g", True)   '64
+        Debug.Print GetFontColor(oTrgtCellsPos01, "b", True)   '98
+        Debug.Print GetFontColor(oTrgtCellsPos01, "", False)   'エラー 2015
+        Debug.Print GetFontColor(oTrgtCellsPos01, "aa", False) 'エラー 2015
+        Debug.Print GetFontColor(oTrgtCellsNeg01, "r", False)  'エラー 2023
+        Debug.Print GetFontColor(oTrgtCellsNeg02, "r", False)  'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Font.Color = lColorBefore
     End Sub
 
 ' ==================================================================
 ' = 概要    背景色を返却する
-' = 引数    rRange   Range     [in]  セル
-' = 戻値             Variant         背景色
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    sColorType  String    [in]  色種別（R or G or B）
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 戻値                Variant         背景色
 ' = 覚書    なし
 ' ==================================================================
 Public Function GetInteriorColor( _
-    ByRef rRange As Range _
+    ByRef rTrgtCell As Range, _
+    ByVal sColorType As String, _
+    ByVal bIsHex As Boolean _
 ) As Variant
-    If rRange.Rows.Count = 1 And _
-       rRange.Columns.Count = 1 Then
-        GetInteriorColor = rRange.Interior.Color
+    Dim lColorRGB As Long
+    Dim lColorX As Long
+    
+    If rTrgtCell.Count > 1 Then
+        GetInteriorColor = CVErr(xlErrRef)
     Else
-        GetInteriorColor = CVErr(xlErrRef)  'エラー値
+        lColorRGB = rTrgtCell.Interior.Color
+        lColorX = ConvRgb2X(lColorRGB, sColorType)
+        If lColorX > 255 Then
+            GetInteriorColor = CVErr(xlErrValue)
+        Else
+            If bIsHex = True Then
+                GetInteriorColor = UCase(String(2 - Len(Hex(lColorX)), "0") & Hex(lColorX))
+            Else
+                GetInteriorColor = lColorX
+            End If
+        End If
     End If
 End Function
     Private Sub Test_GetInteriorColor()
-        'Range型はVBAから入力できないため、テストできない。
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorBefore As Long
+        lColorBefore = oTrgtCellsPos01.Interior.Color
+        
+        Debug.Print "*** test start! ***"
+        oTrgtCellsPos01.Interior.Color = RGB(0, 0, 0)
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "r", False)  '0
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "g", False)  '0
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "b", False)  '0
+        oTrgtCellsPos01.Interior.Color = RGB(100, 100, 100)
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "r", False)  '100
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "g", False)  '100
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "b", False)  '100
+        oTrgtCellsPos01.Interior.Color = RGB(255, 255, 255)
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "r", False)  '255
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "g", False)  '255
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "b", False)  '255
+        oTrgtCellsPos01.Interior.Color = RGB(16, 100, 152)
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "r", False)  '16
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "g", False)  '100
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "b", False)  '152
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "r", True)   '10
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "g", True)   '64
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "b", True)   '98
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "", False)   'エラー 2015
+        Debug.Print GetInteriorColor(oTrgtCellsPos01, "aa", False) 'エラー 2015
+        Debug.Print GetInteriorColor(oTrgtCellsNeg01, "r", False)  'エラー 2023
+        Debug.Print GetInteriorColor(oTrgtCellsNeg02, "r", False)  'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Interior.Color = lColorBefore
     End Sub
 
 ' ==================================================================
@@ -1884,6 +2056,34 @@ End Function
     '   Debug.Print BitShiftAriStrBin("10001011", -1, LEFT_SHIFT, 10, True, True)       'プログラム停止
     '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, 10, True, True)        'プログラム停止
     '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, -1, True, True)        'プログラム停止
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+Private Function ConvRgb2X( _
+    ByVal lColorRGB As Long, _
+    ByVal sColorType As String _
+) As Long
+    Select Case LCase(sColorType)
+        Case "r": ConvRgb2X = lColorRGB Mod 256
+        Case "g": ConvRgb2X = Int(lColorRGB / 256) Mod 256
+        Case "b": ConvRgb2X = Int(lColorRGB / 256 / 256)
+        Case Else: ConvRgb2X = 256 'エラー
+    End Select
+End Function
+    Private Sub Test_ConvRgb2X()
+        Debug.Print "*** test start! ***"
+        Debug.Print ConvRgb2X(RGB(255, 255, 255), "r") '255
+        Debug.Print ConvRgb2X(RGB(255, 255, 255), "g") '255
+        Debug.Print ConvRgb2X(RGB(255, 255, 255), "b") '255
+        Debug.Print ConvRgb2X(RGB(0, 0, 0), "r")       '0
+        Debug.Print ConvRgb2X(RGB(0, 0, 0), "g")       '0
+        Debug.Print ConvRgb2X(RGB(0, 0, 0), "b")       '0
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "r")    '16
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "g")    '39
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "b")    '40
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "")     '256
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "a")    '256
+        Debug.Print ConvRgb2X(RGB(16, 39, 40), "aa")   '256
         Debug.Print "*** test finished! ***"
     End Sub
 
