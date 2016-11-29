@@ -63,8 +63,8 @@ If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	bIsLogValid = False
 Else
-	WScript.Echo "[error] argument number error!" & vbNewLine & _
-		   "  argument num : " & WScript.Arguments.Count
+	WScript.Echo "#########################################################" & vbNewLine & _
+				 "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
 	WScript.Quit
 End If
 
@@ -72,13 +72,23 @@ Dim sExecResult
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	sExecResult = "[error] runas exec error!"
+	sExecResult = "#########################################################" & vbNewLine & _
+				  "### result : [error  ] runas exec error!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
 		WScript.Echo sExecResult
 	End If
 	WScript.Quit
+End If
+
+sExecResult = "#########################################################" & vbNewLine & _
+			  "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH) & vbNewLine & _
+			  "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
+If bIsLogValid = True Then
+	objLogFile.WriteLine sExecResult
+Else
+	WScript.Echo sExecResult
 End If
 
 Dim sFileType
@@ -89,9 +99,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	sExecResult = "[error] source path is missing!" & vbNewLine & _
-				  "  src : " & WScript.Arguments(ARG_IDX_SRCPATH) & vbNewLine & _
-				  "  dst : " & WScript.Arguments(ARG_IDX_DSTPATH)
+	sExecResult = "### result : [error  ] source path is missing!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
@@ -118,9 +126,7 @@ If sFileType = "folder" Then
 	sSrcDirParentDirPath = objFSO.GetParentFolderName( sSrcDirPath )
 	sDstDirParentDirPath = objFSO.GetParentFolderName( sDstDirPath )
 	If objFSO.GetFolder( sSrcDirPath ).Attributes And 1024 Then
-		sExecResult = "[error] setting files are already evacuated!" & vbNewLine & _
-					  "  src : " & sSrcDirPath & vbNewLine & _
-					  "  dst : " & sDstDirPath
+		sExecResult = "### result : [error  ] setting files are already evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -140,9 +146,7 @@ If sFileType = "folder" Then
 				.Save
 			End With
 		End If
-		sExecResult = "[success] setting files are evacuated!" & vbNewLine & _
-					  "  src : " & sSrcDirPath & vbNewLine & _
-					  "  dst : " & sDstDirPath
+		sExecResult = "### result : [success] setting files are evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -161,9 +165,7 @@ Else
 	sSrcFileParentDirPath = objFSO.GetParentFolderName( sSrcFilePath )
 	
 	If objFSO.GetFile( sSrcFilePath ).Attributes And 1024 Then
-		sExecResult = "[error] setting files are already evacuated!" & vbNewLine & _
-					  "  src : " & sSrcFilePath & vbNewLine & _
-					  "  dst : " & sDstFilePath
+		sExecResult = "### result : [error  ] setting files are already evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -183,9 +185,7 @@ Else
 				.Save
 			End With
 		End If
-		sExecResult = "[success] setting files are evacuated!" & vbNewLine & _
-					  "  src : " & sSrcFilePath & vbNewLine & _
-					  "  dst : " & sDstFilePath
+		sExecResult = "### result : [success] setting files are evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else

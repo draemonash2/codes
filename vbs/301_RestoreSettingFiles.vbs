@@ -60,8 +60,8 @@ If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	bIsLogValid = False
 Else
-	WScript.Echo "[error] argument number error!" & vbNewLine & _
-				 "  argument num : " & WScript.Arguments.Count
+	WScript.Echo "#########################################################" & vbNewLine & _
+				 "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
 	WScript.Quit
 End If
 
@@ -69,13 +69,23 @@ Dim sExecResult
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	sExecResult = "[error] runas exec error!"
+	sExecResult = "#########################################################" & vbNewLine & _
+				  "### result : [error  ] runas exec error!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
 		WScript.Echo sExecResult
 	End If
 	WScript.Quit
+End If
+
+sExecResult = "#########################################################" & vbNewLine & _
+			  "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH) & vbNewLine & _
+			  "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
+If bIsLogValid = True Then
+	objLogFile.WriteLine sExecResult
+Else
+	WScript.Echo sExecResult
 End If
 
 Dim sFileType
@@ -86,9 +96,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	sExecResult = "[error] destination path is missing!" & vbNewLine & _
-				  "  src : " & WScript.Arguments(ARG_IDX_SRCPATH) & vbNewLine & _
-				  "  dst : " & WScript.Arguments(ARG_IDX_DSTPATH)
+	sExecResult = "### result : [error  ] destination path is missing!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
@@ -116,9 +124,7 @@ If sFileType = "folder" Then
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
 	objFSO.MoveFolder sDstDirPath, sSrcDirPath
 	Call DeleteEmptyFolder( sDstDirPath )
-	sExecResult = "[success] setting files are restored!" & vbNewLine & _
-				  "  src : " & sSrcDirPath & vbNewLine & _
-				  "  dst : " & sDstDirPath
+	sExecResult = "### result : [success] setting files are restored!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
@@ -137,9 +143,7 @@ Else
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
 	objFSO.MoveFile sDstFilePath, sSrcFilePath
 	Call DeleteEmptyFolder( sDstFileParentDirPath )
-	sExecResult = "[success] setting files are restored!" & vbNewLine & _
-				  "  src : " & sSrcFilePath & vbNewLine & _
-				  "  dst : " & sDstFilePath
+	sExecResult = "### result : [success] setting files are restored!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
