@@ -126,7 +126,8 @@ If sFileType = "folder" Then
 	sSrcDirParentDirPath = objFSO.GetParentFolderName( sSrcDirPath )
 	sDstDirParentDirPath = objFSO.GetParentFolderName( sDstDirPath )
 	If objFSO.GetFolder( sSrcDirPath ).Attributes And 1024 Then
-		sExecResult = "### result : [error  ] setting files are already evacuated!"
+		sExecResult = "### target : folder" & vbNewLine & _
+					  "### result : [error  ] setting files are already evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -146,7 +147,8 @@ If sFileType = "folder" Then
 				.Save
 			End With
 		End If
-		sExecResult = "### result : [success] setting files are evacuated!"
+		sExecResult = "### target : folder" & vbNewLine & _
+					  "### result : [success] setting files are evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -165,7 +167,8 @@ Else
 	sSrcFileParentDirPath = objFSO.GetParentFolderName( sSrcFilePath )
 	
 	If objFSO.GetFile( sSrcFilePath ).Attributes And 1024 Then
-		sExecResult = "### result : [error  ] setting files are already evacuated!"
+		sExecResult = "### target : file" & vbNewLine & _
+					  "### result : [error  ] setting files are already evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else
@@ -185,7 +188,8 @@ Else
 				.Save
 			End With
 		End If
-		sExecResult = "### result : [success] setting files are evacuated!"
+		sExecResult = "### target : file" & vbNewLine & _
+					  "### result : [success] setting files are evacuated!"
 		If bIsLogValid = True Then
 			objLogFile.WriteLine sExecResult
 		Else

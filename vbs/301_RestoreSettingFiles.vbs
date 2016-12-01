@@ -124,7 +124,8 @@ If sFileType = "folder" Then
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
 	objFSO.MoveFolder sDstDirPath, sSrcDirPath
 	Call DeleteEmptyFolder( sDstDirPath )
-	sExecResult = "### result : [success] setting files are restored!"
+	sExecResult = "### target : folder" & vbNewLine & _
+				  "### result : [success] setting files are restored!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
@@ -143,7 +144,8 @@ Else
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
 	objFSO.MoveFile sDstFilePath, sSrcFilePath
 	Call DeleteEmptyFolder( sDstFileParentDirPath )
-	sExecResult = "### result : [success] setting files are restored!"
+	sExecResult = "### target : file" & vbNewLine & _
+				  "### result : [success] setting files are restored!"
 	If bIsLogValid = True Then
 		objLogFile.WriteLine sExecResult
 	Else
