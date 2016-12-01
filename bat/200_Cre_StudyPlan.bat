@@ -1,10 +1,9 @@
 @echo off
-if {%MYPATH_CODES%} == {0} (
-	echo target environment variable is nothing!
-	pause
-	exit /B 0
-)
+
 set sep_num=15
-set inp_path=%MYPATH_CODES%\ruby\inp\input_study_ap.csv
-ruby %MYPATH_CODES%\ruby\cre_studyPlan.rb %sep_num% %inp_path%
+set ruby_path=%~dp0..\ruby
+set inp_path=%ruby_path%\inp\input_study_ap.csv
+set script_path=%ruby_path%\cre_studyPlan.rb
+
+ruby %script_path% %sep_num% %inp_path%
 pause

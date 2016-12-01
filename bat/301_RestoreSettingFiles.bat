@@ -22,12 +22,7 @@
 
 setlocal
 
-if {%MYPATH_CODES%} == {0} (
-	echo target environment variable is nothing!
-	pause
-	goto end
-)
-set DERETE_EMPTY_FOLDERS_BAT=%MYPATH_CODES%\bat\lib\DeleteEmptyFolders.bat
+set DERETE_EMPTY_FOLDERS_BAT=%~dp0lib\DeleteEmptyFolders.bat
 
 echo #########################################################
 echo ### src	: %~1
