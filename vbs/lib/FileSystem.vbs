@@ -1,5 +1,8 @@
 Option Explicit
 
+'*********************************************************************
+'* グローバル関数定義
+'*********************************************************************
 'lFileListType）0：両方、1:ファイル、2:フォルダ、それ以外：格納しない
 Public Function GetFileList( _
 	ByVal sTrgtDir, _
@@ -261,3 +264,129 @@ End Function
 		MsgBox sOutStr
 	End Sub
 '	Call Test_DeleteEmptyFolder()
+
+'指定パスが存在する場合、"_XXX" を付与して返却する
+'lFileDirType ) 1:file、2:folder、other:both
+Public Function GetNotExistPath( _
+	ByVal sTrgtPath, _
+	ByVal lFileDirType _
+)
+	Dim objFSO
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	If lFileDirType = 1 Then
+		GetNotExistPath = GetFileNotExistPath( sTrgtPath )
+	ElseIf lFileDirType = 2 Then
+		GetNotExistPath = GetFolderNotExistPath( sTrgtPath )
+	Else
+		GetNotExistPath = ""
+	End If
+End Function
+	Private Sub Test_GetNotExistPath()
+		Dim sOutStr
+		sOutStr = ""
+		sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",		0 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",		1 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",		2 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt",	0 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt",	1 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt",	2 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt",	0 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt",	1 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt",	2 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",		0 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",		1 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",		2 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",		0 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",		1 )
+		sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",		2 )
+		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+		MsgBox sOutStr
+	End Sub
+'	Call Test_GetNotExistPath()
+
+'*********************************************************************
+'* ローカル関数定義
+'*********************************************************************
+Private Function GetFolderNotExistPath( _
+	ByVal sTrgtPath _
+)
+	Dim lIdx
+	Dim objFSO
+	Dim sCreDirPath
+	Dim bIsTrgtPathExists
+	lIdx = 0
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	sCreDirPath = sTrgtPath
+	bIsTrgtPathExists = False
+	Do While objFSO.FolderExists( sCreDirPath )
+		bIsTrgtPathExists = True
+		lIdx = lIdx + 1
+		sCreDirPath = sTrgtPath & "_" & String( 3 - len(lIdx), "0" ) & lIdx
+	Loop
+	If bIsTrgtPathExists = True Then
+		GetFolderNotExistPath = sCreDirPath
+	Else
+		GetFolderNotExistPath = ""
+	End If
+End Function
+	Private Sub Test_GetFolderNotExistPath()
+		Dim sOutStr
+		sOutStr = ""
+		sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+		sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\a" )
+		sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\b.txt" )
+		sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\c.txt" )
+		sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\d" )
+		sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\e" )
+		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+		MsgBox sOutStr
+	End Sub
+'	Call Test_GetFolderNotExistPath()
+
+Private Function GetFileNotExistPath( _
+	ByVal sTrgtPath _
+)
+	Dim lIdx
+	Dim objFSO
+	Dim sFileParDirPath
+	Dim sFileBaseName
+	Dim sFileExtName
+	Dim sCreFilePath
+	Dim bIsTrgtPathExists
+	
+	lIdx = 0
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	sCreFilePath = sTrgtPath
+	bIsTrgtPathExists = False
+	Do While objFSO.FileExists( sCreFilePath )
+		bIsTrgtPathExists = True
+		lIdx = lIdx + 1
+		sFileParDirPath = objFSO.GetParentFolderName( sTrgtPath )
+		sFileBaseName = objFSO.GetBaseName( sTrgtPath ) & "_" & String( 3 - len(lIdx), "0" ) & lIdx
+		sFileExtName = objFSO.GetExtensionName( sTrgtPath )
+		If sFileExtName = "" Then
+			sCreFilePath = sFileParDirPath & "\" & sFileBaseName
+		Else
+			sCreFilePath = sFileParDirPath & "\" & sFileBaseName & "." & sFileExtName
+		End If
+	Loop
+	If bIsTrgtPathExists = True Then
+		GetFileNotExistPath = sCreFilePath
+	Else
+		GetFileNotExistPath = ""
+	End If
+End Function
+	Private Sub Test_GetFileNotExistPath()
+		Dim sOutStr
+		sOutStr = ""
+		sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+		sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\a" )
+		sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\b.txt" )
+		sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\c.txt" )
+		sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\d" )
+		sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\e" )
+		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+		MsgBox sOutStr
+	End Sub
+'	Call Test_GetFileNotExistPath()
