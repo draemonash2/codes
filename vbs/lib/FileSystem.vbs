@@ -201,15 +201,16 @@ End Function
 
 '指定フォルダパスに含まれるフォルダが空か判定し、空フォルダなら削除する。
 Public Function DeleteEmptyFolder( _
-	ByVal sTrgtDirPath _
+	ByVal sTrgtPath _
 )
 	Dim objFSO
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Dim sTrgtParentDirPath
-	'objLogFile.WriteLine "[Debug] called! " & sTrgtDirPath
-	If objFSO.FolderExists( sTrgtDirPath ) Then
+	Dim sRetStr
+	'objLogFile.WriteLine "[Debug] called! " & sTrgtPath
+	If objFSO.FolderExists( sTrgtPath ) Then
 		Dim objFolder
-		Set objFolder = objFSO.GetFolder( sTrgtDirPath )
+		Set objFolder = objFSO.GetFolder( sTrgtPath )
 		
 		Dim bIsFileFolderExists
 		bIsFileFolderExists = False
@@ -218,33 +219,41 @@ Public Function DeleteEmptyFolder( _
 		Dim objSubFolder
 		For Each objSubFolder In objFolder.SubFolders
 			bIsFileFolderExists = True
+			Exit For
 		Next
 		
 		'サブファイル精査
 		Dim objFile
 		For Each objFile In objFolder.Files
 			bIsFileFolderExists = True
+			Exit For
 		Next
 		
-		'objLogFile.WriteLine "[Debug] " & bIsFileFolderExists & " : " & sTrgtDirPath
+		'objLogFile.WriteLine "[Debug] " & bIsFileFolderExists & " : " & sTrgtPath
 		If bIsFileFolderExists = True Then
-			'Do Nothing
+			sRetStr = sRetStr & vbNewLine & "[Folder] exists / stay   / -- / " & sTrgtPath
 		Else
 			objFolder.Delete
-			sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtDirPath )
-			Call DeleteEmptyFolder( sTrgtParentDirPath )
+			sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtPath )
+			sRetStr = sRetStr & vbNewLine & "[Folder] empty  / delete / ↓ / " & sTrgtPath
+			sRetStr = sRetStr & DeleteEmptyFolder( sTrgtParentDirPath )
 		End If
-		DeleteEmptyFolder = True
+	ElseIf objFSO.FileExists( sTrgtPath ) Then
+		sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtPath )
+		sRetStr = sRetStr & vbNewLine & "[File  ]        / stay   / ↓ / " & sTrgtPath
+		sRetStr = sRetStr & DeleteEmptyFolder( sTrgtParentDirPath )
 	Else
-		sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtDirPath )
-		Call DeleteEmptyFolder( sTrgtParentDirPath )
-		DeleteEmptyFolder = False
+		sTrgtParentDirPath = objFSO.GetParentFolderName( sTrgtPath )
+		sRetStr = sRetStr & vbNewLine & "[-     ]        / stay   / ↓ / " & sTrgtPath
+		sRetStr = sRetStr & DeleteEmptyFolder( sTrgtParentDirPath )
 	End If
+	DeleteEmptyFolder = sRetStr
 	Set objFSO = Nothing
 End Function
 	Private Sub Test_DeleteEmptyFolder()
 		Dim sOutStr
 		sOutStr = ""
+		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\a\e\e.txt" )
 		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\a\e" )
 		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\b.txt" )
 		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\c.txt" )
