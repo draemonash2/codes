@@ -115,87 +115,62 @@ Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
 Dim sShortcutPath
+Dim sSrcPath
+Dim sDstPath
+Dim sSrcParentDirPath
+Dim sDstParentDirPath
+sSrcPath    = WScript.Arguments(ARG_IDX_SRCPATH)
+sDstPath    = WScript.Arguments(ARG_IDX_DSTPATH)
+sSrcParentDirPath = objFSO.GetParentFolderName( sSrcPath )
+sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
 
 If sFileType = "folder" Then
-	Dim sSrcDirPath
-	Dim sDstDirPath
-	Dim sSrcDirParentDirPath
-	Dim sDstDirParentDirPath
-	sSrcDirPath    = WScript.Arguments(ARG_IDX_SRCPATH)
-	sDstDirPath    = WScript.Arguments(ARG_IDX_DSTPATH)
-	sSrcDirParentDirPath = objFSO.GetParentFolderName( sSrcDirPath )
-	sDstDirParentDirPath = objFSO.GetParentFolderName( sDstDirPath )
-	If objFSO.GetFolder( sSrcDirPath ).Attributes And 1024 Then
-		sExecResult = "### target : folder" & vbNewLine & _
+	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
+		sExecResult = "### target : " & sFileType & vbNewLine & _
 					  "### result : [error  ] setting files are already evacuated!"
-		If bIsLogValid = True Then
-			objLogFile.WriteLine sExecResult
-		Else
-			WScript.Echo sExecResult
-		End If
 	Else
-		If objFSO.FolderExists( sDstDirPath ) Then objFSO.DeleteFolder sDstDirPath, True
-		Call CreateDirectry( GetDirPath( sDstDirPath ) )
-		objFSO.MoveFolder sSrcDirPath, sDstDirPath
-		objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcDirPath & """ """ & sDstDirPath & """", 0, True
-		sShortcutPath = sDstDirParentDirPath & "\" & GetFileName( sSrcDirPath ) & "_linksrc.lnk"
+		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
+		Call CreateDirectry( GetDirPath( sDstPath ) )
+		objFSO.MoveFolder sSrcPath, sDstPath
+		objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcPath & """ """ & sDstPath & """", 0, True
+		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
 			With objWshShell.CreateShortcut( sShortcutPath )
-				.TargetPath = sSrcDirParentDirPath
+				.TargetPath = sSrcParentDirPath
 				.Save
 			End With
 		End If
-		sExecResult = "### target : folder" & vbNewLine & _
+		sExecResult = "### target : " & sFileType & vbNewLine & _
 					  "### result : [success] setting files are evacuated!"
-		If bIsLogValid = True Then
-			objLogFile.WriteLine sExecResult
-		Else
-			WScript.Echo sExecResult
-		End If
 	End If
 Else
-	Dim sSrcFilePath
-	Dim sDstFilePath
-	Dim sDstFileParentDirPath
-	Dim sSrcFileParentDirPath
-	
-	sSrcFilePath	= WScript.Arguments(ARG_IDX_SRCPATH)
-	sDstFilePath	= WScript.Arguments(ARG_IDX_DSTPATH)
-	sDstFileParentDirPath = objFSO.GetParentFolderName( sDstFilePath )
-	sSrcFileParentDirPath = objFSO.GetParentFolderName( sSrcFilePath )
-	
-	If objFSO.GetFile( sSrcFilePath ).Attributes And 1024 Then
-		sExecResult = "### target : file" & vbNewLine & _
+	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
+		sExecResult = "### target : " & sFileType & vbNewLine & _
 					  "### result : [error  ] setting files are already evacuated!"
-		If bIsLogValid = True Then
-			objLogFile.WriteLine sExecResult
-		Else
-			WScript.Echo sExecResult
-		End If
 	Else
-		If objFSO.FileExists( sDstFilePath ) Then objFSO.DeleteFile sDstFilePath, True
-		Call CreateDirectry( GetDirPath( sDstFilePath ) )
-		objFSO.MoveFile sSrcFilePath, sDstFilePath
-		objWshShell.Run "%ComSpec% /c mklink """ & sSrcFilePath & """ """ & sDstFilePath & """", 0, True
-		sShortcutPath = sDstFileParentDirPath & "\" & GetFileName( sSrcFilePath ) & "_linksrc.lnk"
+		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
+		Call CreateDirectry( GetDirPath( sDstPath ) )
+		objFSO.MoveFile sSrcPath, sDstPath
+		objWshShell.Run "%ComSpec% /c mklink """ & sSrcPath & """ """ & sDstPath & """", 0, True
+		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
 			With objWshShell.CreateShortcut( sShortcutPath )
-				.TargetPath = sSrcFileParentDirPath
+				.TargetPath = sSrcParentDirPath
 				.Save
 			End With
 		End If
-		sExecResult = "### target : file" & vbNewLine & _
+		sExecResult = "### target : " & sFileType & vbNewLine & _
 					  "### result : [success] setting files are evacuated!"
-		If bIsLogValid = True Then
-			objLogFile.WriteLine sExecResult
-		Else
-			WScript.Echo sExecResult
-		End If
 	End If
+End If
+If bIsLogValid = True Then
+	objLogFile.WriteLine sExecResult
+Else
+	WScript.Echo sExecResult
 End If
 
 If bIsLogValid = True Then

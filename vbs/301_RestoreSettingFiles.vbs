@@ -111,46 +111,31 @@ End If
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
+Dim sSrcPath
+Dim sDstPath
+Dim sDstParentDirPath
 Dim sShortcutPath
+sSrcPath = WScript.Arguments(ARG_IDX_SRCPATH)
+sDstPath = WScript.Arguments(ARG_IDX_DSTPATH)
+sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
+sShortcutPath = sDstPath & "_linksrc.lnk"
 
 If sFileType = "folder" Then
-	Dim sSrcDirPath
-	Dim sDstDirPath
-	sSrcDirPath = WScript.Arguments(ARG_IDX_SRCPATH)
-	sDstDirPath = WScript.Arguments(ARG_IDX_DSTPATH)
-	sShortcutPath = sDstDirPath & "_linksrc.lnk"
-	
-	If objFSO.FolderExists( sSrcDirPath ) Then objWshShell.Run "%ComSpec% /c rmdir /s /q """ & sSrcDirPath & """", 0, True
+	If objFSO.FolderExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c rmdir /s /q """ & sSrcPath & """", 0, True
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
-	objFSO.MoveFolder sDstDirPath, sSrcDirPath
-	Call DeleteEmptyFolder( sDstDirPath )
-	sExecResult = "### target : folder" & vbNewLine & _
-				  "### result : [success] setting files are restored!"
-	If bIsLogValid = True Then
-		objLogFile.WriteLine sExecResult
-	Else
-		WScript.Echo sExecResult
-	End If
+	objFSO.MoveFolder sDstPath, sSrcPath
 Else
-	Dim sSrcFilePath
-	Dim sDstFilePath
-	Dim sDstFileParentDirPath
-	sSrcFilePath = WScript.Arguments(ARG_IDX_SRCPATH)
-	sDstFilePath = WScript.Arguments(ARG_IDX_DSTPATH)
-	sDstFileParentDirPath = objFSO.GetParentFolderName( sDstFilePath )
-	sShortcutPath = sDstFilePath & "_linksrc.lnk"
-	
-	If objFSO.FileExists( sSrcFilePath ) Then objWshShell.Run "%ComSpec% /c del /a /q """ & sSrcFilePath & """", 0, True
+	If objFSO.FileExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c del /a /q """ & sSrcPath & """", 0, True
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
-	objFSO.MoveFile sDstFilePath, sSrcFilePath
-	Call DeleteEmptyFolder( sDstFileParentDirPath )
-	sExecResult = "### target : file" & vbNewLine & _
-				  "### result : [success] setting files are restored!"
-	If bIsLogValid = True Then
-		objLogFile.WriteLine sExecResult
-	Else
-		WScript.Echo sExecResult
-	End If
+	objFSO.MoveFile sDstPath, sSrcPath
+End If
+Call DeleteEmptyFolder( sDstPath )
+sExecResult = "### target : " & sFileType & vbNewLine & _
+			  "### result : [success] setting files are restored!"
+If bIsLogValid = True Then
+	objLogFile.WriteLine sExecResult
+Else
+	WScript.Echo sExecResult
 End If
 
 If bIsLogValid = True Then
