@@ -35,6 +35,7 @@ sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( sMyDirPath & "\lib\FileSystem.vbs" )
 Call Include( sMyDirPath & "\lib\Windows.vbs" )
 Call Include( sMyDirPath & "\lib\String.vbs" )
+Call Include( sMyDirPath & "\lib\Log.vbs" )
 
 '==========================================================
 '= 本処理
@@ -55,41 +56,32 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 '###############################################
 '# 事前処理
 '###############################################
-Dim bIsLogValid
+Dim oLog
+Set oLog = New LogMng
 If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
-	bIsLogValid = True
-	Dim objLogFile
-	Set objLogFile = objFSO.OpenTextFile( WScript.Arguments(ARG_IDX_LOGDIR), 8, True) '第二引数：IOモード（1:読出し、2:新規書込み、8:追加書込み）
+	Call oLog.LogFileOpen( _
+		WScript.Arguments(ARG_IDX_LOGDIR), _
+		"+w" _
+	)
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
-	bIsLogValid = False
+	'Do Nothing
 Else
-	WScript.Echo "#########################################################" & vbNewLine & _
-				 "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
+	oLog.LogPuts "#########################################################"
+	oLog.LogPuts "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
 	WScript.Quit
 End If
 
-Dim sExecResult
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	sExecResult = "#########################################################" & vbNewLine & _
-				  "### result : [error  ] runas exec error!"
-	If bIsLogValid = True Then
-		objLogFile.WriteLine sExecResult
-	Else
-		WScript.Echo sExecResult
-	End If
+	oLog.LogPuts "#########################################################"
+	oLog.LogPuts "### result : [error  ] runas exec error!"
 	WScript.Quit
 End If
 
-sExecResult = "#########################################################" & vbNewLine & _
-			  "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH) & vbNewLine & _
-			  "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
-If bIsLogValid = True Then
-	objLogFile.WriteLine sExecResult
-Else
-	WScript.Echo sExecResult
-End If
+oLog.LogPuts "#########################################################"
+oLog.LogPuts "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH)
+oLog.LogPuts "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
 
 Dim sFileType
 Dim lRet
@@ -99,12 +91,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	sExecResult = "### result : [error  ] source path is missing!"
-	If bIsLogValid = True Then
-		objLogFile.WriteLine sExecResult
-	Else
-		WScript.Echo sExecResult
-	End If
+	oLog.LogPuts "### result : [error  ] source path is missing!"
 	WScript.Quit
 End If
 
@@ -126,8 +113,8 @@ sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
 
 If sFileType = "folder" Then
 	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
-		sExecResult = "### target : " & sFileType & vbNewLine & _
-					  "### result : [error  ] setting files are already evacuated!"
+		oLog.LogPuts "### target : " & sFileType
+		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
 	Else
 		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
 		Call CreateDirectry( GetDirPath( sDstPath ) )
@@ -142,13 +129,13 @@ If sFileType = "folder" Then
 				.Save
 			End With
 		End If
-		sExecResult = "### target : " & sFileType & vbNewLine & _
-					  "### result : [success] setting files are evacuated!"
+		oLog.LogPuts "### target : " & sFileType
+		oLog.LogPuts "### result : [success] setting files are evacuated!"
 	End If
 Else
 	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
-		sExecResult = "### target : " & sFileType & vbNewLine & _
-					  "### result : [error  ] setting files are already evacuated!"
+		oLog.LogPuts "### target : " & sFileType
+		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
 	Else
 		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
 		Call CreateDirectry( GetDirPath( sDstPath ) )
@@ -163,23 +150,14 @@ Else
 				.Save
 			End With
 		End If
-		sExecResult = "### target : " & sFileType & vbNewLine & _
-					  "### result : [success] setting files are evacuated!"
+		oLog.LogPuts "### target : " & sFileType
+		oLog.LogPuts "### result : [success] setting files are evacuated!"
 	End If
 End If
-If bIsLogValid = True Then
-	objLogFile.WriteLine sExecResult
-Else
-	WScript.Echo sExecResult
-End If
 
-If bIsLogValid = True Then
-	objLogFile.Close
-	Set objLogFile = Nothing
-Else
-	'Do Nothing
-End If
+Call oLog.LogFileClose
 
+Set oLog = Nothing
 Set objFSO = Nothing
 Set objWshShell = Nothing
 
@@ -202,4 +180,3 @@ Function Include( _
 	Set objVbsFile = Nothing
 	Set objFSO = Nothing
 End Function
-
