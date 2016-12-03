@@ -107,16 +107,25 @@ sDstPath = WScript.Arguments(ARG_IDX_DSTPATH)
 sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
 sShortcutPath = sDstPath & "_linksrc.lnk"
 
+On Error Resume Next
 If sFileType = "folder" Then
 	If objFSO.FolderExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c rmdir /s /q """ & sSrcPath & """", 0, True
+	Call ErrorCheck(1)
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
+	Call ErrorCheck(2)
 	objFSO.MoveFolder sDstPath, sSrcPath
+	Call ErrorCheck(3)
 Else
 	If objFSO.FileExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c del /a /q """ & sSrcPath & """", 0, True
+	Call ErrorCheck(4)
 	If objFSO.FileExists( sShortcutPath ) Then objFSO.DeleteFile sShortcutPath, True
+	Call ErrorCheck(5)
 	objFSO.MoveFile sDstPath, sSrcPath
+	Call ErrorCheck(6)
 End If
 Call DeleteEmptyFolder( sDstPath )
+Call ErrorCheck(7)
+On Error Goto 0
 oLog.LogPuts "### target : " & sFileType
 oLog.LogPuts "### result : [success] setting files are restored!"
 
@@ -146,3 +155,19 @@ Function Include( _
     Set objFSO = Nothing
 End Function
 
+Function ErrorCheck( _
+	ByVal sErrorPlace _
+)
+	If Err.Number <> 0 Then
+		oLog.LogPuts "### result : [error  ] an error occurred!"
+		oLog.LogPuts "###   error place  : " & sErrorPlace
+		oLog.LogPuts "###   error number : " & Err.Number
+		oLog.LogPuts "###   error detail : " & Err.Description
+		Err.Clear
+		Call oLog.LogFileClose
+		Set oLog = Nothing
+		WScript.Quit
+	Else
+		'Do Nothing
+	End If
+End Function

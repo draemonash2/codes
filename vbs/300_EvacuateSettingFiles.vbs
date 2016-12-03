@@ -111,16 +111,22 @@ sDstPath    = WScript.Arguments(ARG_IDX_DSTPATH)
 sSrcParentDirPath = objFSO.GetParentFolderName( sSrcPath )
 sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
 
+On Error Resume Next
 If sFileType = "folder" Then
 	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
 		oLog.LogPuts "### target : " & sFileType
 		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
 	Else
 		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
+		Call ErrorCheck(1)
 		Call CreateDirectry( GetDirPath( sDstPath ) )
+		Call ErrorCheck(2)
 		objFSO.MoveFolder sSrcPath, sDstPath
+		Call ErrorCheck(3)
 		objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcPath & """ """ & sDstPath & """", 0, True
+		Call ErrorCheck(4)
 		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
+		Call ErrorCheck(5)
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
@@ -129,19 +135,26 @@ If sFileType = "folder" Then
 				.Save
 			End With
 		End If
+		Call ErrorCheck(6)
 		oLog.LogPuts "### target : " & sFileType
 		oLog.LogPuts "### result : [success] setting files are evacuated!"
 	End If
+	Call ErrorCheck(7)
 Else
 	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
 		oLog.LogPuts "### target : " & sFileType
 		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
 	Else
 		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
+		Call ErrorCheck(8)
 		Call CreateDirectry( GetDirPath( sDstPath ) )
+		Call ErrorCheck(9)
 		objFSO.MoveFile sSrcPath, sDstPath
+		Call ErrorCheck(10)
 		objWshShell.Run "%ComSpec% /c mklink """ & sSrcPath & """ """ & sDstPath & """", 0, True
+		Call ErrorCheck(11)
 		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
+		Call ErrorCheck(12)
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
@@ -150,10 +163,13 @@ Else
 				.Save
 			End With
 		End If
+		Call ErrorCheck(13)
 		oLog.LogPuts "### target : " & sFileType
 		oLog.LogPuts "### result : [success] setting files are evacuated!"
 	End If
+	Call ErrorCheck(14)
 End If
+On Error Goto 0
 
 Call oLog.LogFileClose
 
@@ -179,4 +195,21 @@ Function Include( _
 	
 	Set objVbsFile = Nothing
 	Set objFSO = Nothing
+End Function
+
+Function ErrorCheck( _
+	ByVal sErrorPlace _
+)
+	If Err.Number <> 0 Then
+		oLog.LogPuts "### result : [error  ] an error occurred!"
+		oLog.LogPuts "###   error place  : " & sErrorPlace
+		oLog.LogPuts "###   error number : " & Err.Number
+		oLog.LogPuts "###   error detail : " & Err.Description
+		Err.Clear
+		Call oLog.LogFileClose
+		Set oLog = Nothing
+		WScript.Quit
+	Else
+		'Do Nothing
+	End If
 End Function
