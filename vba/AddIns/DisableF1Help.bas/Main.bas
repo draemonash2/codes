@@ -1,4 +1,4 @@
-Attribute VB_Name = "F1HelpDisable"
+Attribute VB_Name = "Main"
 Option Explicit
 
 Const APPNAME = "F1‚Ìƒwƒ‹ƒv‚ð–³Œø‚É"

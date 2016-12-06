@@ -9,7 +9,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Option Explicit
 
-Private Sub Workbook_Open()
-    Call ユーザー定義ショートカットキーを設定
+Private Sub Workbook_AddinInstall()
+    Call InstallAddin
 End Sub
+
+Private Sub Workbook_AddinUninstall()
+    Call UninstallAddin
+End Sub
+
 
