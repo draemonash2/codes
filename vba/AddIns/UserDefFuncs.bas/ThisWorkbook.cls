@@ -12,3 +12,12 @@ Option Explicit
 Private Sub Workbook_Open()
     Call ユーザー定義ショートカットキーを設定
 End Sub
+
+Private Sub Workbook_AddinInstall()
+    Call InstallAddin
+End Sub
+
+Private Sub Workbook_AddinUninstall()
+    Call UninstallAddin
+End Sub
+
