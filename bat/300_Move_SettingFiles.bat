@@ -58,36 +58,29 @@ echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 :: セットアップの移行はインポート/エクスポートにて行うため、シンボリックリンクは作成しない。
 ::	"%USERPROFILE%\Documents\GoogleDrive\Settings\PDF X-Change Viewer"
 :: 別ドライブからのシンボリックリンクは作成不可
-::	call "%EXEC_SCRIPT_PATH%"		"Z:\_ScratchLIVE_"																"%DST_ROOT_PATH%\setting\Serato\_ScratchLIVE_"					"%LOGFILE_PATH%"
-::	call "%EXEC_SCRIPT_PATH%"		"Z:\_ScratchLIVE_Backup"														"%DST_ROOT_PATH%\setting\Serato\_ScratchLIVE_Backup"			"%LOGFILE_PATH%"
+::	call "%EXEC_SCRIPT_PATH%"		"Z:\_ScratchLIVE_"														"%DST_ROOT_PATH%\setting\Serato\_ScratchLIVE_"					"%LOGFILE_PATH%"
+::	call "%EXEC_SCRIPT_PATH%"		"Z:\_ScratchLIVE_Backup"												"%DST_ROOT_PATH%\setting\Serato\_ScratchLIVE_Backup"			"%LOGFILE_PATH%"
 
 :: #######################################################
 :: ### 本処理
 :: #######################################################
 	:: setting
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Scooter Software\Beyond Compare 3"				"%DST_ROOT_PATH%\setting\Beyond Compare 3\Beyond Compare 3"		"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\Kinza\User Data"									"%DST_ROOT_PATH%\setting\Kinza\User Data"						"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Mozilla\Firefox"									"%DST_ROOT_PATH%\setting\Mozilla Firefox\Firefox"				"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Hidemaruo\Hidemaru\Setting"						"%DST_ROOT_PATH%\setting\Hidemaru\Setting"						"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\foobar2000"										"%DST_ROOT_PATH%\setting\foobar2000\foobar2000"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\GRETECH\GomPlayer"								"%DST_ROOT_PATH%\setting\GomPlayer\GomPlayer"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\KeePass"											"%DST_ROOT_PATH%\setting\KeePass\KeePass"						"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\Thunderbird\Profiles"								"%DST_ROOT_PATH%\setting\Mozilla Thunderbird\Profiles"			"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\CherryPlayer\CherryPlayer 2.0"						"%DST_ROOT_PATH%\setting\CherryPlayer\CherryPlayer 2.0"			"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\Icaros\IcarosCache"								"%DST_ROOT_PATH%\setting\Icaros\IcarosCache"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\_Serato_"													"%DST_ROOT_PATH%\setting\Serato\_Serato_"						"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\_Serato_Backup"											"%DST_ROOT_PATH%\setting\Serato\_Serato_Backup"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\iTunes\iTunes Library Backup"								"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Backup"			"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Extras.itdb"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Extras.itdb"		"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Genius.itdb"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Genius.itdb"		"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library.itl"									"%DST_ROOT_PATH%\setting\iTunes\iTunes Library.itl"				"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Music Library.xml"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Music Library.xml"		"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"C:\prg\Everything\Everything.ini"												"%DST_ROOT_PATH%\setting\Everything\Everything.ini"				"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"C:\prg\Honeyview\config.ini"													"%DST_ROOT_PATH%\setting\Honeyview\config.ini"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"C:\prg\STEP038bin\SuperTagEditor.ini"											"%DST_ROOT_PATH%\setting\STEP038bin\SuperTagEditor.ini"			"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\Kinza\User Data"							"%DST_ROOT_PATH%\setting\Kinza\User Data"						"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\CherryPlayer\CherryPlayer 2.0"				"%DST_ROOT_PATH%\setting\CherryPlayer\CherryPlayer 2.0"			"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\GZ20\EasyShot\EasyShot.ini"				"%DST_ROOT_PATH%\setting\EasyShot\EasyShot.ini"					"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\KT Software\DeInput\DeInput.cfg"			"%DST_ROOT_PATH%\setting\DeInput\DeInput.cfg"					"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Mp3tag"									"%DST_ROOT_PATH%\setting\MP3Tag\MP3Tag"							"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\_Serato_"											"%DST_ROOT_PATH%\setting\Serato\_Serato_"						"%LOGFILE_PATH%"
+		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\_Serato_Backup"									"%DST_ROOT_PATH%\setting\Serato\_Serato_Backup"					"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\iTunes\iTunes Library Backup"						"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Backup"			"%LOGFILE_PATH%"
+		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Extras.itdb"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Extras.itdb"		"%LOGFILE_PATH%"
+		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Genius.itdb"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Genius.itdb"		"%LOGFILE_PATH%"
+		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library.itl"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Library.itl"				"%LOGFILE_PATH%"
+		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Music Library.xml"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Music Library.xml"		"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"C:\prg\STEP038bin\SuperTagEditor.ini"									"%DST_ROOT_PATH%\setting\STEP038bin\SuperTagEditor.ini"			"%LOGFILE_PATH%"
 	
 	:: program
-	call "%EXEC_SCRIPT_PATH%"		"C:\prg_exe"																	"%DST_ROOT_PATH%\program\prg_exe"								"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"C:\prg_exe"															"%DST_ROOT_PATH%\program\prg_exe"								"%LOGFILE_PATH%"
 	
 	cmd.exe /c "%LOGFILE_PATH%"
 
