@@ -27,14 +27,14 @@ Private Sub ModifyRegistry( _
             .eOperation = REG_ADDMOD
             If bAdd = True Then
                 With .atRegValues(0)
-                    .sName = "F1key"
+                    .sName = APPNAME
                     .sData = "112,0"
                     .eType = REG_SZ
                     .eOperation = REG_ADDMOD
                 End With
             Else
                 With .atRegValues(0)
-                    .sName = "F1key"
+                    .sName = APPNAME
                     .eOperation = REG_DELETE
                 End With
             End If
