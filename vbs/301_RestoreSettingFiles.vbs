@@ -63,22 +63,21 @@ If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	'Do Nothing
 Else
-	oLog.LogPuts "#########################################################"
-	oLog.LogPuts "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
+	oLog.LogPuts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	oLog.LogPuts "#########################################################"
-	oLog.LogPuts "### result : [error  ] runas exec error!"
+	oLog.LogPuts "-      : [error  ] runas exec error!"
 	WScript.Quit
 End If
 
-oLog.LogPuts "#########################################################"
-oLog.LogPuts "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH)
-oLog.LogPuts "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
+Dim sSrcPath
+Dim sDstPath
+sSrcPath = WScript.Arguments(ARG_IDX_SRCPATH)
+sDstPath = WScript.Arguments(ARG_IDX_DSTPATH)
 
 Dim sFileType
 Dim lRet
@@ -88,7 +87,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	oLog.LogPuts "### result : [error  ] destination path is missing!"
+	oLog.LogPuts "-      : [error  ] destination path is missing!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
@@ -99,11 +98,7 @@ Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
 Dim sShortcutPath
-Dim sSrcPath
-Dim sDstPath
 Dim sDstParentDirPath
-sSrcPath = WScript.Arguments(ARG_IDX_SRCPATH)
-sDstPath = WScript.Arguments(ARG_IDX_DSTPATH)
 sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
 sShortcutPath = sDstPath & "_linksrc.lnk"
 
@@ -115,6 +110,7 @@ If sFileType = "folder" Then
 	Call ErrorCheck(2)
 	objFSO.MoveFolder sDstPath, sSrcPath
 	Call ErrorCheck(3)
+	oLog.LogPuts "folder : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
 Else
 	If objFSO.FileExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c del /a /q """ & sSrcPath & """", 0, True
 	Call ErrorCheck(4)
@@ -122,12 +118,11 @@ Else
 	Call ErrorCheck(5)
 	objFSO.MoveFile sDstPath, sSrcPath
 	Call ErrorCheck(6)
+	oLog.LogPuts "file   : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
 End If
 Call DeleteEmptyFolder( sDstPath )
 Call ErrorCheck(7)
 On Error Goto 0
-oLog.LogPuts "### target : " & sFileType
-oLog.LogPuts "### result : [success] setting files are restored!"
 
 Call oLog.LogFileClose
 
@@ -140,29 +135,29 @@ Set objWshShell = Nothing
 '==========================================================
 ' 外部プログラム インクルード関数
 Function Include( _
-    ByVal sOpenFile _
+	ByVal sOpenFile _
 )
-    Dim objFSO
-    Dim objVbsFile
-    
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-    
-    ExecuteGlobal objVbsFile.ReadAll()
-    objVbsFile.Close
-    
-    Set objVbsFile = Nothing
-    Set objFSO = Nothing
+	Dim objFSO
+	Dim objVbsFile
+	
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+	
+	ExecuteGlobal objVbsFile.ReadAll()
+	objVbsFile.Close
+	
+	Set objVbsFile = Nothing
+	Set objFSO = Nothing
 End Function
 
 Function ErrorCheck( _
 	ByVal sErrorPlace _
 )
 	If Err.Number <> 0 Then
-		oLog.LogPuts "### result : [error  ] an error occurred!"
-		oLog.LogPuts "###   error place  : " & sErrorPlace
-		oLog.LogPuts "###   error number : " & Err.Number
-		oLog.LogPuts "###   error detail : " & Err.Description
+		oLog.LogPuts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.LogPuts "           error place  : " & sErrorPlace
+		oLog.LogPuts "           error number : " & Err.Number
+		oLog.LogPuts "           error detail : " & Err.Description
 		Err.Clear
 		Call oLog.LogFileClose
 		Set oLog = Nothing

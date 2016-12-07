@@ -49,7 +49,7 @@ Const ARG_IDX_LOGDIR = 3
 
 '本スクリプトを管理者として実行させる
 If ExecRunas( False ) Then WScript.Quit
-	
+
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
@@ -66,22 +66,21 @@ If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	'Do Nothing
 Else
-	oLog.LogPuts "#########################################################"
-	oLog.LogPuts "### result : [error  ] argument number error! arg num is " & WScript.Arguments.Count
+	oLog.LogPuts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	oLog.LogPuts "#########################################################"
-	oLog.LogPuts "### result : [error  ] runas exec error!"
+	oLog.LogPuts "-      : [error  ] runas exec error!"
 	WScript.Quit
 End If
 
-oLog.LogPuts "#########################################################"
-oLog.LogPuts "### src    : " & WScript.Arguments(ARG_IDX_SRCPATH)
-oLog.LogPuts "### dst    : " & WScript.Arguments(ARG_IDX_DSTPATH)
+Dim sSrcPath
+Dim sDstPath
+sSrcPath = WScript.Arguments(ARG_IDX_SRCPATH)
+sDstPath = WScript.Arguments(ARG_IDX_DSTPATH)
 
 Dim sFileType
 Dim lRet
@@ -91,7 +90,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	oLog.LogPuts "### result : [error  ] source path is missing!"
+	oLog.LogPuts "-      : [error  ] source path is missing!             " & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
@@ -102,20 +101,16 @@ Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
 Dim sShortcutPath
-Dim sSrcPath
-Dim sDstPath
 Dim sSrcParentDirPath
 Dim sDstParentDirPath
-sSrcPath    = WScript.Arguments(ARG_IDX_SRCPATH)
-sDstPath    = WScript.Arguments(ARG_IDX_DSTPATH)
 sSrcParentDirPath = objFSO.GetParentFolderName( sSrcPath )
 sDstParentDirPath = objFSO.GetParentFolderName( sDstPath )
+sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
 
 On Error Resume Next
 If sFileType = "folder" Then
 	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
-		oLog.LogPuts "### target : " & sFileType
-		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
+		oLog.LogPuts "folder : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
 	Else
 		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
 		Call ErrorCheck(1)
@@ -125,8 +120,6 @@ If sFileType = "folder" Then
 		Call ErrorCheck(3)
 		objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcPath & """ """ & sDstPath & """", 0, True
 		Call ErrorCheck(4)
-		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
-		Call ErrorCheck(5)
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
@@ -136,14 +129,12 @@ If sFileType = "folder" Then
 			End With
 		End If
 		Call ErrorCheck(6)
-		oLog.LogPuts "### target : " & sFileType
-		oLog.LogPuts "### result : [success] setting files are evacuated!"
+		oLog.LogPuts "folder : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	End If
 	Call ErrorCheck(7)
 Else
 	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
-		oLog.LogPuts "### target : " & sFileType
-		oLog.LogPuts "### result : [error  ] setting files are already evacuated!"
+		oLog.LogPuts "file   : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
 	Else
 		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
 		Call ErrorCheck(8)
@@ -153,8 +144,6 @@ Else
 		Call ErrorCheck(10)
 		objWshShell.Run "%ComSpec% /c mklink """ & sSrcPath & """ """ & sDstPath & """", 0, True
 		Call ErrorCheck(11)
-		sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.lnk"
-		Call ErrorCheck(12)
 		If objFSO.FileExists( sShortcutPath ) Then
 			'Do Nothing
 		Else
@@ -164,8 +153,7 @@ Else
 			End With
 		End If
 		Call ErrorCheck(13)
-		oLog.LogPuts "### target : " & sFileType
-		oLog.LogPuts "### result : [success] setting files are evacuated!"
+		oLog.LogPuts "file   : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	End If
 	Call ErrorCheck(14)
 End If
@@ -201,10 +189,10 @@ Function ErrorCheck( _
 	ByVal sErrorPlace _
 )
 	If Err.Number <> 0 Then
-		oLog.LogPuts "### result : [error  ] an error occurred!"
-		oLog.LogPuts "###   error place  : " & sErrorPlace
-		oLog.LogPuts "###   error number : " & Err.Number
-		oLog.LogPuts "###   error detail : " & Err.Description
+		oLog.LogPuts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.LogPuts "           error place  : " & sErrorPlace
+		oLog.LogPuts "           error number : " & Err.Number
+		oLog.LogPuts "           error detail : " & Err.Description
 		Err.Clear
 		Call oLog.LogFileClose
 		Set oLog = Nothing
