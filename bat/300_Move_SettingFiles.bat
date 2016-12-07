@@ -39,7 +39,7 @@ if %MOVE_TYPE% == e (
 	exit /B 0
 )
 
-set DST_ROOT_PATH=%USERPROFILE%\Documents\GoogleDrive\100_Programs
+set DST_ROOT_PATH=%USERPROFILE%\Documents\Amazon Drive\100_Programs
 set LOGFILE_PATH=%DST_ROOT_PATH%\move_setting_files.log
 
 echo.>> "%LOGFILE_PATH%"
@@ -70,6 +70,7 @@ echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\GZ20\EasyShot\EasyShot.ini"				"%DST_ROOT_PATH%\setting\EasyShot\EasyShot.ini"					"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\KT Software\DeInput\DeInput.cfg"			"%DST_ROOT_PATH%\setting\DeInput\DeInput.cfg"					"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Mp3tag"									"%DST_ROOT_PATH%\setting\MP3Tag\MP3Tag"							"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Team Hasebe\TVClock"						"%DST_ROOT_PATH%\setting\TVClock\TVClock"						"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\_Serato_"											"%DST_ROOT_PATH%\setting\Serato\_Serato_"						"%LOGFILE_PATH%"
 		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\_Serato_Backup"									"%DST_ROOT_PATH%\setting\Serato\_Serato_Backup"					"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\iTunes\iTunes Library Backup"						"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Backup"			"%LOGFILE_PATH%"
@@ -77,6 +78,7 @@ echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Genius.itdb"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Genius.itdb"		"%LOGFILE_PATH%"
 		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library.itl"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Library.itl"				"%LOGFILE_PATH%"
 		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Music Library.xml"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Music Library.xml"		"%LOGFILE_PATH%"
+	
 	call "%EXEC_SCRIPT_PATH%"		"C:\prg\STEP038bin\SuperTagEditor.ini"									"%DST_ROOT_PATH%\setting\STEP038bin\SuperTagEditor.ini"			"%LOGFILE_PATH%"
 	
 	:: program
