@@ -1,4 +1,14 @@
 @echo off
+::第一引数：対象
+::  /l : Library
+::  /d : Dropbox
+::  /g : GoogleDrive
+::  /a : AmazonDrive
+::
+::第二引数：実行モード
+::  /close   : 処理終了後、コンソールを閉じる
+::  /suspend : 処理終了後、コンソールを開いたままにする
+::  指定なし : 処理終了後、コンソールを開いたままにする
 
 setlocal ENABLEDELAYEDEXPANSION
 
