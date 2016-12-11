@@ -1,2 +1,2 @@
 @echo off
-call %~dp0011_Syn_Drives.bat /l /suspend
+call %~dp0011_Syn_Drives.bat /l /suspend 1
