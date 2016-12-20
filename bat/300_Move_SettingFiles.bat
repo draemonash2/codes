@@ -76,11 +76,7 @@ echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Audacity"								"%DST_ROOT_PATH%\setting\Audacity\Audacity"						"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\_Serato_"											"%DST_ROOT_PATH%\setting\Serato\_Serato_"						"%LOGFILE_PATH%"
 		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\_Serato_Backup"									"%DST_ROOT_PATH%\setting\Serato\_Serato_Backup"					"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\iTunes\iTunes Library Backup"						"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Backup"			"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Extras.itdb"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Extras.itdb"		"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library Genius.itdb"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Library Genius.itdb"		"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Library.itl"							"%DST_ROOT_PATH%\setting\iTunes\iTunes Library.itl"				"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\Music\iTunes\iTunes Music Library.xml"					"%DST_ROOT_PATH%\setting\iTunes\iTunes Music Library.xml"		"%LOGFILE_PATH%"
+	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\Music\iTunes"											"%DST_ROOT_PATH%\setting\iTunes\iTunes"							"%LOGFILE_PATH%"
 	
 	:: program
 	call "%EXEC_SCRIPT_PATH%"		"C:\prg_exe"															"%DST_ROOT_PATH%\program\prg_exe"								"%LOGFILE_PATH%"
