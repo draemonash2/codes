@@ -69,8 +69,6 @@ echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\CherryPlayer\CherryPlayer 2.0"				"%DST_ROOT_PATH%\setting\CherryPlayer\CherryPlayer 2.0"			"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\HNXgrep"									"%DST_ROOT_PATH%\setting\HNXgrep\HNXgrep"						"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\Icaros"									"%DST_ROOT_PATH%\setting\Icaros\Icaros"							"%LOGFILE_PATH%"
-	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Local\KeePass\PluginCache"						"%DST_ROOT_PATH%\setting\KeePass\PluginCache"					"%LOGFILE_PATH%"
-		call "%EXEC_SCRIPT_PATH%"	"%USERPROFILE%\AppData\Roaming\KeePass\KeePass.config.xml"				"%DST_ROOT_PATH%\setting\KeePass\KeePass.config.xml"			"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\GZ20\EasyShot\EasyShot.ini"				"%DST_ROOT_PATH%\setting\EasyShot\EasyShot.ini"					"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\KT Software\DeInput\DeInput.cfg"			"%DST_ROOT_PATH%\setting\DeInput\DeInput.cfg"					"%LOGFILE_PATH%"
 	call "%EXEC_SCRIPT_PATH%"		"%USERPROFILE%\AppData\Roaming\Mp3tag"									"%DST_ROOT_PATH%\setting\MP3Tag\MP3Tag"							"%LOGFILE_PATH%"

@@ -15,8 +15,8 @@ Call RunasCheck
 
 Const TRGT_NETWORKDRIVE_PATH = "\\RASPBERRYPI\pockethdd"
 Const SEARCH_VOLUME_LAVEL = "PocketHdd"
-Const BACKUP_PATH_SRC = "C:\Users\draem_000\AppData\Roaming\Apple Computer\MobileSync\Backup"
-Const BACKUP_PATH_DST = "810_BackUp_iTunes\MobileSync\Backup"
+Const BACKUP_PATH_SRC = "C:\Users\draem_000\AppData\Roaming\Apple Computer\MobileSync"
+Const BACKUP_PATH_DST = "700_Evacuate_iTunes\MobileSync"
 
 Dim sTrgtDrvPath
 sTrgtDrvPath = ""
