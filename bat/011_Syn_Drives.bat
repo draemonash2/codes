@@ -43,7 +43,7 @@ if %ARG_NUM% == 3 (
 
 set OPT=
 if %1 == /l (
-	set SRC_PATH=Z:\
+	set SRC_PATH=Z:
 	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\800_BackUp_Library
 	set OPT=!OPT! /MIR
 	set OPT=!OPT! /SL
@@ -114,7 +114,8 @@ if "%EXEC_MODE%" == "SUSPEND" (
 	rem
 )
 echo ### Wait for a while ...
-robocopy "%SRC_PATH%" "%DST_PATH%" %OPT% /LOG:%LOG_PATH% >NUL 2>&1
+robocopy "%SRC_PATH%" "%DST_PATH%" %OPT% > "%LOG_PATH%"
+::echo robocopy "%SRC_PATH%" "%DST_PATH%" %OPT% "%LOG_PATH%"
 echo ############### Finish! ##################
 if "%EXEC_MODE%" == "SUSPEND" (
 	pause
