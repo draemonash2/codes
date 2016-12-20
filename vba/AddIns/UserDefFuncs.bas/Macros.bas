@@ -177,10 +177,7 @@ Public Sub ダブルクォートを除いてセルコピー()
         End If
     Next lSelCnt
     
-    With New DataObject
-        .SetText sBuf
-        .PutInClipboard
-    End With
+    Call CopyText(sBuf)
     
     'フィードバック
     Application.StatusBar = "■■■■■■■■ コピー完了！ ■■■■■■■■"
