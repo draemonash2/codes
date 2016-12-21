@@ -89,7 +89,7 @@ set IDX_MAX=%~3
 set PREV_ACTIVE_DIR_NUM=1
 set CURR_ACTIVE_DIR_NUM=1
 for /l %%i in (1,1,%IDX_MAX%) do (
-	if exist %DST_PATH%_%%i_is_active_directory (
+	if exist "%DST_PATH%_%%i is active directory" (
 		set PREV_ACTIVE_DIR_NUM=%%i
 		if %%i==%IDX_MAX% (
 			set CURR_ACTIVE_DIR_NUM=1
@@ -100,8 +100,8 @@ for /l %%i in (1,1,%IDX_MAX%) do (
 	)
 )
 :break
-del %DST_PATH%_%PREV_ACTIVE_DIR_NUM%_is_active_directory >NUL 2>&1
-echo.> %DST_PATH%_%CURR_ACTIVE_DIR_NUM%_is_active_directory
+del "%DST_PATH%_%PREV_ACTIVE_DIR_NUM% is active directory" >NUL 2>&1
+echo.> "%DST_PATH%_%CURR_ACTIVE_DIR_NUM% is active directory"
 set DST_PATH=%DST_PATH%_%CURR_ACTIVE_DIR_NUM%
 set LOG_PATH=%DST_BASE_PATH%\%~n0_%CURR_ACTIVE_DIR_NUM%.log
 
