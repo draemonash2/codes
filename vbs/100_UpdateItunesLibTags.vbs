@@ -493,7 +493,7 @@ if bIsExecLibMod = True Then
         )
         oPrgBar.SetProg( 0 ) '進捗更新
         
-        objLogFile.WriteLine "[FilePath]" & Chr(9) & "[TrackName}" & Chr(9) & "[HitNum]"
+        objLogFile.WriteLine "[HitNum]" & Chr(9) & "[FilePath}" & Chr(9) & "[TrackName]" & Chr(9) & "[Kind]" & Chr(9) & "[Location]" & Chr(9) & "[LocMatch]"
         
         Dim lTrgtFileListIdx
         Dim lTrgtFileListNum
@@ -531,12 +531,13 @@ if bIsExecLibMod = True Then
             Set objPlayList = WScript.CreateObject("iTunes.Application").Sources.Item(1).Playlists.ItemByName("ミュージック")
             Set objSearchResult = objPlayList.Search( sTrgtTrackName, 5 )
             
-            objLogFile.WriteLine sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & objSearchResult.Count
-            
+			Dim sOutLine
             Dim lHitIdx
             For lHitIdx = 1 to objSearchResult.Count
                 With objSearchResult.Item(lHitIdx)
-                    If .Kind = "MPEG オーディオファイル" Then
+					sOutLine = lHitIdx & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
+                    If .Kind = 1 Then
+						sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & .Location = sTrgtFilePath
                         If .Location = sTrgtFilePath Then
                             .Composer = "1"
                             .Composer = ""
@@ -548,6 +549,7 @@ if bIsExecLibMod = True Then
                         'Do Nothing
                     End If
                 End With
+				objLogFile.WriteLine sOutLine
             Next
             Set objSearchResult = Nothing
             Set objPlayList = Nothing
