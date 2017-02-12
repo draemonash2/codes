@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ProgressBar 
    Caption         =   "モードレス表示を使用した進捗表示"
-   ClientHeight    =   2544
+   ClientHeight    =   3048
    ClientLeft      =   48
    ClientTop       =   432
    ClientWidth     =   3888
@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'ProgressBar v1.3
+'ProgressBar v1.4
 '
 '<<Usage Sample>>
 '    Sub test()
@@ -61,8 +61,11 @@ Private Const BAR_COLOR_B As Long = 150
 Private Const FONT_NAME As String = "MS ゴシック"
 Private Const FONT_SIZE_LABEL As Long = 14
 Private Const FONT_SIZE_ELPSDTIME As Long = 12
+Private Const FONT_SIZE_REMTIME As Long = 12
 Private Const FONT_SIZE_BAR As Long = 15
 Private Const FONT_SIZE_BUTTON As Long = 12
+
+Private Const ELAPSED_TIME_DIFF_COUNT_MAX As Long = 10
 
 '======================================================
 ' 定数＆変数
@@ -75,6 +78,12 @@ Private glProgMsgLineNum As Long
 Private gdStartTime As Double
 Private gbIsCanceled As Boolean
 Private gbIsSuspended As Boolean
+Private gdElapsedTime As Double
+Private gdProgPerLastCalc As Double
+Private glElapsedTimeStoreNum As Long
+Private gdElapsedTimeDiffTable() As Double
+Private gdElapsedTimeLastCalc As Double
+Private gdRemainingTime As Double
 
 '======================================================
 ' 本処理
@@ -104,6 +113,11 @@ Private Sub UserForm_Initialize()
             .Caption = ""
             .Font.Name = FONT_NAME
             .Font.Size = FONT_SIZE_ELPSDTIME
+        End With
+        With .RemTime
+            .Caption = ""
+            .Font.Name = FONT_NAME
+            .Font.Size = FONT_SIZE_REMTIME
         End With
         With .ProgBarFrame
             .Caption = ""
@@ -141,6 +155,16 @@ Private Sub UserForm_Initialize()
     gdStartTime = Timer
     gbIsCanceled = False
     gbIsSuspended = False
+    gdElapsedTime = 0
+    gdProgPerLastCalc = 0
+    glElapsedTimeStoreNum = 0
+    ReDim Preserve gdElapsedTimeDiffTable(ELAPSED_TIME_DIFF_COUNT_MAX - 1)
+    Dim i
+    For i = 0 To ELAPSED_TIME_DIFF_COUNT_MAX - 1
+        gdElapsedTimeDiffTable(i) = 0
+    Next i
+    gdElapsedTimeLastCalc = 0
+    gdRemainingTime = 7200
 End Sub
 
 Private Sub UserForm_Terminate()
@@ -149,6 +173,14 @@ End Sub
 
 Public Property Get IsCanceled()
     IsCanceled = gbIsCanceled
+End Property
+
+Public Property Get ElapsedTime()
+    ElapsedTime = gdElapsedTime
+End Property
+
+Public Property Get RemainingTime()
+    RemainingTime = gdRemainingTime
 End Property
 
 'Public Property Get IsSuspended()
@@ -179,18 +211,57 @@ Public Function Update( _
     
     '経過時間算出
     Dim dNow As Double
-    Dim lElapsedTime As Long
     dNow = Timer
     If dNow - gdStartTime > 0 Then
-        lElapsedTime = dNow - gdStartTime
+        gdElapsedTime = dNow - gdStartTime
     Else
-        lElapsedTime = ((60 * 60 * 24) - gdStartTime) + dNow
+        gdElapsedTime = ((60 * 60 * 24) - gdStartTime) + dNow
+    End If
+    
+    '残り時間算出
+    Dim dProgPerCur As Double
+    Dim dProgPerDiff As Double
+    Dim dElapsedTimeCur As Double
+    dProgPerCur = dProgPer
+    dProgPerDiff = dProgPerCur - gdProgPerLastCalc
+    dElapsedTimeCur = gdElapsedTime
+    If Int(dProgPerDiff * 100) >= 1 Then
+        Dim dProgPerRem As Double
+        Dim dElapsedTimeDiff As Double
+        Dim dElapsedTime1PerCur As Double
+        dProgPerRem = 100 - (dProgPerCur * 100)
+        dElapsedTimeDiff = dElapsedTimeCur - gdElapsedTimeLastCalc
+        dElapsedTime1PerCur = dElapsedTimeDiff / Int(dProgPerDiff * 100)
+        Dim dElapsedTimeSum As Double
+        dElapsedTimeSum = dElapsedTime1PerCur
+        Dim i As Long
+        For i = 0 To glElapsedTimeStoreNum - 1 Step 1
+            dElapsedTimeSum = dElapsedTimeSum + gdElapsedTimeDiffTable(i)
+        Next i
+        Dim dElapsedTimeAvg As Double
+        dElapsedTimeAvg = dElapsedTimeSum / (glElapsedTimeStoreNum + 1)
+        gdRemainingTime = dElapsedTimeAvg * dProgPerRem
+        
+        For i = ELAPSED_TIME_DIFF_COUNT_MAX - 1 To 1 Step -1
+            gdElapsedTimeDiffTable(i) = gdElapsedTimeDiffTable(i - 1)
+        Next i
+        gdElapsedTimeDiffTable(0) = dElapsedTime1PerCur
+        If glElapsedTimeStoreNum < ELAPSED_TIME_DIFF_COUNT_MAX Then
+            glElapsedTimeStoreNum = glElapsedTimeStoreNum + 1
+        Else
+            'Do Nothing
+        End If
+        gdProgPerLastCalc = dProgPerCur
+        gdElapsedTimeLastCalc = dElapsedTimeCur
+    Else
+        'Do Nothing
     End If
     
     'キャプション設定
     With Me
         .ProgMsg.Caption = sProgMsg
-        .ElpsdTime.Caption = "経過時間：" & lElapsedTime & " [秒]"
+        .ElpsdTime.Caption = "経過時間：" & ConvSec2SplitTime(Int(gdElapsedTime))
+        .RemTime.Caption = "残り時間：" & ConvSec2SplitTime(Application.RoundUp(gdRemainingTime, 0))
         .ProgPer.Caption = Int(dProgPer * 100) & " [%]"
         .ProgBar.Width = glBarMaxWidth * dProgPer 'プログレスバーの進捗表示を更新
     End With
@@ -230,6 +301,13 @@ Private Function FormResize()
             End If
         End With
         With .ElpsdTime
+            .Top = lHeightOffset + HEIGHT_SPACE
+            .Left = LEFT_OFFSET
+            .Width = WIDTH_WINDOW - (.Left * 2)
+            .Height = .Font.Size
+            lHeightOffset = .Top + .Height
+        End With
+        With .RemTime
             .Top = lHeightOffset + HEIGHT_SPACE
             .Left = LEFT_OFFSET
             .Width = WIDTH_WINDOW - (.Left * 2)
@@ -277,4 +355,31 @@ Private Function FormResize()
     End With
 End Function
 
+Private Function ConvSec2SplitTime( _
+    ByVal lRawSec As Long _
+)
+    Dim lOutSec As Long
+    Dim lOutMin As Long
+    Dim lOutHour As Long
+    Dim lMod As Long
+    
+    lMod = lRawSec
+    lOutHour = Fix(lMod / (60 * 60))
+    
+    lMod = Fix(lMod - (lOutHour * (60 * 60)))
+    lOutMin = Fix(lMod / 60)
+    
+    lMod = Fix(lMod - (lOutMin * 60))
+    lOutSec = lMod
+    
+    If lOutHour = 0 Then
+        If lOutMin = 0 Then
+            ConvSec2SplitTime = lOutSec & " 秒"
+        Else
+            ConvSec2SplitTime = lOutMin & " 分 " & lOutSec & " 秒"
+        End If
+    Else
+        ConvSec2SplitTime = lOutHour & " 時間 " & lOutMin & " 分 " & lOutSec & " 秒"
+    End If
+End Function
 
