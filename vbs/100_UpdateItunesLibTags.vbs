@@ -134,16 +134,15 @@ End If
 ' * iTunes ライブラリバックアップ          *
 ' ******************************************
 If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
-    oPrgBar.SetMsg( _
+    oPrgBar.Message = _
         "⇒・iTunes ライブラリ バックアップ" & vbNewLine & _
         "　・iTunes ライブラリ 追加処理" & vbNewLine & _
         "　・iTunes ライブラリ 更新処理" & vbNewLine & _
         "　　- 日付入力処理" & vbNewLine & _
         "　　- 更新対象ファイル特定処理" & vbNewLine & _
         "　　- タグ更新処理" & _
-        "" _
-    )
-    oPrgBar.SetProg( 20 ) '進捗更新
+        ""
+    oPrgBar.Update( 0.2 ) '進捗更新
     
     '*** バックアップフォルダ作成 ***
     Dim sCurDateTime
@@ -208,20 +207,19 @@ if bIsExecLibAdd = True Then
         
         objLogFile.WriteLine ""
         objLogFile.WriteLine "*** ファイル追加 *** "
-        oPrgBar.SetMsg( _
+        oPrgBar.Message = _
             "　・iTunes ライブラリ バックアップ" & vbNewLine & _
             "⇒・iTunes ライブラリ 追加処理" & vbNewLine & _
             "　・iTunes ライブラリ 更新処理" & vbNewLine & _
             "　　- 日付入力処理" & vbNewLine & _
             "　　- 更新対象ファイル特定処理" & vbNewLine & _
             "　　- タグ更新処理" & _
-            "" _
-        )
-        oPrgBar.SetProg( 50 ) '進捗更新
+            ""
+        oPrgBar.Update( 0.5 ) '進捗更新
         
         WScript.CreateObject("iTunes.Application").LibraryPlaylist.AddFile( TRGT_DIR )
         
-        oPrgBar.SetProg( 100 ) '進捗更新
+        oPrgBar.Update( 1 ) '進捗更新
         
         objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
         objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
@@ -243,20 +241,19 @@ if bIsExecLibMod = True Then
         
         objLogFile.WriteLine ""
         objLogFile.WriteLine "*** 日付入力処理 *** "
-        oPrgBar.SetMsg( _
+        oPrgBar.Message = _
             "　・iTunes ライブラリ バックアップ" & vbNewLine & _
             "　・iTunes ライブラリ 追加処理" & vbNewLine & _
             "　・iTunes ライブラリ 更新処理" & vbNewLine & _
             "⇒　- 日付入力処理" & vbNewLine & _
             "　　- 更新対象ファイル特定処理" & vbNewLine & _
             "　　- タグ更新処理" & _
-            "" _
-        )
-        oPrgBar.SetProg( 0 ) '進捗更新
+            ""
+        oPrgBar.Update( 0 ) '進捗更新
         
         On Error Resume Next
         
-        oPrgBar.SetProg( 10 ) '進捗更新
+        oPrgBar.Update( 0.1 ) '進捗更新
         
         Dim sNow
         sNow = Now()
@@ -281,7 +278,7 @@ if bIsExecLibMod = True Then
         sTimeValue = TimeValue(sCmpBaseTime)
         sDateValue = DateValue(sCmpBaseTime)
         
-        oPrgBar.SetProg( 50 ) '進捗更新
+        oPrgBar.Update( 0.5 ) '進捗更新
         
         '日付チェック
         If Err.Number <> 0 Then
@@ -307,7 +304,7 @@ if bIsExecLibMod = True Then
         End If
         On Error Goto 0 '「On Error Resume Next」を解除
         
-        oPrgBar.SetProg( 100 ) '進捗更新
+        oPrgBar.Update( 1 ) '進捗更新
         
         oStpWtch.IntervalTime ' IntervalTime 更新
         
@@ -322,16 +319,15 @@ if bIsExecLibMod = True Then
         
         objLogFile.WriteLine ""
         objLogFile.WriteLine "*** 更新対象ファイル特定 *** "
-        oPrgBar.SetMsg( _
+        oPrgBar.Message = _
             "　・iTunes ライブラリ バックアップ" & vbNewLine & _
             "　・iTunes ライブラリ 追加処理" & vbNewLine & _
             "　・iTunes ライブラリ 更新処理" & vbNewLine & _
             "　　- 日付入力処理" & vbNewLine & _
             "⇒　- 更新対象ファイル特定処理" & vbNewLine & _
             "　　- タグ更新処理" & _
-            "" _
-        )
-        oPrgBar.SetProg( 0 ) '進捗更新
+            ""
+        oPrgBar.Update( 0 ) '進捗更新
         
         On Error Resume Next
         
@@ -364,7 +360,7 @@ if bIsExecLibMod = True Then
         End If
         On Error Goto 0
         
-        oPrgBar.SetProg( 20 ) '進捗更新
+        oPrgBar.Update( 0.2 ) '進捗更新
         
         '*** 更新日時抽出 ***
         Dim oMatchResult
@@ -400,7 +396,7 @@ if bIsExecLibMod = True Then
         For iMatchIdx = 0 To lMatchResultCount - 1
             '進捗更新
             If iMatchIdx Mod 100 = 0 Then
-                oPrgBar.SetProg( _
+                oPrgBar.Update( _
                     oPrgBar.ConvProgRange( _
                         0, _
                         oMatchResult.Count - 1, _
@@ -455,7 +451,7 @@ if bIsExecLibMod = True Then
             End If
         Next
         
-        oPrgBar.SetProg( 100 ) '進捗更新
+        oPrgBar.Update( 1 ) '進捗更新
         
         If DEBUG_FUNCVALID_DIRRESULTDELETE = True Then ' ★Debug★
             objFSO.DeleteFile sTmpFilePath, True
@@ -482,16 +478,15 @@ if bIsExecLibMod = True Then
         
         objLogFile.WriteLine ""
         objLogFile.WriteLine "*** タグ更新処理 *** "
-        oPrgBar.SetMsg( _
+        oPrgBar.Message = _
             "　・iTunes ライブラリ バックアップ" & vbNewLine & _
             "　・iTunes ライブラリ 追加処理" & vbNewLine & _
             "　・iTunes ライブラリ 更新処理" & vbNewLine & _
             "　　- 日付入力処理" & vbNewLine & _
             "　　- 更新対象ファイル特定処理" & vbNewLine & _
             "⇒　- タグ更新処理" & _
-            "" _
-        )
-        oPrgBar.SetProg( 0 ) '進捗更新
+            ""
+        oPrgBar.Update( 0 ) '進捗更新
         
         objLogFile.WriteLine "[HitNum]" & Chr(9) & "[FilePath}" & Chr(9) & "[TrackName]" & Chr(9) & "[Kind]" & Chr(9) & "[Location]" & Chr(9) & "[LocMatch]"
         
@@ -500,7 +495,7 @@ if bIsExecLibMod = True Then
         lTrgtFileListNum = UBound( asTrgtFileList )
         For lTrgtFileListIdx = 0 To lTrgtFileListNum
             '進捗更新
-            oPrgBar.SetProg( _
+            oPrgBar.Update( _
                 oPrgBar.ConvProgRange( _
                     0, _
                     lTrgtFileListNum, _
@@ -531,13 +526,13 @@ if bIsExecLibMod = True Then
             Set objPlayList = WScript.CreateObject("iTunes.Application").Sources.Item(1).Playlists.ItemByName("ミュージック")
             Set objSearchResult = objPlayList.Search( sTrgtTrackName, 5 )
             
-			Dim sOutLine
+            Dim sOutLine
             Dim lHitIdx
             For lHitIdx = 1 to objSearchResult.Count
                 With objSearchResult.Item(lHitIdx)
-					sOutLine = lHitIdx & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
+                    sOutLine = lHitIdx & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
                     If .Kind = 1 Then
-						sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & .Location = sTrgtFilePath
+                        sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & ( .Location = sTrgtFilePath )
                         If .Location = sTrgtFilePath Then
                             .Composer = "1"
                             .Composer = ""
@@ -549,7 +544,7 @@ if bIsExecLibMod = True Then
                         'Do Nothing
                     End If
                 End With
-				objLogFile.WriteLine sOutLine
+                objLogFile.WriteLine sOutLine
             Next
             Set objSearchResult = Nothing
             Set objPlayList = Nothing

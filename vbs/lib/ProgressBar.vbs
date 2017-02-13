@@ -1,11 +1,26 @@
 Option Explicit
 
+Private Const ELAPSED_TIME_DIFF_COUNT_MAX = 10
+Private Const PROGBAR_BASIC_LINE_NUM = 4
+Private Const PROGBAR_WIN_WIDTH = 600
+Private Const PROGBAR_REMAINING_TIME_INIT = 7200
+
 Class ProgressBar
 	Dim gobjExplorer
+	Dim glWinHeight
+	Dim glWinHeightOld
 	Dim gsProgMsg
-	Dim glProg100
-	Dim glProg10
-	Dim glStartTime
+	Dim gdProgPerRaw
+	Dim gdProgPer10
+	Dim gdProgPer100
+	Dim gdStartTime
+	Dim gsStartDate
+	Dim gdElapsedTime
+	Dim gdProgPerLastCalc
+	Dim glElapsedTimeStoreNum
+	Dim gdElapsedTimeDiffTable()
+	Dim gdElapsedTimeLastCalc
+	Dim gdRemainingTime
 	
 	Private Sub Class_Initialize()
 		Dim objWMIService
@@ -25,72 +40,182 @@ Class ProgressBar
 		Set colItems = Nothing
 		
 		gsProgMsg = ""
-		glProg100 = 0
-		glProg10 = 0
-		glStartTime = 0
+		glWinHeight = CalcWinHeight( PROGBAR_BASIC_LINE_NUM )
+		glWinHeightOld = glWinHeight
+		gdProgPerRaw = 0
+		gdProgPer10 = 0
+		gdProgPer100 = 0
+		gdStartTime = Timer()
+		gsStartDate = Date()
+		gdElapsedTime = 0
+		gdProgPerLastCalc = 0
+		glElapsedTimeStoreNum = 0
+		ReDim Preserve gdElapsedTimeDiffTable(ELAPSED_TIME_DIFF_COUNT_MAX - 1)
+		Dim i
+		For i = 0 To ELAPSED_TIME_DIFF_COUNT_MAX - 1
+			gdElapsedTimeDiffTable(i) = 0
+		Next
+		gdElapsedTimeLastCalc = 0
+		gdRemainingTime = PROGBAR_REMAINING_TIME_INIT
 		
 		Set gobjExplorer = CreateObject("InternetExplorer.Application")
 		gobjExplorer.Navigate "about:blank"
 		gobjExplorer.ToolBar = 0
 		gobjExplorer.StatusBar = 0
-		gobjExplorer.Width = 450
-		gobjExplorer.Height = ( 28 * 2 ) + 65
+		gobjExplorer.Width = PROGBAR_WIN_WIDTH
+		gobjExplorer.Height = glWinHeight
 		gobjExplorer.Left = ( intHorizontal - gobjExplorer.Width ) / 2
 		gobjExplorer.Top = ( intVertical - gobjExplorer.Height ) / 2
+		gobjExplorer.Document.Body.InnerHTML = _
+			"<font face=""ＭＳ ゴシック"">" & _
+			"<span style=""font-size:18px; line-height:22px;"">" & _
+			"処理中...<br>" & _
+			"</span>" & _
+			"</font>" & _
+			""
 		gobjExplorer.Visible = 1
 		
 		Call ActiveIE
 		gobjExplorer.Document.Body.Style.Cursor = "wait"
 		gobjExplorer.Document.Title = "進捗状況"
-		
-		SetProg(0)
 	End Sub
 	
 	Private Sub Class_Terminate()
 		'Do Nothing
 	End Sub
 	
+	' タイトルを指定
+	Public Property Let Title( _
+		ByVal sTitle _
+	)
+		gobjExplorer.Document.Title = sTitle
+	End Property
+	
 	' メッセージを指定
-	' ★注意★
-	'   本関数は若干処理時間がかかります。
-	'   一定時間感覚を空けて呼び出すこと。
-	Public Function SetMsg( _
+	Public Property Let Message( _
 		ByVal sProgMsg _
 	)
 		Dim lBrNum
 		Dim lLineNum
-		'ウィンドウの高さ算出
 		lBrNum = ( Len( sProgMsg ) - Len( Replace( sProgMsg, vbNewLine, "" ) ) ) / 2
-		lLineNum = ( lBrNum + 1 ) + 4
-		gobjExplorer.Height = ( 28 * lLineNum ) + 65
-		
-		gsProgMsg = sProgMsg
-		
-		PutProg()
-	End Function
+		lLineNum = ( lBrNum + 1 ) + PROGBAR_BASIC_LINE_NUM + 1
+		glWinHeight = CalcWinHeight( lLineNum )
+		If sProgMsg = "" Then
+			gsProgMsg = ""
+		Else
+			gsProgMsg = Replace( sProgMsg, vbNewLine, "<br>" ) & "<br><br>"
+		End If
+	End Property
 	
-	' 0 ～ 100 を指定
+	' 0 ～ 1 を指定
 	' ★注意★
-	'   本関数は若干処理時間がかかります。
-	'   一定時間感覚を空けて呼び出すこと。
-	Public Function SetProg( _
-		ByVal lProg100 _
+	'	本関数は若干処理時間がかかります。
+	'	一定時間間隔を空けて呼び出すこと。
+	Public Function Update( _
+		ByVal dProgPerRaw _
 	)
-		If lProg100 > 100 Or lProg100 < 0 Then
+		If dProgPerRaw > 1 Or dProgPerRaw < 0 Then
 			MsgBox "指定されたプログレスバーの進捗が最大最小範囲外の値が指定されています！" & vbNewLine & _
-				   "値：" & lProg100
+				   "値：" & dProgPerRaw
 			MsgBox "プログラムを中止します！"
 			Call Quit
 			WScript.Quit
 		End If
 		
-		glProg100 = Fix( lProg100 )
-		glProg10 = Fix( lProg100 / 10 )
+		gdProgPerRaw = dProgPerRaw
+		gdProgPer10 = Int( dProgPerRaw * 10 )
+		gdProgPer100 = Int( dProgPerRaw * 100 )
 		
-		PutProg()
+		'経過時間算出
+		Dim sDateOld
+		Dim sDateNow
+		Dim dSecondOld
+		Dim dSecondNow
+		Dim lDateDiff
+		sDateOld = gsStartDate
+		sDateNow = Date()
+		dSecondOld = gdStartTime
+		dSecondNow = Timer()
+		lDateDiff = DateDiff("d", sDateOld, sDateNow)
+		If lDateDiff > 0 Then
+			gdElapsedTime = (DATE_SECOND * (lDateDiff - 1)) + (DATE_SECOND - dSecondOld) + dSecondNow
+		ElseIf lDateDiff = 0 Then
+			gdElapsedTime = dSecondNow - dSecondOld
+		Else
+			gdElapsedTime = 0
+		End If
+		gdElapsedTime = CDbl( gdElapsedTime )
+		
+		'残り時間算出
+		Dim dProgPerCur
+		Dim dProgPerDiff
+		Dim dElapsedTimeCur
+		dProgPerCur = gdProgPerRaw
+		dProgPerDiff = dProgPerCur - gdProgPerLastCalc
+		dElapsedTimeCur = gdElapsedTime
+		If Int(dProgPerDiff * 100) >= 1 Then
+			Dim dProgPerRem
+			Dim dElapsedTimeDiff
+			Dim dElapsedTime1PerCur
+			dProgPerRem = 100 - (dProgPerCur * 100)
+			dElapsedTimeDiff = dElapsedTimeCur - gdElapsedTimeLastCalc
+			dElapsedTime1PerCur = dElapsedTimeDiff / Int(dProgPerDiff * 100)
+			Dim dElapsedTimeSum
+			dElapsedTimeSum = dElapsedTime1PerCur
+			Dim i
+			For i = 0 To glElapsedTimeStoreNum - 1 Step 1
+				dElapsedTimeSum = dElapsedTimeSum + gdElapsedTimeDiffTable(i)
+			Next
+			Dim dElapsedTimeAvg
+			dElapsedTimeAvg = dElapsedTimeSum / (glElapsedTimeStoreNum + 1)
+			gdRemainingTime = dElapsedTimeAvg * dProgPerRem
+			
+			For i = ELAPSED_TIME_DIFF_COUNT_MAX - 1 To 1 Step -1
+				gdElapsedTimeDiffTable(i) = gdElapsedTimeDiffTable(i - 1)
+			Next
+			gdElapsedTimeDiffTable(0) = dElapsedTime1PerCur
+			If glElapsedTimeStoreNum < ELAPSED_TIME_DIFF_COUNT_MAX Then
+				glElapsedTimeStoreNum = glElapsedTimeStoreNum + 1
+			Else
+				'Do Nothing
+			End If
+			gdProgPerLastCalc = dProgPerCur
+			gdElapsedTimeLastCalc = dElapsedTimeCur
+		ElseIf Fix(dProgPerDiff * 100) < 0 Then
+			'進捗が下がったらクリアする
+			For i = 0 To ELAPSED_TIME_DIFF_COUNT_MAX - 1
+				gdElapsedTimeDiffTable(i) = 0
+			Next
+			gdProgPerLastCalc = dProgPerCur
+			gdElapsedTimeLastCalc = dElapsedTimeCur
+			glElapsedTimeStoreNum = 0
+			gdRemainingTime = PROGBAR_REMAINING_TIME_INIT
+		Else
+			'Do Nothing
+		End If
+		
+		'高さ調節
+		If glWinHeight = glWinHeightOld Then
+			'Do Nothing
+		Else
+			gobjExplorer.Height = glWinHeight
+		End If
+		glWinHeightOld = glWinHeight
+		
+		'本文出力
+		gobjExplorer.Document.Body.InnerHTML = _
+			"<font face=""ＭＳ ゴシック"">" & _
+			"<span style=""font-size:18px; line-height:22px;"">" & _
+			gsProgMsg & "処理中...<br>" & _
+			"　経過時間：" & ConvSec2SplitTime( Int( gdElapsedTime ) ) & "<br>" & _
+			"　残り時間：" & ConvSec2SplitTime( RoundUp( gdRemainingTime ) ) & "<br>" & _
+			String( gdProgPer10, "■") & String( 10 - gdProgPer10, "□") & "  " & gdProgPer100 & "% 完了" & _
+			"</span>" & _
+			"</font>" & _
+			""
 	End Function
 	
-	' 進捗を変換（例：0～500 を 0～100 に変換）
+	' 進捗を変換（例：100～500 を 0～1 に変換）
 	Public Function ConvProgRange( _
 		ByVal lInMin, _
 		ByVal lInMax, _
@@ -113,32 +238,7 @@ Class ProgressBar
 		
 		lConvMax = ( lInMax - lInMin ) + 1
 		lConvProg = ( lInProg - lInMin ) + 1
-		ConvProgRange = ( lConvProg / lConvMax ) * 100
-	End Function
-	
-	Private Function PutProg()
-		Dim sProgMsg
-		If gsProgMsg = "" Then
-			sProgMsg = gsProgMsg
-		Else
-			sProgMsg = Replace( gsProgMsg, vbNewLine, "<br>" ) & "<br><br>"
-		End If
-		
-		If glStartTime = 0 Then
-			glStartTime = Now()
-		Else
-			'Do Nothing
-		End If
-		
-		gobjExplorer.Document.Body.InnerHTML = _
-			"<font face=""ＭＳ ゴシック"">" & _
-			"<span style=""font-size:18px; line-height:22px;"">" & _
-			sProgMsg & "処理中...<br>" & _
-			DateDiff( "s", glStartTime, Now() ) & " [s] 経過...<br>" & _
-			String( glProg10, "■") & String( 10 - glProg10, "□") & "  " & glProg100 & "% 完了" & _
-			"</span>" & _
-			"</font>" & _
-			""
+		ConvProgRange = lConvProg / lConvMax
 	End Function
 	
 	Public Function Quit()
@@ -159,7 +259,9 @@ Class ProgressBar
 		Set objWshShell = Nothing
 	End Function
 	
-	Private Function GetProcID(ProcessName)
+	Private Function GetProcID( _
+		ByVal ProcessName _
+	)
 		Dim Service
 		Dim QfeSet
 		Dim Qfe
@@ -175,43 +277,154 @@ Class ProgressBar
 			Exit For
 		Next
 	End Function
+	
+	Private Function ConvSec2SplitTime( _
+		ByVal lRawSec _
+	)
+		Dim lOutSec
+		Dim lOutMin
+		Dim lOutHour
+		Dim lMod
+		
+		lMod = lRawSec
+		lOutHour = Fix(lMod / (60 * 60))
+		
+		lMod = Fix(lMod - (lOutHour * (60 * 60)))
+		lOutMin = Fix(lMod / 60)
+		
+		lMod = Fix(lMod - (lOutMin * 60))
+		lOutSec = lMod
+		
+		If lOutHour = 0 Then
+			If lOutMin = 0 Then
+				ConvSec2SplitTime = lOutSec & " 秒"
+			Else
+				ConvSec2SplitTime = lOutMin & " 分 " & lOutSec & " 秒"
+			End If
+		Else
+			ConvSec2SplitTime = lOutHour & " 時間 " & lOutMin & " 分 " & lOutSec & " 秒"
+		End If
+	End Function
+	
+	Private Function RoundUp( _
+		ByVal dRawVal _
+	)
+		RoundUp = Round( dRawVal + 0.5 )
+	End Function
+	
+	Private Function CalcWinHeight( _
+		ByVal lLineNum _
+	)
+		CalcWinHeight = ( 28 * lLineNum ) + 65
+	End Function
 End Class
 
-'Call TestCase
-'Private Sub TestCase
-'	Dim oProgBar
-'	Dim lTestCase
-'	Dim i
-'	Dim iBefore
-'	Dim iAfter
-'	
-'	lTestCase = 2
-'	
-'	Set oProgBar = New ProgressBar
-'	With oProgBar
-'		Select Case lTestCase
-'			Case 1
-'				.SetMsg( "Test Maggage" )
-'				iBefore = Timer()
-'				For i = 0 to 100
-'					.SetProg( i )
-'					WScript.Sleep 10
-'				Next
-'				iAfter = Timer()
-'				MsgBox iAfter - iBefore
-'			Case 2
-'				.SetMsg( "Test Maggage" )
-'				iBefore = Timer()
-'				For i = 400 to 500
-'					.SetProg( .ConvProgRange( 400, 500, i ) )
-'					WScript.Sleep 10
-'				Next
-'				iAfter = Timer()
-'				MsgBox iAfter - iBefore
-'			Case Else
-'				
-'		End Select
-'		.Quit()
-'	End With
-'End Sub
+'	Call TestCase_ProgressBar
+	Private Sub TestCase_ProgressBar
+		Dim oProgBar
+		Dim lTestCase
+		Dim i
+		Dim iBefore
+		Dim iAfter
+		
+		lTestCase = InputBox( "テストケース番号を入力してください。" , "TestTitle" )
+		
+		Set oProgBar = New ProgressBar
+		Select Case lTestCase
+			Case 1
+				oProgBar.Message = "Test Message"
+				iBefore = Timer()
+				For i = 0 to 100
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 2
+				oProgBar.Message = "Test Message"
+				iBefore = Timer()
+				For i = 400 to 500
+					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 3
+				oProgBar.Message = "Test Message"
+				WScript.Sleep 3000
+				iBefore = Timer()
+				For i = 0 to 1000
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 4
+				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+				iBefore = Timer()
+				For i = 400 to 500
+					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 5
+				oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
+				iBefore = Timer()
+				For i = 400 to 500
+					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 6
+				iBefore = Timer()
+				For i = 0 to 1000
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 7
+				iBefore = Timer()
+				For i = 0 to 1000
+					If i = 300 Then
+						oProgBar.Message = "Test Message" & vbNewLine & "ooo" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
+					Else
+						'Do Nothing
+					End If
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 8
+				oProgBar.Title = "Progress!!"
+				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+				iBefore = Timer()
+				For i = 0 to 100
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case 9
+				iBefore = Timer()
+				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+				For i = 0 to 1000
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+					WScript.Sleep 10
+				Next
+				oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa"
+				For i = 0 to 1000
+					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+					WScript.Sleep 10
+				Next
+				iAfter = Timer()
+				MsgBox iAfter - iBefore
+			Case Else
+				'Do Nothing
+		End Select
+		oProgBar.Quit()
+	End Sub
 
