@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'ProgressBar v1.4
+'ProgressBar v1.5
 '
 '<<Usage Sample>>
 '    Sub test()
@@ -70,12 +70,14 @@ Private Const ELAPSED_TIME_DIFF_COUNT_MAX As Long = 10
 '======================================================
 ' 定数＆変数
 '======================================================
+Private Const DATE_SECOND = 86400 '60[s] * 60[m] * 24[h]
 Private Const HEIGHT_WINDOWTITLE As Long = 20
 
 Private glBarMaxWidth As Long
 Private gdOldTime As Double
 Private glProgMsgLineNum As Long
 Private gdStartTime As Double
+Private gsStartDate As String
 Private gbIsCanceled As Boolean
 Private gbIsSuspended As Boolean
 Private gdElapsedTime As Double
@@ -153,6 +155,7 @@ Private Sub UserForm_Initialize()
     glBarMaxWidth = Me.ProgBarFrame.Width - 6
     gdOldTime = Timer
     gdStartTime = Timer
+    gsStartDate = Date
     gbIsCanceled = False
     gbIsSuspended = False
     gdElapsedTime = 0
@@ -210,12 +213,22 @@ Public Function Update( _
     Call FormResize
     
     '経過時間算出
-    Dim dNow As Double
-    dNow = Timer
-    If dNow - gdStartTime > 0 Then
-        gdElapsedTime = dNow - gdStartTime
+    Dim sDateOld As String
+    Dim sDateNow As String
+    Dim dSecondOld As Double
+    Dim dSecondNow As Double
+    Dim lDateDiff As Long
+    sDateOld = gsStartDate
+    sDateNow = Date
+    dSecondOld = gdStartTime
+    dSecondNow = Timer
+    lDateDiff = DateDiff("d", sDateOld, sDateNow)
+    If lDateDiff > 0 Then
+        gdElapsedTime = (DATE_SECOND * (lDateDiff - 1)) + (DATE_SECOND - dSecondOld) + dSecondNow
+    ElseIf lDateDiff = 0 Then
+        gdElapsedTime = dSecondNow - dSecondOld
     Else
-        gdElapsedTime = ((60 * 60 * 24) - gdStartTime) + dNow
+        gdElapsedTime = 0
     End If
     
     '残り時間算出
