@@ -29,7 +29,9 @@ sMyFileBaseName = objFSO.GetBaseName( WScript.ScriptFullName )
 
 Dim oLogMng
 Set oLogMng = New LogMng
-Call oLogMng.LogFileOpen( sTrgtDir & "\" & sMyFileBaseName & ".log", "w" )
+Dim sLogFilePath
+sLogFilePath = sTrgtDir & "\" & sMyFileBaseName & ".log"
+Call oLogMng.LogFileOpen( sLogFilePath, "w" )
 
 Dim asFileList
 Call GetFileList2( sTrgtDir, asFileList, 1 )
@@ -55,6 +57,13 @@ Next
 
 oLogMng.LogFileClose()
 Set oLogMng = Nothing
+
+MsgBox _
+	"プログラムのショートカットの指示先を置換しました。" & vbNewLine & _
+	"元：" & EXE_PATH_ORG & vbNewLine & _
+	"先：" & EXE_PATH_NEW & vbNewLine & _
+	"" & vbNewLine & _
+	"※「" & sLogFilePath & "」に置換結果を出力しています"
 
 '==========================================================
 '= 関数定義
