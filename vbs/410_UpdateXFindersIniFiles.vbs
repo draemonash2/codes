@@ -31,28 +31,28 @@ sIniRootDirPath = objFSO.GetAbsolutePathName( sIniRootDirPath )
 
 Dim oLogMng
 Set oLogMng = New LogMng
-Call oLogMng.LogFileOpen( sLogFilePath, "w" )
+Call oLogMng.Open( sLogFilePath, "w" )
 
-oLogMng.LogPuts "sLogFilePath     : " & sLogFilePath
-oLogMng.LogPuts "sRootDirPath     : " & sRootDirPath
-oLogMng.LogPuts "sShortcutDirPath : " & sShortcutDirPath
-oLogMng.LogPuts "sIniRootDirPath  : " & sIniRootDirPath
-oLogMng.LogPuts ""
+oLogMng.Puts "sLogFilePath     : " & sLogFilePath
+oLogMng.Puts "sRootDirPath     : " & sRootDirPath
+oLogMng.Puts "sShortcutDirPath : " & sShortcutDirPath
+oLogMng.Puts "sIniRootDirPath  : " & sIniRootDirPath
+oLogMng.Puts ""
 
 'iniファイル全削除
-oLogMng.LogPuts "*** delete ini files ***"
+oLogMng.Puts "*** delete ini files ***"
 Dim objFile
 For Each objFile In objFSO.GetFolder( sIniRootDirPath ).Files
 	If objFile.Name = "_favorite_data.ini" Then
 		'Do Nothing
 	ElseIf InStr( objFile.Name, ".ini" ) Then
-		oLogMng.LogPuts objFile.Path
+		oLogMng.Puts objFile.Path
 		objFSO.DeleteFile objFile.Path, True
 	Else
 		'Do Nothing
 	End If
 Next
-oLogMng.LogPuts ""
+oLogMng.Puts ""
 
 'ショートカット ファイル/フォルダ一覧取得
 Dim asFileList()
@@ -63,7 +63,7 @@ Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
 'Ini ファイル作成
-oLogMng.LogPuts "*** create ini files ***"
+oLogMng.Puts "*** create ini files ***"
 Dim sFileDirPath
 Dim sFileDirParentDirPath
 Dim sIniFileName
@@ -91,7 +91,7 @@ For lIdx = 0 to UBound( asFileList )
 				sItemIcon					= ""
 				sItemExt					= ""
 				Call UpdateIniFile( sIniFilePath, sItemName, sItemPath, sItemType, sItemIcon, sItemExt )
-				Call oLogMng.LogPuts( "file   : " & chr(9) & sIniFilePath & chr(9) & sItemName & chr(9) & sItemPath & chr(9) & sItemType & chr(9) & sItemIcon & chr(9) & sItemExt )
+				Call oLogMng.Puts( "file   : " & chr(9) & sIniFilePath & chr(9) & sItemName & chr(9) & sItemPath & chr(9) & sItemType & chr(9) & sItemIcon & chr(9) & sItemExt )
 			Else
 				'Do Nothing
 			End If
@@ -106,18 +106,18 @@ For lIdx = 0 to UBound( asFileList )
 			sItemIcon						= "shell32.dll,3"
 			sItemExt						= ""
 			Call UpdateIniFile( sIniFilePath, sItemName, sItemPath, sItemType, sItemIcon, sItemExt )
-			Call oLogMng.LogPuts( "folder : " & chr(9) & sIniFilePath & chr(9) & sItemName & chr(9) & sItemPath & chr(9) & sItemType & chr(9) & sItemIcon & chr(9) & sItemExt )
+			Call oLogMng.Puts( "folder : " & chr(9) & sIniFilePath & chr(9) & sItemName & chr(9) & sItemPath & chr(9) & sItemType & chr(9) & sItemIcon & chr(9) & sItemExt )
 		Else
 			Dim sLogMsg
 			sLogMsg = "[error  ] target path is invalid! " & sFileDirPath
-			oLogMng.LogPuts sLogMsg
+			oLogMng.Puts sLogMsg
 			MsgBox sLogMsg
 			Wscript.Quit()
 		End If
 	End If
 Next
 
-Call oLogMng.LogFileClose()
+Call oLogMng.Close()
 Set oLogMng = Nothing
 
 '==========================================================

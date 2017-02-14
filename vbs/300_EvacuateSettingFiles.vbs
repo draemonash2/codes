@@ -59,21 +59,21 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 Dim oLog
 Set oLog = New LogMng
 If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
-	Call oLog.LogFileOpen( _
+	Call oLog.Open( _
 		WScript.Arguments(ARG_IDX_LOGDIR), _
 		"+w" _
 	)
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	'Do Nothing
 Else
-	oLog.LogPuts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	oLog.LogPuts "-      : [error  ] runas exec error!"
+	oLog.Puts "-      : [error  ] runas exec error!"
 	WScript.Quit
 End If
 
@@ -90,7 +90,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	oLog.LogPuts "-      : [error  ] source path is missing!             " & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "-      : [error  ] source path is missing!             " & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
@@ -110,7 +110,7 @@ sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.ln
 On Error Resume Next
 If sFileType = "folder" Then
 	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
-		oLog.LogPuts "folder : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "folder : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
 	Else
 		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
 		Call ErrorCheck(1)
@@ -129,12 +129,12 @@ If sFileType = "folder" Then
 			End With
 		End If
 		Call ErrorCheck(6)
-		oLog.LogPuts "folder : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "folder : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	End If
 	Call ErrorCheck(7)
 Else
 	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
-		oLog.LogPuts "file   : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "file   : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
 	Else
 		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
 		Call ErrorCheck(8)
@@ -153,13 +153,13 @@ Else
 			End With
 		End If
 		Call ErrorCheck(13)
-		oLog.LogPuts "file   : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "file   : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	End If
 	Call ErrorCheck(14)
 End If
 On Error Goto 0
 
-Call oLog.LogFileClose
+Call oLog.Close
 
 Set oLog = Nothing
 Set objFSO = Nothing
@@ -189,12 +189,12 @@ Function ErrorCheck( _
 	ByVal sErrorPlace _
 )
 	If Err.Number <> 0 Then
-		oLog.LogPuts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
-		oLog.LogPuts "           error place  : " & sErrorPlace
-		oLog.LogPuts "           error number : " & Err.Number
-		oLog.LogPuts "           error detail : " & Err.Description
+		oLog.Puts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "           error place  : " & sErrorPlace
+		oLog.Puts "           error number : " & Err.Number
+		oLog.Puts "           error detail : " & Err.Description
 		Err.Clear
-		Call oLog.LogFileClose
+		Call oLog.Close
 		Set oLog = Nothing
 		WScript.Quit
 	Else

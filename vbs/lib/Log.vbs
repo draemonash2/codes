@@ -1,23 +1,39 @@
 Option Explicit
 
 Class LogMng
-	Dim gbLogFileEnable
-	Dim goLogFile
+	Private gbLogFileEnable
+	Private goLogFile
 	
 	Private Sub Class_Initialize()
-		Call LogInit()
+		Call Init()
 	End Sub
 	Private Sub Class_Terminate()
-		Call LogFileClose()
+		Call Close()
 	End Sub
 	
-	Private Function LogInit()
+	Private Function Init()
 		gbLogFileEnable = False
 		Set goLogFile = Nothing
 	End Function
 	
+	'第一引数：出力モード（0:標準出力、1:ログファイル出力）
+	'戻り値：出力モード変更 実行結果（True:成功、False:失敗）
+	Public Function Mode( _
+		ByVal lSelectedMode _
+	)
+		If lSelectedMode = 0 Then
+			gbLogFileEnable = False
+			Mode = True
+		If lSelectedMode = 1 Then
+			gbLogFileEnable = True
+			Mode = True
+		Else
+			Mode = False
+		End If
+	End Function
+	
 	 '第二引数：IOモード（"r":読出し、"w":新規書込み、"+w":追加書込み）
-	Public Function LogFileOpen( _
+	Public Function Open( _
 		ByVal sTrgtPath, _
 		ByVal sIOMode _
 	)
@@ -33,17 +49,17 @@ Class LogMng
 		gbLogFileEnable = True
 	End Function
 	
-	Public Function LogPuts( _
-		ByVal sMsg _
+	Public Function Puts( _
+		ByVal sOutputMsg _
 	)
 		If gbLogFileEnable = True Then
-			goLogFile.WriteLine sMsg
+			goLogFile.WriteLine sOutputMsg
 		Else
-			WScript.Echo sMsg
+			WScript.Echo sOutputMsg
 		End If
 	End Function
 	
-	Public Function LogFileClose()
+	Public Function Close()
 		If gbLogFileEnable = True Then
 			goLogFile.Close
 			gbLogFileEnable = False
@@ -52,31 +68,26 @@ Class LogMng
 		End If
 	End Function
 End Class
-'	Call Test
-'	Private Sub Test
-'		Dim oLog
-'		Set oLog = New LogMng
-'		
-'		Call oLog.LogFileOpen( _
-'			"C:\Users\draem_000\Desktop\test.log", _
-'			"+w" _
-'		)
-'		oLog.LogPuts "desu"
-'		oLog.LogPuts "yorosiku"
-'		Call oLog.LogFileClose
-'		
-'		Call oLog.LogFileOpen( _
-'			"C:\Users\draem_000\Desktop\test2.log", _
-'			"w" _
-'		)
-'		oLog.LogPuts "desu"
-'		oLog.LogPuts "yorosiku"
-'		oLog.LogPuts "you"
-'		Call oLog.LogFileClose
-'		
-'		oLog.LogPuts "desu"
-'		oLog.LogPuts "yorosiku"
-'		Call oLog.LogFileClose
-'		
-'		Set oLog = Nothing
-'	End Sub
+'	Call Test_LogMng
+	Private Sub Test_LogMng
+		Dim oLog1
+		Set oLog1 = New LogMng
+		Dim oLog2
+		Set oLog2 = New LogMng
+		Call oLog1.Open( "C:\Users\draem_000\Desktop\test1.log", "+w" )
+		Call oLog2.Open( "C:\Users\draem_000\Desktop\test2.log", "w" )
+		
+		oLog1.Puts "desu"
+		oLog1.Puts "yorosiku"
+		oLog2.Puts "desu"
+		oLog2.Puts "yorosiku"
+		oLog2.Puts "you"
+		Call oLog2.Close
+		oLog2.Puts "desu"
+		oLog2.Puts "yorosiku"
+		
+		Call oLog1.Close
+		Call oLog2.Close
+		Set oLog1 = Nothing
+		Set oLog2 = Nothing
+	End Sub

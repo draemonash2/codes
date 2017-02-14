@@ -31,12 +31,12 @@ Dim oLogMng
 Set oLogMng = New LogMng
 Dim sLogFilePath
 sLogFilePath = sTrgtDir & "\" & sMyFileBaseName & ".log"
-Call oLogMng.LogFileOpen( sLogFilePath, "w" )
+Call oLogMng.Open( sLogFilePath, "w" )
 
 Dim asFileList
 Call GetFileList2( sTrgtDir, asFileList, 1 )
 
-oLogMng.LogPuts( "[Result]" & chr(9) & "[sFileDirPath]" & chr(9) & "[sOrgDirPath]" & chr(9) & "[sNewDirPath]" )
+oLogMng.Puts( "[Result]" & chr(9) & "[sFileDirPath]" & chr(9) & "[sOrgDirPath]" & chr(9) & "[sNewDirPath]" )
 
 Dim i
 For i = 0 to UBound( asFileList ) - 1
@@ -49,13 +49,13 @@ For i = 0 to UBound( asFileList ) - 1
 		sOrgDirPath = objWshShell.CreateShortcut( sFileDirPath ).TargetPath
 		sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
 		objWshShell.CreateShortcut( sFileDirPath ).TargetPath = sNewDirPath
-		oLogMng.LogPuts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
+		oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
 	Else
-		oLogMng.LogPuts( "[Stay    ]" & chr(9) & sFileDirPath )
+		oLogMng.Puts( "[Stay    ]" & chr(9) & sFileDirPath )
 	End If
 Next
 
-oLogMng.LogFileClose()
+oLogMng.Close()
 Set oLogMng = Nothing
 
 MsgBox _

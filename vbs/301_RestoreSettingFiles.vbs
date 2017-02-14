@@ -56,21 +56,21 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 Dim oLog
 Set oLog = New LogMng
 If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
-	Call oLog.LogFileOpen( _
+	Call oLog.Open( _
 		WScript.Arguments(ARG_IDX_LOGDIR), _
 		"+w" _
 	)
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
 	'Do Nothing
 Else
-	oLog.LogPuts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
 	'Do Nothing
 Else
-	oLog.LogPuts "-      : [error  ] runas exec error!"
+	oLog.Puts "-      : [error  ] runas exec error!"
 	WScript.Quit
 End If
 
@@ -87,7 +87,7 @@ If lRet = 2 Then
 ElseIf lRet = 1 Then
 	sFileType = "file"
 Else
-	oLog.LogPuts "-      : [error  ] destination path is missing!        " & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "-      : [error  ] destination path is missing!        " & chr(9) & sSrcPath & chr(9) & sDstPath
 	WScript.Quit
 End If
 
@@ -110,7 +110,7 @@ If sFileType = "folder" Then
 	Call ErrorCheck(2)
 	objFSO.MoveFolder sDstPath, sSrcPath
 	Call ErrorCheck(3)
-	oLog.LogPuts "folder : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "folder : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
 Else
 	If objFSO.FileExists( sSrcPath ) Then objWshShell.Run "%ComSpec% /c del /a /q """ & sSrcPath & """", 0, True
 	Call ErrorCheck(4)
@@ -118,13 +118,13 @@ Else
 	Call ErrorCheck(5)
 	objFSO.MoveFile sDstPath, sSrcPath
 	Call ErrorCheck(6)
-	oLog.LogPuts "file   : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
+	oLog.Puts "file   : [success] setting files are restored!         " & chr(9) & sSrcPath & chr(9) & sDstPath
 End If
 Call DeleteEmptyFolder( sDstPath )
 Call ErrorCheck(7)
 On Error Goto 0
 
-Call oLog.LogFileClose
+Call oLog.Close
 
 Set oLog = Nothing
 Set objFSO = Nothing
@@ -154,12 +154,12 @@ Function ErrorCheck( _
 	ByVal sErrorPlace _
 )
 	If Err.Number <> 0 Then
-		oLog.LogPuts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
-		oLog.LogPuts "           error place  : " & sErrorPlace
-		oLog.LogPuts "           error number : " & Err.Number
-		oLog.LogPuts "           error detail : " & Err.Description
+		oLog.Puts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
+		oLog.Puts "           error place  : " & sErrorPlace
+		oLog.Puts "           error number : " & Err.Number
+		oLog.Puts "           error detail : " & Err.Description
 		Err.Clear
-		Call oLog.LogFileClose
+		Call oLog.Close
 		Set oLog = Nothing
 		WScript.Quit
 	Else
