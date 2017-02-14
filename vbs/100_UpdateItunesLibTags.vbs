@@ -488,7 +488,7 @@ if bIsExecLibMod = True Then
             ""
         oPrgBar.Update( 0 ) 'êiíªçXêV
         
-        objLogFile.WriteLine "[HitNum]" & Chr(9) & "[FilePath}" & Chr(9) & "[TrackName]" & Chr(9) & "[Kind]" & Chr(9) & "[Location]" & Chr(9) & "[LocMatch]"
+        objLogFile.WriteLine "[TrgtFileIdx}" & Chr(9) & "[HitIdx] / [HitNum}" & Chr(9) & "[FilePath}" & Chr(9) & "[TrackName]" & Chr(9) & "[Kind]" & Chr(9) & "[Location]" & Chr(9) & "[LocMatch]"
         
         Dim lTrgtFileListIdx
         Dim lTrgtFileListNum
@@ -527,16 +527,18 @@ if bIsExecLibMod = True Then
             Set objSearchResult = objPlayList.Search( sTrgtTrackName, 5 )
             
             Dim sOutLine
+            Dim bIsFilePathMatched
             Dim lHitIdx
+            bIsFilePathMatched = False
             For lHitIdx = 1 to objSearchResult.Count
                 With objSearchResult.Item(lHitIdx)
-                    sOutLine = lHitIdx & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
+                    sOutLine = lTrgtFileListIdx & Chr(9) & lHitIdx & " / " & objSearchResult.Count & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
                     If .Kind = 1 Then
                         sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & ( .Location = sTrgtFilePath )
                         If .Location = sTrgtFilePath Then
                             .Composer = "1"
                             .Composer = ""
-                            Exit For
+                            bIsFilePathMatched = True
                         Else
                             'Do Nothing
                         End If
@@ -545,6 +547,11 @@ if bIsExecLibMod = True Then
                     End If
                 End With
                 objLogFile.WriteLine sOutLine
+                If bIsFilePathMatched = True Then
+                    Exit For
+                Else
+                    'Do Nothing
+                End If
             Next
             Set objSearchResult = Nothing
             Set objPlayList = Nothing
