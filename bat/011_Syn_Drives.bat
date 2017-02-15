@@ -14,6 +14,9 @@
 
 setlocal ENABLEDELAYEDEXPANSION
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: 管理者権限チェック
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 whoami /PRIV | FIND "SeLoadDriverPrivilege" > NUL
 if errorlevel 1 (
 	echo [error] please execute on runas mode!
@@ -21,6 +24,9 @@ if errorlevel 1 (
 	exit /B 0
 )
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: 引数チェック
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
                  set ARG_NUM=9
 if "%~9" == "" ( set ARG_NUM=8 ) else ( goto exec )
 if "%~8" == "" ( set ARG_NUM=7 ) else ( goto exec )
@@ -32,7 +38,6 @@ if "%~3" == "" ( set ARG_NUM=2 ) else ( goto exec )
 if "%~2" == "" ( set ARG_NUM=1 ) else ( goto exec )
 if "%~1" == "" ( set ARG_NUM=0 ) else ( goto exec )
 :exec
-
 if %ARG_NUM% == 3 (
 	rem
 ) else (
@@ -41,6 +46,9 @@ if %ARG_NUM% == 3 (
 	exit /B 0
 )
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: robocopy オプション判定
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set OPT=
 if %1 == /l (
 	set SRC_PATH=Z:
@@ -54,13 +62,6 @@ if %1 == /l (
 	set OPT=!OPT! /MIR
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XD "System Volume Information"
-) else if %1 == /g (
-	set SRC_PATH=C:\Users\draem_000\Documents\GoogleDrive
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\830_BackUp_GoogleDrive
-	set OPT=!OPT! /MIR
-	set OPT=!OPT! /SL
-	set OPT=!OPT! /XF "Current Session"
-	set OPT=!OPT! /XF "Current Tabs"
 ) else if %1 == /a (
 	set SRC_PATH=C:\Users\draem_000\Documents\Amazon Drive
 	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\840_BackUp_AmazonDrive
@@ -75,6 +76,9 @@ if %1 == /l (
 )
 set DST_PATH=%DST_BASE_PATH%\data
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: 実行モード（終了 or 停止）判定
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if "%~2" == "/close" (
 	set EXEC_MODE=CLOSE
 ) else if "%~2" == "/suspend" (
@@ -85,6 +89,9 @@ if "%~2" == "/close" (
 	exit /B 0
 )
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: アクティブディレクトリ判定
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set IDX_MAX=%~3
 set PREV_ACTIVE_DIR_NUM=1
 set CURR_ACTIVE_DIR_NUM=1
@@ -105,6 +112,9 @@ echo.> "%DST_PATH%_%CURR_ACTIVE_DIR_NUM% is active directory"
 set DST_PATH=%DST_PATH%_%CURR_ACTIVE_DIR_NUM%
 set LOG_PATH=%DST_BASE_PATH%\%~n0_%CURR_ACTIVE_DIR_NUM%.log
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: 同期実行
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 echo ############### Sync Drive! ##############
 echo ### Source      Path is %SRC_PATH%
 echo ### Destination Path is %DST_PATH%
