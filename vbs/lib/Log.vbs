@@ -24,7 +24,7 @@ Class LogMng
 		If lSelectedMode = 0 Then
 			gbLogFileEnable = False
 			Mode = True
-		If lSelectedMode = 1 Then
+		ElseIf lSelectedMode = 1 Then
 			gbLogFileEnable = True
 			Mode = True
 		Else
@@ -68,14 +68,16 @@ Class LogMng
 		End If
 	End Function
 End Class
-'	Call Test_LogMng
+	If WScript.ScriptName = "Log.vbs" Then
+		Call Test_LogMng
+	End If
 	Private Sub Test_LogMng
 		Dim oLog1
 		Set oLog1 = New LogMng
 		Dim oLog2
 		Set oLog2 = New LogMng
-		Call oLog1.Open( "C:\Users\draem_000\Desktop\test1.log", "+w" )
-		Call oLog2.Open( "C:\Users\draem_000\Desktop\test2.log", "w" )
+		Call oLog1.Open( Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" ) & "\LogTest1.log", "+w" )
+		Call oLog2.Open( Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" ) & "\LogTest2.log", "+w" )
 		
 		oLog1.Puts "desu"
 		oLog1.Puts "yorosiku"

@@ -17,14 +17,22 @@ Const EXE_PATH_NEW = "C:\prg_exe"
 '==========================================================
 '= 本処理
 '==========================================================
+MsgBox "本プログラムは管理者権限が必要となる場合があります。" & vbNewLine & "エラーが発生した場合、管理者権限にて実行してください。"
+
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
+Dim sTrgtDir
+If WScript.Arguments.Count = 0 Then
+'	sTrgtDir = objWshShell.SpecialFolders("StartMenu")
+	sTrgtDir = InputBox ( "対象ディレクトリを指定してください。" )
+Else
+	sTrgtDir = WScript.Arguments(0)
+End If
+
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-Dim sTrgtDir
 Dim sMyFileBaseName
-sTrgtDir = objWshShell.SpecialFolders("StartMenu")
 sMyFileBaseName = objFSO.GetBaseName( WScript.ScriptFullName )
 
 Dim oLogMng
@@ -36,6 +44,10 @@ Call oLogMng.Open( sLogFilePath, "w" )
 Dim asFileList
 Call GetFileList2( sTrgtDir, asFileList, 1 )
 
+oLogMng.Puts( "target directory path : " & sTrgtDir )
+oLogMng.Puts( "org path              : " & EXE_PATH_ORG )
+oLogMng.Puts( "new path              : " & EXE_PATH_NEW )
+oLogMng.Puts( "" )
 oLogMng.Puts( "[Result]" & chr(9) & "[sFileDirPath]" & chr(9) & "[sOrgDirPath]" & chr(9) & "[sNewDirPath]" )
 
 Dim i
@@ -46,12 +58,19 @@ For i = 0 to UBound( asFileList ) - 1
 	Dim sOrgDirPath
 	Dim sNewDirPath
 	If objFSO.GetExtensionName( sFileDirPath ) = "lnk" Then
-		sOrgDirPath = objWshShell.CreateShortcut( sFileDirPath ).TargetPath
-		sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
-		objWshShell.CreateShortcut( sFileDirPath ).TargetPath = sNewDirPath
-		oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
+		With objWshShell.CreateShortcut( sFileDirPath )
+			sOrgDirPath = .TargetPath
+			If InStr( sOrgDirPath, EXE_PATH_ORG ) > 0 Then
+				sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
+					.TargetPath = sNewDirPath
+					.Save
+				oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
+			Else
+				oLogMng.Puts( "[UnMatch ]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath )
+			End If
+		End With
 	Else
-		oLogMng.Puts( "[Stay    ]" & chr(9) & sFileDirPath )
+		oLogMng.Puts( "[NoShrtCt]" & chr(9) & sFileDirPath )
 	End If
 Next
 
