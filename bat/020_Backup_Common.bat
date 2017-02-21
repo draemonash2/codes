@@ -52,19 +52,19 @@ if %ARG_NUM% == 3 (
 set OPT=
 if %1 == /l (
 	set SRC_PATH=Z:
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\800_BackUp_Library
+	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\821_BackUp_Library
 	set OPT=!OPT! /MIR
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XD "System Volume Information"
 ) else if %1 == /d (
 	set SRC_PATH=C:\Users\draem_000\Documents\Dropbox
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\820_BackUp_Dropbox
+	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\822_BackUp_Dropbox
 	set OPT=!OPT! /MIR
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XD "System Volume Information"
 ) else if %1 == /a (
 	set SRC_PATH=C:\Users\draem_000\Documents\Amazon Drive
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\840_BackUp_AmazonDrive
+	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\823_BackUp_AmazonDrive
 	set OPT=!OPT! /MIR
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XF "Current Session"
