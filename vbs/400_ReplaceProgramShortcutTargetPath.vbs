@@ -22,12 +22,24 @@ MsgBox "–{ƒvƒƒOƒ‰ƒ€‚ÍŠÇ—ÒŒ ŒÀ‚ª•K—v‚Æ‚È‚éê‡‚ª‚ ‚è‚Ü‚·B" & vbNewLine & "ƒGƒ
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 Dim sTrgtDir
-If WScript.Arguments.Count = 0 Then
-'	sTrgtDir = objWshShell.SpecialFolders("StartMenu")
-	sTrgtDir = InputBox ( "‘ÎÛƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B" )
-Else
-	sTrgtDir = WScript.Arguments(0)
-End If
+sTrgtDir = objWshShell.CurrentDirectory
+'sTrgtDir = objWshShell.SpecialFolders("StartMenu")
+Dim bIsContinue
+Do
+	Dim vAnswer
+	vAnswer = MsgBox( "ˆÈ‰º‚ğ‘ÎÛ‚ÉÀs‚µ‚Ü‚·BÀs‚µ‚Ü‚·‚©H" & vbNewLine & sTrgtDir, vbOkCancel )
+	If vAnswer = vbOk Then
+		bIsContinue = False
+	Else
+		vAnswer = MsgBox( "ˆ—‚ğ‘±‚¯‚Ü‚·‚©H", vbOkCancel )
+		If vAnswer = vbCancel Then
+			WScript.Quit
+		Else
+			sTrgtDir = InputBox ( "‘ÎÛƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B" )
+			bIsContinue = True
+		End If
+	End If
+Loop While bIsContinue = True
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
