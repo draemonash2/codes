@@ -15,6 +15,12 @@
 setlocal ENABLEDELAYEDEXPANSION
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: 設定値
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	set DST_BASE=\\RASPBERRYPI\pockethdd
+::	set DST_BASE=D:
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: 管理者権限チェック
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 whoami /PRIV | FIND "SeLoadDriverPrivilege" > NUL
@@ -52,20 +58,26 @@ if %ARG_NUM% == 3 (
 set OPT=
 if %1 == /l (
 	set SRC_PATH=Z:
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\821_BackUp_Library
+	set DST_BASE_PATH=!DST_BASE!\821_BackUp_Library
 	set OPT=!OPT! /MIR
+	set OPT=!OPT! /R:5
+	set OPT=!OPT! /W:30
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XD "System Volume Information"
 ) else if %1 == /d (
 	set SRC_PATH=C:\Users\draem_000\Documents\Dropbox
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\822_BackUp_Dropbox
+	set DST_BASE_PATH=!DST_BASE!\822_BackUp_Dropbox
 	set OPT=!OPT! /MIR
+	set OPT=!OPT! /R:5
+	set OPT=!OPT! /W:30
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XD "System Volume Information"
 ) else if %1 == /a (
 	set SRC_PATH=C:\Users\draem_000\Documents\Amazon Drive
-	set DST_BASE_PATH=\\RASPBERRYPI\pockethdd\823_BackUp_AmazonDrive
+	set DST_BASE_PATH=!DST_BASE!\823_BackUp_AmazonDrive
 	set OPT=!OPT! /MIR
+	set OPT=!OPT! /R:5
+	set OPT=!OPT! /W:30
 	set OPT=!OPT! /SL
 	set OPT=!OPT! /XF "Current Session"
 	set OPT=!OPT! /XF "Current Tabs"
