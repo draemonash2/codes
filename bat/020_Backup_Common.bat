@@ -17,7 +17,8 @@ setlocal ENABLEDELAYEDEXPANSION
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ê›íËíl
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	set DST_BASE=\\RASPBERRYPI\pockethdd
+	set DST_BASE=\\RASPBERRYPI\LogitecHdd3T
+::	set DST_BASE=\\RASPBERRYPI\pockethdd
 ::	set DST_BASE=D:
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
