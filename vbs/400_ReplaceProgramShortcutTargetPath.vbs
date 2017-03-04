@@ -60,7 +60,12 @@ oLogMng.Puts( "target directory path : " & sTrgtDir )
 oLogMng.Puts( "org path              : " & EXE_PATH_ORG )
 oLogMng.Puts( "new path              : " & EXE_PATH_NEW )
 oLogMng.Puts( "" )
-oLogMng.Puts( "[Result]" & chr(9) & "[sFileDirPath]" & chr(9) & "[sOrgDirPath]" & chr(9) & "[sNewDirPath]" )
+oLogMng.Puts( "### Legend ###" )
+oLogMng.Puts( "  Replaced : replaced target pathes" )
+oLogMng.Puts( "  UnMatch  : replace word is nothing at target path" )
+oLogMng.Puts( "  NoShrtCt : not a program shortcut file" )
+oLogMng.Puts( "### Result ###" )
+oLogMng.Puts( "<Result>" & chr(9) & "<sFileDirPath>" & chr(9) & "<sOrgDirPath>" & chr(9) & "<sNewDirPath>" )
 
 Dim i
 For i = 0 to UBound( asFileList ) - 1
