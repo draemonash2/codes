@@ -65,19 +65,20 @@ for root, dirs, files in os.walk( trgt_dir_path ):
 	
 	log_file.write( "\n" )
 	log_file.write( ( "[dir] " + root ).replace("\\","/") + "\n" )
-	log_file.write( "[folder_jpg_exist] " + str( folder_jpg_exist ) + "\n" )
-	log_file.write( "[other_jpg_exist] " + str( other_jpg_exist ) + "\n" )
+	log_file.write( "  folder_jpg_exist : " + str( folder_jpg_exist ) + "\n" )
+	log_file.write( "  other_jpg_exist  : " + str( other_jpg_exist ) + "\n" )
 	
 	##########################################
 	# delete and add artwork to mp3 file
 	##########################################
+	log_file.write( "[file_path]\t[ext]\n" )
 	for file_path in files:
 		file_path = (root + "/" + file_path).replace("\\","/")
 		root_path, file_ext = os.path.splitext( file_path )
 		
-		log_file.write( "[file_path] " + file_path + "  [ext] " + file_ext + "\n" )
+		log_file.write( file_path + "\t" + file_ext + "\n" )
 		
-		if file_ext == ".mp3":
+		if file_ext.lower() == ".mp3":
 			audiofile = eyed3.core.load( file_path )
 			
 			#### delete artwork ####
@@ -95,7 +96,7 @@ for root, dirs, files in os.walk( trgt_dir_path ):
 			#### save artwork ####
 			audiofile.tag.save()
 			
-		elif file_ext == ".jpg":
+		elif file_ext.lower() == ".jpg":
 			#### hide folder.jpg ####
 			exe_cmd = "attrib +h \"" + file_path.replace("/","\\") + "\""
 			os.system( exe_cmd )
