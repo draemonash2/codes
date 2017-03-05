@@ -1,6 +1,6 @@
 Option Explicit
 
-Private Const ELAPSED_TIME_DIFF_COUNT_MAX = 10
+Private Const PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX = 10
 Private Const PROGBAR_BASIC_LINE_NUM = 4
 Private Const PROGBAR_WIN_WIDTH = 600
 Private Const PROGBAR_REMAINING_TIME_INIT = 7200
@@ -50,9 +50,9 @@ Class ProgressBar
 		gdElapsedTime = 0
 		gdProgPerLastCalc = 0
 		glElapsedTimeStoreNum = 0
-		ReDim Preserve gdElapsedTimeDiffTable(ELAPSED_TIME_DIFF_COUNT_MAX - 1)
+		ReDim Preserve gdElapsedTimeDiffTable(PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX - 1)
 		Dim i
-		For i = 0 To ELAPSED_TIME_DIFF_COUNT_MAX - 1
+		For i = 0 To PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX - 1
 			gdElapsedTimeDiffTable(i) = 0
 		Next
 		gdElapsedTimeLastCalc = 0
@@ -170,11 +170,11 @@ Class ProgressBar
 			dElapsedTimeAvg = dElapsedTimeSum / (glElapsedTimeStoreNum + 1)
 			gdRemainingTime = dElapsedTimeAvg * dProgPerRem
 			
-			For i = ELAPSED_TIME_DIFF_COUNT_MAX - 1 To 1 Step -1
+			For i = PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX - 1 To 1 Step -1
 				gdElapsedTimeDiffTable(i) = gdElapsedTimeDiffTable(i - 1)
 			Next
 			gdElapsedTimeDiffTable(0) = dElapsedTime1PerCur
-			If glElapsedTimeStoreNum < ELAPSED_TIME_DIFF_COUNT_MAX Then
+			If glElapsedTimeStoreNum < PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX Then
 				glElapsedTimeStoreNum = glElapsedTimeStoreNum + 1
 			Else
 				'Do Nothing
@@ -183,7 +183,7 @@ Class ProgressBar
 			gdElapsedTimeLastCalc = dElapsedTimeCur
 		ElseIf Fix(dProgPerDiff * 100) < 0 Then
 			'i’»‚ª‰º‚ª‚Á‚½‚çƒNƒŠƒA‚·‚é
-			For i = 0 To ELAPSED_TIME_DIFF_COUNT_MAX - 1
+			For i = 0 To PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX - 1
 				gdElapsedTimeDiffTable(i) = 0
 			Next
 			gdProgPerLastCalc = dProgPerCur
@@ -319,8 +319,10 @@ Class ProgressBar
 	End Function
 End Class
 
-'	Call TestCase_ProgressBar
-	Private Sub TestCase_ProgressBar
+	If WScript.ScriptName = "ProgressBar.vbs" Then
+		Call Test_ProgressBar
+	End If
+	Private Sub Test_ProgressBar
 		Dim oProgBar
 		Dim lTestCase
 		Dim i
@@ -426,5 +428,6 @@ End Class
 				'Do Nothing
 		End Select
 		oProgBar.Quit()
+		Set oProgBar = Nothing
 	End Sub
 
