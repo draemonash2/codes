@@ -134,57 +134,59 @@ Class IE
 		Set objWshShell = Nothing
 	End Function
 End Class
-'	Private Sub Test
-'		Dim oIE
-'		Set oIE = New IE
-'		
-'		oIE.Activate
-'		WScript.Sleep(1000)
-'	'	Select Case 1
-'	'		Case 1:  oIE.Text = "あ"
-'	'		Case 2:  oIE.Text = "あ" & vbNewLine & "い"
-'	'		Case 3:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
-'	'		Case 4:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
-'	'		Case 8:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
-'	'		Case 16: oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
-'	'		Case Else: MsgBox "error!"
-'	'	End Select
-'	
-'		oIE.Title = "タイトル"
-'		oIE.Font = "メイリオ"
-'		oIE.FontSize = 30
-'		oIE.Text = "あ"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
-'		WScript.Sleep(500)
-'		
-'		oIE.Font = "MS 明朝"
-'		oIE.FontSize = 8
-'		oIE.Text = "あ"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
-'		WScript.Sleep(500)
-'		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
-'		WScript.Sleep(500)
-'		
-'		oIE.Width = 500
-'		WScript.Sleep(1000)
-'		
-'		oIE.Quit
-'		Set oIE = Nothing
-'	End Sub
-'	Call Test
+	If WScript.ScriptName = "IE.vbs" Then
+		Call Test_IE
+	End If
+	Private Sub Test_IE
+		Dim oIE
+		Set oIE = New IE
+		
+		oIE.Activate
+		WScript.Sleep(1000)
+	'	Select Case 1
+	'		Case 1:  oIE.Text = "あ"
+	'		Case 2:  oIE.Text = "あ" & vbNewLine & "い"
+	'		Case 3:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
+	'		Case 4:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
+	'		Case 8:  oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
+	'		Case 16: oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
+	'		Case Else: MsgBox "error!"
+	'	End Select
+	
+		oIE.Title = "タイトル"
+		oIE.Font = "メイリオ"
+		oIE.FontSize = 30
+		oIE.Text = "あ"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
+		WScript.Sleep(500)
+		
+		oIE.Font = "MS 明朝"
+		oIE.FontSize = 8
+		oIE.Text = "あ"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い"
+		WScript.Sleep(500)
+		oIE.Text = "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か" & vbNewLine & "あ" & vbNewLine & "い" & vbNewLine & "う" & vbNewLine & "え" & vbNewLine & "お" & vbNewLine & "か"
+		WScript.Sleep(500)
+		
+		oIE.Width = 500
+		WScript.Sleep(1000)
+		
+		oIE.Quit
+		Set oIE = Nothing
+	End Sub

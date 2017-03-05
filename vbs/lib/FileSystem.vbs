@@ -158,49 +158,48 @@ Public Function GetFileOrFolder( _
 		GetFileOrFolder = 0 'エラー（存在しないパス）
 	End If
 End Function
-
-'	Call Test()
-'	Private Sub Test()
-'		Dim objWshShell
-'		Dim sCurDir
-'		Set objWshShell = WScript.CreateObject( "WScript.Shell" )
-'		sCurDir = objWshShell.CurrentDirectory
-'		Call Include( sCurDir & "\Array.vbs" )
-'		Call Include( sCurDir & "\iTunes.vbs" )
-'		Call Include( sCurDir & "\ProgressBar.vbs" )
-'		Call Include( sCurDir & "\StopWatch.vbs" )
-'		Call Include( sCurDir & "\String.vbs" )
-'		
-'		Dim oStpWtch
-'		
-'		Set oStpWtch = New StopWatch
-'		
-'		oStpWtch.StartT
-'	'	Dim asFileList()
-'	'	ReDim asFileList(-1)
-'	'	Call GetFileList( "Z:\300_Musics", asFileList, 0 )
-'		Dim asFileList
-'		Call GetFileList2( "Z:\300_Musics", asFileList, 1 )
-'		oStpWtch.StopT
-'		
-'		MsgBox oStpWtch.ElapsedTime
-'		Call OutputAllElement2LogFile(asFileList)
-'	End Sub
-'	Function Include( _
-'		ByVal sOpenFile _
-'		)
-'		Dim objFSO
-'		Dim objVbsFile
-'	
-'		Set objFSO = CreateObject("Scripting.FileSystemObject")
-'		Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-'	
-'		ExecuteGlobal objVbsFile.ReadAll()
-'		objVbsFile.Close
-'	
-'		Set objVbsFile = Nothing
-'		Set objFSO = Nothing
-'	End Function
+'	Call Test_GetFileOrFolder()
+	Private Sub Test_GetFileOrFolder()
+		Dim objWshShell
+		Dim sCurDir
+		Set objWshShell = WScript.CreateObject( "WScript.Shell" )
+		sCurDir = objWshShell.CurrentDirectory
+		Call Test_GetFileOrFolder_Include( sCurDir & "\Array.vbs" )
+		Call Test_GetFileOrFolder_Include( sCurDir & "\iTunes.vbs" )
+		Call Test_GetFileOrFolder_Include( sCurDir & "\ProgressBar.vbs" )
+		Call Test_GetFileOrFolder_Include( sCurDir & "\StopWatch.vbs" )
+		Call Test_GetFileOrFolder_Include( sCurDir & "\String.vbs" )
+		
+		Dim oStpWtch
+		
+		Set oStpWtch = New StopWatch
+		
+		oStpWtch.StartT
+	'	Dim asFileList()
+	'	ReDim asFileList(-1)
+	'	Call GetFileList( "Z:\300_Musics", asFileList, 0 )
+		Dim asFileList
+		Call GetFileList2( "Z:\300_Musics", asFileList, 1 )
+		oStpWtch.StopT
+		
+		MsgBox oStpWtch.ElapsedTime
+		Call OutputAllElement2LogFile(asFileList)
+	End Sub
+	Private Function Test_GetFileOrFolder_Include( _
+		ByVal sOpenFile _
+		)
+		Dim objFSO
+		Dim objVbsFile
+	
+		Set objFSO = CreateObject("Scripting.FileSystemObject")
+		Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+	
+		ExecuteGlobal objVbsFile.ReadAll()
+		objVbsFile.Close
+	
+		Set objVbsFile = Nothing
+		Set objFSO = Nothing
+	End Function
 
 '指定フォルダパスに含まれるフォルダが空か判定し、空フォルダなら削除する。
 Public Function DeleteEmptyFolder( _
@@ -253,6 +252,7 @@ Public Function DeleteEmptyFolder( _
 	DeleteEmptyFolder = sRetStr
 	Set objFSO = Nothing
 End Function
+'	Call Test_DeleteEmptyFolder()
 	Private Sub Test_DeleteEmptyFolder()
 		Dim sOutStr
 		sOutStr = ""
@@ -263,7 +263,6 @@ End Function
 		sOutStr = sOutStr & vbNewLine & DeleteEmptyFolder( "C:\codes\vbs\test\c" )
 		MsgBox sOutStr
 	End Sub
-'	Call Test_DeleteEmptyFolder()
 
 '指定パスが存在する場合、"_XXX" を付与して返却する
 'lFileDirType ) 1:file、2:folder、other:both
@@ -281,6 +280,7 @@ Public Function GetNotExistPath( _
 		GetNotExistPath = ""
 	End If
 End Function
+'	Call Test_GetNotExistPath()
 	Private Sub Test_GetNotExistPath()
 		Dim sOutStr
 		sOutStr = ""
@@ -303,7 +303,6 @@ End Function
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
 	End Sub
-'	Call Test_GetNotExistPath()
 
 '*********************************************************************
 '* ローカル関数定義
@@ -330,6 +329,7 @@ Private Function GetFolderNotExistPath( _
 		GetFolderNotExistPath = ""
 	End If
 End Function
+'	Call Test_GetFolderNotExistPath()
 	Private Sub Test_GetFolderNotExistPath()
 		Dim sOutStr
 		sOutStr = ""
@@ -342,7 +342,6 @@ End Function
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
 	End Sub
-'	Call Test_GetFolderNotExistPath()
 
 Private Function GetFileNotExistPath( _
 	ByVal sTrgtPath _
@@ -377,6 +376,7 @@ Private Function GetFileNotExistPath( _
 		GetFileNotExistPath = ""
 	End If
 End Function
+'	Call Test_GetFileNotExistPath()
 	Private Sub Test_GetFileNotExistPath()
 		Dim sOutStr
 		sOutStr = ""
@@ -389,4 +389,3 @@ End Function
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
 	End Sub
-'	Call Test_GetFileNotExistPath()

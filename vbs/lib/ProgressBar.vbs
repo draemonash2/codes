@@ -318,7 +318,6 @@ Class ProgressBar
 		CalcWinHeight = ( 28 * lLineNum ) + 65
 	End Function
 End Class
-
 	If WScript.ScriptName = "ProgressBar.vbs" Then
 		Call Test_ProgressBar
 	End If

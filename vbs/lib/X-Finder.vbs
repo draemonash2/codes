@@ -54,7 +54,8 @@ Public Function UpdateIniFile( _
 		Set objFileOpenAsWrite = Nothing
 	End If
 End Function
-	Private Function Test_UpdateIniFile()
+'	Call Test_UpdateIniFile()
+	Private Sub Test_UpdateIniFile()
 		Dim sTrgtPath
 		sTrgtPath = "C:\Users\draem_000\Desktop\data\vbs\lib\test.ini"
 		
@@ -74,8 +75,7 @@ End Function
 			"", _
 			"" _
 		)
-	End Function
-'	Call Test_UpdateIniFile()
+	End Sub
 
 Private Function GetTailIdx( _
 	ByRef vTextAll _
@@ -88,7 +88,8 @@ Private Function GetTailIdx( _
 		GetTailIdx = 0
 	End If
 End Function
-	Private Function Test_GetTailIdx()
+'	Call Test_GetTailIdx()
+	Private Sub Test_GetTailIdx()
 		Dim sTrgtPath
 		sTrgtPath = "C:\Users\draem_000\Desktop\data\vbs\lib\_fav_program_ÅyVideoÅzRecord.ini"
 		
@@ -102,8 +103,7 @@ End Function
 		sOutStr = sOutStr & vbNewLine & GetTailIdx( vTextAll )
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
-	End Function
-'	Call Test_GetTailIdx()
+	End Sub
 
 Private Function TextFile2VariantArray( _
 	ByVal sTrgtPath _
@@ -123,7 +123,8 @@ Private Function TextFile2VariantArray( _
 	objFile.Close
 	Set objFile = Nothing
 End Function
-	Private Function Test_TextFile2VariantArray()
+'	Call Test_TextFile2VariantArray()
+	Private Sub Test_TextFile2VariantArray()
 		Dim sTrgtPath
 		sTrgtPath = "C:\Users\draem_000\Desktop\data\vbs\lib\_fav_program_ÅyVideoÅzRecord.ini"
 		
@@ -139,5 +140,4 @@ End Function
 		Next
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
-	End Function
-'	Call Test_TextFile2VariantArray()
+	End Sub
