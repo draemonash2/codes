@@ -2,7 +2,7 @@ Option Explicit
 
 '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
 '□
-'□ iTunes タグ更新ツール v.2.5
+'□ iTunes タグ更新ツール v.2.6
 '□
 '□  【概要】
 '□     mp3 ファイルの更新日時を元にタグ更新済みファイルを自動判別し、iTunes の API を
@@ -29,6 +29,10 @@ Option Explicit
 '□     (3) 本スクリプトを実行。
 '□     
 '□  【更新履歴】
+'□     v2.6 (2017/03/05)
+'□       ・StopWatch.vbs 修正に対する対応
+'□       ・軽微なバグFix
+'□     
 '□     v2.5 (2016/10/28)
 '□       ・ログファイル出力先変更
 '□       ・処理終了時にログファイルを開く処理を追加
@@ -186,8 +190,8 @@ If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
     objLogFile.WriteLine "[更新対象フォルダ] " & TRGT_DIR
     objLogFile.WriteLine ""
     objLogFile.WriteLine "*** iTunes ライブラリバックアップ *** "
-    objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+    objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime
+    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
 Else
     sLogFilePath = TRGT_DIR & "\" & Replace( WScript.ScriptName, ".vbs", ".log" )
     Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -221,8 +225,8 @@ if bIsExecLibAdd = True Then
         
         oPrgBar.Update( 1 ) '進捗更新
         
-        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime
+        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
     Else
         'Do Nothing
     End If ' ★Debug★
@@ -460,8 +464,8 @@ if bIsExecLibMod = True Then
         Set objFSO = Nothing    'オブジェクトの破棄
         
         objLogFile.WriteLine "ファイル数：" & UBound(asTrgtFileList) + 1
-        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime
+        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
         
     Else ' ★Debug★
         ReDim asTrgtFileList(0)
@@ -532,7 +536,7 @@ if bIsExecLibMod = True Then
             bIsFilePathMatched = False
             For lHitIdx = 1 to objSearchResult.Count
                 With objSearchResult.Item(lHitIdx)
-                    sOutLine = lTrgtFileListIdx & Chr(9) & lHitIdx & " / " & objSearchResult.Count & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
+                    sOutLine = ( lTrgtFileListIdx + 1 ) & Chr(9) & lHitIdx & " / " & objSearchResult.Count & Chr(9) & sTrgtFilePath & Chr(9) & sTrgtTrackName & Chr(9) & .Kind
                     If .Kind = 1 Then
                         sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & ( .Location = sTrgtFilePath )
                         If .Location = sTrgtFilePath Then
@@ -567,8 +571,8 @@ if bIsExecLibMod = True Then
         Next
         
         objLogFile.WriteLine "ファイル数：" & UBound(asTrgtFileList) + 1
-        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime & " [s]"
-        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+        objLogFile.WriteLine "経過時間（本処理のみ） : " & oStpWtch.IntervalTime
+        objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
         
     End If ' ★Debug★
 Else
@@ -608,7 +612,7 @@ Function Finish()
     objLogFile.WriteLine ""
     objLogFile.WriteLine "開始時刻               : " & oStpWtch.StartPoint
     objLogFile.WriteLine "終了時刻               : " & oStpWtch.StopPoint
-    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime & " [s]"
+    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
     objLogFile.WriteLine ""
     objLogFile.WriteLine "script finished."
     objLogFile.Close

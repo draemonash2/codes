@@ -6,136 +6,241 @@ Const ONEMINSEC = 60    '60[s]
 
 '時間計測＆時刻取得（数十ミリ秒程度の誤差有り）
 Class StopWatch
-	Dim glStartPoint
-	Dim glStopPoint
-	Dim glIntervalTime
+	Dim gbIsMeasuring
+	Dim gdStartPoint
+	Dim gdStopPoint
+	Dim gdIntervalPoint
+	Dim gsStartDate
+	Dim gsStopDate
+	Dim gsIntervalDate
 	
 	Private Sub Class_Initialize()
 		Call StopWatchInit
 	End Sub
 	
 	'*** 初期化 ***
-	Private Function StopWatchInit()
-		glStartPoint = 0
-		glStopPoint = 0
-		glIntervalTime = 0
-	End Function
-	
-	'*** 測定開始 ***
-	Public Sub StartT()
-		glStartPoint = Timer()
-		glIntervalTime = glStartPoint
+	Private Sub StopWatchInit()
+		gbIsMeasuring = False
+		gdStartPoint = 0
+		gdStopPoint = 0
+		gdIntervalPoint = 0
+		gsStartDate = Date()
+		gsStopDate = Date()
+		gsIntervalDate = Date()
 	End Sub
 	
-	'*** 測定停止 ***
-	Public Function StopT()
-		glStopPoint = Timer()
-		StopT = glStopPoint - glStartPoint
+	'*** 測定開始 ***
+	'戻り値：開始時刻
+	Public Function StartT()
+		gbIsMeasuring = True
+		gdStartPoint = Timer()
+		gsStartDate = Date()
+		gdIntervalPoint = gdStartPoint
+		gsIntervalDate = gsStartDate
+		StartT = ConvFormat( gdStartPoint, 1 )
 	End Function
+	
+	'*** 測定停止 ***
+	'戻り値：停止時刻
+	Public Function StopT()
+		gbIsMeasuring = True
+		gdStopPoint = Timer()
+		gsStopDate = Date()
+		StopT = ConvFormat( gdStopPoint, 1 )
+	End Function
+	
+	'*** 測定開始時刻 ***
+	Public Property Get StartPoint()
+		StartPoint = ConvFormat( gdStartPoint, 1 )
+	End Property
+	
+	'*** 測定停止時刻 ***
+	Public Property Get StopPoint()
+		StopPoint = ConvFormat( gdStopPoint, 1 )
+	End Property
 	
 	'*** 開始から現在までの総経過時間[s] ***
 	Public Property Get ElapsedTime()
-		ElapsedTime = TimeDiff( glStartPoint, Timer() )
+		If gbIsMeasuring = True Then
+			ElapsedTime = ConvFormat( TimeDiff( gsStartDate, gdStartPoint, Date(), Timer() ), 2 )
+		Else
+			ElapsedTime = ConvFormat( TimeDiff( gsStartDate, gdStartPoint, gsStopDate, gdStopPoint ), 2 )
+		End If
 	End Property
 	
 	'*** 前回 IntervalTime() 呼び出し時からの時間間隔[s] ***
 	Public Property Get IntervalTime()
-		Dim lCurTime
-		lCurTime = Timer()
-		IntervalTime = TimeDiff( glIntervalTime, lCurTime )
-		glIntervalTime = lCurTime
-	End Property
-	
-	'*** 開始時刻 ***
-	Public Property Get StartPoint()
-		StartPoint = ConvFormat( glStartPoint )
-	End Property
-	
-	'*** 終了時刻 ***
-	Public Property Get StopPoint()
-		StopPoint = ConvFormat( glStopPoint )
+		Dim dCurPoint
+		Dim sCurDate
+		dCurPoint = Timer()
+		sCurDate = Date()
+		IntervalTime = ConvFormat( TimeDiff( gsIntervalDate, gdIntervalPoint, sCurDate, dCurPoint ), 2 )
+		gdIntervalPoint = dCurPoint
+		gsIntervalDate = sCurDate
 	End Property
 	
 	Private Sub Class_Terminate()
 		Call StopWatchInit
 	End Sub
 	
-	Private Function TimeDiff( _
-		ByVal lPreTime, _
-		ByVal lPostTime _
+	'*** 時刻比較 ***
+	Public Function TimeDiff( _
+		ByVal sPreDate, _
+		ByVal dPreTime, _
+		ByVal sPostDate, _
+		ByVal dPostTime _
 	)
-		If lPostTime >= lPreTime Then
-			TimeDiff = lPostTime - lPreTime
+		Dim lDateDiff
+		lDateDiff = DateDiff("d", sPreDate, sPostDate)
+		If lDateDiff > 0 Then
+			TimeDiff = (ONEDAYSEC * (lDateDiff - 1)) + (ONEDAYSEC - dPreTime) + dPostTime
+		ElseIf lDateDiff = 0 Then
+			TimeDiff = dPostTime - dPreTime
 		Else
-			' 真夜中の0時を跨いだときの対処
-			TimeDiff = ( ONEDAYSEC - lPreTime ) + lPostTime
+			TimeDiff = 0
 		End If
 	End Function
 	
 	' Timer()関数の返却値を時刻形式に変換
 	'   ex) 49229.781 ⇒ 13:40:29 .781
-	Private Function ConvFormat( _
-		ByVal lTimeValue _
+	' arg1 : 経過秒数
+	' arg2 : 時刻形式
+	'		1 => 3:40:29 .781
+	'		2 => 3h 40m 29s 781 ms
+	Public Function ConvFormat( _
+		ByVal dTimeValue, _
+		ByVal lTimeFormat _
 	)
+		Dim lTime
+		lTime = Fix( dTimeValue )
+		
+		Dim lTemp
 		Dim lHour
 		Dim lMinite
 		Dim lSecond
-		Dim lTime
 		Dim lMinSec
-		
-		lTime = Fix( lTimeValue )
 		
 		'時刻算出
 		lHour = Fix( lTime / ONEHOURSEC )
-		lMinite = Fix( ( lTime - ( lHour * ONEHOURSEC ) ) / ONEMINSEC )
-		lSecond = Fix( ( lTime - ( lHour * ONEHOURSEC ) - ( lMinite * ONEMINSEC ) ) )
-		lMinSec = Round( lTimeValue - lTime, 3 )
-		
-		'文字列整形
-		lHour = String( 2 - Len(CStr(lHour)),   "0" ) & lHour
-		lMinite = String( 2 - Len(CStr(lMinite)), "0" ) & lMinite
-		lSecond = String( 2 - Len(CStr(lSecond)), "0" ) & lSecond
+		lTemp = Fix( lTime Mod ONEHOURSEC )
+		lMinite = Fix( lTemp / ONEMINSEC )
+		lSecond = Fix( lTemp Mod ONEMINSEC )
+		lMinSec = Round( dTimeValue - lTime, 3 )
 		lMinSec = Mid( CStr(lMinSec), 3, 3 )
 		lMinSec = lMinSec & String( 3 - Len(lMinSec), "0" )
 		
-		ConvFormat = lHour & ":" & lMinite & ":" & lSecond & " ." & lMinSec
+		If lTimeFormat = 1 Then
+			lHour = String( 2 - Len(CStr(lHour)),"0" ) & lHour
+			lMinite = String( 2 - Len(CStr(lMinite)), "0" ) & lMinite
+			lSecond = String( 2 - Len(CStr(lSecond)), "0" ) & lSecond
+			ConvFormat = lHour & ":" & lMinite & ":" & lSecond & " ." & lMinSec
+		ElseIf lTimeFormat = 2 Then
+			If lHour = 0 Then
+				If lMinite = 0 Then
+					ConvFormat = lSecond & "[s] " & lMinSec & "[ms]"
+				Else
+					If lSecond = 0 Then
+						ConvFormat = lMinSec & "[ms]"
+					Else
+						ConvFormat = lSecond & "[s] " & lMinSec & "[ms]"
+					End If
+				End If
+			Else
+				ConvFormat = lHour & "[h] " & lMinite & "[m] " & lSecond & "[s] " & lMinSec & "[ms]"
+			End If
+		Else
+			ConvFormat = ""
+		End If
 	End Function
 End Class
-
-'Call Test
-'Private Sub Test
-'	Dim oStpWtch
-'	Set oStpWtch = New StopWatch
-'	
-'	Dim sTime
-'	
-'	sTime = ""
-'	oStpWtch.StartT
-'	
-'	WScript.Sleep 1000
-'	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-'	sTime = sTime & vbNewLine & oStpWtch.ElapsedTime
-'	sTime = sTime & vbNewLine & ""
-'	WScript.Sleep 1000
-''	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-''	WScript.Sleep 100000
-''	sTime = sTime & vbNewLine & oStpWtch.ElapsedTime
-''	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-''	WScript.Sleep 2000
-''	sTime = sTime & vbNewLine & oStpWtch.ElapsedTime
-''	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-''	WScript.Sleep 4000
-''	sTime = sTime & vbNewLine & oStpWtch.StartPoint
-''	sTime = sTime & vbNewLine & oStpWtch.StopPoint
-''	sTime = sTime & vbNewLine & oStpWtch.ElapsedTime
-''	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-'	
-'	oStpWtch.StopT
-'	
-'	sTime = sTime & vbNewLine & oStpWtch.IntervalTime
-'	sTime = sTime & vbNewLine & oStpWtch.ElapsedTime
-'	sTime = sTime & vbNewLine & oStpWtch.StartPoint
-'	sTime = sTime & vbNewLine & oStpWtch.StopPoint
-'	
-'	MsgBox sTime
-'End Sub
+	If WScript.ScriptName = "StopWatch.vbs" Then
+		Call Test_StopWatch
+	End If
+	Private Sub Test_StopWatch
+		Dim oStpWtch
+		Set oStpWtch = New StopWatch
+		
+		Dim lTestCase
+		lTestCase = InputBox("テストケースを入力してください")
+		
+		Dim sOutMsg
+		sOutMsg = ""
+		Select Case lTestCase
+			Case 1:
+				sOutMsg = sOutMsg & vbNewLine & "### start! ###"
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.StartT
+				
+				WScript.Sleep 1000
+				sOutMsg = sOutMsg & vbNewLine & "--- wait1000 ---"
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+				
+				WScript.Sleep 1000
+				sOutMsg = sOutMsg & vbNewLine & "--- wait1000 ---"
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+				
+				sOutMsg = sOutMsg & vbNewLine & "### stop! ###"
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.StopT
+				
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+			Case 2:
+				sOutMsg = sOutMsg & vbNewLine & "### start! ###"
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.StartT
+				
+				WScript.Sleep 2000
+				sOutMsg = sOutMsg & vbNewLine & "--- wait2000 ---"
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+				
+				WScript.Sleep 4000
+				sOutMsg = sOutMsg & vbNewLine & "--- wait4000 ---"
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+				
+				sOutMsg = sOutMsg & vbNewLine & "### stop! ###"
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.StopT
+				
+				sOutMsg = sOutMsg & vbNewLine & "StartPoint   : " & oStpWtch.StartPoint
+				sOutMsg = sOutMsg & vbNewLine & "StopPoint    : " & oStpWtch.StopPoint
+				sOutMsg = sOutMsg & vbNewLine & "IntervalTime : " & oStpWtch.IntervalTime
+				sOutMsg = sOutMsg & vbNewLine & "ElapsedTime  : " & oStpWtch.ElapsedTime
+			Case 3:
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/13", 6003 ), 1 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/13", 6003 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & ""
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 0,    "2016/12/11", 6003 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 6003 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 6059 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 6060 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 9599 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 9600 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/12", 5999 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/12", 6000 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & ""
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 0.12, "2016/12/11", 0.59 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & ""
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/12", 6003 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/13", 6003 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & ""
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 6000 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/11", 5999 ), 2 )
+				sOutMsg = sOutMsg & vbNewLine & oStpWtch.ConvFormat( oStpWtch.TimeDiff( "2016/12/11", 6000, "2016/12/10", 6003 ), 2 )
+			Case Else:
+				'Do Nothing
+		End Select
+		MsgBox sOutMsg
+		
+		Set oStpWtch = Nothing
+	End Sub
