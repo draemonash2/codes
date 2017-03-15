@@ -2,7 +2,7 @@ Option Explicit
 
 '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
 '□
-'□ iTunes タグ更新ツール v.2.6
+'□ iTunes タグ更新ツール v.2.7
 '□
 '□  【概要】
 '□     mp3 ファイルの更新日時を元にタグ更新済みファイルを自動判別し、iTunes の API を
@@ -29,6 +29,9 @@ Option Explicit
 '□     (3) 本スクリプトを実行。
 '□     
 '□  【更新履歴】
+'□     v2.7 (2017/03/15)
+'□       ・古い iTunes Library Backup フォルダの削除
+'□     
 '□     v2.6 (2017/03/05)
 '□       ・StopWatch.vbs 修正に対する対応
 '□       ・軽微なバグFix
@@ -61,6 +64,8 @@ Const DEBUG_FUNCVALID_TRGTLISTUP            = True
 Const DEBUG_FUNCVALID_DIRCMDEXEC            = True
 Const DEBUG_FUNCVALID_TAGUPDATE             = True
 Const DEBUG_FUNCVALID_DIRRESULTDELETE       = True
+
+Const ITUNES_BACKUP_FOLDER_MAX = 20
 
 '==========================================================
 '= 本処理
@@ -158,7 +163,9 @@ If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
     Dim sBackUpDirName
     Dim sBackUpDirPath
     Dim sItuneDirPath
+    Dim sItuneBackUpDirPath
     sItuneDirPath = GetDirPath( objItunes.LibraryXMLPath )
+    sItuneBackUpDirPath = sItuneDirPath & "\iTunes Library Backup"
     sBackUpDirName = Year( sCurDateTime ) & _
                      String( 2 - Len( Month( sCurDateTime ) ), "0" ) & Month( sCurDateTime ) & _
                      String( 2 - Len( Day( sCurDateTime ) ), "0" ) & Day( sCurDateTime ) & _
@@ -166,7 +173,7 @@ If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
                      String( 2 - Len( Hour( sCurDateTime ) ), "0" ) & Hour( sCurDateTime ) & _
                      String( 2 - Len( Minute( sCurDateTime ) ), "0" ) & Minute( sCurDateTime ) & _
                      String( 2 - Len( Second( sCurDateTime ) ), "0" ) & Second( sCurDateTime )
-    sBackUpDirPath = sItuneDirPath & "\iTunes Library Backup\" & sBackUpDirName
+    sBackUpDirPath = sItuneBackUpDirPath & "\" & sBackUpDirName
     
     Set objItunes = Nothing
     
@@ -177,6 +184,37 @@ If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
     objFSO.CopyFile sItuneDirPath & "\iTunes Library Genius.itdb", sBackUpDirPath & "\"
     objFSO.CopyFile sItuneDirPath & "\iTunes Library.itl        ", sBackUpDirPath & "\"
     objFSO.CopyFile sItuneDirPath & "\iTunes Music Library.xml  ", sBackUpDirPath & "\"
+    
+    '*** 古いバックアップフォルダを削除 ***
+    Dim asDirList
+    Call GetFileList2(sItuneBackUpDirPath, asDirList, 2) 
+    
+    'フォルダ削除
+    MsgBox UBound( asDirList )
+    If UBound( asDirList ) >= ITUNES_BACKUP_FOLDER_MAX then
+        Dim lDelFolderMax
+        lDelFolderMax = UBound(asDirList) - ITUNES_BACKUP_FOLDER_MAX
+        Dim lDelDirIdx
+        'Debug <TOP>
+        Dim sBuf
+        sBuf = ""
+        For lDelDirIdx = LBound(asDirList) to UBound(asDirList)
+            sBuf = sBuf & vbNewLine & asDirList(lDelDirIdx)
+        Next
+        MsgBox sBuf
+        sBuf = ""
+        'Debug <END>
+        For lDelDirIdx = LBound(asDirList) to lDelFolderMax
+            'バックアップフォルダ名は「YYYYMMDD_HHMMSS」で統一されているため、
+            'asDirList() は自然と日時順に並ぶ。（要素番号が大きくなるほど新しい）
+            'そのため、要素番号の小さい順からフォルダを削除する。
+            sBuf = sBuf & vbNewLine & asDirList(lDelDirIdx)
+            objFSO.DeleteFolder asDirList(lDelDirIdx), True
+        Next
+        MsgBox sBuf 'Debug
+    Else
+        'Do Nothing
+    End If
     
     '*** ログファイル作成 ***
     Dim sLogFilePath
