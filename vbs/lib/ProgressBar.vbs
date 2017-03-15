@@ -4,6 +4,9 @@ Private Const PROGBAR_ELAPSED_TIME_DIFF_COUNT_MAX = 10
 Private Const PROGBAR_BASIC_LINE_NUM = 4
 Private Const PROGBAR_WIN_WIDTH = 600
 Private Const PROGBAR_REMAINING_TIME_INIT = 7200
+Private Const PROGBAR_ONEDAYSEC = 86400 '60[s] * 60[m] * 24[h]
+Private Const PROGBAR_ONEHOURSEC = 3600 '60[s] * 60[m]
+Private Const PROGBAR_ONEMINSEC = 60    '60[s]
 
 Class ProgressBar
 	Dim gobjExplorer
@@ -84,14 +87,24 @@ Class ProgressBar
 		'Do Nothing
 	End Sub
 	
-	' タイトルを指定
+	' ==================================================================
+	' = 概要	タイトルを更新する
+	' = 引数	sTitle	  String   [in]	タイトル
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let Title( _
 		ByVal sTitle _
 	)
 		gobjExplorer.Document.Title = sTitle
 	End Property
 	
-	' メッセージを指定
+	' ==================================================================
+	' = 概要	メッセージを更新する
+	' = 引数	sProgMsg	  String   [in]	メッセージ
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let Message( _
 		ByVal sProgMsg _
 	)
@@ -107,10 +120,12 @@ Class ProgressBar
 		End If
 	End Property
 	
-	' 0 ～ 1 を指定
-	' ★注意★
-	'	本関数は若干処理時間がかかります。
-	'	一定時間間隔を空けて呼び出すこと。
+	' ==================================================================
+	' = 概要	進捗を更新する
+	' = 引数	dProgPerRaw	  Double   [in]	進捗（0 ～ 1 の小数で指定）
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Function Update( _
 		ByVal dProgPerRaw _
 	)
@@ -138,7 +153,7 @@ Class ProgressBar
 		dSecondNow = Timer()
 		lDateDiff = DateDiff("d", sDateOld, sDateNow)
 		If lDateDiff > 0 Then
-			gdElapsedTime = (DATE_SECOND * (lDateDiff - 1)) + (DATE_SECOND - dSecondOld) + dSecondNow
+			gdElapsedTime = (PROGBAR_ONEDAYSEC * (lDateDiff - 1)) + (PROGBAR_ONEDAYSEC - dSecondOld) + dSecondNow
 		ElseIf lDateDiff = 0 Then
 			gdElapsedTime = dSecondNow - dSecondOld
 		Else
@@ -215,7 +230,14 @@ Class ProgressBar
 			""
 	End Function
 	
-	' 進捗を変換（例：100～500 を 0～1 に変換）
+	' ==================================================================
+	' = 概要	進捗値を変換する（例：100～500 を 0～1 に変換）
+	' = 引数	lInMin		Long   [in]	進捗最小値
+	' = 引数	lInMax		Long   [in]	進捗最大値
+	' = 引数	lInProg		Long   [in]	進捗値
+	' = 戻値				Double		変換結果（0 ～ 1 の小数値
+	' = 覚書	なし
+	' ==================================================================
 	Public Function ConvProgRange( _
 		ByVal lInMin, _
 		ByVal lInMax, _
@@ -241,6 +263,12 @@ Class ProgressBar
 		ConvProgRange = lConvProg / lConvMax
 	End Function
 	
+	' ==================================================================
+	' = 概要	プログレスバーを終了する
+	' = 引数	なし
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Function Quit()
 		gobjExplorer.Document.Body.Style.Cursor = "default"
 		gobjExplorer.Quit
@@ -287,12 +315,10 @@ Class ProgressBar
 		Dim lMod
 		
 		lMod = lRawSec
-		lOutHour = Fix(lMod / (60 * 60))
-		
-		lMod = Fix(lMod - (lOutHour * (60 * 60)))
-		lOutMin = Fix(lMod / 60)
-		
-		lMod = Fix(lMod - (lOutMin * 60))
+		lOutHour = Fix(lMod / PROGBAR_ONEHOURSEC)
+		lMod = Fix(lMod - (lOutHour * PROGBAR_ONEHOURSEC))
+		lOutMin = Fix(lMod / PROGBAR_ONEMINSEC)
+		lMod = Fix(lMod - (lOutMin * PROGBAR_ONEMINSEC))
 		lOutSec = lMod
 		
 		If lOutHour = 0 Then
