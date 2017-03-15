@@ -10,6 +10,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・選択範囲内で中央                   選択セルに対して「選択範囲内で中央」を実行する
 ' =    ・ダブルクォートを除いてセルコピー   ダブルクオーテーションなしでセルコピーする
 ' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
+' =    ・選択範囲をファイルエクスポート     選択範囲をファイルとしてエクスポートする。
 ' =    ・シート表示非表示を切り替え         シート表示/非表示を切り替える
 ' =    ・シート並べ替え作業用シートを作成   シート並べ替え作業用シート作成
 ' =    ・セル内の丸数字をデクリメント       ②～⑮を指定して、指定番号以降をインクリメントする
@@ -47,6 +48,7 @@ End Enum
 Public Sub ユーザー定義ショートカットキーを設定()
 '   Application.OnKey "   ", "選択範囲内で中央"
     Application.OnKey "^+c", "ダブルクォートを除いてセルコピー"
+    Application.OnKey "^+e", "選択範囲をファイルエクスポート"
 '   Application.OnKey "   ", "全シート名をコピー"
 '   Application.OnKey "   ", "シート表示非表示を切り替え"
 '   Application.OnKey "   ", "シート並べ替え作業用シートを作成"
@@ -58,6 +60,7 @@ End Sub
 
 Public Sub ユーザー定義ショートカットキーを解除()
     Application.OnKey "^+c"
+    Application.OnKey "^+e"
 End Sub
 
 ' *****************************************************************************
@@ -350,6 +353,89 @@ Public Sub SortSheetPost()
     End With
     
     MsgBox "並べ替え完了！"
+End Sub
+
+' =============================================================================
+' = 概要：選択範囲をファイルとしてエクスポートする。
+' =       隣り合った列のセルにはタブ文字を挿入して出力する。
+' =============================================================================
+Public Sub 選択範囲をファイルエクスポート()
+    '*** セル選択判定 ***
+    If Selection.Count = 0 Then
+        MsgBox "セルが選択されていません"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '*** ファイルパス入力 ***
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sOutputDirPath As String
+    Dim sOutputFilePath As String
+    sOutputDirPath = objWshShell.SpecialFolders("Desktop")
+    sOutputFilePath = InputBox( _
+                            Title:="出力ファイルパス入力", _
+                            Prompt:="出力するファイルパスを入力してください。", _
+                            Default:=sOutputDirPath & "\export.txt" _
+                        )
+    
+    '*** ファイル上書き判定 ***
+    If Dir(sOutputFilePath) = "" Then
+        'Do Nothing
+    Else
+        Dim vAnswer As Variant
+        vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel)
+        If vAnswer = vbOK Then
+            'Do Nothing
+        Else
+            MsgBox "処理を中断します"
+            End
+        End If
+    End If
+    
+    '*** ファイル出力処理 ***
+    Open sOutputFilePath For Output As #1
+    
+    Dim sBuf As String
+    Dim bIs1stStore As Boolean
+    sBuf = ""
+    bIs1stStore = True
+    Dim lCurRow As Long
+    Dim lOldRow As Long
+    lCurRow = 0
+    lOldRow = 0
+    Dim lSelCnt As Long
+    For lSelCnt = 1 To Selection.Count
+        lCurRow = Selection(lSelCnt).Row
+        '非表示セルは無視する
+        If Selection(lSelCnt).EntireRow.Hidden = True Or _
+           Selection(lSelCnt).EntireColumn.Hidden = True Then
+            'Do Nothing
+        Else
+            If lCurRow = lOldRow Then
+                sBuf = sBuf & Chr(9) & Selection(lSelCnt).Value
+            Else
+                If bIs1stStore = True Then
+                    bIs1stStore = False
+                Else
+                    Print #1, sBuf
+                End If
+                sBuf = Selection(lSelCnt).Value
+            End If
+        End If
+        lOldRow = lCurRow
+    Next lSelCnt
+    Close #1
+    
+    MsgBox "出力完了！"
+    
+    '*** 出力ファイルを開く ***
+    If Left(sOutputFilePath, 1) = "" Then
+        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+    Else
+        'Do Nothing
+    End If
+    objWshShell.Run """" & sOutputFilePath & """", 3
 End Sub
 
 ' =============================================================================
