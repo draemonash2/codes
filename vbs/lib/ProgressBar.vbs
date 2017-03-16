@@ -353,106 +353,131 @@ End Class
 		Dim i
 		Dim iBefore
 		Dim iAfter
+		Dim bTestContinue
+		Dim bAllTestExec
+		Dim bIsTestFinish
 		
 		lTestCase = InputBox( "テストケース番号を入力してください。" , "TestTitle" )
+		If lTestCase = 0 Then
+			bAllTestExec = True
+		Else
+			bAllTestExec = False
+		End If
 		
-		Set oProgBar = New ProgressBar
-		Select Case lTestCase
-			Case 1
-				oProgBar.Message = "Test Message"
-				iBefore = Timer()
-				For i = 0 to 100
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 2
-				oProgBar.Message = "Test Message"
-				iBefore = Timer()
-				For i = 400 to 500
-					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 3
-				oProgBar.Message = "Test Message"
-				WScript.Sleep 3000
-				iBefore = Timer()
-				For i = 0 to 1000
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 4
-				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
-				iBefore = Timer()
-				For i = 400 to 500
-					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 5
-				oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
-				iBefore = Timer()
-				For i = 400 to 500
-					oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 6
-				iBefore = Timer()
-				For i = 0 to 1000
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 7
-				iBefore = Timer()
-				For i = 0 to 1000
-					If i = 300 Then
-						oProgBar.Message = "Test Message" & vbNewLine & "ooo" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
-					Else
-						'Do Nothing
-					End If
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 8
-				oProgBar.Title = "Progress!!"
-				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
-				iBefore = Timer()
-				For i = 0 to 100
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case 9
-				iBefore = Timer()
-				oProgBar.Message = "Test Message" & vbNewLine & "aaa"
-				For i = 0 to 1000
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
-					WScript.Sleep 10
-				Next
-				oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa"
-				For i = 0 to 1000
-					oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
-					WScript.Sleep 10
-				Next
-				iAfter = Timer()
-				MsgBox iAfter - iBefore
-			Case Else
-				'Do Nothing
-		End Select
-		oProgBar.Quit()
+		bIsTestFinish = False
+		bTestContinue = True
+		Do While bTestContinue = True
+			Set oProgBar = New ProgressBar
+			Select Case lTestCase
+				Case 0
+					'Do Nothing
+				Case 1
+					oProgBar.Message = "Test Message"
+					iBefore = Timer()
+					For i = 0 to 100
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 2
+					oProgBar.Message = "Test Message"
+					iBefore = Timer()
+					For i = 400 to 500
+						oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 3
+					oProgBar.Message = "Test Message"
+					WScript.Sleep 3000
+					iBefore = Timer()
+					For i = 0 to 1000
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 4
+					oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+					iBefore = Timer()
+					For i = 400 to 500
+						oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 5
+					oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
+					iBefore = Timer()
+					For i = 400 to 500
+						oProgBar.Update( oProgBar.ConvProgRange( 400, 500, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 6
+					iBefore = Timer()
+					For i = 0 to 1000
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 7
+					iBefore = Timer()
+					For i = 0 to 1000
+						If i = 300 Then
+							oProgBar.Message = "Test Message" & vbNewLine & "ooo" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa" & vbNewLine & "aaa"
+						Else
+							'Do Nothing
+						End If
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 8
+					oProgBar.Title = "Progress!!"
+					oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+					iBefore = Timer()
+					For i = 0 to 100
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 100, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case 9
+					iBefore = Timer()
+					oProgBar.Message = "Test Message" & vbNewLine & "aaa"
+					For i = 0 to 1000
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+						WScript.Sleep 10
+					Next
+					oProgBar.Message = "Test Message" & vbNewLine & "aaa" & vbNewLine & "aaa"
+					For i = 0 to 1000
+						oProgBar.Update( oProgBar.ConvProgRange( 0, 1000, i ) )
+						WScript.Sleep 10
+					Next
+					iAfter = Timer()
+					MsgBox iAfter - iBefore
+				Case Else
+					bIsTestFinish = True
+			End Select
+			oProgBar.Quit()
+			
+			If bAllTestExec = True Then
+				If bIsTestFinish = True Then
+					bTestContinue = False
+				Else
+					lTestCase = lTestCase + 1
+					bTestContinue = True
+				End If
+			Else
+				bTestContinue = False
+			End If
+		Loop
 		Set oProgBar = Nothing
 	End Sub
 

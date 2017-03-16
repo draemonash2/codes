@@ -3,7 +3,18 @@ Option Explicit
 '*********************************************************************
 '* グローバル関数定義
 '*********************************************************************
-'lFileListType）0：両方、1:ファイル、2:フォルダ、それ以外：格納しない
+' ==================================================================
+' = 概要	ファイル/フォルダパス一覧を取得する
+' = 引数	sTrgtDir		String		[in]	対象フォルダ
+' = 引数	asFileList		String()	[out]	ファイル/フォルダパス一覧
+' = 引数	lFileListType	Long		[in]	取得する一覧の形式
+' =													0：両方
+' =													1:ファイル
+' =													2:フォルダ
+' =													それ以外：格納しない
+' = 戻値	なし
+' = 覚書	なし
+' ==================================================================
 Public Function GetFileList( _
 	ByVal sTrgtDir, _
 	ByRef asFileList, _
@@ -65,10 +76,46 @@ Public Function GetFileList( _
 	Set objFolder = Nothing
 	Set objFileSys = Nothing
 End Function
+'	Call Test_GetFileList()
+	Private Sub Test_GetFileList()
+		Dim objWshShell
+		Dim sCurDir
+		Set objWshShell = WScript.CreateObject( "WScript.Shell" )
+		sCurDir = objWshShell.CurrentDirectory
+		Call FileSysem_Include( sCurDir & "\Array.vbs" )
+		Call FileSysem_Include( sCurDir & "\iTunes.vbs" )
+		Call FileSysem_Include( sCurDir & "\ProgressBar.vbs" )
+		Call FileSysem_Include( sCurDir & "\StopWatch.vbs" )
+		Call FileSysem_Include( sCurDir & "\String.vbs" )
+		
+		Dim oStpWtch
+		
+		Set oStpWtch = New StopWatch
+		
+		oStpWtch.StartT
+		Dim asFileList()
+		Redim Preserve asFileList(-1)
+		Call GetFileList( "Z:\300_Musics", asFileList, 1 )
+		oStpWtch.StopT
+		
+		MsgBox oStpWtch.ElapsedTime
+		Call OutputAllElement2LogFile(asFileList)
+	End Sub
 
-'Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
-'asFileList は配列型ではなくバリアント型として定義する必要があることに注意！
-'lFileListType）0：両方、1:ファイル、2:フォルダ、それ以外：格納しない
+' ==================================================================
+' = 概要	ファイル/フォルダパス一覧を取得する
+' = 引数	sTrgtDir		String		[in]	対象フォルダ
+' = 引数	asFileList		Variant		[out]	ファイル/フォルダパス一覧
+' = 引数	lFileListType	Long		[in]	取得する一覧の形式
+' =													0：両方
+' =													1:ファイル
+' =													2:フォルダ
+' =													それ以外：格納しない
+' = 戻値	なし
+' = 覚書	・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
+' =			・asFileList は配列型ではなくバリアント型として定義する
+' =			  必要があることに注意！
+' ==================================================================
 Public Function GetFileList2( _
 	ByVal sTrgtDir, _
 	ByRef asFileList, _
@@ -112,8 +159,39 @@ Public Function GetFileList2( _
 	Set objFSO = Nothing	'オブジェクトの破棄
 	On Error Goto 0
 End Function
+'	Call Test_GetFileList2()
+	Private Sub Test_GetFileList2()
+		Dim objWshShell
+		Dim sCurDir
+		Set objWshShell = WScript.CreateObject( "WScript.Shell" )
+		sCurDir = objWshShell.CurrentDirectory
+		Call FileSysem_Include( sCurDir & "\Array.vbs" )
+		Call FileSysem_Include( sCurDir & "\iTunes.vbs" )
+		Call FileSysem_Include( sCurDir & "\ProgressBar.vbs" )
+		Call FileSysem_Include( sCurDir & "\StopWatch.vbs" )
+		Call FileSysem_Include( sCurDir & "\String.vbs" )
+		
+		Dim oStpWtch
+		
+		Set oStpWtch = New StopWatch
+		
+		oStpWtch.StartT
+		Dim asFileList
+		Call GetFileList2( "Z:\300_Musics", asFileList, 1 )
+		oStpWtch.StopT
+		
+		MsgBox oStpWtch.ElapsedTime
+		Call OutputAllElement2LogFile(asFileList)
+	End Sub
 
-'フォルダが既に存在している場合は何もしない
+' ==================================================================
+' = 概要	フォルダを作成する
+' = 引数	sDirPath		String		[in]	作成対象フォルダ
+' = 戻値	なし
+' = 覚書	・作成対象フォルダの親ディレクトリが存在しない場合、
+' =			  再帰的に親フォルダを作成する
+' =			・フォルダが既に存在している場合は何もしない
+' ==================================================================
 Public Function CreateDirectry( _
 	ByVal sDirPath _
 )
@@ -137,7 +215,16 @@ Public Function CreateDirectry( _
 	Set oFileSys = Nothing
 End Function
 
-'戻り値）1：ファイル、2、フォルダー、0：エラー（存在しないパス）
+' ==================================================================
+' = 概要	ファイルかフォルダかを判定する
+' = 引数	sChkTrgtPath	String		[in]	チェック対象フォルダ
+' = 戻値					Long				判定結果
+' =													1) ファイル
+' =													2) フォルダー
+' =													0) エラー（存在しないパス）
+' = 覚書	FileSystemObject を使っているので、ファイル/フォルダの
+' =			存在確認にも使用可能。
+' ==================================================================
 Public Function GetFileOrFolder( _
 	ByVal sChkTrgtPath _
 )
@@ -158,50 +245,14 @@ Public Function GetFileOrFolder( _
 		GetFileOrFolder = 0 'エラー（存在しないパス）
 	End If
 End Function
-'	Call Test_GetFileOrFolder()
-	Private Sub Test_GetFileOrFolder()
-		Dim objWshShell
-		Dim sCurDir
-		Set objWshShell = WScript.CreateObject( "WScript.Shell" )
-		sCurDir = objWshShell.CurrentDirectory
-		Call Test_GetFileOrFolder_Include( sCurDir & "\Array.vbs" )
-		Call Test_GetFileOrFolder_Include( sCurDir & "\iTunes.vbs" )
-		Call Test_GetFileOrFolder_Include( sCurDir & "\ProgressBar.vbs" )
-		Call Test_GetFileOrFolder_Include( sCurDir & "\StopWatch.vbs" )
-		Call Test_GetFileOrFolder_Include( sCurDir & "\String.vbs" )
-		
-		Dim oStpWtch
-		
-		Set oStpWtch = New StopWatch
-		
-		oStpWtch.StartT
-	'	Dim asFileList()
-	'	ReDim asFileList(-1)
-	'	Call GetFileList( "Z:\300_Musics", asFileList, 0 )
-		Dim asFileList
-		Call GetFileList2( "Z:\300_Musics", asFileList, 1 )
-		oStpWtch.StopT
-		
-		MsgBox oStpWtch.ElapsedTime
-		Call OutputAllElement2LogFile(asFileList)
-	End Sub
-	Private Function Test_GetFileOrFolder_Include( _
-		ByVal sOpenFile _
-		)
-		Dim objFSO
-		Dim objVbsFile
-	
-		Set objFSO = CreateObject("Scripting.FileSystemObject")
-		Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-	
-		ExecuteGlobal objVbsFile.ReadAll()
-		objVbsFile.Close
-	
-		Set objVbsFile = Nothing
-		Set objFSO = Nothing
-	End Function
 
-'指定フォルダパスに含まれるフォルダが空か判定し、空フォルダなら削除する。
+' ==================================================================
+' = 概要	指定フォルダパスに含まれるフォルダが空か判定し、
+' =			空フォルダなら削除する。
+' = 引数	sTrgtPath	String		[in]	チェック対象フォルダ
+' = 戻値				String				削除結果ログ
+' = 覚書	なし
+' ==================================================================
 Public Function DeleteEmptyFolder( _
 	ByVal sTrgtPath _
 )
@@ -264,8 +315,15 @@ End Function
 		MsgBox sOutStr
 	End Sub
 
-'指定パスが存在する場合、"_XXX" を付与して返却する
-'lFileDirType ) 1:file、2:folder、other:both
+' ==================================================================
+' = 概要	指定パスが存在する場合、"_XXX" を付与して返却する
+' = 引数	sTrgtPath		String		[in]	対象フォルダ
+' = 引数	lFileDirType	Long		[in]	ファイル/フォルダ種別
+' =													1:ファイル
+' =													2:フォルダ
+' = 戻値					String				フォルダパス
+' = 覚書	本関数では、ファイル/フォルダは作成しない。
+' ==================================================================
 Public Function GetNotExistPath( _
 	ByVal sTrgtPath, _
 	ByVal lFileDirType _
@@ -389,3 +447,20 @@ End Function
 		sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
 		MsgBox sOutStr
 	End Sub
+
+'テスト用
+Private Function FileSysem_Include( _
+	ByVal sOpenFile _
+	)
+	Dim objFSO
+	Dim objVbsFile
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+
+	ExecuteGlobal objVbsFile.ReadAll()
+	objVbsFile.Close
+
+	Set objVbsFile = Nothing
+	Set objFSO = Nothing
+End Function

@@ -1,5 +1,17 @@
 Option Explicit
 
+' ==================================================================
+' = 概要	X-Finder の ini ファイルに対して、アイテムを追加する。
+' =			ファイルが存在しない場合は、新規作成する。
+' = 引数	sTrgtIniPath	String	[in]	ini ファイルパス
+' = 引数	sItemName		String	[in]	追加アイテム（名前）
+' = 引数	sItemPath		String	[in]	追加アイテム（パス）
+' = 引数	sItemType		String	[in]	追加アイテム（種別）
+' = 引数	sItemIcon		String	[in]	追加アイテム（アイコン）
+' = 引数	sItemExt		String	[in]	追加アイテム（拡張）
+' = 戻値					String				フォルダパス
+' = 覚書	X-Finder の初期設定 ini ファイルでは使えないことに注意！
+' ==================================================================
 Public Function UpdateIniFile( _
 	ByVal sTrgtIniPath, _
 	ByVal sItemName, _
@@ -77,6 +89,9 @@ End Function
 		)
 	End Sub
 
+'*********************************************************************
+'* ローカル関数定義
+'*********************************************************************
 Private Function GetTailIdx( _
 	ByRef vTextAll _
 )

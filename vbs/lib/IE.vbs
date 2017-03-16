@@ -1,9 +1,9 @@
 Option Explicit
 
 ' 定数は実験して導き出したもの
-Const LINE_HEIGHT_RATIO = 1.22
-Const WIN_LINE_HEIGHT_RATIO = 1.27
-Const HEADER_HEIGHT = 65
+Const IE_LINE_HEIGHT_RATIO = 1.22
+Const IE_WIN_LINE_HEIGHT_RATIO = 1.27
+Const IE_HEADER_HEIGHT = 65
 
 Class IE
 	Dim gobjExplorer
@@ -29,7 +29,7 @@ Class IE
 		
 		gsFont = "ＭＳ ゴシック"
 		glFontSize = 18
-		glLineHeight = glFontSize * LINE_HEIGHT_RATIO
+		glLineHeight = glFontSize * IE_LINE_HEIGHT_RATIO
 		
 		Set gobjExplorer = CreateObject("InternetExplorer.Application")
 		gobjExplorer.Navigate "about:blank"
@@ -48,16 +48,34 @@ Class IE
 		' Do Nothing
 	End Sub
 	
+	' ==================================================================
+	' = 概要	ウィンドウを作成、表示する
+	' = 引数	なし
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Sub Activate()
 		gobjExplorer.Document.Body.Style.Cursor = "wait" 'マウスカーソルを砂時計にする
 		Call ActiveIE
 	End Sub
 	
+	' ==================================================================
+	' = 概要	ウィンドウを終了する
+	' = 引数	なし
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Sub Quit()
 		gobjExplorer.Document.Body.Style.Cursor = "default" 'マウスカーソルを元に戻す
 		gobjExplorer.Quit
 	End Sub
 	
+	' ==================================================================
+	' = 概要	ウィンドウの高さを設定する
+	' = 引数	lHeight		Long   [in]	ウィンドウの高さ
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	'ウィンドウのサイズはテキストの行数で自動算出するため、設定させない
 '	Public Property Let Height( _
 '		ByVal lHeight _
@@ -66,6 +84,12 @@ Class IE
 '		gobjExplorer.Top = ( glVertical - gobjExplorer.Height ) / 2
 '	End Property
 	
+	' ==================================================================
+	' = 概要	ウィンドウ幅を設定する
+	' = 引数	lWidth		Long   [in]	ウィンドウの幅
+	' = 戻値	なし
+	' = 覚書	ウィンドウの表示位置は、幅に合わせて画面中央に自動調整する
+	' ==================================================================
 	Public Property Let Width( _
 		ByVal lWidth _
 	)
@@ -73,25 +97,49 @@ Class IE
 		gobjExplorer.Left = ( glHorizontal - gobjExplorer.Width ) / 2
 	End Property
 	
+	' ==================================================================
+	' = 概要	ウィンドウタイトルを設定する
+	' = 引数	sSetTitle	String   [in]	ウィンドウタイトル
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let Title( _
 		ByVal sSetTitle _
 	)
 		gobjExplorer.Document.Title = sSetTitle
 	End Property
 	
+	' ==================================================================
+	' = 概要	フォントを指定する
+	' = 引数	sFont	String   [in]	フォント名
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let Font( _
 		ByVal sFont _
 	)
 		gsFont = sFont
 	End Property
 	
+	' ==================================================================
+	' = 概要	フォントサイズを指定する
+	' = 引数	lFontSize	Long   [in]	フォントサイズ
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let FontSize( _
 		ByVal lFontSize _
 	)
 		glFontSize = lFontSize
-		glLineHeight = lFontSize * LINE_HEIGHT_RATIO
+		glLineHeight = lFontSize * IE_LINE_HEIGHT_RATIO
 	End Property
 	
+	' ==================================================================
+	' = 概要	ウィンドウ内のテキストを設定する
+	' = 引数	sText	String   [in]	テキスト
+	' = 戻値	なし
+	' = 覚書	なし
+	' ==================================================================
 	Public Property Let Text( _
 		ByVal sText _
 	)
@@ -102,7 +150,7 @@ Class IE
 		'ウィンドウの高さ、位置算出
 		Dim lLineNum
 		lLineNum = ( ( Len( sText ) - Len( Replace( sText, "<br>", "" ) ) ) / 4 ) + 1
-		gobjExplorer.Height = ( ( glLineHeight * WIN_LINE_HEIGHT_RATIO ) * lLineNum ) + HEADER_HEIGHT
+		gobjExplorer.Height = ( ( glLineHeight * IE_WIN_LINE_HEIGHT_RATIO ) * lLineNum ) + IE_HEADER_HEIGHT
 		gobjExplorer.Top = ( glVertical - gobjExplorer.Height ) / 2
 		
 	'	MsgBox lLineNum & "：" & sText
