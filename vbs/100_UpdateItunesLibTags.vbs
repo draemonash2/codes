@@ -190,28 +190,16 @@ If DEBUG_FUNCVALID_BACKUPITUNELIBRARYS = True Then ' ★Debug★
     Call GetFileList2(sItuneBackUpDirPath, asDirList, 2) 
     
     'フォルダ削除
-    MsgBox UBound( asDirList )
     If UBound( asDirList ) >= ITUNES_BACKUP_FOLDER_MAX then
         Dim lDelFolderMax
         lDelFolderMax = UBound(asDirList) - ITUNES_BACKUP_FOLDER_MAX
         Dim lDelDirIdx
-        'Debug <TOP>
-        Dim sBuf
-        sBuf = ""
-        For lDelDirIdx = LBound(asDirList) to UBound(asDirList)
-            sBuf = sBuf & vbNewLine & asDirList(lDelDirIdx)
-        Next
-        MsgBox sBuf
-        sBuf = ""
-        'Debug <END>
         For lDelDirIdx = LBound(asDirList) to lDelFolderMax
             'バックアップフォルダ名は「YYYYMMDD_HHMMSS」で統一されているため、
             'asDirList() は自然と日時順に並ぶ。（要素番号が大きくなるほど新しい）
             'そのため、要素番号の小さい順からフォルダを削除する。
-            sBuf = sBuf & vbNewLine & asDirList(lDelDirIdx)
             objFSO.DeleteFolder asDirList(lDelDirIdx), True
         Next
-        MsgBox sBuf 'Debug
     Else
         'Do Nothing
     End If
