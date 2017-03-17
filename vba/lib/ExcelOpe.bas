@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExcelOpe"
 Option Explicit
 
-' excel operation library v2.0
+' excel operation library v2.2
 
 Sub CreateSheetList()
     Dim oSheet As Object
@@ -1089,14 +1089,15 @@ End Function
 ' = 概要    フォルダ選択ダイアログを表示する
 ' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
 ' = 戻値                String        フォルダ選択結果
-' = 覚書    なし
+' = 覚書    ・キャンセルが押下されると、空文字を返却する。
+' =         ・存在しないフォルダを指定すると、空文字を返却する。
 ' ==================================================================
 Public Function ShowFolderSelectDialog( _
     Optional ByVal sInitPath As String = "" _
 ) As String
     Dim fdDialog As Office.FileDialog
     Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
-    fdDialog.Title = "フォルダを選択してください"
+    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
     If sInitPath = "" Then
         'Do Nothing
     Else
@@ -1113,7 +1114,15 @@ Public Function ShowFolderSelectDialog( _
     If lResult <> -1 Then 'キャンセル押下
         ShowFolderSelectDialog = ""
     Else
-        ShowFolderSelectDialog = fdDialog.SelectedItems.Item(1)
+        Dim objFSO As Object
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Dim sOutputDirPath As String
+        sOutputDirPath = fdDialog.SelectedItems.Item(1)
+        If objFSO.FolderExists(sOutputDirPath) Then
+            ShowFolderSelectDialog = sOutputDirPath
+        Else
+            ShowFolderSelectDialog = ""
+        End If
     End If
     
     Set fdDialog = Nothing
@@ -1137,7 +1146,8 @@ End Function
 ' =                    - ファイル種別と拡張子は"/"で区切る
 ' =                    - フィルタが複数ある場合、","で区切る
 ' =         ・sFilters が省略もしくは空文字の場合、フィルタをクリアする。
-' =         ・ダイアログでキャンセルが押下された場合、空文字が返却される。
+' =         ・ダイアログでキャンセルが押下された場合、空文字を返却する。
+' =         ・存在しないファイルは選択できない。
 ' ==================================================================
 Public Function ShowFileSelectDialog( _
     Optional ByVal sInitPath As String = "", _
@@ -1195,7 +1205,8 @@ End Function
 ' =                    - ファイル種別と拡張子は"/"で区切る
 ' =                    - フィルタが複数ある場合、","で区切る
 ' =         ・sFilters が省略もしくは空文字の場合、フィルタをクリアする。
-' =         ・ダイアログでキャンセルが押下された場合、空文字が返却される。
+' =         ・ダイアログでキャンセルが押下された場合、空文字を返却する。
+' =         ・存在しないファイルは選択できない。
 ' ==================================================================
 Public Function ShowFilesSelectDialog( _
     ByRef asSelectedFiles() As String, _
