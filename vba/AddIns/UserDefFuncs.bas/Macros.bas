@@ -9,8 +9,8 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =  <<マクロ一覧>>
 ' =    ・選択範囲内で中央                   選択セルに対して「選択範囲内で中央」を実行する
 ' =    ・ダブルクォートを除いてセルコピー   ダブルクオーテーションなしでセルコピーする
-' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
 ' =    ・選択範囲をファイルエクスポート     選択範囲をファイルとしてエクスポートする。
+' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
 ' =    ・シート表示非表示を切り替え         シート表示/非表示を切り替える
 ' =    ・シート並べ替え作業用シートを作成   シート並べ替え作業用シート作成
 ' =    ・セル内の丸数字をデクリメント       ②～⑮を指定して、指定番号以降をインクリメントする
@@ -158,33 +158,169 @@ End Sub
 ' =       非表示セルは無視する。複数範囲は未対応。
 ' =============================================================================
 Public Sub ダブルクォートを除いてセルコピー()
-    Dim sBuf As String
-    Dim lSelCnt As Long
-    Dim bIs1stStore As Boolean
+    '*** 非表示セル出力判定 ***
+    Dim bIsInvisibleCellIgnore As Boolean
+    'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+    bIsInvisibleCellIgnore = True
+'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
+'    If vAnswer = vbYes Then
+'        bIsInvisibleCellIgnore = True
+'    ElseIf vAnswer = vbNo Then
+'        bIsInvisibleCellIgnore = False
+'    Else
+'        MsgBox "処理を中断します"
+'        End
+'    End If
     
-    sBuf = ""
-    bIs1stStore = True
-    For lSelCnt = 1 To Selection.Count
-        '非表示セルは無視する
-        If Selection(lSelCnt).EntireRow.Hidden = True Or _
-           Selection(lSelCnt).EntireColumn.Hidden = True Then
-            'Do Nothing
-        Else
-            If bIs1stStore = True Then
-                sBuf = Selection(lSelCnt).Value
-                bIs1stStore = False
-            Else
-                sBuf = sBuf & vbCrLf & Selection(lSelCnt).Value
-            End If
-        End If
-    Next lSelCnt
+    '*** 区切り文字判定 ***
+    Dim sDelimiter As String
+    'ユーザー操作を単純化するため、列間の区切り文字はデフォルトで「タブ文字」固定としておく
+    sDelimiter = Chr(9)
     
-    Call CopyText(sBuf)
+    '*** セル範囲をString()型へ変換 ***
+    Dim asLine() As String
+    Call ConvRange2Array( _
+        Selection, _
+        asLine, _
+        bIsInvisibleCellIgnore, _
+        sDelimiter _
+    )
+    
+    'String()型を順次クリップボードにコピー
+    Dim lLineIdx As Long
+    For lLineIdx = LBound(asLine) To UBound(asLine)
+        Call CopyText(asLine(lLineIdx))
+    Next lLineIdx
     
     'フィードバック
     Application.StatusBar = "■■■■■■■■ コピー完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要：選択範囲をファイルとしてエクスポートする。
+' =       隣り合った列のセルにはタブ文字を挿入して出力する。
+' =============================================================================
+Public Sub 選択範囲をファイルエクスポート()
+    Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
+    
+    '*** セル選択判定 ***
+    If Selection.Count = 0 Then
+        MsgBox "セルが選択されていません"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '+++ Tempファイル読出し ***
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+        Dim sTmpPath As String
+    sTmpPath = objWshShell.SpecialFolders("Templates") & "\" & TEMP_FILE_NAME
+    Dim sDirPathOld As String
+    Dim sFileNameOld As String
+    If objFSO.FileExists(sTmpPath) Then
+        Open sTmpPath For Input As #1
+        Line Input #1, sDirPathOld
+        Line Input #1, sFileNameOld
+        Close #1
+    Else
+        sDirPathOld = objWshShell.SpecialFolders("Desktop")
+        sFileNameOld = "export"
+    End If
+    
+    '*** フォルダパス入力 ***
+    Dim sOutputDirPath As String
+    sOutputDirPath = ShowFolderSelectDialog(sDirPathOld)
+    If sOutputDirPath = "" Then
+        MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。"
+        MsgBox "処理を中断します。"
+        End
+    Else
+        'Do Nothing
+    End If
+    
+    '*** ファイル名入力 ***
+    Dim sOutputFileName As String
+    sOutputFileName = InputBox("ファイル名を入力してください。（拡張子なし）", "ファイル名入力", sFileNameOld)
+    
+    '*** ファイル名作成 ***
+    Dim sOutputFilePath As String
+    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & ".txt"
+    
+    '*** ファイル上書き判定 ***
+    If objFSO.FileExists(sOutputFilePath) Then
+        Dim vAnswer As Variant
+        vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel)
+        If vAnswer = vbOK Then
+            'Do Nothing
+        Else
+            MsgBox "処理を中断します。"
+            End
+        End If
+    Else
+        'Do Nothing
+    End If
+    
+    '*** 非表示セル出力判定 ***
+    Dim bIsInvisibleCellIgnore As Boolean
+    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
+'    If vAnswer = vbYes Then
+'        bIsInvisibleCellIgnore = True
+'    ElseIf vAnswer = vbNo Then
+'        bIsInvisibleCellIgnore = False
+'    Else
+'        MsgBox "処理を中断します"
+'        End
+'    End If
+    
+    '*** ファイル出力処理 ***
+    Dim sDelimiter As String
+    sDelimiter = Chr(9) '列間の区切り文字は「タブ文字」固定
+    
+    'Range型からString()型へ変換
+    Dim asRange() As String
+    Call ConvRange2Array( _
+                Selection, _
+                asRange, _
+                bIsInvisibleCellIgnore, _
+                sDelimiter _
+            )
+    
+    On Error Resume Next
+    Open sOutputFilePath For Output As #1
+    If Err.Number = 0 Then
+        'Do Nothing
+    Else
+        MsgBox "無効なファイルパスが指定されました" & Err.Description
+        MsgBox "処理を中断します。"
+        End
+    End If
+    On Error GoTo 0
+    Dim lLineIdx As Long
+    For lLineIdx = LBound(asRange) To UBound(asRange)
+        Print #1, asRange(lLineIdx)
+    Next lLineIdx
+    Close #1
+    
+    '*** Tempファイル書き出し ***
+    Open sTmpPath For Output As #1
+    Print #1, sOutputDirPath
+    Print #1, sOutputFileName
+    Close #1
+    
+    MsgBox "出力完了！"
+    
+    '*** 出力ファイルを開く ***
+    If Left(sOutputFilePath, 1) = "" Then
+        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+    Else
+        'Do Nothing
+    End If
+    objWshShell.Run """" & sOutputFilePath & """", 3
 End Sub
 
 ' =============================================================================
@@ -353,87 +489,6 @@ Public Sub SortSheetPost()
     End With
     
     MsgBox "並べ替え完了！"
-End Sub
-
-' =============================================================================
-' = 概要：選択範囲をファイルとしてエクスポートする。
-' =       隣り合った列のセルにはタブ文字を挿入して出力する。
-' =============================================================================
-Public Sub 選択範囲をファイルエクスポート()
-    '*** セル選択判定 ***
-    If Selection.Count = 0 Then
-        MsgBox "セルが選択されていません"
-        MsgBox "処理を中断します"
-        End
-    End If
-    
-    '*** ファイルパス入力 ***
-    Dim objWshShell As Object
-    Set objWshShell = CreateObject("WScript.Shell")
-    Dim sOutputFilePath As String
-    sOutputFilePath = ShowFileSelectDialog( _
-                            objWshShell.SpecialFolders("Desktop") & "\export.txt", _
-                            "テキストファイル/*.txt; *.csv" _
-                        )
-    
-    '*** ファイル上書き判定 ***
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    If objFSO.FileExists(sOutputFilePath) Then
-        Dim vAnswer As Variant
-        vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel)
-        If vAnswer = vbOK Then
-            'Do Nothing
-        Else
-            MsgBox "処理を中断します"
-            End
-        End If
-    Else
-        'Do Nothing
-    End If
-    
-    '*** 非表示セル出力判定 ***
-    Dim bIsInvisibleCellIgnore As Boolean
-    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
-'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
-'    If vAnswer = vbYes Then
-'        bIsInvisibleCellIgnore = True
-'    ElseIf vAnswer = vbNo Then
-'        bIsInvisibleCellIgnore = False
-'    Else
-'        MsgBox "処理を中断します"
-'        End
-'    End If
-    
-    '*** ファイル出力処理 ***
-    Dim sDelimiter As String
-    sDelimiter = Chr(9) '列間の区切り文字は「タブ文字」固定
-    
-    'Range型からString()型へ変換
-    Dim asRange() As String
-    Call ConvRange2Array( _
-                Selection, _
-                asRange, _
-                bIsInvisibleCellIgnore, _
-                sDelimiter _
-            )
-    
-    Open sOutputFilePath For Output As #1
-    Dim lLineIdx As Long
-    For lLineIdx = LBound(asRange) To UBound(asRange)
-        Print #1, asRange(lLineIdx)
-    Next lLineIdx
-    Close #1
-    
-    MsgBox "出力完了！"
-    
-    '*** 出力ファイルを開く ***
-    If Left(sOutputFilePath, 1) = "" Then
-        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
-    Else
-        'Do Nothing
-    End If
-    objWshShell.Run """" & sOutputFilePath & """", 3
 End Sub
 
 ' =============================================================================
@@ -610,60 +665,53 @@ Private Function ConvRange2Array( _
 End Function
 
 ' ==================================================================
-' = 概要    ファイル（単一）選択ダイアログを表示する
-' = 引数    sInitPath   String  [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters　  String  [in]  選択時のフィルタ（省略可）(※)
-' = 戻値                String        ファイル選択結果
-' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
-' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
-' =                    - 拡張子が複数ある場合は、";"で区切る
-' =                    - ファイル種別と拡張子は"/"で区切る
-' =                    - フィルタが複数ある場合、","で区切る
-' =         ・sFilters が省略もしくは空文字の場合、フィルタをクリアする。
-' =         ・ダイアログでキャンセルが押下された場合、空文字が返却される。
+' = 概要    フォルダ選択ダイアログを表示する
+' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
+' = 戻値                String        フォルダ選択結果
+' = 覚書    ・キャンセルが押下されると、空文字を返却する。
+' =         ・存在しないフォルダを指定すると、空文字を返却する。
 ' ==================================================================
-Private Function ShowFileSelectDialog( _
-    Optional ByVal sInitPath As String = "", _
-    Optional ByVal sFilters As String = "" _
+Private Function ShowFolderSelectDialog( _
+    Optional ByVal sInitPath As String = "" _
 ) As String
     Dim fdDialog As Office.FileDialog
-    Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
-    fdDialog.Title = "ファイルを選択してください"
-    fdDialog.AllowMultiSelect = False
+    Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
     If sInitPath = "" Then
         'Do Nothing
     Else
-        fdDialog.InitialFileName = sInitPath
+        If Right(sInitPath, 1) = "\" Then
+            fdDialog.InitialFileName = sInitPath
+        Else
+            fdDialog.InitialFileName = sInitPath & "\"
+        End If
     End If
-    Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
     
     'ダイアログ表示
     Dim lResult As Long
     lResult = fdDialog.Show()
     If lResult <> -1 Then 'キャンセル押下
-        ShowFileSelectDialog = ""
+        ShowFolderSelectDialog = ""
     Else
-        ShowFileSelectDialog = fdDialog.SelectedItems(1)
+        Dim objFSO As Object
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Dim sOutputDirPath As String
+        sOutputDirPath = fdDialog.SelectedItems.Item(1)
+        If objFSO.FolderExists(sOutputDirPath) Then
+            ShowFolderSelectDialog = sOutputDirPath
+        Else
+            ShowFolderSelectDialog = ""
+        End If
     End If
-     
+    
     Set fdDialog = Nothing
 End Function
-    Private Sub Test_ShowFileSelectDialog()
+    Private Sub Test_ShowFolderSelectDialog()
         Dim objWshShell
         Set objWshShell = CreateObject("WScript.Shell")
-        Dim sFilters As String
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
-        sFilters = ""
-        
-        MsgBox ShowFileSelectDialog( _
-                    objWshShell.SpecialFolders("Desktop") & "\test.txt", _
-                    sFilters _
+        MsgBox ShowFolderSelectDialog( _
+                    objWshShell.SpecialFolders("Desktop") _
                 )
-    '    MsgBox ShowFileSelectDialog( _
-    '                objWshShell.SpecialFolders("Desktop") & "\test.txt" _
-    '            )
     End Sub
 
 'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
