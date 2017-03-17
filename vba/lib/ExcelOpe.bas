@@ -1085,6 +1085,240 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
+' ==================================================================
+' = 概要    フォルダ選択ダイアログを表示する
+' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
+' = 戻値                String        フォルダ選択結果
+' = 覚書    なし
+' ==================================================================
+Public Function ShowFolderSelectDialog( _
+    Optional ByVal sInitPath As String = "" _
+) As String
+    Dim fdDialog As Office.FileDialog
+    Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    fdDialog.Title = "フォルダを選択してください"
+    If sInitPath = "" Then
+        'Do Nothing
+    Else
+        If Right(sInitPath, 1) = "\" Then
+            fdDialog.InitialFileName = sInitPath
+        Else
+            fdDialog.InitialFileName = sInitPath & "\"
+        End If
+    End If
+    
+    'ダイアログ表示
+    Dim lResult As Long
+    lResult = fdDialog.Show()
+    If lResult <> -1 Then 'キャンセル押下
+        ShowFolderSelectDialog = ""
+    Else
+        ShowFolderSelectDialog = fdDialog.SelectedItems.Item(1)
+    End If
+    
+    Set fdDialog = Nothing
+End Function
+    Private Sub Test_ShowFolderSelectDialog()
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        MsgBox ShowFolderSelectDialog( _
+                    objWshShell.SpecialFolders("Desktop") _
+                )
+    End Sub
+
+' ==================================================================
+' = 概要    ファイル（単一）選択ダイアログを表示する
+' = 引数    sInitPath   String  [in]  デフォルトファイルパス（省略可）
+' = 引数    sFilters　  String  [in]  選択時のフィルタ（省略可）(※)
+' = 戻値                String        ファイル選択結果
+' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
+' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+' =                    - 拡張子が複数ある場合は、";"で区切る
+' =                    - ファイル種別と拡張子は"/"で区切る
+' =                    - フィルタが複数ある場合、","で区切る
+' =         ・sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' =         ・ダイアログでキャンセルが押下された場合、空文字が返却される。
+' ==================================================================
+Public Function ShowFileSelectDialog( _
+    Optional ByVal sInitPath As String = "", _
+    Optional ByVal sFilters As String = "" _
+) As String
+    Dim fdDialog As Office.FileDialog
+    Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
+    fdDialog.Title = "ファイルを選択してください"
+    fdDialog.AllowMultiSelect = False
+    If sInitPath = "" Then
+        'Do Nothing
+    Else
+        fdDialog.InitialFileName = sInitPath
+    End If
+    Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
+    
+    'ダイアログ表示
+    Dim lResult As Long
+    lResult = fdDialog.Show()
+    If lResult <> -1 Then 'キャンセル押下
+        ShowFileSelectDialog = ""
+    Else
+        ShowFileSelectDialog = fdDialog.SelectedItems(1)
+    End If
+     
+    Set fdDialog = Nothing
+End Function
+    Private Sub Test_ShowFileSelectDialog()
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        Dim sFilters As String
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
+        sFilters = ""
+        
+        MsgBox ShowFileSelectDialog( _
+                    objWshShell.SpecialFolders("Desktop") & "\test.txt", _
+                    sFilters _
+                )
+    '    MsgBox ShowFileSelectDialog( _
+    '                objWshShell.SpecialFolders("Desktop") & "\test.txt" _
+    '            )
+    End Sub
+
+' ==================================================================
+' = 概要    ファイル（複数）選択ダイアログを表示する
+' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
+' = 引数    sInitPath       String      [in]  デフォルトファイルパス（省略可）
+' = 引数    sFilters        String      [in]  選択時のフィルタ（省略可）(※)
+' = 戻値    なし
+' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
+' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+' =                    - 拡張子が複数ある場合は、";"で区切る
+' =                    - ファイル種別と拡張子は"/"で区切る
+' =                    - フィルタが複数ある場合、","で区切る
+' =         ・sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' =         ・ダイアログでキャンセルが押下された場合、空文字が返却される。
+' ==================================================================
+Public Function ShowFilesSelectDialog( _
+    ByRef asSelectedFiles() As String, _
+    Optional ByVal sInitPath As String = "", _
+    Optional ByVal sFilters As String = "" _
+)
+    Dim fdDialog As Office.FileDialog
+    Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
+    fdDialog.Title = "ファイルを選択してください（複数可）"
+    fdDialog.AllowMultiSelect = True
+    If sInitPath = "" Then
+        'Do Nothing
+    Else
+        fdDialog.InitialFileName = sInitPath
+    End If
+    Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
+    
+    'ダイアログ表示
+    Dim lResult As Long
+    lResult = fdDialog.Show()
+    If lResult <> -1 Then 'キャンセル押下
+        ReDim Preserve asSelectedFiles(0)
+        asSelectedFiles(0) = ""
+    Else
+        Dim lSelNum As Long
+        lSelNum = fdDialog.SelectedItems.Count
+        ReDim Preserve asSelectedFiles(lSelNum - 1)
+        Dim lSelIdx As Long
+        For lSelIdx = 0 To lSelNum - 1
+            asSelectedFiles(lSelIdx) = fdDialog.SelectedItems(lSelIdx + 1)
+        Next lSelIdx
+    End If
+     
+    Set fdDialog = Nothing
+End Function
+    Private Sub Test_ShowFilesSelectDialog()
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        Dim sFilters As String
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
+        sFilters = "全てのファイル/*.*,画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
+        
+        Dim asSelectedFiles() As String
+        Call ShowFilesSelectDialog( _
+                    asSelectedFiles, _
+                    objWshShell.SpecialFolders("Desktop") & "\test.txt", _
+                    sFilters _
+                )
+        Dim sBuf As String
+        sBuf = ""
+        Dim lSelIdx As Long
+        For lSelIdx = 0 To UBound(asSelectedFiles)
+            sBuf = sBuf & vbNewLine & asSelectedFiles(lSelIdx)
+        Next lSelIdx
+        MsgBox sBuf
+    End Sub
+
+' ==================================================================
+' = 概要    セル範囲（Range型）を文字列配列（String配列型）に変換する。
+' =         主にセル範囲をテキストファイルに出力する時に使用する。
+' = 引数    rCellsRange             Range   [in]  対象のセル範囲
+' = 引数    asLine()                String  [out] 文字列返還後のセル範囲
+' = 引数    bIsInvisibleCellIgnore  String  [in]  非表示セル無視実行可否
+' = 引数    sDelimiter              String  [in]  区切り文字
+' = 戻値    なし
+' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
+' ==================================================================
+Private Function ConvRange2Array( _
+    ByRef rCellsRange As Range, _
+    ByRef asLine() As String, _
+    ByVal bIsInvisibleCellIgnore As Boolean, _
+    ByVal sDelimiter As String _
+)
+    Dim lLineIdx As Long
+    lLineIdx = 0
+    ReDim Preserve asLine(lLineIdx)
+    
+    Dim lRowIdx As Long
+    For lRowIdx = 1 To rCellsRange.Rows.Count
+        Dim lIgnoreCnt As Long
+        lIgnoreCnt = 0
+        Dim lClmIdx As Long
+        For lClmIdx = 1 To rCellsRange.Columns.Count
+            Dim sCurCellValue As String
+            sCurCellValue = rCellsRange(lRowIdx, lClmIdx).Value
+            '非表示セルは無視する
+            Dim bIsIgnoreCurExec As Boolean
+            If bIsInvisibleCellIgnore = True Then
+                If rCellsRange(lRowIdx, lClmIdx).EntireRow.Hidden = True Or _
+                   rCellsRange(lRowIdx, lClmIdx).EntireColumn.Hidden = True Then
+                    bIsIgnoreCurExec = True
+                Else
+                    bIsIgnoreCurExec = False
+                End If
+            Else
+                bIsIgnoreCurExec = False
+            End If
+            
+            If bIsIgnoreCurExec = True Then
+                lIgnoreCnt = lIgnoreCnt + 1
+            Else
+                If lClmIdx = 1 Then
+                    asLine(lLineIdx) = sCurCellValue
+                Else
+                    asLine(lLineIdx) = asLine(lLineIdx) & sDelimiter & sCurCellValue
+                End If
+            End If
+        Next lClmIdx
+        If lIgnoreCnt = rCellsRange.Columns.Count Then '非表示行は行加算しない
+            'Do Nothing
+        Else
+            If lRowIdx = rCellsRange.Rows.Count Then '最終行は行加算しない
+                'Do Nothing
+            Else
+                lLineIdx = lLineIdx + 1
+                ReDim Preserve asLine(lLineIdx)
+            End If
+        End If
+    Next lRowIdx
+End Function
+
 '********************************************************************************
 '* 内部関数定義
 '********************************************************************************
@@ -1748,4 +1982,71 @@ End Function
     '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, -1, True, True)        'プログラム停止
         Debug.Print "*** test finished! ***"
     End Sub
+
+'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
+'ダイアログのフィルタを追加する。指定方法は以下。
+'  ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+'      ・拡張子が複数ある場合は、";"で区切る
+'      ・ファイル種別と拡張子は"/"で区切る
+'      ・フィルタが複数ある場合、","で区切る
+'sFilters が空文字の場合、フィルタをクリアする。
+Private Function SetDialogFilters( _
+    ByVal sFilters As String, _
+    ByRef fdDialog As FileDialog _
+)
+    fdDialog.Filters.Clear
+    If sFilters = "" Then
+        'Do Nothing
+    Else
+        Dim vFilter As Variant
+        If InStr(sFilters, ",") > 0 Then
+            Dim vFilters As Variant
+            vFilters = Split(sFilters, ",")
+            Dim lFilterIdx As Long
+            For lFilterIdx = 0 To UBound(vFilters)
+                If InStr(vFilters(lFilterIdx), "/") > 0 Then
+                    vFilter = Split(vFilters(lFilterIdx), "/")
+                    If UBound(vFilter) = 1 Then
+                        fdDialog.Filters.Add vFilter(0), vFilter(1), lFilterIdx + 1
+                    Else
+                        MsgBox _
+                            "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                            """/"" は一つだけ指定してください" & vbNewLine & _
+                            "  " & vFilters(lFilterIdx)
+                        MsgBox "処理を中断します。"
+                        End
+                    End If
+                Else
+                    MsgBox _
+                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                        "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
+                        "  " & vFilters(lFilterIdx)
+                    MsgBox "処理を中断します。"
+                    End
+                End If
+            Next lFilterIdx
+        Else
+            If InStr(sFilters, "/") > 0 Then
+                vFilter = Split(sFilters, "/")
+                If UBound(vFilter) = 1 Then
+                    fdDialog.Filters.Add vFilter(0), vFilter(1), 1
+                Else
+                    MsgBox _
+                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                        """/"" は一つだけ指定してください" & vbNewLine & _
+                        "  " & sFilters
+                    MsgBox "処理を中断します。"
+                    End
+                End If
+            Else
+                MsgBox _
+                    "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                    "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
+                    "  " & sFilters
+                MsgBox "処理を中断します。"
+                End
+            End If
+        End If
+    End If
+End Function
 
