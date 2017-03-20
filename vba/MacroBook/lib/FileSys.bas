@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileSys"
 Option Explicit
 
-' file system library v1.0
+' file system library v1.1
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -163,7 +163,76 @@ Public Function GetFileList( _
         atPathList(lLastIdx).ePathType = PATH_TYPE_FILE
     Next oFile
 End Function
- 
+
+' ==================================================================
+' = 概要    ファイル/フォルダパス一覧を取得する
+' = 引数    sTrgtDir        String      [in]    対象フォルダ
+' = 引数    asFileList      Variant     [out]   ファイル/フォルダパス一覧
+' = 引数    lFileListType   Long        [in]    取得する一覧の形式
+' =                                                 0：両方
+' =                                                 1:ファイル
+' =                                                 2:フォルダ
+' =                                                 それ以外：格納しない
+' = 戻値    なし
+' = 覚書    ・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
+' =         ・asFileList は配列型ではなくバリアント型として定義する
+' =           必要があることに注意！
+' ==================================================================
+Public Function GetFileList2( _
+    ByVal sTrgtDir, _
+    ByRef asFileList, _
+    ByVal lFileListType _
+)
+    Dim objFSO As Object 'FileSystemObjectの格納先
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    'Dir コマンド実行（出力結果を一時ファイルに格納）
+    Dim sTmpFilePath As String
+    Dim sExecCmd As String
+    sTmpFilePath = CreateObject("WScript.Shell").CurrentDirectory & "\Dir.tmp"
+    Select Case lFileListType
+        Case 0:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a > """ & sTmpFilePath & """"
+        Case 1:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:a-d > """ & sTmpFilePath & """"
+        Case 2:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:d > """ & sTmpFilePath & """"
+        Case Else: sExecCmd = ""
+    End Select
+    With CreateObject("Wscript.Shell")
+        .Run "cmd /c" & sExecCmd, 7, True
+    End With
+    
+    Dim objFile As Object
+    Dim sTextAll As String
+    On Error Resume Next
+    If Err.Number = 0 Then
+        Set objFile = objFSO.OpenTextFile(sTmpFilePath, 1)
+        If Err.Number = 0 Then
+            sTextAll = objFile.ReadAll
+            sTextAll = Left(sTextAll, Len(sTextAll) - Len(vbNewLine))       '末尾に改行が付与されてしまうため、削除
+            asFileList = Split(sTextAll, vbNewLine)
+            objFile.Close
+        Else
+            MsgBox "ファイルが開けません: " & Err.Description
+        End If
+        Set objFile = Nothing   'オブジェクトの破棄
+    Else
+        MsgBox "エラー " & Err.Description
+    End If
+    objFSO.DeleteFile sTmpFilePath, True
+    Set objFSO = Nothing    'オブジェクトの破棄
+    On Error GoTo 0
+End Function
+    Private Sub Test_GetFileList2()
+        Dim objWshShell As Object
+        Set objWshShell = CreateObject("WScript.Shell")
+        Dim sCurDir As String
+        sCurDir = "C:\codes"
+        
+        Dim asFileList As Variant
+'        Call GetFileList2("Z:\300_Musics", asFileList, 0)
+'        Call GetFileList2("Z:\300_Musics", asFileList, 1)
+        Call GetFileList2("Z:\300_Musics", asFileList, 2)
+    End Sub
+
 Public Function GetFileOrFolder( _
     ByVal sChkTrgtPath As String _
 ) As T_SYSOBJ_TYPE
