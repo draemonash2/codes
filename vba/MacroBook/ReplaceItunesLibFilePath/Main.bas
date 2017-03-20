@@ -19,13 +19,13 @@ Public Sub ReplaceItunesLibFilePath()
     
     Load goPrgrsBar
     goPrgrsBar.Show vbModeless
-    
     Call BackUpItunesPlaylist
     Call GetBasicInfo
     Call ReplaceItunesLibLocation
-    
     goPrgrsBar.Hide
     Unload goPrgrsBar
+    Set goPrgrsBar = Nothing
+    
     Call ItunesTerminate
     
     CreateObject("Wscript.Shell").Run """" & gsLogFilePath & """", 5
@@ -41,9 +41,10 @@ Public Sub OutputItunesLibFilePath()
     goPrgrsBar.Show vbModeless
     
     Call OutputItunesLibLocation
-    
     goPrgrsBar.Hide
     Unload goPrgrsBar
+    Set goPrgrsBar = Nothing
+    
     Call ItunesTerminate
     
     CreateObject("Wscript.Shell").Run """" & gsLogFilePath & """", 5

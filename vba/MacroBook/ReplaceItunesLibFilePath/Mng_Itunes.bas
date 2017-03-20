@@ -4,9 +4,12 @@ Option Explicit
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Dim objItunes As Object
 Dim objPlayList As Object
-Public gsOrgDirPath
-Public gsDstDirPath
-Public gsLogFilePath
+Public gsOrgDirPath As String
+Public gsDstDirPath As String
+Public gsDstDirBasePath As String
+Public gsLogFilePath As String
+
+Const ITUNES_BACKUP_FOLDER_MAX As Long = 20
 
 Public Function ItunesInit()
     Set objItunes = CreateObject("iTunes.Application")
@@ -19,11 +22,13 @@ Public Function ItunesInit()
     Dim sDate
     sDate = Format(Now, "yyyymmdd_hhmmss")
     gsOrgDirPath = RemoveTailWord(objItunes.LibraryXMLPath, "\")
-    gsDstDirPath = gsOrgDirPath & "\iTunes Library Backup\" & sDate
+    gsDstDirBasePath = gsOrgDirPath & "\iTunes Library Backup"
+    gsDstDirPath = gsDstDirBasePath & "\" & sDate
     gsLogFilePath = gsDstDirPath & "\" & Replace(ThisWorkbook.Name, ".xlsm", ".log")
 End Function
 
 Public Function BackUpItunesPlaylist()
+    '*** フォルダをバックアップ ***
     MkDir gsDstDirPath
     
     Dim objFSO As Object
@@ -32,6 +37,25 @@ Public Function BackUpItunesPlaylist()
     objFSO.CopyFile (gsOrgDirPath & "\iTunes Library Genius.itdb"), (gsDstDirPath & "\iTunes Library Genius.itdb")
     objFSO.CopyFile (gsOrgDirPath & "\iTunes Library.itl"), (gsDstDirPath & "\iTunes Library.itl")
     objFSO.CopyFile (gsOrgDirPath & "\iTunes Music Library.xml"), (gsDstDirPath & "\iTunes Music Library.xml")
+    
+    '*** 古いバックアップフォルダを削除 ***
+    Dim asDirList As Variant
+    Call GetFileList2(gsDstDirBasePath, asDirList, 2)
+    
+    'フォルダ削除
+    If UBound(asDirList) >= ITUNES_BACKUP_FOLDER_MAX Then
+        Dim lDelFolderMax
+        lDelFolderMax = UBound(asDirList) - ITUNES_BACKUP_FOLDER_MAX
+        Dim lDelDirIdx
+        For lDelDirIdx = LBound(asDirList) To lDelFolderMax
+            'バックアップフォルダ名は「YYYYMMDD_HHMMSS」で統一されているため、
+            'asDirList() は自然と日時順に並ぶ。（要素番号が大きくなるほど新しい）
+            'そのため、要素番号の小さい順からフォルダを削除する。
+            objFSO.DeleteFolder asDirList(lDelDirIdx), True
+        Next
+    Else
+        'Do Nothing
+    End If
 End Function
 
 Public Function ReplaceItunesLibLocation()
