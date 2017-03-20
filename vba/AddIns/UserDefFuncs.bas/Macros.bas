@@ -187,10 +187,17 @@ Public Sub ダブルクォートを除いてセルコピー()
     )
     
     'String()型を順次クリップボードにコピー
+    Dim sBuf As String
+    sBuf = ""
     Dim lLineIdx As Long
     For lLineIdx = LBound(asLine) To UBound(asLine)
-        Call CopyText(asLine(lLineIdx))
+        If lLineIdx = LBound(asLine) Then
+            sBuf = asLine(lLineIdx)
+        Else
+            sBuf = sBuf & vbNewLine & asLine(lLineIdx)
+        End If
     Next lLineIdx
+    Call CopyText(sBuf)
     
     'フィードバック
     Application.StatusBar = "■■■■■■■■ コピー完了！ ■■■■■■■■"
