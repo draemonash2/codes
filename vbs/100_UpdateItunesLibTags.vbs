@@ -2,7 +2,7 @@ Option Explicit
 
 '□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
 '□
-'□ iTunes タグ更新ツール v.2.7
+'□ iTunes タグ更新ツール
 '□
 '□  【概要】
 '□     mp3 ファイルの更新日時を元にタグ更新済みファイルを自動判別し、iTunes の API を
@@ -18,10 +18,11 @@ Option Explicit
 '□     （登録実行可否は選択可）
 '□     
 '□  【注意事項、特記事項】
-'□     ・本ツールは、mp3 タグ内の未使用のエントリを更新することで、ライブラリを
-'□     更新する。この時、エントリ「作曲者(Composer)」を書き換えるため、
-'□     ここに何らかの情報を埋め込んでいる場合、空白になってしまう。
 '□     ・指定したフォルダ配下に実行結果ログを格納する。
+'□     ・「作曲者」「グループ」「コメント」（他にもあるかも）においては iTunes 以外の
+'□       ソフトで更新しても、iTunes 上の表示は更新されない。（iTunes の仕様） 
+'□       表示を更新するためには、iTunes から直接上記タグを更新する必要がある。
+'□       本ツールも同様の理由で、上記タグの表示更新はできない。
 '□     
 '□  【使用方法】
 '□     (1) 音楽を格納するフォルダのルートフォルダパスを「TRGT_DIR」に記載する。
@@ -29,6 +30,11 @@ Option Explicit
 '□     (3) 本スクリプトを実行。
 '□     
 '□  【更新履歴】
+'□     v2.8 (2017/03/21)
+'□       ・書き換え対象タグを変更
+'□           Composer ⇒ VolumeAdjustment
+'□       ・更新日書き戻し処理変更
+'□     
 '□     v2.7 (2017/03/15)
 '□       ・古い iTunes Library Backup フォルダの削除
 '□     
@@ -55,8 +61,9 @@ Option Explicit
 '= 設定値
 '==========================================================
 Const TRGT_DIR = "Z:\300_Musics"
+Const UPDATE_MODIFIED_DATE = False
+Const ITUNES_BACKUP_FOLDER_MAX = 20
 
-Const DEBUG_FUNCVALID_DISABLEUPDATEMODDATE  = True
 Const DEBUG_FUNCVALID_BACKUPITUNELIBRARYS   = True
 Const DEBUG_FUNCVALID_ADDFILES              = True
 Const DEBUG_FUNCVALID_DATEINPUT             = True
@@ -64,8 +71,6 @@ Const DEBUG_FUNCVALID_TRGTLISTUP            = True
 Const DEBUG_FUNCVALID_DIRCMDEXEC            = True
 Const DEBUG_FUNCVALID_TAGUPDATE             = True
 Const DEBUG_FUNCVALID_DIRRESULTDELETE       = True
-
-Const ITUNES_BACKUP_FOLDER_MAX = 20
 
 '==========================================================
 '= 本処理
@@ -566,8 +571,7 @@ if bIsExecLibMod = True Then
                     If .Kind = 1 Then
                         sOutLine = sOutLine & Chr(9) & .Location & Chr(9) & ( .Location = sTrgtFilePath )
                         If .Location = sTrgtFilePath Then
-                            .Composer = "1"
-                            .Composer = ""
+                            .VolumeAdjustment = 0
                             bIsFilePathMatched = True
                         Else
                             'Do Nothing
@@ -586,10 +590,10 @@ if bIsExecLibMod = True Then
             Set objSearchResult = Nothing
             Set objPlayList = Nothing
             
-            If DEBUG_FUNCVALID_DISABLEUPDATEMODDATE = True Then
-                oTrgtFile.ModifyDate = CDate( sTrgtModDate ) '更新日を書き戻し
-            Else
+            If UPDATE_MODIFIED_DATE = True Then
                 '更新日は更新されたまま
+            Else
+                oTrgtFile.ModifyDate = CDate( sTrgtModDate ) '更新日を書き戻し
             End If
             
             Set oTrgtFile = Nothing
