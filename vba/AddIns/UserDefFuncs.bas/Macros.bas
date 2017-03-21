@@ -675,8 +675,7 @@ End Function
 ' = 概要    フォルダ選択ダイアログを表示する
 ' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
 ' = 戻値                String        フォルダ選択結果
-' = 覚書    ・キャンセルが押下されると、空文字を返却する。
-' =         ・存在しないフォルダを指定すると、空文字を返却する。
+' = 覚書    なし
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
     Optional ByVal sInitPath As String = "" _
@@ -700,12 +699,10 @@ Private Function ShowFolderSelectDialog( _
     If lResult <> -1 Then 'キャンセル押下
         ShowFolderSelectDialog = ""
     Else
-        Dim objFSO As Object
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
-        Dim sOutputDirPath As String
-        sOutputDirPath = fdDialog.SelectedItems.Item(1)
-        If objFSO.FolderExists(sOutputDirPath) Then
-            ShowFolderSelectDialog = sOutputDirPath
+        Dim sSelectedPath As String
+        sSelectedPath = fdDialog.SelectedItems.Item(1)
+        If CreateObject("Scripting.FileSystemObject").FolderExists(sSelectedPath) Then
+            ShowFolderSelectDialog = sSelectedPath
         Else
             ShowFolderSelectDialog = ""
         End If
@@ -720,70 +717,3 @@ End Function
                     objWshShell.SpecialFolders("Desktop") _
                 )
     End Sub
-
-'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
-'ダイアログのフィルタを追加する。指定方法は以下。
-'  ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
-'      ・拡張子が複数ある場合は、";"で区切る
-'      ・ファイル種別と拡張子は"/"で区切る
-'      ・フィルタが複数ある場合、","で区切る
-'sFilters が空文字の場合、フィルタをクリアする。
-Private Function SetDialogFilters( _
-    ByVal sFilters As String, _
-    ByRef fdDialog As FileDialog _
-)
-    fdDialog.Filters.Clear
-    If sFilters = "" Then
-        'Do Nothing
-    Else
-        Dim vFilter As Variant
-        If InStr(sFilters, ",") > 0 Then
-            Dim vFilters As Variant
-            vFilters = Split(sFilters, ",")
-            Dim lFilterIdx As Long
-            For lFilterIdx = 0 To UBound(vFilters)
-                If InStr(vFilters(lFilterIdx), "/") > 0 Then
-                    vFilter = Split(vFilters(lFilterIdx), "/")
-                    If UBound(vFilter) = 1 Then
-                        fdDialog.Filters.Add vFilter(0), vFilter(1), lFilterIdx + 1
-                    Else
-                        MsgBox _
-                            "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
-                            """/"" は一つだけ指定してください" & vbNewLine & _
-                            "  " & vFilters(lFilterIdx)
-                        MsgBox "処理を中断します。"
-                        End
-                    End If
-                Else
-                    MsgBox _
-                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
-                        "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
-                        "  " & vFilters(lFilterIdx)
-                    MsgBox "処理を中断します。"
-                    End
-                End If
-            Next lFilterIdx
-        Else
-            If InStr(sFilters, "/") > 0 Then
-                vFilter = Split(sFilters, "/")
-                If UBound(vFilter) = 1 Then
-                    fdDialog.Filters.Add vFilter(0), vFilter(1), 1
-                Else
-                    MsgBox _
-                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
-                        """/"" は一つだけ指定してください" & vbNewLine & _
-                        "  " & sFilters
-                    MsgBox "処理を中断します。"
-                    End
-                End If
-            Else
-                MsgBox _
-                    "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
-                    "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
-                    "  " & sFilters
-                MsgBox "処理を中断します。"
-                End
-            End If
-        End If
-    End If
-End Function

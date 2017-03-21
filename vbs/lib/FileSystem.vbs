@@ -382,7 +382,7 @@ Private Function ShowFolderSelectDialog( _
 	
 	Dim fdDialog
 	Set fdDialog = objExcel.FileDialog(msoFileDialogFolderPicker)
-	fdDialog.Title = "フォルダを選択してください"
+    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
 	If sInitPath = "" Then
 		'Do Nothing
 	Else
