@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v1.0
+' user define macros v2.0
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -10,6 +10,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・選択範囲内で中央                   選択セルに対して「選択範囲内で中央」を実行する
 ' =    ・ダブルクォートを除いてセルコピー   ダブルクオーテーションなしでセルコピーする
 ' =    ・選択範囲をファイルエクスポート     選択範囲をファイルとしてエクスポートする。
+' =    ・選択範囲をコマンド実行             選択範囲内のコマンドを実行する。
 ' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
 ' =    ・シート表示非表示を切り替え         シート表示/非表示を切り替える
 ' =    ・シート並べ替え作業用シートを作成   シート並べ替え作業用シート作成
@@ -42,25 +43,37 @@ Enum E_CLM
     CLM_SHT_NAME = 2
 End Enum
 
+Private Type T_SHORTCUT_KEY
+    sKey As String
+    sMacroName As String
+End Type
+Dim gtShortcutKey() As T_SHORTCUT_KEY
+
 ' *****************************************************************************
 ' * ショートカットキー定義
 ' *****************************************************************************
+Private Function InitUserDefShortcut()
+'   Call AddUserDefShortcut("   ", "選択範囲内で中央")
+    Call AddUserDefShortcut("^+c", "ダブルクォートを除いてセルコピー")
+    Call AddUserDefShortcut("^+e", "選択範囲をファイルエクスポート")
+'   Call AddUserDefShortcut("   ", "選択範囲をコマンド実行")
+'   Call AddUserDefShortcut("   ", "全シート名をコピー")
+'   Call AddUserDefShortcut("   ", "シート表示非表示を切り替え")
+'   Call AddUserDefShortcut("   ", "シート並べ替え作業用シートを作成")
+'   Call AddUserDefShortcut("   ", "セル内の丸数字をデクリメント")
+'   Call AddUserDefShortcut("   ", "セル内の丸数字をインクリメント")
+'   Call AddUserDefShortcut("   ", "ツリーをグループ化")
+'   Call AddUserDefShortcut("   ", "ハイパーリンク一括オープン")
+End Function
+
 Public Sub ユーザー定義ショートカットキーを設定()
-'   Application.OnKey "   ", "選択範囲内で中央"
-    Application.OnKey "^+c", "ダブルクォートを除いてセルコピー"
-    Application.OnKey "^+e", "選択範囲をファイルエクスポート"
-'   Application.OnKey "   ", "全シート名をコピー"
-'   Application.OnKey "   ", "シート表示非表示を切り替え"
-'   Application.OnKey "   ", "シート並べ替え作業用シートを作成"
-'   Application.OnKey "   ", "セル内の丸数字をデクリメント"
-'   Application.OnKey "   ", "セル内の丸数字をインクリメント"
-'   Application.OnKey "   ", "ツリーをグループ化"
-'   Application.OnKey "   ", "ハイパーリンク一括オープン"
+    Call InitUserDefShortcut
+    Call EnableUserDefShortcut
 End Sub
 
 Public Sub ユーザー定義ショートカットキーを解除()
-    Application.OnKey "^+c"
-    Application.OnKey "^+e"
+    Call InitUserDefShortcut
+    Call DisableUserDefShortcut
 End Sub
 
 ' *****************************************************************************
@@ -219,7 +232,7 @@ Public Sub 選択範囲をファイルエクスポート()
         End
     End If
     
-    '+++ Tempファイル読出し ***
+    '*** Tempファイル読出し ***
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objWshShell As Object
@@ -320,6 +333,78 @@ Public Sub 選択範囲をファイルエクスポート()
     Close #1
     
     MsgBox "出力完了！"
+    
+    '*** 出力ファイルを開く ***
+    If Left(sOutputFilePath, 1) = "" Then
+        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+    Else
+        'Do Nothing
+    End If
+    objWshShell.Run """" & sOutputFilePath & """", 3
+End Sub
+
+' =============================================================================
+' = 概要：選択範囲内のコマンドを実行する。
+' =       単一列選択時のみ有効。
+' =============================================================================
+Public Sub 選択範囲をコマンド実行()
+    '*** セル選択判定 ***
+    If Selection.Count = 0 Then
+        MsgBox "セルが選択されていません"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '*** 範囲チェック ***
+    If Selection.Columns.Count = 1 Then
+        'Do Nothing
+    Else
+        MsgBox "単一列のみ選択してください"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '*** 非表示セル出力判定 ***
+    Dim bIsInvisibleCellIgnore As Boolean
+    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
+'    If vAnswer = vbYes Then
+'        bIsInvisibleCellIgnore = True
+'    ElseIf vAnswer = vbNo Then
+'        bIsInvisibleCellIgnore = False
+'    Else
+'        MsgBox "処理を中断します"
+'        End
+'    End If
+    
+    'Range型からString()型へ変換
+    Dim asRange() As String
+    Call ConvRange2Array( _
+                Selection, _
+                asRange, _
+                bIsInvisibleCellIgnore, _
+                "" _
+            )
+    
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sOutputFilePath As String
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\redirect.log"
+    
+    '*** コマンド実行 ***
+    Open sOutputFilePath For Append As #1
+    Print #1, "****************************************************"
+    Print #1, Now()
+    Print #1, "****************************************************"
+    Dim lLineIdx As Long
+    For lLineIdx = LBound(asRange) To UBound(asRange)
+        Print #1, asRange(lLineIdx)
+        Print #1, ExecDosCmd(asRange(lLineIdx))
+    Next lLineIdx
+    Print #1, ""
+    Close #1
+    
+    MsgBox "実行完了！"
     
     '*** 出力ファイルを開く ***
     If Left(sOutputFilePath, 1) = "" Then
@@ -717,3 +802,55 @@ End Function
                     objWshShell.SpecialFolders("Desktop") _
                 )
     End Sub
+
+'コマンドを実行
+Private Function ExecDosCmd( _
+    ByVal sCommand As String _
+) As String
+    Dim oExeResult As Object
+    Dim sStrOut As String
+    Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c " & sCommand)
+    Do While Not (oExeResult.StdOut.AtEndOfStream)
+      sStrOut = sStrOut & vbNewLine & oExeResult.StdOut.ReadLine
+    Loop
+    ExecDosCmd = sStrOut
+    Set oExeResult = Nothing
+End Function
+    Private Sub Test_ExecDosCmd()
+        Dim sBuf As String
+        sBuf = sBuf & vbNewLine & ExecDosCmd("copy C:\Users\draem_000\Desktop\test.txt C:\Users\draem_000\Desktop\test2.txt")
+        MsgBox sBuf
+    End Sub
+
+'ショートカットキーを追加
+Private Function AddUserDefShortcut( _
+    ByVal sKey As String, _
+    ByVal sMacroName As String _
+)
+    If Sgn(gtShortcutKey) = 0 Then
+        ReDim Preserve gtShortcutKey(0)
+    Else
+        ReDim Preserve gtShortcutKey(UBound(gtShortcutKey) + 1)
+    End If
+    gtShortcutKey(UBound(gtShortcutKey)).sKey = sKey
+    gtShortcutKey(UBound(gtShortcutKey)).sMacroName = sMacroName
+End Function
+
+'ショートカットキーを有効化
+Private Function EnableUserDefShortcut()
+    Dim lIdx As Long
+    For lIdx = LBound(gtShortcutKey) To UBound(gtShortcutKey)
+        Application.OnKey gtShortcutKey(lIdx).sKey, gtShortcutKey(lIdx).sMacroName
+    Next lIdx
+End Function
+
+'ショートカットキーを無効化
+Private Function DisableUserDefShortcut()
+    Dim lIdx As Long
+    For lIdx = LBound(gtShortcutKey) To UBound(gtShortcutKey)
+        Application.OnKey gtShortcutKey(lIdx).sKey
+    Next lIdx
+End Function
+
+
+
