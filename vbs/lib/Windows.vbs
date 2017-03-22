@@ -99,3 +99,20 @@ Public Function ExecRunas( _
 	ExecRunas = True
 End Function
 
+'Dos コマンド実行
+Public Function ExecDosCmd( _
+	ByVal sCommand _
+)
+	Dim oExeResult
+	Dim sStrOut
+	Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c " & sCommand)
+	Do While Not (oExeResult.StdOut.AtEndOfStream)
+		sStrOut = sStrOut & vbNewLine & oExeResult.StdOut.ReadLine
+	Loop
+	ExecDosCmd = sStrOut
+	Set oExeResult = Nothing
+End Function
+'	Call Test_ExecDosCmd()
+	Private Sub Test_ExecDosCmd()
+		Msgbox ExecDosCmd( "copy ""C:\Users\draem_000\Desktop\test.txt"" ""C:\Users\draem_000\Desktop\test2.txt""" )
+	End Sub
