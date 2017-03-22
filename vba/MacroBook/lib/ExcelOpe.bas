@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExcelOpe"
 Option Explicit
 
-' excel operation library v2.2
+' excel operation library v2.3
 
 Sub CreateSheetList()
     Dim oSheet As Object
@@ -1329,6 +1329,22 @@ Private Function ConvRange2Array( _
         End If
     Next lRowIdx
 End Function
+
+Public Sub シート毎の名前定義を削除()
+    Debug.Print ThisWorkbook.Names.Count
+    Dim i As Long
+    Dim sName As String
+    For i = ThisWorkbook.Names.Count To 1 Step -1
+        sName = ThisWorkbook.Names.Item(i).Name
+        'ThisWorkbook.Names.Item(i).Delete
+        If Left(sName, 1) = "'" Then
+            Debug.Print sName
+            ThisWorkbook.Names.Item(i).Delete
+        Else
+            'Do Nothing
+        End If
+    Next i
+End Sub
 
 '********************************************************************************
 '* 内部関数定義
