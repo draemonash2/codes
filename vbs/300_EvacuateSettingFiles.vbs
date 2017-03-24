@@ -59,22 +59,22 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 Dim oLog
 Set oLog = New LogMng
 If WScript.Arguments.Count = ARG_COUNT_LOGVALID Then
-	Call oLog.Open( _
-		WScript.Arguments(ARG_IDX_LOGDIR), _
-		"+w" _
-	)
+    Call oLog.Open( _
+        WScript.Arguments(ARG_IDX_LOGDIR), _
+        "+w" _
+    )
 ElseIf WScript.Arguments.Count = ARG_COUNT_LOGINVALID Then
-	'Do Nothing
+    'Do Nothing
 Else
-	oLog.Puts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
-	WScript.Quit
+    oLog.Puts "-      : [error  ] argument number error! arg num is " & WScript.Arguments.Count & chr(9) & sSrcPath & chr(9) & sDstPath
+    WScript.Quit
 End If
 
 If WScript.Arguments(ARG_IDX_RUNAS) = "/ExecRunas" Then
-	'Do Nothing
+    'Do Nothing
 Else
-	oLog.Puts "-      : [error  ] runas exec error!"
-	WScript.Quit
+    oLog.Puts "-      : [error  ] runas exec error!"
+    WScript.Quit
 End If
 
 Dim sSrcPath
@@ -86,12 +86,12 @@ Dim sFileType
 Dim lRet
 lRet = GetFileOrFolder( WScript.Arguments(ARG_IDX_SRCPATH) )
 If lRet = 2 Then
-	sFileType = "folder"
+    sFileType = "folder"
 ElseIf lRet = 1 Then
-	sFileType = "file"
+    sFileType = "file"
 Else
-	oLog.Puts "-      : [error  ] source path is missing!             " & chr(9) & sSrcPath & chr(9) & sDstPath
-	WScript.Quit
+    oLog.Puts "-      : [error  ] source path is missing!             " & chr(9) & sSrcPath & chr(9) & sDstPath
+    WScript.Quit
 End If
 
 '###############################################
@@ -109,53 +109,53 @@ sShortcutPath = sDstParentDirPath & "\" & GetFileName( sSrcPath ) & "_linksrc.ln
 
 On Error Resume Next
 If sFileType = "folder" Then
-	If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
-		oLog.Puts "folder : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
-	Else
-		If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
-		Call ErrorCheck(1)
-		Call CreateDirectry( GetDirPath( sDstPath ) )
-		Call ErrorCheck(2)
-		objFSO.MoveFolder sSrcPath, sDstPath
-		Call ErrorCheck(3)
-		objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcPath & """ """ & sDstPath & """", 0, True
-		Call ErrorCheck(4)
-		If objFSO.FileExists( sShortcutPath ) Then
-			'Do Nothing
-		Else
-			With objWshShell.CreateShortcut( sShortcutPath )
-				.TargetPath = sSrcParentDirPath
-				.Save
-			End With
-		End If
-		Call ErrorCheck(6)
-		oLog.Puts "folder : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
-	End If
-	Call ErrorCheck(7)
+    If objFSO.GetFolder( sSrcPath ).Attributes And 1024 Then
+        oLog.Puts "folder : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
+    Else
+        If objFSO.FolderExists( sDstPath ) Then objFSO.DeleteFolder sDstPath, True
+        Call ErrorCheck(1)
+        Call CreateDirectry( GetDirPath( sDstPath ) )
+        Call ErrorCheck(2)
+        objFSO.MoveFolder sSrcPath, sDstPath
+        Call ErrorCheck(3)
+        objWshShell.Run "%ComSpec% /c mklink /d """ & sSrcPath & """ """ & sDstPath & """", 0, True
+        Call ErrorCheck(4)
+        If objFSO.FileExists( sShortcutPath ) Then
+            'Do Nothing
+        Else
+            With objWshShell.CreateShortcut( sShortcutPath )
+                .TargetPath = sSrcParentDirPath
+                .Save
+            End With
+        End If
+        Call ErrorCheck(6)
+        oLog.Puts "folder : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
+    End If
+    Call ErrorCheck(7)
 Else
-	If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
-		oLog.Puts "file   : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
-	Else
-		If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
-		Call ErrorCheck(8)
-		Call CreateDirectry( GetDirPath( sDstPath ) )
-		Call ErrorCheck(9)
-		objFSO.MoveFile sSrcPath, sDstPath
-		Call ErrorCheck(10)
-		objWshShell.Run "%ComSpec% /c mklink """ & sSrcPath & """ """ & sDstPath & """", 0, True
-		Call ErrorCheck(11)
-		If objFSO.FileExists( sShortcutPath ) Then
-			'Do Nothing
-		Else
-			With objWshShell.CreateShortcut( sShortcutPath )
-				.TargetPath = sSrcParentDirPath
-				.Save
-			End With
-		End If
-		Call ErrorCheck(13)
-		oLog.Puts "file   : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
-	End If
-	Call ErrorCheck(14)
+    If objFSO.GetFile( sSrcPath ).Attributes And 1024 Then
+        oLog.Puts "file   : [-      ] setting files are already evacuated!" & chr(9) & sSrcPath & chr(9) & sDstPath
+    Else
+        If objFSO.FileExists( sDstPath ) Then objFSO.DeleteFile sDstPath, True
+        Call ErrorCheck(8)
+        Call CreateDirectry( GetDirPath( sDstPath ) )
+        Call ErrorCheck(9)
+        objFSO.MoveFile sSrcPath, sDstPath
+        Call ErrorCheck(10)
+        objWshShell.Run "%ComSpec% /c mklink """ & sSrcPath & """ """ & sDstPath & """", 0, True
+        Call ErrorCheck(11)
+        If objFSO.FileExists( sShortcutPath ) Then
+            'Do Nothing
+        Else
+            With objWshShell.CreateShortcut( sShortcutPath )
+                .TargetPath = sSrcParentDirPath
+                .Save
+            End With
+        End If
+        Call ErrorCheck(13)
+        oLog.Puts "file   : [success] setting files are evacuated!        " & chr(9) & sSrcPath & chr(9) & sDstPath
+    End If
+    Call ErrorCheck(14)
 End If
 On Error Goto 0
 
@@ -170,34 +170,34 @@ Set objWshShell = Nothing
 '==========================================================
 ' 外部プログラム インクルード関数
 Function Include( _
-	ByVal sOpenFile _
+    ByVal sOpenFile _
 )
-	Dim objFSO
-	Dim objVbsFile
-	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")
-	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-	
-	ExecuteGlobal objVbsFile.ReadAll()
-	objVbsFile.Close
-	
-	Set objVbsFile = Nothing
-	Set objFSO = Nothing
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
 
 Function ErrorCheck( _
-	ByVal sErrorPlace _
+    ByVal sErrorPlace _
 )
-	If Err.Number <> 0 Then
-		oLog.Puts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
-		oLog.Puts "           error place  : " & sErrorPlace
-		oLog.Puts "           error number : " & Err.Number
-		oLog.Puts "           error detail : " & Err.Description
-		Err.Clear
-		Call oLog.Close
-		Set oLog = Nothing
-		WScript.Quit
-	Else
-		'Do Nothing
-	End If
+    If Err.Number <> 0 Then
+        oLog.Puts "-      : [error  ] an error occurred!                  " & chr(9) & sSrcPath & chr(9) & sDstPath
+        oLog.Puts "           error place  : " & sErrorPlace
+        oLog.Puts "           error number : " & Err.Number
+        oLog.Puts "           error detail : " & Err.Description
+        Err.Clear
+        Call oLog.Close
+        Set oLog = Nothing
+        WScript.Quit
+    Else
+        'Do Nothing
+    End If
 End Function

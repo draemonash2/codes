@@ -26,19 +26,19 @@ sTrgtDir = objWshShell.CurrentDirectory
 'sTrgtDir = objWshShell.SpecialFolders("StartMenu")
 Dim bIsContinue
 Do
-	Dim vAnswer
-	vAnswer = MsgBox( "以下を対象に実行します。実行しますか？" & vbNewLine & sTrgtDir, vbOkCancel )
-	If vAnswer = vbOk Then
-		bIsContinue = False
-	Else
-		vAnswer = MsgBox( "処理を続けますか？", vbOkCancel )
-		If vAnswer = vbCancel Then
-			WScript.Quit
-		Else
-			sTrgtDir = InputBox ( "対象ディレクトリを指定してください。" )
-			bIsContinue = True
-		End If
-	End If
+    Dim vAnswer
+    vAnswer = MsgBox( "以下を対象に実行します。実行しますか？" & vbNewLine & sTrgtDir, vbOkCancel )
+    If vAnswer = vbOk Then
+        bIsContinue = False
+    Else
+        vAnswer = MsgBox( "処理を続けますか？", vbOkCancel )
+        If vAnswer = vbCancel Then
+            WScript.Quit
+        Else
+            sTrgtDir = InputBox ( "対象ディレクトリを指定してください。" )
+            bIsContinue = True
+        End If
+    End If
 Loop While bIsContinue = True
 
 Dim objFSO
@@ -69,55 +69,55 @@ oLogMng.Puts( "<Result>" & chr(9) & "<sFileDirPath>" & chr(9) & "<sOrgDirPath>" 
 
 Dim i
 For i = 0 to UBound( asFileList ) - 1
-	Dim sFileDirPath
-	sFileDirPath = asFileList(i)
-	
-	Dim sOrgDirPath
-	Dim sNewDirPath
-	If objFSO.GetExtensionName( sFileDirPath ) = "lnk" Then
-		With objWshShell.CreateShortcut( sFileDirPath )
-			sOrgDirPath = .TargetPath
-			If InStr( sOrgDirPath, EXE_PATH_ORG ) > 0 Then
-				sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
-					.TargetPath = sNewDirPath
-					.Save
-				oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
-			Else
-				oLogMng.Puts( "[UnMatch ]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath )
-			End If
-		End With
-	Else
-		oLogMng.Puts( "[NoShrtCt]" & chr(9) & sFileDirPath )
-	End If
+    Dim sFileDirPath
+    sFileDirPath = asFileList(i)
+    
+    Dim sOrgDirPath
+    Dim sNewDirPath
+    If objFSO.GetExtensionName( sFileDirPath ) = "lnk" Then
+        With objWshShell.CreateShortcut( sFileDirPath )
+            sOrgDirPath = .TargetPath
+            If InStr( sOrgDirPath, EXE_PATH_ORG ) > 0 Then
+                sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
+                    .TargetPath = sNewDirPath
+                    .Save
+                oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
+            Else
+                oLogMng.Puts( "[UnMatch ]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath )
+            End If
+        End With
+    Else
+        oLogMng.Puts( "[NoShrtCt]" & chr(9) & sFileDirPath )
+    End If
 Next
 
 oLogMng.Close()
 Set oLogMng = Nothing
 
 MsgBox _
-	"プログラムのショートカットの指示先を置換しました。" & vbNewLine & _
-	"元：" & EXE_PATH_ORG & vbNewLine & _
-	"先：" & EXE_PATH_NEW & vbNewLine & _
-	"" & vbNewLine & _
-	"※「" & sLogFilePath & "」に置換結果を出力しています"
+    "プログラムのショートカットの指示先を置換しました。" & vbNewLine & _
+    "元：" & EXE_PATH_ORG & vbNewLine & _
+    "先：" & EXE_PATH_NEW & vbNewLine & _
+    "" & vbNewLine & _
+    "※「" & sLogFilePath & "」に置換結果を出力しています"
 
 '==========================================================
 '= 関数定義
 '==========================================================
 ' 外部プログラム インクルード関数
 Function Include( _
-	ByVal sOpenFile _
+    ByVal sOpenFile _
 )
-	Dim objFSO
-	Dim objVbsFile
-	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")
-	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-	
-	ExecuteGlobal objVbsFile.ReadAll()
-	objVbsFile.Close
-	
-	Set objVbsFile = Nothing
-	Set objFSO = Nothing
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
 

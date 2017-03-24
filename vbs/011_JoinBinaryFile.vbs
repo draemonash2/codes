@@ -13,14 +13,14 @@ Set asWSArgs = WScript.Arguments
 Dim sFileStr
 sFileStr = ""
 If asWSArgs.Count <= 1 Then
-	WScript.Echo "More Arguments!"
-	WScript.Quit
+    WScript.Echo "More Arguments!"
+    WScript.Quit
 Else
-	sFileStr = asWSArgs( 0 )
-	Dim lArgIdx
-	For lArgIdx = 1 to ( asWSArgs.Count - 1 )
-		sFileStr = sFileStr & " + " & asWSArgs( lArgIdx )
-	Next
+    sFileStr = asWSArgs( 0 )
+    Dim lArgIdx
+    For lArgIdx = 1 to ( asWSArgs.Count - 1 )
+        sFileStr = sFileStr & " + " & asWSArgs( lArgIdx )
+    Next
 End If
 
 Dim oFileSys

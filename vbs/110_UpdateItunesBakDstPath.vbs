@@ -33,60 +33,60 @@ Dim lDrvLttrAscLast
 lDrvLttrAscStrt = asc("A")
 lDrvLttrAscLast = asc("Z")
 For lDrvLttrIdx = lDrvLttrAscStrt to lDrvLttrAscLast
-	sDrvLttr = Chr(lDrvLttrIdx)
-	If Err.Number = 0 Then
-		If objFSO.DriveExists(sDrvLttr) Then
-			Dim objDrive
-			Set objDrive = objFSO.GetDrive(sDrvLttr)
-			If objDrive.IsReady = True Then
-				If LCase( objDrive.VolumeName ) = LCase( SEARCH_VOLUME_LAVEL ) Then
-					sTrgtDrvPath = objDrive.Path
-					Exit For
-				Else
-					'Do Nothing
-				End If
-			Else
-				'Do Nothing
-			End If
-		Else
-			'Do Nothing
-		End If
-	Else
-		MsgBox "{error] " & Err.Description
-		WScript.Quit
-	End If
+    sDrvLttr = Chr(lDrvLttrIdx)
+    If Err.Number = 0 Then
+        If objFSO.DriveExists(sDrvLttr) Then
+            Dim objDrive
+            Set objDrive = objFSO.GetDrive(sDrvLttr)
+            If objDrive.IsReady = True Then
+                If LCase( objDrive.VolumeName ) = LCase( SEARCH_VOLUME_LAVEL ) Then
+                    sTrgtDrvPath = objDrive.Path
+                    Exit For
+                Else
+                    'Do Nothing
+                End If
+            Else
+                'Do Nothing
+            End If
+        Else
+            'Do Nothing
+        End If
+    Else
+        MsgBox "{error] " & Err.Description
+        WScript.Quit
+    End If
 Next
 On Error Goto 0
 
 '**** ローカルドライブを探す ****
 If sTrgtDrvPath = "" Then
-	If objFSO.FolderExists( TRGT_NETWORKDRIVE_PATH ) Then
-		sTrgtDrvPath = TRGT_NETWORKDRIVE_PATH
-	Else
-		'Do Nothing
-	End If
+    If objFSO.FolderExists( TRGT_NETWORKDRIVE_PATH ) Then
+        sTrgtDrvPath = TRGT_NETWORKDRIVE_PATH
+    Else
+        'Do Nothing
+    End If
 Else
-	'Do Nothing
+    'Do Nothing
 End If
 
 '**** シンボリックリンク作成 ****
 Dim oWsh
 Set oWsh = WScript.CreateObject("WScript.Shell")
 If sTrgtDrvPath = "" Then
-	MsgBox "対象フォルダが見つかりませんでした。"
+    MsgBox "対象フォルダが見つかりませんでした。"
 Else
-	'シンボリックリンク削除
-	If objFSO.FolderExists( BACKUP_PATH_SRC ) Then
-		oWsh.Run "%ComSpec% /c rmdir """ & BACKUP_PATH_SRC & """"
-	Else
-		'Do Nothing
-	End If
-	
-	'シンボリックリンク削除
-	oWsh.Run "%ComSpec% /c mklink /d """ & BACKUP_PATH_SRC & """ """ & _
-		     sTrgtDrvPath & "\" & BACKUP_PATH_DST & """"
-	MsgBox "iTunes バックアップ格納先を以下に設定しました。" & vbNewLine & _
-		   "  格納先：" & Replace( sTrgtDrvPath, ":", "" )
+    'シンボリックリンク削除
+    If objFSO.FolderExists( BACKUP_PATH_SRC ) Then
+        oWsh.Run "%ComSpec% /c rmdir """ & BACKUP_PATH_SRC & """"
+    Else
+        'Do Nothing
+    End If
+    
+    'シンボリックリンク削除
+    oWsh.Run "%ComSpec% /c mklink /d """ & BACKUP_PATH_SRC & """ """ & _
+             sTrgtDrvPath & "\" & BACKUP_PATH_DST & """"
+    MsgBox "iTunes バックアップ格納先を以下に設定しました。" & vbNewLine & _
+           "  格納先：" & Replace( sTrgtDrvPath, ":", "" )
 End If
 
 '==========================================================
