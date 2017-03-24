@@ -13,6 +13,9 @@ Option Explicit
 ' =    ・ExtractTailWord    末尾区切り文字以降の文字列を返却する｡
 ' =    ・GetDirPath         指定されたファイルパスからフォルダパスを抽出する。
 ' =    ・GetFileName        指定されたファイルパスからファイル名を抽出する。
+' =    ・GetFileExt         指定されたファイルパスから拡張子を抽出する｡
+' =    ・GetFileBase        指定されたファイルパスからファイルベース名を抽出する｡
+' =    ・GetFilePart        指定されたファイルパスから指定された一部を抽出する｡
 ' =
 ' =    ・GetStrikeExist     取り消し線の有無を判定する。
 ' =    ・GetFontColor       フォントカラーを返却する。
@@ -334,6 +337,88 @@ Public Function GetFileName( _
 End Function
     Private Sub Test_GetFileName()
         'ExtractTailWordと同等のテストケースのため、テストしない
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスから拡張子を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        拡張子
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
+' ==================================================================
+Public Function GetFileExt( _
+    ByVal sFilePath As String _
+) As String
+    Dim sFileName As String
+    sFileName = GetFileName(sFilePath)
+    If InStr(sFileName, ".") > 0 Then
+        GetFileExt = SplitStr(sFileName, ".", GetStrNum(sFileName, "."))
+    Else
+        GetFileExt = ""
+    End If
+End Function
+    Private Sub Test_GetFileExt()
+        Debug.Print GetFileExt("c:\codes\test.txt")     'txt
+        Debug.Print GetFileExt("c:\codes\test")         '
+        Debug.Print GetFileExt("test.txt")              'txt
+        Debug.Print GetFileExt("test")                  '
+        Debug.Print GetFileExt("c:\codes\test.aaa.txt") 'txt
+        Debug.Print GetFileExt("test.aaa.txt")          'txt
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスからファイルベース名を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        ファイルベース名
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
+' ==================================================================
+Public Function GetFileBase( _
+    ByVal sFilePath As String _
+) As String
+    Dim sFileName As String
+    sFileName = GetFileName(sFilePath)
+    GetFileBase = RemoveTailWord(sFileName, ".")
+End Function
+    Private Sub Test_GetFileBase()
+        Debug.Print GetFileBase("c:\codes\test.txt")     'test
+        Debug.Print GetFileBase("c:\codes\test")         'test
+        Debug.Print GetFileBase("test.txt")              'test
+        Debug.Print GetFileBase("test")                  'test
+        Debug.Print GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
+        Debug.Print GetFileBase("test.aaa.txt")          'test.aaa
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスから指定された一部を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 引数    lPartType   Long    [in]  抽出種別
+' =                                     1) フォルダパス
+' =                                     2) ファイル名
+' =                                     3) ファイルベース名
+' =                                     4) ファイル拡張子
+' = 戻値                String        抽出した一部
+' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' ==================================================================
+Public Function GetFilePart( _
+    ByVal sFilePath As String, _
+    ByVal lPartType As Long _
+) As String
+    Select Case lPartType
+        Case 1: GetFilePart = GetDirPath(sFilePath)
+        Case 2: GetFilePart = GetFileName(sFilePath)
+        Case 3: GetFilePart = GetFileBase(sFilePath)
+        Case 4: GetFilePart = GetFileExt(sFilePath)
+        Case Else: GetFilePart = ""
+    End Select
+End Function
+    Private Sub Test_GetFilePart()
+        Debug.Print GetFilePart("c:\codes\test.txt", 0)     '
+        Debug.Print GetFilePart("c:\codes\test.txt", 1)     'c:\codes
+        Debug.Print GetFilePart("c:\codes\test.txt", 2)     'test.txt
+        Debug.Print GetFilePart("c:\codes\test.txt", 3)     'test
+        Debug.Print GetFilePart("c:\codes\test.txt", 4)     'txt
+        Debug.Print GetFilePart("c:\codes\test.txt", 5)     '
     End Sub
 
 ' ==================================================================
