@@ -89,7 +89,7 @@ Public Function ReplaceItunesLibLocation()
     lTracksNum = objPlayList.Tracks.Count
     lTracksIdx = 0
     For Each objTrack In objPlayList.Tracks
-        If objTrack.KindAsString = "MPEG オーディオファイル" Then
+        If objTrack.KindAsString = "MPEG オーディオファイル" Or objTrack.KindAsString = "MPEGオーディオファイル" Then
             sPathOrg = objTrack.Location
             bIsMatch = False
             bIsFileExist = False
