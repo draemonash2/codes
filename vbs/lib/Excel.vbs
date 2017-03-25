@@ -38,7 +38,7 @@ Public Function ExecExcelMacro( _
     
     Set objExcel = Nothing
 End Function
-    Call Test_ExecExcelMacro()
+'   Call Test_ExecExcelMacro()
     Private Sub Test_ExecExcelMacro()
         Dim lTestCase
         lTestCase = InputBox("テストケースを入力してください")
@@ -61,4 +61,52 @@ End Function
             Case Else:
                 MsgBox "テストケースがありません"
         End Select
+    End Sub
+
+'新しいエクセルファイルを作成する
+Public Function CreateNewExcelFile( _
+    ByVal sBookPath _
+)
+    '[参考] https://msdn.microsoft.com/ja-jp/library/office/ff198017.aspx
+    Const xlExcel8 = 56
+    Const xlWorkbookDefault = 51
+    Const xlOpenXMLWorkbookMacroEnabled = 52
+    
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FileExists( sBookPath ) Then
+        'Do Nothing
+    Else
+        Dim ExcelApp    ' アプリケーション
+        Dim ExcelBook   ' ブック
+        Set ExcelApp = CreateObject("Excel.Application")
+        ExcelApp.DisplayAlerts = False
+        
+        ExcelApp.Workbooks.Add
+        Set ExcelBook = ExcelApp.Workbooks( ExcelApp.Workbooks.Count )
+        
+        Dim sFileExt
+        sFileExt = Mid( sBookPath, InStrRev( sBookPath, "." ) + 1, Len( sBookPath ) )
+        on error resume next
+        Select Case sFileExt
+            Case "xlsx":    ExcelBook.SaveAs sBookPath, xlWorkbookDefault
+            Case "xls":     ExcelBook.SaveAs sBookPath, xlExcel8
+            Case "xlsm":    ExcelBook.SaveAs sBookPath, xlOpenXMLWorkbookMacroEnabled
+            Case Else:      'Do Nothing
+        End Select
+        if Err.Number <> 0 then
+            MsgBox( "ERROR:" & Err.Description )
+        end if
+        on error goto 0
+        
+        ExcelApp.Quit
+        Set ExcelApp = Nothing
+        ExcelApp = Empty
+    End If
+End Function
+'   Call Test_CreateNewExcelFile()
+    Private Sub Test_CreateNewExcelFile()
+        Call CreateNewExcelFile("C:\Users\draem_000\Desktop\0.xlsx")
+        Call CreateNewExcelFile("C:\Users\draem_000\Desktop\1.xlsm")
+        Call CreateNewExcelFile("C:\Users\draem_000\Desktop\2.xls")
     End Sub
