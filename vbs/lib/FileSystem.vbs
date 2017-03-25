@@ -892,15 +892,16 @@ End Function
     End Sub
 
 'ファイル情報は「ファイル名」「属性」が設定可能
-'しかし、以下のメソッドにて変更可能なため、改めて関数定義しない
+'しかし、以下のメソッドにて変更可能なため、実装しない
 '  ファイル名： objFSO.MoveFile
 '  属性： objFSO.GetFile( "C:\codes\a.txt" ).Attributes
-'Public Function SetFileInfo( _
-'   ByVal sTrgtPath, _
-'   ByVal lSetInfoType, _
-'   ByVal vFileInfo _
-')
-'End Function
+Public Function SetFileInfo( _
+   ByVal sTrgtPath, _
+   ByVal lSetInfoType, _
+   ByVal vFileInfo _
+)
+    'Do Nothing
+End Function
 
 ' ==================================================================
 ' = 概要    フォルダ情報取得
@@ -999,30 +1000,30 @@ End Function
     End Sub
 
 'フォルダ情報は「ファイル名」「属性」が設定可能
-'しかし、以下のメソッドにて変更可能なため、改めて関数定義しない
+'しかし、以下のメソッドにて変更可能なため、実装しない
 '  ファイル名： objFSO.MoveFolder
 '  属性： objFSO.GetFolder( "C:\codes" ).Attributes
-'Public Function SetFolderInfo( _
-'   ByVal sTrgtPath, _
-'   ByVal lSetInfoType, _
-'   ByVal vFolderInfo _
-')
-'End Function
+Public Function SetFolderInfo( _
+   ByVal sTrgtPath, _
+   ByVal lSetInfoType, _
+   ByVal vFolderInfo _
+)
+    'Do Nothing
+End Function
 
 ' ==================================================================
 ' = 概要    ファイル詳細情報取得
 ' = 引数    sTrgtPath       String      [in]    ファイルパス
-' = 引数    lGetInfoType    Long        [in]    取得情報種別番号(※)
+' = 引数    lGetInfoType    Long        [in]    取得情報種別番号(※1)(※2)
 ' = 引数    vFileInfoValue  Variant     [out]   ファイル詳細情報
 ' = 引数    vFileInfoTitle  Variant     [out]   ファイル詳細情報タイトル
 ' = 戻値                    Boolean             取得結果
-' = 覚書    (※)取得できる情報はＯＳのバージョンによって異なる。
-' =             事前に Exec_GetDetailsOfGetDetailsOf() を実行して、
-' =             取得できる情報を確認しておくこと。
-' =             なお、lGetInfoType は Folder オブジェクト GetDetailsOf() 
-' =             プロパティの要素番号に対応する。
-' =             割り当てられていない取得情報種別番号を指定した場合、
-' =             取得結果 False を返却する。
+' = 覚書    (※1) 取得できる情報はＯＳのバージョンによって異なる。
+' =               事前に GetDetailsOfIndexFromTitle() を実行して、
+' =               取得できるプロパティの要素番号を確認しておくこと。
+' =         (※2) lGetInfoType は Folder オブジェクト GetDetailsOf() 
+' =               プロパティの要素番号に対応する。割り当てられていない
+' =               要素番号を指定した場合、取得結果 False を返却する。
 ' ==================================================================
 Public Function GetFileDetailInfo( _
     ByVal sTrgtPath, _
@@ -1075,19 +1076,97 @@ End Function
         bRet = GetFileDetailInfo( sTrgtPath,    52, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
         MsgBox sBuf
     End Sub
+'   Call Test_GetFileDetailInfo2()
+    Private Sub Test_GetFileDetailInfo2()
+        Dim sTrgtPath
+        sTrgtPath = "Z:\300_Musics\290_Reggae@Riddim\Major\02 Let's Do It Again (Major Riddim).mp3"
+        Dim sValue
+        Dim sTitle
+        Dim bRet
+        Dim sBuf
+        sBuf = ""
+        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "アルバム"          ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
+        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "参加アーティスト"  ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
+        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "ビット レート"     ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
+        MsgBox sBuf
+    End Sub
 
-'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
-'Call Exec_GetDetailsOfGetDetailsOf()
-Public Sub Exec_GetDetailsOfGetDetailsOf()
-    Dim sTrgtFilePath
-    Dim sLogFilePath
-    sTrgtFilePath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3"
-    sLogFilePath = WScript.CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\track_title_names.txt"
+'GetDetailsOf() は設定できないため、実装しない
+Public Function SetFileDetailInfo( _
+    ByVal sTrgtPath, _
+    ByVal lGetInfoType, _
+    ByVal sFileInfoValue _
+)
+    'Do Nothing
+End Function
+
+' ==================================================================
+' = 概要    GetDetailsOf() のタイトル名から要素番号を取得する
+' = 引数    sTrgtPath       String      [in]    ファイルパス
+' = 引数    sTitle          String      [in]    タイトル名
+' = 戻値                    Boolean             要素番号
+' = 覚書    存在しないファイルまたは存在しないタイトルを指定した場合、
+' =         -1 を返却する。
+' ==================================================================
+Public Function GetDetailsOfIndexFromTitle( _
+    ByVal sTrgtPath, _
+    ByVal sTitle _
+)
+    Dim objFSO
+    Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
+    If objFSO.FileExists( sTrgtPath ) Then
+        'Do Nothing
+    Else
+        GetDetailsOfIndexFromTitle = -1
+        Exit Function
+    End If
     
-    Call GetDetailsOfGetDetailsOf( sTrgtFilePath, sLogFilePath )
+    Dim sTrgtFolderPath
+    Dim sTrgtFileName
+    sTrgtFolderPath = Mid( sTrgtPath, 1, InStrRev( sTrgtPath, "\") - 1 )
+    sTrgtFileName = Mid( sTrgtPath, InStrRev( sTrgtPath, "\") + 1, Len( sTrgtPath ) )
     
-    WScript.CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
-End Sub
+    Dim objFolder
+    Set objFolder = WScript.CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
+    Dim objFile
+    Set objFile = objFolder.ParseName(sTrgtFileName)
+    
+    Dim bExistTitle
+    bExistTitle = False
+    
+    Dim lIdx
+    For lIdx = 0 to 400
+        If objFolder.GetDetailsOf( "", lIdx ) = sTitle Then
+            bExistTitle = True
+            Exit For
+        Else
+            'Do Nothing
+        End If
+    Next
+    
+    If bExistTitle = True Then
+        GetDetailsOfIndexFromTitle = lIdx
+    Else
+        GetDetailsOfIndexFromTitle = -1
+    End If
+End Function
+'   Call Test_GetDetailsOfIndexFromTitle()
+    Private Sub Test_GetDetailsOfIndexFromTitle()
+        Dim sTrgtPath
+        sTrgtPath = "C:\codes\vbs\lib\FileSystem.vbs"
+        Dim lIdx
+        Dim bRet
+        Dim sBuf
+        sBuf = ""
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "名前" )
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "サイズ" )
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "項目の種類" )
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "ビット レート" )
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "★" )
+        sTrgtPath = "C:\codes\vbs\lib\notexist.vbs"
+        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "名前" )
+        MsgBox sBuf
+    End Sub
 
 '*********************************************************************
 '* ローカル関数定義
