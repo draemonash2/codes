@@ -110,3 +110,35 @@ End Function
         Call CreateNewExcelFile("C:\Users\draem_000\Desktop\1.xlsm")
         Call CreateNewExcelFile("C:\Users\draem_000\Desktop\2.xls")
     End Sub
+
+'Excel シート印刷
+Public Function PrintExcelSheet( _
+    ByVal sTrgtBookPath, _
+    ByVal sTrgtSheetName, _
+    ByVal lTrgtPageBegin, _
+    ByVal lTrgtPageEnd, _
+    ByVal lCopiesNum _
+)
+    Dim objExcel
+    Set objExcel = CreateObject("Excel.Application")
+    
+    Dim objExcelBook
+    Set objExcelBook = objExcel.Workbooks.Open( sTrgtBookPath )
+    objExcel.Workbooks(1).Sheets( sTrgtSheetName ).Select
+    objExcel.ActiveWindow.SelectedSheets.PrintOut lTrgtPageBegin, lTrgtPageEnd, lCopiesNum '印刷
+    objExcel.Workbooks(1).Close
+    Set objExcelBook = Nothing
+    
+    objExcel.quit()
+    Set objExcel = Nothing
+End Function
+'   Call Test_PrintExcelSheet()
+    Private Sub Test_PrintExcelSheet()
+        Call PrintExcelSheet( _
+            "C:\Users\draem_000\Desktop\プリンタインク詰まり防止用印刷ページ.xlsx", _
+            "Sheet2", _
+            1, _
+            1, _
+            1 _
+        )
+    End Sub
