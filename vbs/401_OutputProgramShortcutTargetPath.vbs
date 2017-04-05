@@ -11,8 +11,6 @@ Call Include( sMyDirPath & "\lib\Log.vbs" )
 '==========================================================
 '= 設定値
 '==========================================================
-Const EXE_PATH_ORG = "C:\Users\draem_000\Documents\Amazon Drive\100_Programs\program\prg_exe"
-Const EXE_PATH_NEW = "C:\prg_exe"
 
 '==========================================================
 '= 本処理
@@ -57,34 +55,18 @@ Dim asFileList
 Call GetFileList2( sTrgtDir, asFileList, 1 )
 
 oLogMng.Puts( "target directory path : " & sTrgtDir )
-oLogMng.Puts( "org path              : " & EXE_PATH_ORG )
-oLogMng.Puts( "new path              : " & EXE_PATH_NEW )
 oLogMng.Puts( "" )
-oLogMng.Puts( "### Legend ###" )
-oLogMng.Puts( "  Replaced : replaced target pathes" )
-oLogMng.Puts( "  UnMatch  : replace word is nothing at target path" )
-oLogMng.Puts( "  NoShrtCt : not a program shortcut file" )
 oLogMng.Puts( "### Result ###" )
-oLogMng.Puts( "<Result>" & chr(9) & "<sFileDirPath>" & chr(9) & "<sOrgDirPath>" & chr(9) & "<sNewDirPath>" )
+oLogMng.Puts( "<Type>" & chr(9) & "<sFileDirPath>" & chr(9) & "<sTargetPath>" )
 
 Dim i
 For i = 0 to UBound( asFileList ) - 1
     Dim sFileDirPath
     sFileDirPath = asFileList(i)
     
-    Dim sOrgDirPath
-    Dim sNewDirPath
     If objFSO.GetExtensionName( sFileDirPath ) = "lnk" Then
         With objWshShell.CreateShortcut( sFileDirPath )
-            sOrgDirPath = .TargetPath
-            If InStr( sOrgDirPath, EXE_PATH_ORG ) > 0 Then
-                sNewDirPath = Replace( sOrgDirPath, EXE_PATH_ORG, EXE_PATH_NEW )
-                    .TargetPath = sNewDirPath
-                    .Save
-                oLogMng.Puts( "[Replaced]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath & chr(9) & sNewDirPath )
-            Else
-                oLogMng.Puts( "[UnMatch ]" & chr(9) & sFileDirPath & chr(9) & sOrgDirPath )
-            End If
+            oLogMng.Puts( "[ShrtCt  ]" & chr(9) & sFileDirPath & chr(9) & .TargetPath )
         End With
     Else
         oLogMng.Puts( "[NoShrtCt]" & chr(9) & sFileDirPath )
@@ -95,7 +77,7 @@ oLogMng.Close()
 Set oLogMng = Nothing
 
 MsgBox _
-    "以下にプログラムショートカットの指示先置換結果を出力しました。" & vbNewLine & _
+    "以下にプログラムショートカットの指示先を出力しました。" & vbNewLine & _
     "  " & sLogFilePath
 
 '==========================================================
