@@ -8,16 +8,21 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =============================================================================
 ' =  <<マクロ一覧>>
 ' =    ・選択範囲内で中央                   選択セルに対して「選択範囲内で中央」を実行する
+' =
 ' =    ・ダブルクォートを除いてセルコピー   ダブルクオーテーションなしでセルコピーする
 ' =    ・選択範囲をファイルエクスポート     選択範囲をファイルとしてエクスポートする。
 ' =    ・選択範囲をコマンド実行             選択範囲内のコマンドを実行する。
+' =
 ' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
 ' =    ・シート表示非表示を切り替え         シート表示/非表示を切り替える
 ' =    ・シート並べ替え作業用シートを作成   シート並べ替え作業用シート作成
+' =
 ' =    ・セル内の丸数字をデクリメント       ②～⑮を指定して、指定番号以降をインクリメントする
 ' =    ・セル内の丸数字をインクリメント     ①～⑭を指定して、指定番号以降をデクリメントする
+' =
 ' =    ・ツリーをグループ化                 ツリーグループ化する
 ' =    ・ハイパーリンク一括オープン         選択した範囲のハイパーリンクを一括で開く
+' =
 ' =    ・フォント色をトグル                 フォント色を「赤」⇔「自動」でトグルする
 ' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
 ' =============================================================================
@@ -57,7 +62,7 @@ Dim gtShortcutKey() As T_SHORTCUT_KEY
 Private Function InitUserDefShortcut()
 '   Call AddUserDefShortcut("   ", "選択範囲内で中央")
     Call AddUserDefShortcut("^+c", "ダブルクォートを除いてセルコピー")
-    Call AddUserDefShortcut("^+e", "選択範囲をファイルエクスポート")
+'   Call AddUserDefShortcut("   ", "選択範囲をファイルエクスポート")
 '   Call AddUserDefShortcut("   ", "選択範囲をコマンド実行")
 '   Call AddUserDefShortcut("   ", "全シート名をコピー")
 '   Call AddUserDefShortcut("   ", "シート表示非表示を切り替え")
@@ -66,6 +71,8 @@ Private Function InitUserDefShortcut()
 '   Call AddUserDefShortcut("   ", "セル内の丸数字をインクリメント")
 '   Call AddUserDefShortcut("   ", "ツリーをグループ化")
 '   Call AddUserDefShortcut("   ", "ハイパーリンク一括オープン")
+'   Call AddUserDefShortcut("   ", "フォント色をトグル")
+'   Call AddUserDefShortcut("   ", "背景色をトグル")
 End Function
 
 Public Sub ユーザー定義ショートカットキーを設定()
