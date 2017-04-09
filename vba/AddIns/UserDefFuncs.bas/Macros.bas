@@ -18,6 +18,8 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・セル内の丸数字をインクリメント     ①～⑭を指定して、指定番号以降をデクリメントする
 ' =    ・ツリーをグループ化                 ツリーグループ化する
 ' =    ・ハイパーリンク一括オープン         選択した範囲のハイパーリンクを一括で開く
+' =    ・フォント色をトグル                 フォント色を「赤」⇔「自動」でトグルする
+' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
 ' =============================================================================
 
 '******************************************************************************
@@ -595,6 +597,34 @@ Public Sub ハイパーリンク一括オープン()
         Next
     Else
         MsgBox "セル範囲が選択されていません。", vbExclamation
+    End If
+End Sub
+
+' =============================================================================
+' = 概要：フォント色を「赤」⇔「自動」でトグルする
+' =============================================================================
+Public Sub フォント色をトグル()
+    Const COLOR_R As Long = 255
+    Const COLOR_G As Long = 0
+    Const COLOR_B As Long = 0
+    If Selection(1).Font.Color = RGB(COLOR_R, COLOR_G, COLOR_B) Then
+        Selection.Font.ColorIndex = xlAutomatic
+    Else
+        Selection.Font.Color = RGB(COLOR_R, COLOR_G, COLOR_B)
+    End If
+End Sub
+
+' =============================================================================
+' = 概要：背景色を「黄」⇔「背景色なし」でトグルする
+' =============================================================================
+Public Sub 背景色をトグル()
+    Const COLOR_R As Long = 255
+    Const COLOR_G As Long = 255
+    Const COLOR_B As Long = 0
+    If Selection(1).Interior.Color = RGB(COLOR_R, COLOR_G, COLOR_B) Then
+        Selection.Interior.ColorIndex = 0
+    Else
+        Selection.Interior.Color = RGB(COLOR_R, COLOR_G, COLOR_B)
     End If
 End Sub
 
