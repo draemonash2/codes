@@ -6,7 +6,7 @@ Option Explicit
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( sMyDirPath & "\lib\Excel.vbs" )
-Call Include( sMyDirPath & "\lib\FileSystem.vbs" )
+Call Include( sMyDirPath & "\lib\String.vbs" )
 
 '==========================================================
 '= –{ˆ—
@@ -16,9 +16,10 @@ Set objWshShell = WScript.CreateObject("WScript.Shell")
 Dim sFilePath
 If WScript.Arguments.Count = 0 Then
 	sFilePath = objWshShell.SpecialFolders("Desktop") & "\temp.xlsm"
-Else
+ElseIf WScript.Arguments.Count = 1 Then
+	sFilePath = WScript.Arguments(0)
 	Dim sFileExt
-	sFileExt = GetFileExt( sFilePath )
+	sFileExt = GetFileExtName( sFilePath )
 	Select Case sFileExt
 		Case "xlsx":    'Do Nothing
 		Case "xls":     'Do Nothing
@@ -29,6 +30,10 @@ Else
 			WScript.Quit
 	End Select
 	sFilePath = WScript.Arguments(0)
+Else
+	MsgBox "‚Q‚ÂˆÈã‚Ìˆø”‚Íw’è‚Å‚«‚Ü‚¹‚ñ"
+	MsgBox "ˆ—‚ğ’†’f‚µ‚Ü‚·"
+	WScript.Quit
 End If
 Call CreateNewExcelFile( sFilePath )
 
