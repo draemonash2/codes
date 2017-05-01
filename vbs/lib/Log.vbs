@@ -1,5 +1,13 @@
 Option Explicit
 
+' <<usage example>>
+' Dim oLog
+' Set oLog = New LogMng
+' oLog.Mode 1
+' oLog.Open "C:\Users\draem_000\Desktop\test.log", "w"
+' oLog.Puts "test"
+' Set oLog = Nothing
+
 Class LogMng
     Private gbLogFileEnable
     Private goLogFile
