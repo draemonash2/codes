@@ -1,7 +1,7 @@
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 
-	set LOG_FILE_PATH=%USERPROFILE%\Documents\Amazon Drive\100_Programs\program_list.txt
+	set LOG_FILE_PATH=%USERPROFILE%\Documents\Amazon Drive\100_Programs\_script\program_list.log
 	echo.> "%LOG_FILE_PATH%"
 
 	echo %date% %time%>> "%LOG_FILE_PATH%"
