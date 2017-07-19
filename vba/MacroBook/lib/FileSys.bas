@@ -1,4 +1,4 @@
-Attribute VB_Name = "FileSys"
+Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
 ' file system library v1.2
@@ -360,7 +360,7 @@ End Function
     '                objWshShell.SpecialFolders("Desktop") & "\test.txt" _
     '            )
     End Sub
- 
+
 ' ==================================================================
 ' = 概要    ファイル（複数）選択ダイアログを表示する
 ' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
