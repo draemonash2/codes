@@ -1348,6 +1348,12 @@ Private Function GetDetailsOfGetDetailsOf( _
     Next
     objTxtFile.Close
 End Function
+    'Call Test_GetDetailsOfGetDetailsOf()
+    Private Function Test_GetDetailsOfGetDetailsOf()
+        Dim objWshShell
+        Set objWshShell = WScript.CreateObject("WScript.Shell")
+        Call GetDetailsOfGetDetailsOf( WScript.ScriptFullName, objWshShell.SpecialFolders("Desktop") & "\file_detail.txt" )
+    End Function
 
 'テスト用
 Private Function FileSysem_Include( _
