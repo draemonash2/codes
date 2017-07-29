@@ -183,73 +183,39 @@ Public Sub タグ情報読み込み()
             End If
         End If
         
-        'トラック名取得
-        If bIsTrackErrorExist = True Then
-            'Do Nothing
-        Else
-            Dim bRet As Boolean
-            Dim vFileInfoValue As Variant
-            Dim vFileInfoTitle As Variant
-            Dim sErrorDetail As String
-            bRet = GetFileDetailInfo(sInFilePath, FILE_DETAIL_INFO_TRACK_NAME_INDEX, vFileInfoValue, vFileInfoTitle, sErrorDetail)
-            If bRet = True Then
-                If vFileInfoTitle = FILE_DETAIL_INFO_TRACK_NAME_TITLE Then
-                    Dim sInTrackName As String
-                    sInTrackName = CStr(vFileInfoValue)
-                Else
-                    Debug.Assert 0
-                End If
-            Else
-                Select Case sErrorDetail
-                    Case "File is not exist!": bIsTrackErrorExist = True
-                    Case "Get info type error!": Debug.Assert 0
-                    Case Else: Debug.Assert 0
-                End Select
-                If bIsTrackErrorExist = True Then
-                    bIsErrorExist = True
-                    sLogMsg = sLogMsg & vbNewLine & "・ファイルパスが存在しません"
-                Else
-                    'Do Nothing
-                End If
-            End If
-        End If
-        
         'トラック取得
         If bIsTrackErrorExist = True Then
             'Do Nothing
         Else
-            Dim objTrack As Variant
-            bRet = SearchTrack(sInTrackName, sInFilePath, objTrack)
+            Dim lFileInfoTagIndex As Long
+            Dim bRet
+            bRet = GetFileDetailInfoIndex("タイトル", lFileInfoTagIndex)
             If bRet = True Then
-                If objTrack.Location = sInFilePath Then
-                    If objTrack Is Nothing Then
-                        bIsErrorExist = True
-                        bIsTrackErrorExist = True
-                        sLogMsg = _
-                            sLogMsg & vbNewLine & _
-                            "・iTunes プレイリスト内にトラックがありません" & vbNewLine & _
-                            "  sInFilePath : " & sInFilePath & vbNewLine & _
-                            "  sInTrackName : " & sInTrackName
-                    Else
-                        'Do Nothing
-                    End If
-                Else
-                    bIsErrorExist = True
-                    bIsTrackErrorExist = True
-                    sLogMsg = _
-                        sLogMsg & vbNewLine & _
-                        "・取得したトラック情報内のファイルパスが一致しません" & vbNewLine & _
-                        "  sInFilePath : " & sInFilePath & vbNewLine & _
-                        "  objTrack.Location : " & objTrack.Location
-                End If
+                'Do Nothing
+            Else
+                Debug.Assert 0
+            End If
+            
+            Dim objTrack As Variant
+            Dim sErrorDetail As String
+            bRet = GetTrackInfo(sInFilePath, objTrack, sErrorDetail, lFileInfoTagIndex)
+            If bRet = True Then
+                'Do Nothing
             Else
                 bIsErrorExist = True
                 bIsTrackErrorExist = True
-                sLogMsg = _
-                    sLogMsg & vbNewLine & _
-                    "・iTunes プレイリスト内にトラックがありません" & vbNewLine & _
-                    "  sInFilePath : " & sInFilePath & vbNewLine & _
-                    "  sInTrackName : " & sInTrackName
+                If sErrorDetail = "File path is empty!" Then
+                    Debug.Assert 0
+                ElseIf sErrorDetail = "File is not exist at file system!" Then
+                    sLogMsg = sLogMsg & vbNewLine & "・ファイルパスが存在しません"
+                ElseIf sErrorDetail = "File is not exist at itunes playlist!" Then
+                    sLogMsg = _
+                        sLogMsg & vbNewLine & _
+                        "・iTunes プレイリスト内にトラックがありません" & vbNewLine & _
+                        "  sInFilePath : " & sInFilePath
+                Else
+                    Debug.Assert 0
+                End If
             End If
         End If
         
@@ -282,7 +248,6 @@ Public Sub タグ情報読み込み()
             shLog.Cells(lLogRowIdx, LOG_CLM_DATETIME).Value = sNow
             shLog.Cells(lLogRowIdx, LOG_CLM_RW).Value = "Read"
             shLog.Cells(lLogRowIdx, LOG_CLM_FILEPATH).Value = sInFilePath
-            shLog.Cells(lLogRowIdx, LOG_CLM_TRACKNAME).Value = sInTrackName
             shLog.Cells(lLogRowIdx, LOG_CLM_ERRORMSG).Value = sLogMsg
             lLogRowIdx = lLogRowIdx + 1
         Else
@@ -290,7 +255,6 @@ Public Sub タグ情報読み込み()
                 shLog.Cells(lLogRowIdx, LOG_CLM_DATETIME).Value = sNow
                 shLog.Cells(lLogRowIdx, LOG_CLM_RW).Value = "Read"
                 shLog.Cells(lLogRowIdx, LOG_CLM_FILEPATH).Value = sInFilePath
-                shLog.Cells(lLogRowIdx, LOG_CLM_TRACKNAME).Value = sInTrackName
                 shLog.Cells(lLogRowIdx, LOG_CLM_ERRORMSG).Value = "[Success]"
                 lLogRowIdx = lLogRowIdx + 1
             Else

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Itunes"
 Option Explicit
 
-' itunes libary v1.0
+' itunes libary v1.1
 
 Public gvItunes As Variant
 Public gvPlayList As Variant
@@ -16,6 +16,9 @@ Public Function ItunesTerminate()
     Set gvPlayList = Nothing
 End Function
 
+' ******************************************************************
+' * グローバル関数
+' ******************************************************************
 ' ==================================================================
 ' = 概要    iTunes プレイリストをバックアップする
 ' = 引数    なし
@@ -121,6 +124,7 @@ Public Function GetTagValue( _
                 Case "時間(SECOND)": sTagValue = .Duration
                 Case "再生順インデックス": sTagValue = .PlayOrderIndex
                 Case "インデックス": sTagValue = .Index
+                Case "歌詞": sTagValue = .Lyrics
                 Case Else: sTagValue = "": bRet = False
             End Select
         End With
@@ -211,6 +215,7 @@ Public Function SetTagValue( _
                 Case "音量調整": .VolumeAdjustment = sTagValue
                 Case "年": .Year = sTagValue
                 Case "ファイルパス": .Location = sTagValue
+                Case "歌詞": .Lyrics = sTagValue
                 Case Else: bRet = False
             End Select
         End With
@@ -277,14 +282,173 @@ End Function
     End Sub
 
 ' ==================================================================
+' = 概要    ファイルパスからトラック情報を取得する
+' = 引数    sInTrgtPath         String    [in]  取得したいトラックのトラック名
+' = 引数    vOutTrackInfo       Variant   [out] トラック情報オブジェクト
+' = 引数    sOutErrorDetail     String    [out] エラー詳細情報
+' = 引数    lInFileInfoTagIndex Long      [in]  ファイル取得情報種別番号
+' = 戻値                        Boolean         取得結果
+' = 覚書    ・以下のいずれかを満たす場合、取得結果 False を返却する。
+' =           - ファイルパスが空
+' =               OutErrorDetail ： "File path is empty!"
+' =           - ファイル自体が存在しない場合
+' =               OutErrorDetail ： "File is not exist at file system!"
+' =           - ファイルが iTunes ライブラリ内に存在しない
+' =               sOutErrorDetail ： "File is not exist at itunes playlist!"
+' =         ・本関数使用時は FileSystem.bas をインポートしておくこと。
+' =         ・本関数初回呼出前には ItunesInit() を実行しておくこと。
+' =         ・lFileInfoTagIndex の指定がない場合は自動的に関数内で取得し､
+' =           指定した場合は取得処理を省略する｡そのため､lFileInfoTagIndex が
+' =           あらかじめわかっている場合､引数を省略することで処理を高速化できる｡
+' =           使い方としては、本関数初回呼び出し前に FileSystem.bas の
+' =           GetFileDetailInfoIndex() にて lInFileInfoTagIndex を取得して
+' =           おいてから本関数を呼び出すとよい｡
+' ==================================================================
+Public Function GetTrackInfo( _
+    ByVal sInTrgtPath As String, _
+    ByRef vOutTrackInfo As Variant, _
+    ByRef sOutErrorDetail As String, _
+    Optional ByVal lInFileInfoTagIndex As Long = 9999 _
+) As Boolean
+    Const FILE_DETAIL_INFO_TRACK_NAME_TITLE As String = "タイトル"
+    
+    sOutErrorDetail = ""
+    Set vOutTrackInfo = Nothing
+    
+    Dim bIsError As Boolean
+    bIsError = False
+    
+    '引数チェック
+    If bIsError = True Then
+        'Do Nothing
+    Else
+        If sInTrgtPath = "" Then
+            bIsError = True
+            sOutErrorDetail = "File path is empty!"
+        Else
+            'Do Nothing
+        End If
+    End If
+    
+    '「FILE_DETAIL_INFO_TRACK_NAME_TITLE」のインデックス取得
+    If bIsError = True Then
+        'Do Nothing
+    Else
+        If lInFileInfoTagIndex = 9999 Then
+            'lInFileInfoTagIndex が指定されていない場合、lFileInfoTagIndex を取得する
+            Dim bRet As Boolean
+            bRet = GetFileDetailInfoIndex(FILE_DETAIL_INFO_TRACK_NAME_TITLE, lInFileInfoTagIndex)
+            If bRet = True Then
+                'Do Nothing
+            Else
+                Debug.Assert 0
+            End If
+        Else
+            'lInFileInfoTagIndex が指定されている場合、指定された lInFileInfoTagIndex にて以降の処理を行う
+        End If
+    End If
+    
+    'トラック名取得
+    If bIsError = True Then
+        'Do Nothing
+    Else
+        Dim vFileInfoValue As Variant
+        Dim vFileInfoTitle As Variant
+        Dim sErrorDetail As String
+        Dim sTrackName As String
+        bRet = GetFileDetailInfo(sInTrgtPath, lInFileInfoTagIndex, vFileInfoValue, vFileInfoTitle, sErrorDetail)
+        If bRet = True Then
+            If vFileInfoTitle = FILE_DETAIL_INFO_TRACK_NAME_TITLE Then
+                sTrackName = CStr(vFileInfoValue)
+            Else
+                Debug.Assert 0
+            End If
+        Else
+            If sErrorDetail = "File is not exist!" Then
+                bIsError = True
+                sOutErrorDetail = "File is not exist at file system!"
+            ElseIf sErrorDetail = "Get info type error!" Then
+                Debug.Assert 0
+            Else
+                Debug.Assert 0
+            End If
+        End If
+    End If
+    
+    'トラック情報取得
+    If bIsError = True Then
+        'Do Nothing
+    Else
+        bRet = SearchTrack(sTrackName, sInTrgtPath, vOutTrackInfo)
+        If bRet = True Then
+            'Do Nothing
+        Else
+            bIsError = True
+            sOutErrorDetail = "File is not exist at itunes playlist!"
+        End If
+    End If
+    
+    If bIsError = True Then
+        GetTrackInfo = False
+    Else
+        GetTrackInfo = True
+    End If
+End Function
+    Private Sub Test_GetTrackInfo()
+        Call ItunesInit
+        
+        Dim sTrgtPath As String
+        Dim bRet As Boolean
+        Dim sErrorDetail As String
+        Dim vTrackInfo As Variant
+        
+        sTrgtPath = "Z:\300_Musics\999_Other\test\test album\01 test track 1.mp3"
+        bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+        If vTrackInfo Is Nothing Then
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] "
+        Else
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] " & vTrackInfo.TrackNumber
+        End If
+        
+        sTrgtPath = "Z:\300_Musics\999_Other\test\test album\15 test track 15.mp3"
+        bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+        If vTrackInfo Is Nothing Then
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] "
+        Else
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] " & vTrackInfo.TrackNumber
+        End If
+        
+        sTrgtPath = "Z:\300_Musics\999_Other\test\test album\16 test track 16.mp3"
+        bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+        If vTrackInfo Is Nothing Then
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] "
+        Else
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] " & vTrackInfo.TrackNumber
+        End If
+        
+        sTrgtPath = ""
+        bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+        If vTrackInfo Is Nothing Then
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] "
+        Else
+            Debug.Print "[" & bRet & " : " & sErrorDetail & "] " & vTrackInfo.TrackNumber
+        End If
+        
+        Call ItunesTerminate
+    End Sub
+
+' ******************************************************************
+' * ローカル関数
+' ******************************************************************
+' ==================================================================
 ' = 概要    トラック情報オブジェクト取得
 ' = 引数    sTrackName    String    [in]    取得したいトラックのトラック名
 ' = 引数    sFilePath     String    [in]    取得したいトラックのファイルパス
-' = 引数    vTrack      Variant   [out]   トラック情報オブジェクト
+' = 引数    vTrack        Variant   [out]   トラック情報オブジェクト
 ' = 戻値                  Boolean           取得結果
 ' = 覚書    取得したいトラックが見つからなかった場合、取得結果 False を返却する。
 ' ==================================================================
-Public Function SearchTrack( _
+Private Function SearchTrack( _
     ByVal sTrackName As String, _
     ByVal sFilePath As String, _
     ByRef vTrack As Variant _
@@ -338,4 +502,23 @@ End Function
         
         Call ItunesTerminate
     End Function
+
+Private Sub test()
+    Call ItunesInit
+    
+    Dim sTrgtPath As String
+    Dim bRet As Boolean
+    Dim sErrorDetail As String
+    Dim vTrackInfo As Variant
+    
+    sTrgtPath = "Z:\300_Musics\999_Other\test\test album\01 test track 1.mp3"
+    'sTrgtPath = "Z:\300_Musics\290_Reggae@Riddim\Jim Screechie\Riddim Mix (Jim Screechie Riddim).mp3"
+    bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+    'vTrackInfo.Lyrics = "aaa"
+    Debug.Print vTrackInfo.Lyrics
+    
+    Call ItunesTerminate
+End Sub
+
+    
 

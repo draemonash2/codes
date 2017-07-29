@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileInfo"
 Option Explicit
 
-' file info libary v1.2
+' file info libary v1.3
 
 ' CreateFile 関数
 Private Declare Function CreateFile Lib "KERNEL32.DLL" Alias "CreateFileA" ( _
@@ -494,7 +494,6 @@ End Function
 
 ' ==================================================================
 ' = 概要    ファイル詳細情報のインデックス取得
-' = 引数    sTrgtPath           String      [in]    ファイルパス
 ' = 引数    vFileInfoTitle      Variant     [out]   ファイル詳細情報タイトル
 ' = 引数    lFileInfoTagIndex   Long        [in]    取得情報種別番号(※1)
 ' = 引数    lTagInfoIndexMax    Long        [in]    取得情報種別番号最大値
@@ -502,18 +501,23 @@ End Function
 ' = 覚書    (※1) 取得できる情報はＯＳのバージョンによって異なる。
 ' =               lFileInfoTagIndex は Folder オブジェクト GetDetailsOf()
 ' =               プロパティの要素番号に対応する。
-' =         見つからなかった場合、False を返却する。
+' =         指定したタイトルが見つからない場合、False を返却する。
+' =         ただし、このエラーはlTagInfoIndexMaxが小さいことが理由で
+' =         発生する可能性がある｡その場合､lTagInfoIndexMax を十分に
+' =         大きくして実行すること｡
 ' ==================================================================
 Public Function GetFileDetailInfoIndex( _
-    ByVal sTrgtPath As String, _
     ByRef vFileInfoTitle As Variant, _
     ByRef lFileInfoTagIndex As Long, _
-    Optional ByVal lTagInfoIndexMax As Long _
+    Optional ByVal lTagInfoIndexMax As Long = 999 _
 ) As Boolean
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
     Dim sTrgtFolderPath As String
     Dim sTrgtFileName As String
-    sTrgtFolderPath = Mid(sTrgtPath, 1, InStrRev(sTrgtPath, "\") - 1)
-    sTrgtFileName = Mid(sTrgtPath, InStrRev(sTrgtPath, "\") + 1, Len(sTrgtPath))
+    sTrgtFolderPath = objFSO.GetDriveName(CreateObject("WScript.Shell").SpecialFolders("Desktop"))
+    sTrgtFileName = ""
     
     Dim objFolder As Object
     Dim objFile As Object
@@ -521,9 +525,9 @@ Public Function GetFileDetailInfoIndex( _
     Set objFile = objFolder.ParseName(sTrgtFileName)
     
     GetFileDetailInfoIndex = False
-    lFileInfoTagIndex = 999
+    lFileInfoTagIndex = lTagInfoIndexMax + 1
     Dim i As Long
-    For i = 0 To 400
+    For i = 0 To lTagInfoIndexMax
         Dim vGetTitle As Variant
         vGetTitle = objFolder.GetDetailsOf("", i)
         If vGetTitle = vFileInfoTitle Then
@@ -540,29 +544,31 @@ End Function
         Dim bRet As Boolean
         
         bRet = GetFileDetailInfoIndex( _
-            "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3", _
             "タイトル", _
             lFileInfoTagIndex, _
             400 _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-        
+
         bRet = GetFileDetailInfoIndex( _
-            "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3", _
             "タイトル", _
             lFileInfoTagIndex _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-        
+
         bRet = GetFileDetailInfoIndex( _
-            "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3", _
             "撮影日時", _
             lFileInfoTagIndex _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-        
+
         bRet = GetFileDetailInfoIndex( _
-            "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3", _
+            "暗号化の状態", _
+            lFileInfoTagIndex _
+        )
+        Debug.Print bRet & " : " & lFileInfoTagIndex
+
+        bRet = GetFileDetailInfoIndex( _
             "aaa", _
             lFileInfoTagIndex _
         )
@@ -572,30 +578,22 @@ End Function
 ' ******************************************************************
 ' *** マクロ
 ' ******************************************************************
-'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
+'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）の一覧を
+'デスクトップ配下に出力する
 Public Sub Exec_GetDetailsOfGetDetailsOf()
-    Dim sTrgtPath As String
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim sTrgtDirPath As String
+    Dim sTrgtFileName As String
+    sTrgtDirPath = objFSO.GetDriveName(CreateObject("WScript.Shell").SpecialFolders("Desktop"))
+    sTrgtFileName = ""
+    
     Dim sLogFilePath As String
-    sTrgtPath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice\03 Ride Featuring Tony Matterhorn.MP3"
     sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\track_title_names.txt"
     
-    Call GetDetailsOfGetDetailsOf(sTrgtPath, sLogFilePath)
-    
-    CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
-End Sub
-
-'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
-Private Function GetDetailsOfGetDetailsOf( _
-    ByVal sTrgtPath As String, _
-    ByVal sLogFilePath As String _
-)
-    Dim sTrgtFolderPath As String
-    Dim sTrgtFileName As String
-    sTrgtFolderPath = Mid(sTrgtPath, 1, InStrRev(sTrgtPath, "\") - 1)
-    sTrgtFileName = Mid(sTrgtPath, InStrRev(sTrgtPath, "\") + 1, Len(sTrgtPath))
-    
     Dim objFolder As Object
-    Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
+    Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtDirPath & "\")
     Dim objFile As Object
     Set objFile = objFolder.ParseName(sTrgtFileName)
     
@@ -610,4 +608,7 @@ Private Function GetDetailsOfGetDetailsOf( _
             objFolder.GetDetailsOf("", i)
     Next i
     objTxtFile.Close
-End Function
+    
+    CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
+End Sub
+
