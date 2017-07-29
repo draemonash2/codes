@@ -262,7 +262,11 @@ Public Sub É^ÉOèÓïÒì«Ç›çûÇ›()
             End If
         End If
         
-        oProgBar.Update ((lRowIdx - lStrtRow) / (lLastRow - lStrtRow))
+        If lRowIdx = lStrtRow Then
+            oProgBar.Update 0
+        Else
+            oProgBar.Update ((lRowIdx - lStrtRow) / (lLastRow - lStrtRow))
+        End If
         
     Next lRowIdx
     
