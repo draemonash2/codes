@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.2
+' file system library v1.3
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -505,4 +505,146 @@ Private Function SetDialogFilters( _
         End If
     End If
 End Function
+
+' ==================================================================
+' = 概要    指定パスが存在する場合、"_XXX" を付与して返却する
+' = 引数    sTrgtPath       String      [in]    対象パス
+' = 引数    sAddedPath      String      [out]   付与後のパス
+' = 引数    lAddedPathType  Long        [out]   付与後のパス種別
+' =                                               1: ファイル
+' =                                               2: フォルダ
+' = 戻値                    Boolean             取得結果
+' = 覚書    本関数では、ファイル/フォルダは作成しない。
+' ==================================================================
+Public Function GetNotExistPath( _
+    ByVal sTrgtPath As String, _
+    ByRef sAddedPath As String, _
+    ByRef lAddedPathType As Long _
+) As Boolean
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim bFolderExists As Boolean
+    Dim bFileExists As Boolean
+    bFolderExists = objFSO.FolderExists(sTrgtPath)
+    bFileExists = objFSO.FileExists(sTrgtPath)
+    
+    If bFolderExists = False And bFileExists = True Then
+        sAddedPath = GetFileNotExistPath(sTrgtPath)
+        lAddedPathType = 1
+        GetNotExistPath = True
+    ElseIf bFolderExists = True And bFileExists = False Then
+        sAddedPath = GetFolderNotExistPath(sTrgtPath)
+        lAddedPathType = 2
+        GetNotExistPath = True
+    Else
+        sAddedPath = sTrgtPath
+        lAddedPathType = 0
+        GetNotExistPath = False
+    End If
+End Function
+    Private Sub Test_GetNotExistPath()
+        Dim sOutStr As String
+        Dim sAddedPath As String
+        Dim lAddedPathType As Long
+        Dim bRet As Boolean
+        sOutStr = ""
+        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+        MsgBox sOutStr
+    End Sub
+
+'*********************************************************************
+'* ローカル関数定義
+'*********************************************************************
+Private Function GetFolderNotExistPath( _
+    ByVal sTrgtPath As String _
+) As String
+    Dim lIdx As Long
+    Dim objFSO As Object
+    Dim sCreDirPath  As String
+    Dim bIsTrgtPathExists As Boolean
+    lIdx = 0
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    sCreDirPath = sTrgtPath
+    bIsTrgtPathExists = False
+    Do While objFSO.FolderExists(sCreDirPath)
+        bIsTrgtPathExists = True
+        lIdx = lIdx + 1
+        sCreDirPath = sTrgtPath & "_" & String(3 - Len(CStr(lIdx)), "0") & CStr(lIdx)
+    Loop
+    If bIsTrgtPathExists = True Then
+        GetFolderNotExistPath = sCreDirPath
+    Else
+        GetFolderNotExistPath = ""
+    End If
+End Function
+    Private Sub Test_GetFolderNotExistPath()
+        Dim sOutStr As String
+        sOutStr = ""
+        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
+        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+        MsgBox sOutStr
+    End Sub
+
+Private Function GetFileNotExistPath( _
+    ByVal sTrgtPath As String _
+) As String
+    Dim lIdx As Long
+    Dim objFSO As Object
+    Dim sFileParDirPath As String
+    Dim sFileBaseName As String
+    Dim sFileExtName As String
+    Dim sCreFilePath As String
+    Dim bIsTrgtPathExists As Boolean
+    
+    lIdx = 0
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    sCreFilePath = sTrgtPath
+    bIsTrgtPathExists = False
+    Do While objFSO.FileExists(sCreFilePath)
+        bIsTrgtPathExists = True
+        lIdx = lIdx + 1
+        sFileParDirPath = objFSO.GetParentFolderName(sTrgtPath)
+        sFileBaseName = objFSO.GetBaseName(sTrgtPath) & "_" & String(3 - Len(CStr(lIdx)), "0") & CStr(lIdx)
+        sFileExtName = objFSO.GetExtensionName(sTrgtPath)
+        If sFileExtName = "" Then
+            sCreFilePath = sFileParDirPath & "\" & sFileBaseName
+        Else
+            sCreFilePath = sFileParDirPath & "\" & sFileBaseName & "." & sFileExtName
+        End If
+    Loop
+    If bIsTrgtPathExists = True Then
+        GetFileNotExistPath = sCreFilePath
+    Else
+        GetFileNotExistPath = ""
+    End If
+End Function
+    Private Sub Test_GetFileNotExistPath()
+        Dim sOutStr As String
+        sOutStr = ""
+        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
+        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+        MsgBox sOutStr
+    End Sub
 

@@ -360,21 +360,18 @@ End Function
         Dim bRet
                                                                                            sOutStr = ""
                                                                                            sOutStr = sOutStr & vbNewLine & "*** test start! ***"
-        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
-        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas", sAddedPath, lAddedPathType): sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
                                                                                            sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
@@ -1237,11 +1234,10 @@ End Function
         Dim sOutStr
         sOutStr = ""
         sOutStr = sOutStr & vbNewLine & "*** test start! ***"
-        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\a" )
-        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\b.txt" )
-        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\c.txt" )
-        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\d" )
-        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath( "C:\codes\vbs\test\e" )
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
+        sOutStr = sOutStr & vbNewLine & GetFolderNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
         sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
@@ -1284,11 +1280,10 @@ End Function
         Dim sOutStr
         sOutStr = ""
         sOutStr = sOutStr & vbNewLine & "*** test start! ***"
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\a" )
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\b.txt" )
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\c.txt" )
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\d" )
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath( "C:\codes\vbs\test\e" )
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
         sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
