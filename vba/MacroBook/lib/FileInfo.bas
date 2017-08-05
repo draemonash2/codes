@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileInfo"
 Option Explicit
 
-' file info libary v1.3
+' file info libary v1.3a
 
 ' CreateFile 関数
 Private Declare Function CreateFile Lib "KERNEL32.DLL" Alias "CreateFileA" ( _
@@ -198,7 +198,7 @@ End Function
 ' ==================================================================
 ' = 概要    ファイル情報取得
 ' = 引数    sTrgtPath           String      [in]    ファイルパス
-' = 引数    lFileInfoTagIndex   Long        [in]    取得情報種別 (※1)
+' = 引数    lGetInfoType        Long        [in]    取得情報種別 (※1)
 ' = 引数    vFileInfo           Variant     [out]   ファイル情報 (※1)
 ' = 戻値                        Boolean             取得結果
 ' = 覚書    以下、参照。
@@ -229,7 +229,7 @@ End Function
 ' ==================================================================
 Public Function GetFileInfo( _
     ByVal sTrgtPath As String, _
-    ByVal lFileInfoTagIndex As Long, _
+    ByVal lGetInfoType As Long, _
     ByRef vFileInfo As Variant _
 ) As Boolean
     Dim objFSO As Object
@@ -247,7 +247,7 @@ Public Function GetFileInfo( _
     
     vFileInfo = ""
     GetFileInfo = True
-    Select Case lFileInfoTagIndex
+    Select Case lGetInfoType
         Case 1:     vFileInfo = objFile.Name                'ファイル名
         Case 2:     vFileInfo = objFile.Size                'ファイルサイズ
         Case 3:     vFileInfo = objFile.Type                'ファイル種類
@@ -304,7 +304,7 @@ End Function
 ' ==================================================================
 ' = 概要    フォルダ情報取得
 ' = 引数    sTrgtPath           String      [in]    フォルダパス
-' = 引数    lFileInfoTagIndex   Long        [in]    取得情報種別 (※1)
+' = 引数    lGetInfoType		Long        [in]    取得情報種別 (※1)
 ' = 引数    vFolderInfo         Variant     [out]   フォルダ情報 (※1)
 ' = 戻値                        Boolean             取得結果
 ' = 覚書    以下、参照。
@@ -335,7 +335,7 @@ End Function
 ' ==================================================================
 Public Function GetFolderInfo( _
     ByVal sTrgtPath As String, _
-    ByVal lFileInfoTagIndex As Long, _
+    ByVal lGetInfoType As Long, _
     ByRef vFolderInfo As Variant _
 ) As Boolean
     Dim objFSO As Object
@@ -353,7 +353,7 @@ Public Function GetFolderInfo( _
     
     vFolderInfo = ""
     GetFolderInfo = True
-    Select Case lFileInfoTagIndex
+    Select Case lGetInfoType
         Case 1:     vFolderInfo = objFolder.Name                'フォルダ名
         Case 2:     vFolderInfo = objFolder.Size                'フォルダサイズ
         Case 3:     vFolderInfo = objFolder.Type                'ファイル種類
