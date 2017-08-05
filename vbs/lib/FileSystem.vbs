@@ -317,48 +317,65 @@ End Function
 
 ' ==================================================================
 ' = 概要    指定パスが存在する場合、"_XXX" を付与して返却する
-' = 引数    sTrgtPath       String      [in]    対象フォルダ
-' = 引数    lFileDirType    Long        [in]    ファイル/フォルダ種別
-' =                                                 1:ファイル
-' =                                                 2:フォルダ
-' = 戻値                    String              フォルダパス
+' = 引数    sTrgtPath       String      [in]    対象パス
+' = 引数    sAddedPath      String      [out]   付与後のパス
+' = 引数    lAddedPathType  Long        [out]   付与後のパス種別
+' =                                               1: ファイル
+' =                                               2: フォルダ
+' = 戻値                    Boolean             取得結果
 ' = 覚書    本関数では、ファイル/フォルダは作成しない。
 ' ==================================================================
 Public Function GetNotExistPath( _
     ByVal sTrgtPath, _
-    ByVal lFileDirType _
+    ByRef sAddedPath, _
+    ByRef lAddedPathType _
 )
     Dim objFSO
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    If lFileDirType = 1 Then
-        GetNotExistPath = GetFileNotExistPath( sTrgtPath )
-    ElseIf lFileDirType = 2 Then
-        GetNotExistPath = GetFolderNotExistPath( sTrgtPath )
+    
+    Dim bFolderExists
+    Dim bFileExists
+    bFolderExists = objFSO.FolderExists( sTrgtPath )
+    bFileExists = objFSO.FileExists( sTrgtPath )
+    
+    If bFolderExists = False And bFileExists = True Then
+        sAddedPath = GetFileNotExistPath( sTrgtPath )
+        lAddedPathType = 1
+        GetNotExistPath = True
+    ElseIf bFolderExists = True And bFileExists = False Then
+        sAddedPath = GetFolderNotExistPath( sTrgtPath )
+        lAddedPathType = 2
+        GetNotExistPath = True
     Else
-        GetNotExistPath = ""
+        sAddedPath = sTrgtPath
+        lAddedPathType = 0
+        GetNotExistPath = False
     End If
 End Function
-'   Call Test_GetNotExistPath()
+    'Call Test_GetNotExistPath()
     Private Sub Test_GetNotExistPath()
         Dim sOutStr
-        sOutStr = ""
-        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",     0 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",     1 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\a",     2 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt", 0 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt", 1 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\b.txt", 2 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt", 0 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt", 1 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\c.txt", 2 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",     0 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",     1 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\d",     2 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",     0 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",     1 )
-        sOutStr = sOutStr & vbNewLine & GetNotExistPath( "C:\codes\vbs\test\e",     2 )
-        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+        Dim sAddedPath
+        Dim lAddedPathType
+        Dim bRet
+                                                                                           sOutStr = ""
+                                                                                           sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\a"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\b.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\c.txt" , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\d"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+        bRet = GetNotExistPath( "C:\codes\vbs\test\e"     , sAddedPath, lAddedPathType ) : sOutStr = sOutStr & vbNewLine & bRet & " / " & lAddedPathType & " : " & sAddedPath
+                                                                                           sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
 
