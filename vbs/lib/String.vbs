@@ -85,32 +85,56 @@ End Function
 ' = 概要    指定されたファイルパスからフォルダパスを抽出する
 ' = 引数    sFilePath   String  [in]  ファイルパス
 ' = 戻値                String        フォルダパス
-' = 覚書    なし
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能
 ' ==================================================================
 Public Function GetDirPath( _
     ByVal sFilePath _
 )
-    GetDirPath = RemoveTailWord( sFilePath, "\" )
+    If InStr( sFilePath, "\" ) Then
+        GetDirPath = RemoveTailWord( sFilePath, "\" )
+    ElseIf InStr( sFilePath, "/" ) Then
+        GetDirPath = RemoveTailWord( sFilePath, "/" )
+    Else
+        GetDirPath = sFilePath
+    End If
 End Function
 '   Call Test_GetDirPath()
     Private Sub Test_GetDirPath()
-        'RemoveTailWord() と同等のテストケースのためテストしない
+        Dim Result
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetDirPath( "C:\test\a.txt" )    ' C:\test
+        Result = Result & vbNewLine & GetDirPath( "http://test/a" )    ' http://test
+        Result = Result & vbNewLine & GetDirPath( "C:_test_a.txt" )    ' C:_test_a.txt
+        MsgBox Result
     End Sub
 
 ' ==================================================================
 ' = 概要    指定されたファイルパスからファイル名を抽出する
 ' = 引数    sFilePath   String  [in]  ファイルパス
 ' = 戻値                String        ファイル名
-' = 覚書    なし
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能
 ' ==================================================================
 Public Function GetFileName( _
     ByVal sFilePath _
 )
-    GetFileName = ExtractTailWord( sFilePath, "\" )
+    If InStr( sFilePath, "\" ) Then
+        GetFileName = ExtractTailWord( sFilePath, "\" )
+    ElseIf InStr( sFilePath, "/" ) Then
+        GetFileName = ExtractTailWord( sFilePath, "/" )
+    Else
+        GetFileName = sFilePath
+    End If
 End Function
 '   Call Test_GetFileName()
     Private Sub Test_GetFileName()
-        'ExtractTailWord() と同等のテストケースのためテストしない
+        Dim Result
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileName( "C:\test\a.txt" )    ' a.txt
+        Result = Result & vbNewLine & GetFileName( "http://test/a" )    ' a
+        Result = Result & vbNewLine & GetFileName( "c:_test_a" )        ' c:_test_a
+        MsgBox Result
     End Sub
 
 ' ==================================================================
@@ -256,7 +280,7 @@ Public Function ConvDate2String( _
     Set oRegExp = Nothing
     ConvDate2String = sDateStr
 End Function
-    'Call Test_ConvDate2String()
+'   Call Test_ConvDate2String()
     Private Sub Test_ConvDate2String()
         Dim Result
         Result = "[Result]"
