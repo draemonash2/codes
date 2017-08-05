@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileInfo"
 Option Explicit
 
-' file info libary v1.3a
+' file info libary v1.3b
 
 ' CreateFile 関数
 Private Declare Function CreateFile Lib "KERNEL32.DLL" Alias "CreateFileA" ( _
@@ -304,7 +304,7 @@ End Function
 ' ==================================================================
 ' = 概要    フォルダ情報取得
 ' = 引数    sTrgtPath           String      [in]    フォルダパス
-' = 引数    lGetInfoType		Long        [in]    取得情報種別 (※1)
+' = 引数    lGetInfoType        Long        [in]    取得情報種別 (※1)
 ' = 引数    vFolderInfo         Variant     [out]   フォルダ情報 (※1)
 ' = 戻値                        Boolean             取得結果
 ' = 覚書    以下、参照。
@@ -489,13 +489,17 @@ End Function
         bRet = GetFileDetailInfo(sTrgtPath, 3, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
         bRet = GetFileDetailInfo(sTrgtPath, 4, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
         bRet = GetFileDetailInfo(sTrgtPath, 52, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 500, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        sTrgtPath = "C:\test.txt"
+        sBuf = sBuf & vbNewLine & sTrgtPath
+        bRet = GetFileDetailInfo(sTrgtPath, 1, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
         MsgBox sBuf
     End Sub
 
 ' ==================================================================
 ' = 概要    ファイル詳細情報のインデックス取得
-' = 引数    vFileInfoTitle      Variant     [out]   ファイル詳細情報タイトル
-' = 引数    lFileInfoTagIndex   Long        [in]    取得情報種別番号(※1)
+' = 引数    vFileInfoTitle      Variant     [in]    ファイル詳細情報タイトル
+' = 引数    lFileInfoTagIndex   Long        [out]    取得情報種別番号(※1)
 ' = 引数    lTagInfoIndexMax    Long        [in]    取得情報種別番号最大値
 ' = 戻値                        Boolean             取得結果
 ' = 覚書    (※1) 取得できる情報はＯＳのバージョンによって異なる。
@@ -549,25 +553,25 @@ End Function
             400 _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-
+        
         bRet = GetFileDetailInfoIndex( _
             "タイトル", _
             lFileInfoTagIndex _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-
+        
         bRet = GetFileDetailInfoIndex( _
             "撮影日時", _
             lFileInfoTagIndex _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-
+        
         bRet = GetFileDetailInfoIndex( _
             "暗号化の状態", _
             lFileInfoTagIndex _
         )
         Debug.Print bRet & " : " & lFileInfoTagIndex
-
+        
         bRet = GetFileDetailInfoIndex( _
             "aaa", _
             lFileInfoTagIndex _

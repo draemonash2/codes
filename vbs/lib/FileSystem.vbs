@@ -1030,50 +1030,69 @@ End Function
 
 ' ==================================================================
 ' = 概要    ファイル詳細情報取得
-' = 引数    sTrgtPath       String      [in]    ファイルパス
-' = 引数    lGetInfoType    Long        [in]    取得情報種別番号(※1)(※2)
-' = 引数    vFileInfoValue  Variant     [out]   ファイル詳細情報
-' = 引数    vFileInfoTitle  Variant     [out]   ファイル詳細情報タイトル
-' = 戻値                    Boolean             取得結果
+' = 引数    sTrgtPath           String      [in]    ファイルパス
+' = 引数    lFileInfoTagIndex   Long        [in]    取得情報種別番号(※1)
+' = 引数    vFileInfoValue      Variant     [out]   ファイル詳細情報
+' = 引数    vFileInfoTitle      Variant     [out]   ファイル詳細情報タイトル
+' = 引数    sErrorDetail        String      [out]   取得結果エラー詳細(※2)
+' = 戻値                        Boolean             取得結果
 ' = 覚書    (※1) 取得できる情報はＯＳのバージョンによって異なる。
-' =               事前に GetDetailsOfIndexFromTitle() を実行して、
-' =               取得できるプロパティの要素番号を確認しておくこと。
-' =         (※2) lGetInfoType は Folder オブジェクト GetDetailsOf() 
-' =               プロパティの要素番号に対応する。割り当てられていない
-' =               要素番号を指定した場合、取得結果 False を返却する。
+' =               事前に GetFileDetailInfoIndex() を実行おくこと。
+' =               なお、lFileInfoTagIndex は Folder オブジェクト GetDetailsOf()
+' =               プロパティの要素番号に対応する。
+' =               割り当てられていない取得情報種別番号を指定した場合、
+' =               取得結果 False を返却する。
+' =         (※2) エラー詳細は以下の種類がある。
+' =                   Success!             : 取得成功
+' =                   File is not exist!   : ファイルが見つからない
+' =                   Get info type error! : ファイル詳細情報タイトルが見つからない
 ' ==================================================================
 Public Function GetFileDetailInfo( _
     ByVal sTrgtPath, _
-    ByVal lGetInfoType, _
+    ByVal lFileInfoTagIndex, _
     ByRef vFileInfoValue, _
-    ByRef vFileInfoTitle _
+    ByRef vFileInfoTitle, _
+    ByRef sErrorDetail _
 )
+    GetFileDetailInfo = True
+    sErrorDetail = "Success!"
+    
     Dim objFSO
-    Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
-    If objFSO.FileExists( sTrgtPath ) Then
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FileExists(sTrgtPath) Then
         'Do Nothing
     Else
-        vFileInfoValue = ""
         GetFileDetailInfo = False
+        sErrorDetail = "File is not exist!"
         Exit Function
     End If
     
     Dim sTrgtFolderPath
     Dim sTrgtFileName
-    sTrgtFolderPath = Mid( sTrgtPath, 1, InStrRev( sTrgtPath, "\") - 1 )
-    sTrgtFileName = Mid( sTrgtPath, InStrRev( sTrgtPath, "\") + 1, Len( sTrgtPath ) )
+    sTrgtFolderPath = Mid(sTrgtPath, 1, InStrRev(sTrgtPath, "\") - 1)
+    sTrgtFileName = Mid(sTrgtPath, InStrRev(sTrgtPath, "\") + 1, Len(sTrgtPath))
     
     Dim objFolder
-    Set objFolder = WScript.CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
+    Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
     Dim objFile
     Set objFile = objFolder.ParseName(sTrgtFileName)
     
-    vFileInfoValue = objFolder.GetDetailsOf(objFile, lGetInfoType)
-    vFileInfoTitle = objFolder.GetDetailsOf("", lGetInfoType)
+    If objFile Is Nothing Then
+        GetFileDetailInfo = False
+        sErrorDetail = "File is not exist!"
+        Exit Function
+    Else
+        'Do Nothing
+    End If
+    
+    vFileInfoValue = objFolder.GetDetailsOf(objFile, lFileInfoTagIndex)
+    vFileInfoTitle = objFolder.GetDetailsOf("", lFileInfoTagIndex)
     If vFileInfoTitle = "" Then
         GetFileDetailInfo = False
+        sErrorDetail = "Get info type error!"
+        Exit Function
     Else
-        GetFileDetailInfo = True
+        'Do Nothing
     End If
 End Function
 '   Call Test_GetFileDetailInfo()
@@ -1082,29 +1101,20 @@ End Function
         Dim bRet
         Dim vFileInfoValue
         Dim vFileInfoTitle
+        Dim sErrorDetail
         sBuf = ""
         Dim sTrgtPath
         sTrgtPath = "C:\codes\vbs\lib\FileSystem.vbs"
         sBuf = sBuf & vbNewLine & sTrgtPath
-        bRet = GetFileDetailInfo( sTrgtPath,    1, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
-        bRet = GetFileDetailInfo( sTrgtPath,    2, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
-        bRet = GetFileDetailInfo( sTrgtPath,    3, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
-        bRet = GetFileDetailInfo( sTrgtPath,    4, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
-        bRet = GetFileDetailInfo( sTrgtPath,    52, vFileInfoValue, vFileInfoTitle ) : sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue
-        MsgBox sBuf
-    End Sub
-'   Call Test_GetFileDetailInfo2()
-    Private Sub Test_GetFileDetailInfo2()
-        Dim sTrgtPath
-        sTrgtPath = "Z:\300_Musics\290_Reggae@Riddim\Major\02 Let's Do It Again (Major Riddim).mp3"
-        Dim sValue
-        Dim sTitle
-        Dim bRet
-        Dim sBuf
-        sBuf = ""
-        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "アルバム"          ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
-        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "参加アーティスト"  ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
-        bRet = GetFileDetailInfo( sTrgtPath, GetDetailsOfIndexFromTitle( sTrgtPath, "ビット レート"     ), sValue, sTitle ) : sBuf = sBuf & vbNewLine & bRet & chr(9) & sTitle & "：" & sValue
+        bRet = GetFileDetailInfo(sTrgtPath, 1, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 2, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 3, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 4, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 52, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        bRet = GetFileDetailInfo(sTrgtPath, 500, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
+        sTrgtPath = "C:\test.txt"
+        sBuf = sBuf & vbNewLine & sTrgtPath
+        bRet = GetFileDetailInfo(sTrgtPath, 1, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
         MsgBox sBuf
     End Sub
 
@@ -1118,71 +1128,83 @@ Public Function SetFileDetailInfo( _
 End Function
 
 ' ==================================================================
-' = 概要    GetDetailsOf() のタイトル名から要素番号を取得する
-' = 引数    sTrgtPath       String      [in]    ファイルパス
-' = 引数    sTitle          String      [in]    タイトル名
-' = 戻値                    Boolean             要素番号
-' = 覚書    存在しないファイルまたは存在しないタイトルを指定した場合、
-' =         -1 を返却する。
+' = 概要    ファイル詳細情報のインデックス取得
+' = 引数    vFileInfoTitle      Variant     [in]    ファイル詳細情報タイトル
+' = 引数    lFileInfoTagIndex   Long        [out]   取得情報種別番号(※1)
+' = 戻値                        Boolean             取得結果
+' = 覚書    (※1) 取得できる情報はＯＳのバージョンによって異なる。
+' =               lFileInfoTagIndex は Folder オブジェクト GetDetailsOf()
+' =               プロパティの要素番号に対応する。
+' =         指定したタイトルが見つからない場合、False を返却する。
+' =         ただし、このエラーはlTagInfoIndexMaxが小さいことが理由で
+' =         発生する可能性がある｡その場合､lTagInfoIndexMax を十分に
+' =         大きくして実行すること｡
 ' ==================================================================
-Public Function GetDetailsOfIndexFromTitle( _
-    ByVal sTrgtPath, _
-    ByVal sTitle _
+Public Function GetFileDetailInfoIndex( _
+    ByRef vFileInfoTitle, _
+    ByRef lFileInfoTagIndex _
 )
+    Const lTagInfoIndexMax = 999
+    
     Dim objFSO
-    Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
-    If objFSO.FileExists( sTrgtPath ) Then
-        'Do Nothing
-    Else
-        GetDetailsOfIndexFromTitle = -1
-        Exit Function
-    End If
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     
     Dim sTrgtFolderPath
     Dim sTrgtFileName
-    sTrgtFolderPath = Mid( sTrgtPath, 1, InStrRev( sTrgtPath, "\") - 1 )
-    sTrgtFileName = Mid( sTrgtPath, InStrRev( sTrgtPath, "\") + 1, Len( sTrgtPath ) )
+    sTrgtFolderPath = objFSO.GetDriveName(CreateObject("WScript.Shell").SpecialFolders("Desktop"))
+    sTrgtFileName = ""
     
     Dim objFolder
-    Set objFolder = WScript.CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
     Dim objFile
+    Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
     Set objFile = objFolder.ParseName(sTrgtFileName)
     
-    Dim bExistTitle
-    bExistTitle = False
-    
-    Dim lIdx
-    For lIdx = 0 to 400
-        If objFolder.GetDetailsOf( "", lIdx ) = sTitle Then
-            bExistTitle = True
+    GetFileDetailInfoIndex = False
+    lFileInfoTagIndex = lTagInfoIndexMax + 1
+    Dim i
+    For i = 0 To lTagInfoIndexMax
+        Dim vGetTitle
+        vGetTitle = objFolder.GetDetailsOf("", i)
+        If vGetTitle = vFileInfoTitle Then
+            lFileInfoTagIndex = i
+            GetFileDetailInfoIndex = True
             Exit For
         Else
             'Do Nothing
         End If
     Next
-    
-    If bExistTitle = True Then
-        GetDetailsOfIndexFromTitle = lIdx
-    Else
-        GetDetailsOfIndexFromTitle = -1
-    End If
 End Function
-'   Call Test_GetDetailsOfIndexFromTitle()
-    Private Sub Test_GetDetailsOfIndexFromTitle()
-        Dim sTrgtPath
-        sTrgtPath = "C:\codes\vbs\lib\FileSystem.vbs"
-        Dim lIdx
+'   Call Test_GetFileDetailInfoIndex()
+    Private Sub Test_GetFileDetailInfoIndex()
+        Dim lFileInfoTagIndex
         Dim bRet
-        Dim sBuf
-        sBuf = ""
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "名前" )
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "サイズ" )
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "項目の種類" )
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "ビット レート" )
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "★" )
-        sTrgtPath = "C:\codes\vbs\lib\notexist.vbs"
-        sBuf = sBuf & vbNewLine & GetDetailsOfIndexFromTitle( sTrgtPath, "名前" )
-        MsgBox sBuf
+        Dim sResult
+        sResult = ""
+        bRet = GetFileDetailInfoIndex( _
+            "タイトル", _
+            lFileInfoTagIndex _
+        )
+        sResult = sResult & vbNewLine & bRet & " : " & lFileInfoTagIndex
+        
+        bRet = GetFileDetailInfoIndex( _
+            "撮影日時", _
+            lFileInfoTagIndex _
+        )
+        sResult = sResult & vbNewLine & bRet & " : " & lFileInfoTagIndex
+        
+        bRet = GetFileDetailInfoIndex( _
+            "暗号化の状態", _
+            lFileInfoTagIndex _
+        )
+        sResult = sResult & vbNewLine & bRet & " : " & lFileInfoTagIndex
+        
+        bRet = GetFileDetailInfoIndex( _
+            "aaa", _
+            lFileInfoTagIndex _
+        )
+        sResult = sResult & vbNewLine & bRet & " : " & lFileInfoTagIndex
+        
+        MsgBox sResult
     End Sub
 
 '*********************************************************************
