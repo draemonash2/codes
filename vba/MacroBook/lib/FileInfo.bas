@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileInfo"
 Option Explicit
 
-' file info libary v1.3b
+' file info libary v1.4
 
 ' CreateFile 関数
 Private Declare Function CreateFile Lib "KERNEL32.DLL" Alias "CreateFileA" ( _
@@ -584,7 +584,7 @@ End Function
 ' ******************************************************************
 'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）の一覧を
 'デスクトップ配下に出力する
-Public Sub Exec_GetDetailsOfGetDetailsOf()
+Public Sub GetDetailsOfGetDetailsOf()
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     
@@ -594,7 +594,7 @@ Public Sub Exec_GetDetailsOfGetDetailsOf()
     sTrgtFileName = ""
     
     Dim sLogFilePath As String
-    sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\track_title_names.txt"
+    sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\file_tag_infos.txt"
     
     Dim objFolder As Object
     Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtDirPath & "\")
@@ -612,6 +612,10 @@ Public Sub Exec_GetDetailsOfGetDetailsOf()
             objFolder.GetDetailsOf("", i)
     Next i
     objTxtFile.Close
+    
+    Set objTxtFile = Nothing
+    Set objFolder = Nothing
+    Set objFile = Nothing
     
     CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
 End Sub

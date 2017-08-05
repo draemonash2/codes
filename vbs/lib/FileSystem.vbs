@@ -1360,40 +1360,6 @@ Private Function SetDialogFilters( _
     End If
 End Function
 
-'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
-Private Function GetDetailsOfGetDetailsOf( _
-    ByVal sTrgtFilePath, _
-    ByVal sLogFilePath _
-)
-    Dim sTrgtFolderPath
-    Dim sTrgtFileName
-    sTrgtFolderPath = Mid( sTrgtFilePath, 1, InStrRev( sTrgtFilePath, "\") - 1 )
-    sTrgtFileName = Mid( sTrgtFilePath, InStrRev( sTrgtFilePath, "\") + 1, Len( sTrgtFilePath ) )
-    
-    Dim objFolder
-    Set objFolder = WScript.CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
-    Dim objFile
-    Set objFile = objFolder.ParseName(sTrgtFileName)
-    
-    Dim objTxtFile
-    Set objTxtFile = WScript.CreateObject("Scripting.FileSystemObject").OpenTextFile(sLogFilePath, 2, True)
-    objTxtFile.WriteLine "[Idx] " & Chr(9) & "[TypeName]" & Chr(9) & "[Title]"
-    Dim i
-    For i = 0 To 400
-        objTxtFile.WriteLine _
-            i & Chr(9) & _
-            TypeName(objFolder.GetDetailsOf(objFile, i)) & Chr(9) & _
-            objFolder.GetDetailsOf("", i)
-    Next
-    objTxtFile.Close
-End Function
-    'Call Test_GetDetailsOfGetDetailsOf()
-    Private Function Test_GetDetailsOfGetDetailsOf()
-        Dim objWshShell
-        Set objWshShell = WScript.CreateObject("WScript.Shell")
-        Call GetDetailsOfGetDetailsOf( WScript.ScriptFullName, objWshShell.SpecialFolders("Desktop") & "\file_detail.txt" )
-    End Function
-
 'テスト用
 Private Function FileSysem_Include( _
     ByVal sOpenFile _
@@ -1410,3 +1376,46 @@ Private Function FileSysem_Include( _
     Set objVbsFile = Nothing
     Set objFSO = Nothing
 End Function
+
+' ******************************************************************
+' *** マクロ
+' ******************************************************************
+'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）の一覧を
+'デスクトップ配下に出力する
+'Call GetDetailsOfGetDetailsOf()
+Public Sub GetDetailsOfGetDetailsOf()
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim sTrgtDirPath
+    Dim sTrgtFileName
+    sTrgtDirPath = objFSO.GetDriveName(CreateObject("WScript.Shell").SpecialFolders("Desktop"))
+    sTrgtFileName = ""
+    
+    Dim sLogFilePath
+    sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\file_tag_infos.txt"
+    
+    Dim objFolder
+    Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtDirPath & "\")
+    Dim objFile
+    Set objFile = objFolder.ParseName(sTrgtFileName)
+    
+    Dim objTxtFile
+    Set objTxtFile = CreateObject("Scripting.FileSystemObject").OpenTextFile(sLogFilePath, 2, True)
+    objTxtFile.WriteLine "[Idx] " & Chr(9) & "[TypeName]" & Chr(9) & "[Title]"
+    Dim i
+    For i = 0 To 400
+        objTxtFile.WriteLine _
+            i & Chr(9) & _
+            TypeName(objFolder.GetDetailsOf(objFile, i)) & Chr(9) & _
+            objFolder.GetDetailsOf("", i)
+    Next
+    objTxtFile.Close
+    
+    Set objTxtFile = Nothing
+    Set objFolder = Nothing
+    Set objFile = Nothing
+    
+    CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
+End Sub
+
