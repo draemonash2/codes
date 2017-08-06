@@ -1,49 +1,99 @@
 Attribute VB_Name = "StringMng"
 Option Explicit
 
-' string manage library v1.1
+' string manage library v1.2
 
 ' ==================================================================
-' = 概要    フルパスから "ファイル名" を抽出する
-' = 引数    sFullPath   String  [in]  フルパス
-' = 戻値                Variant       ファイル名
-' = 覚書    なし
+' = 概要    指定されたファイルパスからファイル名を抽出する
+' = 引数    sFilePath       String  [in]  ファイルパス
+' = 引数    bErrorEnable    Boolean [in]  エラー発生有効/無効(※)
+' = 戻値                    Variant       ファイル名
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能。
+' =         (※) bErrorEnable にてファイルパス以外が指定された時の返却値を
+' =         変えることが出来る｡
+' =            True  : sFilePath を返却
+' =            False : エラー値（xlErrNA）を返却
 ' ==================================================================
 Public Function GetFileName( _
-    ByVal sFilePath As String _
+    ByVal sFilePath As String, _
+    Optional ByVal bErrorEnable As Boolean = False _
 ) As Variant
-    Dim asSplitWord() As String
-    If InStr(sFilePath, "\") > 0 Then
-        asSplitWord = Split(sFilePath, "\")
-        GetFileName = asSplitWord(UBound(asSplitWord))
+    If InStr(sFilePath, "\") Then
+        GetFileName = ExtractTailWord(sFilePath, "\")
+    ElseIf InStr(sFilePath, "/") Then
+        GetFileName = ExtractTailWord(sFilePath, "/")
     Else
-        GetFileName = CVErr(xlErrNA)  'エラー値
+        If bErrorEnable = True Then
+            GetFileName = CVErr(xlErrNA)  'エラー値
+        Else
+            GetFileName = sFilePath
+        End If
     End If
 End Function
+    Private Sub Test_GetFileName()
+        Dim Result As String
+        Dim vRet As Variant
+        Result = "[Result]"
+        vRet = GetFileName("C:\test\a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' a.txt
+        vRet = GetFileName("http://test/a", True): Result = Result & vbNewLine & CStr(vRet)  ' a
+        vRet = GetFileName("C:_test_a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' エラー 2042
+        Result = Result & vbNewLine                                                          '
+        vRet = GetFileName("C:\test\a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' a.txt
+        vRet = GetFileName("http://test/a", False): Result = Result & vbNewLine & CStr(vRet) ' a
+        vRet = GetFileName("C:_test_a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' c:_test_a
+        Result = Result & vbNewLine                                                          '
+        vRet = GetFileName("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' a.txt
+        vRet = GetFileName("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' a
+        vRet = GetFileName("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' c:_test_a
+        MsgBox Result
+    End Sub
 
-' ==================================================================x
-' = 概要    フルパスから "ディレクトリパス" を抽出する
-' = 引数    sFullPath   String  [in]  フルパス
-' = 戻値                Variant       ディレクトリパス
-' = 覚書    なし
+' ==================================================================
+' = 概要    指定されたファイルパスからフォルダパスを抽出する
+' = 引数    sFilePath       String  [in]  ファイルパス
+' = 引数    bErrorEnable    Boolean [in]  エラー発生有効/無効(※)
+' = 戻値                    Variant       フォルダパス
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能。
+' =         (※) bErrorEnable にてファイルパス以外が指定された時の返却値を
+' =         変えることが出来る｡
+' =            True  : sFilePath を返却
+' =            False : エラー値（xlErrNA）を返却
 ' ==================================================================
 Public Function GetDirPath( _
-    ByVal sFilePath As String _
+    ByVal sFilePath As String, _
+    Optional ByVal bErrorEnable As Boolean = False _
 ) As Variant
-    Dim asSplitWord() As String
-    Dim sFileName As String
-    If InStr(sFilePath, "\") > 0 Then
-        asSplitWord = Split(sFilePath, "\")
-        sFileName = asSplitWord(UBound(asSplitWord))
-        GetDirPath = Replace( _
-                                sFilePath, _
-                                "\" & sFileName, _
-                                "" _
-                            )
+    If InStr(sFilePath, "\") Then
+        GetDirPath = RemoveTailWord(sFilePath, "\")
+    ElseIf InStr(sFilePath, "/") Then
+        GetDirPath = RemoveTailWord(sFilePath, "/")
     Else
-        GetDirPath = CVErr(xlErrNA)  'エラー値
+        If bErrorEnable = True Then
+            GetDirPath = CVErr(xlErrNA)  'エラー値
+        Else
+            GetDirPath = sFilePath
+        End If
     End If
 End Function
+    Private Sub Test_GetDirPath()
+        Dim Result As String
+        Dim vRet As Variant
+        Result = "[Result]"
+        vRet = GetDirPath("C:\test\a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' C:\test
+        vRet = GetDirPath("http://test/a", True): Result = Result & vbNewLine & CStr(vRet)  ' http://test
+        vRet = GetDirPath("C:_test_a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' エラー 2042
+        Result = Result & vbNewLine                                                         '
+        vRet = GetDirPath("C:\test\a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' C:\test
+        vRet = GetDirPath("http://test/a", False): Result = Result & vbNewLine & CStr(vRet) ' http://test
+        vRet = GetDirPath("C:_test_a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' C:_test_a.txt
+        Result = Result & vbNewLine                                                         '
+        vRet = GetDirPath("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:\test
+        vRet = GetDirPath("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' http://test
+        vRet = GetDirPath("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:_test_a.txt
+        MsgBox Result
+    End Sub
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
