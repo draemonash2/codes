@@ -25,6 +25,7 @@ End Function
     Private Sub Test_ExtractTailWord()
         Dim Result
         Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
         Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "\" )   ' a.txt
         Result = Result & vbNewLine & ExtractTailWord( "C:\test\a", "\" )       ' a
         Result = Result & vbNewLine & ExtractTailWord( "C:\test\", "\" )        ' 
@@ -33,6 +34,7 @@ End Function
         Result = Result & vbNewLine & ExtractTailWord( "a.txt", "\" )           ' a.txt
         Result = Result & vbNewLine & ExtractTailWord( "", "\" )                ' 
         Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "" )    ' C:\test\a.txt
+        Result = Result & vbNewLine & "*** test finished! ***"
         MsgBox Result
     End Sub
 
@@ -70,6 +72,7 @@ End Function
     Private Sub Test_RemoveTailWord()
         Dim Result
         Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
         Result = Result & vbNewLine & RemoveTailWord( "C:\test\a.txt", "\" )    ' C:\test
         Result = Result & vbNewLine & RemoveTailWord( "C:\test\a", "\" )        ' C:\test
         Result = Result & vbNewLine & RemoveTailWord( "C:\test\", "\" )         ' C:\test
@@ -78,6 +81,7 @@ End Function
         Result = Result & vbNewLine & RemoveTailWord( "", "\" )                 ' 
         Result = Result & vbNewLine & RemoveTailWord( "a.txt", "\" )            ' a.txt（ファイル名かどうかは判断しない）
         Result = Result & vbNewLine & RemoveTailWord( "C:\test\a.txt", "" )     ' C:\test\a.txt
+        Result = Result & vbNewLine & "*** test finished! ***"
         MsgBox Result
     End Sub
 
@@ -138,33 +142,6 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    指定されたファイルパスからファイルベース名を抽出する。
-' = 引数    sFilePath   String  [in]  ファイルパス
-' = 戻値                String        ファイルベース名
-' = 覚書    ・拡張子がない場合、空文字を返却する
-' =         ・ファイル名も指定可能
-' ==================================================================
-Public Function GetFileBase( _
-    ByVal sFilePath _
-)
-    Dim sFileName
-    sFileName = GetFileName(sFilePath)
-    GetFileBase = RemoveTailWord(sFileName, ".")
-End Function
-    'Call Test_GetFileBase()
-    Private Sub Test_GetFileBase()
-        Dim Result
-        Result = "[Result]"
-        Result = Result & vbNewLine & GetFileBase("c:\codes\test.txt")     'test
-        Result = Result & vbNewLine & GetFileBase("c:\codes\test")         'test
-        Result = Result & vbNewLine & GetFileBase("test.txt")              'test
-        Result = Result & vbNewLine & GetFileBase("test")                  'test
-        Result = Result & vbNewLine & GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
-        Result = Result & vbNewLine & GetFileBase("test.aaa.txt")          'test.aaa
-        MsgBox Result
-    End Sub
-
-' ==================================================================
 ' = 概要    指定されたファイルパスから拡張子を抽出する。
 ' = 引数    sFilePath   String  [in]  ファイルパス
 ' = 戻値                String        拡張子
@@ -192,6 +169,33 @@ End Function
         Result = Result & vbNewLine & GetFileExt("test")                  '
         Result = Result & vbNewLine & GetFileExt("c:\codes\test.aaa.txt") 'txt
         Result = Result & vbNewLine & GetFileExt("test.aaa.txt")          'txt
+        MsgBox Result
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスからファイルベース名を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        ファイルベース名
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
+' ==================================================================
+Public Function GetFileBase( _
+    ByVal sFilePath _
+)
+    Dim sFileName
+    sFileName = GetFileName(sFilePath)
+    GetFileBase = RemoveTailWord(sFileName, ".")
+End Function
+    'Call Test_GetFileBase()
+    Private Sub Test_GetFileBase()
+        Dim Result
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.txt")     'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test")         'test
+        Result = Result & vbNewLine & GetFileBase("test.txt")              'test
+        Result = Result & vbNewLine & GetFileBase("test")                  'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
+        Result = Result & vbNewLine & GetFileBase("test.aaa.txt")          'test.aaa
         MsgBox Result
     End Sub
 
@@ -229,6 +233,28 @@ End Function
         Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 4)     'txt
         Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 5)     '
         MsgBox Result
+    End Sub
+
+' ==================================================================
+' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 20170322-182014）
+' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
+' = 戻値                String        日時（YYYYMMDD-HHMMSS）
+' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' ==================================================================
+Public Function ConvDate2String( _
+    ByVal sDateTime _
+)
+    ConvDate2String = Year(sDateTime) & _
+                     String(2 - Len(Month(sDateTime)), "0") & Month(sDateTime) & _
+                     String(2 - Len(Day(sDateTime)), "0") & Day(sDateTime) & _
+                     "-" & _
+                     String(2 - Len(Hour(sDateTime)), "0") & Hour(sDateTime) & _
+                     String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
+                     String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
+End Function
+    'Call Test_ConvDate2String()
+    Private Sub Test_ConvDate2String()
+        MsgBox ConvDate2String(Now())
     End Sub
 
 ' ==================================================================
@@ -272,24 +298,3 @@ End Function
         MsgBox Result
     End Sub
 
-' ==================================================================
-' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 20170322-182014）
-' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
-' = 戻値                String        日時（YYYYMMDD-HHMMSS）
-' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
-' ==================================================================
-Public Function ConvDate2String( _
-    ByVal sDateTime _
-)
-    ConvDate2String = Year(sDateTime) & _
-                     String(2 - Len(Month(sDateTime)), "0") & Month(sDateTime) & _
-                     String(2 - Len(Day(sDateTime)), "0") & Day(sDateTime) & _
-                     "-" & _
-                     String(2 - Len(Hour(sDateTime)), "0") & Hour(sDateTime) & _
-                     String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
-                     String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
-End Function
-    'Call Test_ConvDate2String()
-    Private Sub Test_ConvDate2String()
-        MsgBox ConvDate2String(Now())
-    End Sub

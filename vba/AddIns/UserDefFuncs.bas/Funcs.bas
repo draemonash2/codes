@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.8
+' user define functions v1.9
 
 ' ==================================================================
 ' =  <<ŠÖ”ˆê——>>
@@ -422,7 +422,7 @@ Public Function GetFileExt( _
     Dim sFileName As String
     sFileName = GetFileName(sFilePath)
     If InStr(sFileName, ".") > 0 Then
-        GetFileExt = SplitStr(sFileName, ".", GetStrNum(sFileName, "."))
+        GetFileExt = ExtractTailWord(sFileName, ".")
     Else
         GetFileExt = ""
     End If
