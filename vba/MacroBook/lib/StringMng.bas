@@ -1,7 +1,7 @@
 Attribute VB_Name = "StringMng"
 Option Explicit
 
-' string manage library v1.2
+' string manage library v1.3
 
 ' ==================================================================
 ' = 概要    指定されたファイルパスからファイル名を抽出する
@@ -46,7 +46,98 @@ End Function
         vRet = GetFileName("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' a.txt
         vRet = GetFileName("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' a
         vRet = GetFileName("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' c:_test_a
-        MsgBox Result
+        Debug.Print Result
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスからファイルベース名を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        ファイルベース名
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
+' ==================================================================
+Public Function GetFileBase( _
+    ByVal sFilePath As String _
+) As String
+    Dim sFileName As String
+    sFileName = GetFileName(sFilePath)
+    GetFileBase = RemoveTailWord(sFileName, ".")
+End Function
+    Private Sub Test_GetFileBase()
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.txt")     'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test")         'test
+        Result = Result & vbNewLine & GetFileBase("test.txt")              'test
+        Result = Result & vbNewLine & GetFileBase("test")                  'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
+        Result = Result & vbNewLine & GetFileBase("test.aaa.txt")          'test.aaa
+        Debug.Print Result
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスから拡張子を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 戻値                String        拡張子
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
+' ==================================================================
+Public Function GetFileExt( _
+    ByVal sFilePath As String _
+) As String
+    Dim sFileName As String
+    sFileName = GetFileName(sFilePath)
+    If InStr(sFileName, ".") > 0 Then
+        GetFileExt = ExtractTailWord(sFileName, ".")
+    Else
+        GetFileExt = ""
+    End If
+End Function
+    Private Sub Test_GetFileExt()
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.txt")     'txt
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test")         '
+        Result = Result & vbNewLine & GetFileExt("test.txt")              'txt
+        Result = Result & vbNewLine & GetFileExt("test")                  '
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.aaa.txt") 'txt
+        Result = Result & vbNewLine & GetFileExt("test.aaa.txt")          'txt
+        Debug.Print Result
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスから指定された一部を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 引数    lPartType   Long    [in]  抽出種別
+' =                                     1) フォルダパス
+' =                                     2) ファイル名
+' =                                     3) ファイルベース名
+' =                                     4) ファイル拡張子
+' = 戻値                String        抽出した一部
+' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' ==================================================================
+Public Function GetFilePart( _
+    ByVal sFilePath As String, _
+    ByVal lPartType As Long _
+) As String
+    Select Case lPartType
+        Case 1: GetFilePart = GetDirPath(sFilePath)
+        Case 2: GetFilePart = GetFileName(sFilePath)
+        Case 3: GetFilePart = GetFileBase(sFilePath)
+        Case 4: GetFilePart = GetFileExt(sFilePath)
+        Case Else: GetFilePart = ""
+    End Select
+End Function
+    Private Sub Test_GetFilePart()
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 0)     '
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 1)     'c:\codes
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 2)     'test.txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 3)     'test
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 4)     'txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 5)     '
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -92,7 +183,7 @@ End Function
         vRet = GetDirPath("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:\test
         vRet = GetDirPath("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' http://test
         vRet = GetDirPath("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:_test_a.txt
-        MsgBox Result
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -116,6 +207,23 @@ Public Function ExtractTailWord( _
         ExtractTailWord = asSplitWord(UBound(asSplitWord))
     End If
 End Function
+    Private Sub Test_ExtractTailWord()
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
+        Result = Result & vbNewLine & ExtractTailWord("", "\")               '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a", "\")           ' a
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\", "\")          '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b", "\")         ' b
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\", "\")        '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "\")   ' c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\\b\c.txt", "\")    ' c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\\b\c.txt", "\\") ' b\c.txt
+        Result = Result & vbNewLine & "*** test finished! ***"
+        Debug.Print Result
+    End Sub
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を除去する。
@@ -147,6 +255,23 @@ Public Function RemoveTailWord( _
         End If
     End If
 End Function
+    Private Sub Test_RemoveTailWord()
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
+        Result = Result & vbNewLine & RemoveTailWord("", "\")               '
+        Result = Result & vbNewLine & RemoveTailWord("c:\a", "\")           ' c:
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\", "\")          ' c:\a
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b", "\")         ' c:\a
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\", "\")        ' c:\a\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "\")   ' c:\a\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\\b\c.txt", "\")    ' c:\\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\\b\c.txt", "\\") ' c:\a
+        Result = Result & vbNewLine & "*** test finished! ***"
+        Debug.Print Result
+    End Sub
 
 ' ==================================================================
 ' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 20170322-182014）
@@ -166,5 +291,5 @@ Public Function ConvDate2String( _
                      String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
 End Function
     Private Sub Test_ConvDate2String()
-        MsgBox ConvDate2String(Now())
+        Debug.Print ConvDate2String(Now())
     End Sub

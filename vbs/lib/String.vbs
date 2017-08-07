@@ -21,7 +21,7 @@ Public Function ExtractTailWord( _
         ExtractTailWord = asSplitWord(UBound(asSplitWord))
     End If
 End Function
-'   Call Test_ExtractTailWord()
+    'Call Test_ExtractTailWord()
     Private Sub Test_ExtractTailWord()
         Dim Result
         Result = "[Result]"
@@ -66,7 +66,7 @@ Public Function RemoveTailWord( _
         End If
     End If
 End Function
-'   Call Test_RemoveTailWord()
+    'Call Test_RemoveTailWord()
     Private Sub Test_RemoveTailWord()
         Dim Result
         Result = "[Result]"
@@ -99,7 +99,7 @@ Public Function GetDirPath( _
         GetDirPath = sFilePath
     End If
 End Function
-'   Call Test_GetDirPath()
+    'Call Test_GetDirPath()
     Private Sub Test_GetDirPath()
         Dim Result
         Result = "[Result]"
@@ -127,7 +127,7 @@ Public Function GetFileName( _
         GetFileName = sFilePath
     End If
 End Function
-'   Call Test_GetFileName()
+    'Call Test_GetFileName()
     Private Sub Test_GetFileName()
         Dim Result
         Result = "[Result]"
@@ -138,69 +138,96 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    指定されたファイルパスからファイル名（拡張子なし）を抽出する
+' = 概要    指定されたファイルパスからファイルベース名を抽出する。
 ' = 引数    sFilePath   String  [in]  ファイルパス
-' = 戻値                String        ファイル名（拡張子なし）
-' = 覚書    拡張子が付与されていないファイルも存在する。そのため、
-' =         "." が含まれていない場合も文字列を返却する。
+' = 戻値                String        ファイルベース名
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
 ' ==================================================================
-Public Function GetFileBaseName( _
+Public Function GetFileBase( _
     ByVal sFilePath _
 )
-    GetFileBaseName = RemoveTailWord( ExtractTailWord( sFilePath, "\" ), "." )
+    Dim sFileName
+    sFileName = GetFileName(sFilePath)
+    GetFileBase = RemoveTailWord(sFileName, ".")
 End Function
-'   Call Test_GetFileBaseName()
-    Private Sub Test_GetFileBaseName()
+    'Call Test_GetFileBase()
+    Private Sub Test_GetFileBase()
         Dim Result
         Result = "[Result]"
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test\a.txt" )    ' a
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test\a.t" )      ' a
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test\a." )       ' a
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test\a" )        ' a
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test\" )         ' 
-        Result = Result & vbNewLine & GetFileBaseName( "C:\test" )          ' test
-        Result = Result & vbNewLine & GetFileBaseName( "C:" )               ' C:
-        Result = Result & vbNewLine & GetFileBaseName( "" )                 ' 
-        Result = Result & vbNewLine & GetFileBaseName( "a.txt" )            ' a
-        Result = Result & vbNewLine & GetFileBaseName( ".txt" )             ' 
-        Result = Result & vbNewLine & GetFileBaseName( "a." )               ' a
-        Result = Result & vbNewLine & GetFileBaseName( "." )                ' 
-        Result = Result & vbNewLine & GetFileBaseName( "a" )                ' a
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.txt")     'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test")         'test
+        Result = Result & vbNewLine & GetFileBase("test.txt")              'test
+        Result = Result & vbNewLine & GetFileBase("test")                  'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
+        Result = Result & vbNewLine & GetFileBase("test.aaa.txt")          'test.aaa
         MsgBox Result
     End Sub
 
 ' ==================================================================
-' = 概要    指定されたファイルパスから拡張子を抽出する
+' = 概要    指定されたファイルパスから拡張子を抽出する。
 ' = 引数    sFilePath   String  [in]  ファイルパス
 ' = 戻値                String        拡張子
-' = 覚書    "." が含まれていない場合、空文字を返却する
+' = 覚書    ・拡張子がない場合、空文字を返却する
+' =         ・ファイル名も指定可能
 ' ==================================================================
-Public Function GetFileExtName( _
+Public Function GetFileExt( _
     ByVal sFilePath _
 )
-    If InStr( sFilePath, "." ) > 0 Then
-        GetFileExtName = ExtractTailWord( sFilePath, "." )
+    Dim sFileName
+    sFileName = GetFileName(sFilePath)
+    If InStr(sFileName, ".") > 0 Then
+        GetFileExt = ExtractTailWord(sFileName, ".")
     Else
-        GetFileExtName = ""
+        GetFileExt = ""
     End If
 End Function
-'   Call Test_GetFileExtName()
-    Private Sub Test_GetFileExtName()
+    'Call Test_GetFileExt()
+    Private Sub Test_GetFileExt()
         Dim Result
         Result = "[Result]"
-        Result = Result & vbNewLine & GetFileExtName( "C:\test\a.txt" ) ' txt
-        Result = Result & vbNewLine & GetFileExtName( "C:\test\a.t" )   ' t
-        Result = Result & vbNewLine & GetFileExtName( "C:\test\a." )    ' 
-        Result = Result & vbNewLine & GetFileExtName( "C:\test\a" )     ' 
-        Result = Result & vbNewLine & GetFileExtName( "C:\test\" )      ' 
-        Result = Result & vbNewLine & GetFileExtName( "C:\test" )       ' 
-        Result = Result & vbNewLine & GetFileExtName( "C:" )            ' 
-        Result = Result & vbNewLine & GetFileExtName( "" )              ' 
-        Result = Result & vbNewLine & GetFileExtName( "a.txt" )         ' txt
-        Result = Result & vbNewLine & GetFileExtName( ".txt" )          ' txt
-        Result = Result & vbNewLine & GetFileExtName( "a." )            ' 
-        Result = Result & vbNewLine & GetFileExtName( "." )             ' 
-        Result = Result & vbNewLine & GetFileExtName( "a" )             ' 
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.txt")     'txt
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test")         '
+        Result = Result & vbNewLine & GetFileExt("test.txt")              'txt
+        Result = Result & vbNewLine & GetFileExt("test")                  '
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.aaa.txt") 'txt
+        Result = Result & vbNewLine & GetFileExt("test.aaa.txt")          'txt
+        MsgBox Result
+    End Sub
+
+' ==================================================================
+' = 概要    指定されたファイルパスから指定された一部を抽出する。
+' = 引数    sFilePath   String  [in]  ファイルパス
+' = 引数    lPartType   Long    [in]  抽出種別
+' =                                     1) フォルダパス
+' =                                     2) ファイル名
+' =                                     3) ファイルベース名
+' =                                     4) ファイル拡張子
+' = 戻値                String        抽出した一部
+' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' ==================================================================
+Public Function GetFilePart( _
+    ByVal sFilePath, _
+    ByVal lPartType _
+)
+    Select Case lPartType
+        Case 1: GetFilePart = GetDirPath(sFilePath)
+        Case 2: GetFilePart = GetFileName(sFilePath)
+        Case 3: GetFilePart = GetFileBase(sFilePath)
+        Case 4: GetFilePart = GetFileExt(sFilePath)
+        Case Else: GetFilePart = ""
+    End Select
+End Function
+    'Call Test_GetFilePart()
+    Private Sub Test_GetFilePart()
+        Dim Result
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 0)     '
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 1)     'c:\codes
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 2)     'test.txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 3)     'test
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 4)     'txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 5)     '
         MsgBox Result
     End Sub
 
@@ -230,7 +257,7 @@ Public Function LenByte( _
         Next
     End If
 End Function
-'   Call Test_LenByte()
+    'Call Test_LenByte()
     Private Sub Test_LenByte()
         Dim Result
         Result = "[Result]"

@@ -252,18 +252,21 @@ Public Function ExtractTailWord( _
     End If
 End Function
     Private Sub Test_ExtractTailWord()
-        Debug.Print "*** test start! ***"
-        Debug.Print ExtractTailWord("", "\")               '
-        Debug.Print ExtractTailWord("c:\a", "\")           ' a
-        Debug.Print ExtractTailWord("c:\a\", "\")          '
-        Debug.Print ExtractTailWord("c:\a\b", "\")         ' b
-        Debug.Print ExtractTailWord("c:\a\b\", "\")        '
-        Debug.Print ExtractTailWord("c:\a\b\c.txt", "\")   ' c.txt
-        Debug.Print ExtractTailWord("c:\\b\c.txt", "\")    ' c.txt
-        Debug.Print ExtractTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
-        Debug.Print ExtractTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
-        Debug.Print ExtractTailWord("c:\a\\b\c.txt", "\\") ' b\c.txt
-        Debug.Print "*** test finished! ***"
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
+        Result = Result & vbNewLine & ExtractTailWord("", "\")               '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a", "\")           ' a
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\", "\")          '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b", "\")         ' b
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\", "\")        '
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "\")   ' c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\\b\c.txt", "\")    ' c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
+        Result = Result & vbNewLine & ExtractTailWord("c:\a\\b\c.txt", "\\") ' b\c.txt
+        Result = Result & vbNewLine & "*** test finished! ***"
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -297,48 +300,113 @@ Public Function RemoveTailWord( _
     End If
 End Function
     Private Sub Test_RemoveTailWord()
-        Debug.Print "*** test start! ***"
-        Debug.Print RemoveTailWord("", "\")               '
-        Debug.Print RemoveTailWord("c:\a", "\")           ' c:
-        Debug.Print RemoveTailWord("c:\a\", "\")          ' c:\a
-        Debug.Print RemoveTailWord("c:\a\b", "\")         ' c:\a
-        Debug.Print RemoveTailWord("c:\a\b\", "\")        ' c:\a\b
-        Debug.Print RemoveTailWord("c:\a\b\c.txt", "\")   ' c:\a\b
-        Debug.Print RemoveTailWord("c:\\b\c.txt", "\")    ' c:\\b
-        Debug.Print RemoveTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
-        Debug.Print RemoveTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
-        Debug.Print RemoveTailWord("c:\a\\b\c.txt", "\\") ' c:\a
-        Debug.Print "*** test finished! ***"
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & "*** test start! ***"
+        Result = Result & vbNewLine & RemoveTailWord("", "\")               '
+        Result = Result & vbNewLine & RemoveTailWord("c:\a", "\")           ' c:
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\", "\")          ' c:\a
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b", "\")         ' c:\a
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\", "\")        ' c:\a\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "\")   ' c:\a\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\\b\c.txt", "\")    ' c:\\b
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "")    ' c:\a\b\c.txt
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\b\c.txt", "\\")  ' c:\a\b\c.txt
+        Result = Result & vbNewLine & RemoveTailWord("c:\a\\b\c.txt", "\\") ' c:\a
+        Result = Result & vbNewLine & "*** test finished! ***"
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
-' = 概要    指定されたファイルパスからフォルダパスを抽出する。
-' = 引数    sFilePath   String  [in]  ファイルパス
-' = 戻値                String        フォルダパス
-' = 覚書    なし
+' = 概要    指定されたファイルパスからフォルダパスを抽出する
+' = 引数    sFilePath       String  [in]  ファイルパス
+' = 引数    bErrorEnable    Boolean [in]  エラー発生有効/無効(※)
+' = 戻値                    Variant       フォルダパス
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能。
+' =         (※) bErrorEnable にてファイルパス以外が指定された時の返却値を
+' =         変えることが出来る｡
+' =            True  : sFilePath を返却
+' =            False : エラー値（xlErrNA）を返却
 ' ==================================================================
 Public Function GetDirPath( _
-    ByVal sFilePath As String _
-) As String
-    GetDirPath = RemoveTailWord(sFilePath, "\")
+    ByVal sFilePath As String, _
+    Optional ByVal bErrorEnable As Boolean = False _
+) As Variant
+    If InStr(sFilePath, "\") Then
+        GetDirPath = RemoveTailWord(sFilePath, "\")
+    ElseIf InStr(sFilePath, "/") Then
+        GetDirPath = RemoveTailWord(sFilePath, "/")
+    Else
+        If bErrorEnable = True Then
+            GetDirPath = CVErr(xlErrNA)  'エラー値
+        Else
+            GetDirPath = sFilePath
+        End If
+    End If
 End Function
     Private Sub Test_GetDirPath()
-        'RemoveTailWordと同等のテストケースのため、テストしない
+        Dim Result As String
+        Dim vRet As Variant
+        Result = "[Result]"
+        vRet = GetDirPath("C:\test\a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' C:\test
+        vRet = GetDirPath("http://test/a", True): Result = Result & vbNewLine & CStr(vRet)  ' http://test
+        vRet = GetDirPath("C:_test_a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' エラー 2042
+        Result = Result & vbNewLine                                                         '
+        vRet = GetDirPath("C:\test\a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' C:\test
+        vRet = GetDirPath("http://test/a", False): Result = Result & vbNewLine & CStr(vRet) ' http://test
+        vRet = GetDirPath("C:_test_a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' C:_test_a.txt
+        Result = Result & vbNewLine                                                         '
+        vRet = GetDirPath("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:\test
+        vRet = GetDirPath("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' http://test
+        vRet = GetDirPath("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' C:_test_a.txt
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
-' = 概要    指定されたファイルパスからファイル名を抽出する。
-' = 引数    sFilePath   String  [in]  ファイルパス
-' = 戻値                String        ファイル名
-' = 覚書    なし
+' = 概要    指定されたファイルパスからファイル名を抽出する
+' = 引数    sFilePath       String  [in]  ファイルパス
+' = 引数    bErrorEnable    Boolean [in]  エラー発生有効/無効(※)
+' = 戻値                    Variant       ファイル名
+' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
+' =         が指定可能。
+' =         (※) bErrorEnable にてファイルパス以外が指定された時の返却値を
+' =         変えることが出来る｡
+' =            True  : sFilePath を返却
+' =            False : エラー値（xlErrNA）を返却
 ' ==================================================================
 Public Function GetFileName( _
-    ByVal sFilePath As String _
-) As String
-    GetFileName = ExtractTailWord(sFilePath, "\")
+    ByVal sFilePath As String, _
+    Optional ByVal bErrorEnable As Boolean = False _
+) As Variant
+    If InStr(sFilePath, "\") Then
+        GetFileName = ExtractTailWord(sFilePath, "\")
+    ElseIf InStr(sFilePath, "/") Then
+        GetFileName = ExtractTailWord(sFilePath, "/")
+    Else
+        If bErrorEnable = True Then
+            GetFileName = CVErr(xlErrNA)  'エラー値
+        Else
+            GetFileName = sFilePath
+        End If
+    End If
 End Function
     Private Sub Test_GetFileName()
-        'ExtractTailWordと同等のテストケースのため、テストしない
+        Dim Result As String
+        Dim vRet As Variant
+        Result = "[Result]"
+        vRet = GetFileName("C:\test\a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' a.txt
+        vRet = GetFileName("http://test/a", True): Result = Result & vbNewLine & CStr(vRet)  ' a
+        vRet = GetFileName("C:_test_a.txt", True): Result = Result & vbNewLine & CStr(vRet)  ' エラー 2042
+        Result = Result & vbNewLine                                                          '
+        vRet = GetFileName("C:\test\a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' a.txt
+        vRet = GetFileName("http://test/a", False): Result = Result & vbNewLine & CStr(vRet) ' a
+        vRet = GetFileName("C:_test_a.txt", False): Result = Result & vbNewLine & CStr(vRet) ' c:_test_a
+        Result = Result & vbNewLine                                                          '
+        vRet = GetFileName("C:\test\a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' a.txt
+        vRet = GetFileName("http://test/a"): Result = Result & vbNewLine & CStr(vRet)        ' a
+        vRet = GetFileName("C:_test_a.txt"): Result = Result & vbNewLine & CStr(vRet)        ' c:_test_a
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -360,12 +428,15 @@ Public Function GetFileExt( _
     End If
 End Function
     Private Sub Test_GetFileExt()
-        Debug.Print GetFileExt("c:\codes\test.txt")     'txt
-        Debug.Print GetFileExt("c:\codes\test")         '
-        Debug.Print GetFileExt("test.txt")              'txt
-        Debug.Print GetFileExt("test")                  '
-        Debug.Print GetFileExt("c:\codes\test.aaa.txt") 'txt
-        Debug.Print GetFileExt("test.aaa.txt")          'txt
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.txt")     'txt
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test")         '
+        Result = Result & vbNewLine & GetFileExt("test.txt")              'txt
+        Result = Result & vbNewLine & GetFileExt("test")                  '
+        Result = Result & vbNewLine & GetFileExt("c:\codes\test.aaa.txt") 'txt
+        Result = Result & vbNewLine & GetFileExt("test.aaa.txt")          'txt
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -383,12 +454,15 @@ Public Function GetFileBase( _
     GetFileBase = RemoveTailWord(sFileName, ".")
 End Function
     Private Sub Test_GetFileBase()
-        Debug.Print GetFileBase("c:\codes\test.txt")     'test
-        Debug.Print GetFileBase("c:\codes\test")         'test
-        Debug.Print GetFileBase("test.txt")              'test
-        Debug.Print GetFileBase("test")                  'test
-        Debug.Print GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
-        Debug.Print GetFileBase("test.aaa.txt")          'test.aaa
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.txt")     'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test")         'test
+        Result = Result & vbNewLine & GetFileBase("test.txt")              'test
+        Result = Result & vbNewLine & GetFileBase("test")                  'test
+        Result = Result & vbNewLine & GetFileBase("c:\codes\test.aaa.txt") 'test.aaa
+        Result = Result & vbNewLine & GetFileBase("test.aaa.txt")          'test.aaa
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
@@ -415,12 +489,15 @@ Public Function GetFilePart( _
     End Select
 End Function
     Private Sub Test_GetFilePart()
-        Debug.Print GetFilePart("c:\codes\test.txt", 0)     '
-        Debug.Print GetFilePart("c:\codes\test.txt", 1)     'c:\codes
-        Debug.Print GetFilePart("c:\codes\test.txt", 2)     'test.txt
-        Debug.Print GetFilePart("c:\codes\test.txt", 3)     'test
-        Debug.Print GetFilePart("c:\codes\test.txt", 4)     'txt
-        Debug.Print GetFilePart("c:\codes\test.txt", 5)     '
+        Dim Result As String
+        Result = "[Result]"
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 0)     '
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 1)     'c:\codes
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 2)     'test.txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 3)     'test
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 4)     'txt
+        Result = Result & vbNewLine & GetFilePart("c:\codes\test.txt", 5)     '
+        Debug.Print Result
     End Sub
 
 ' ==================================================================
