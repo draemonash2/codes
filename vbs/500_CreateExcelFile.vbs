@@ -19,7 +19,7 @@ If WScript.Arguments.Count = 0 Then
 ElseIf WScript.Arguments.Count = 1 Then
 	sFilePath = WScript.Arguments(0)
 	Dim sFileExt
-	sFileExt = GetFileExtName( sFilePath )
+	sFileExt = GetFileExt( sFilePath )
 	Select Case sFileExt
 		Case "xlsx":    'Do Nothing
 		Case "xls":     'Do Nothing
