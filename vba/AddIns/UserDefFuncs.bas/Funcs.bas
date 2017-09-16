@@ -37,7 +37,9 @@ Option Explicit
 ' =    ・ConvSnakeToCamel   命名規則変換を行う（スネークケース⇒キャメルケース）
 ' =    ・ConvCamelToSnake   命名規則変換を行う（キャメルケース⇒スネークケース）
 ' =
-' =    ・DiffRange           指定した２つの範囲を比較して、完全一致かどうかを判定する
+' =    ・DiffRange          指定した２つの範囲を比較して、完全一致かどうかを判定する
+' =
+' =    ・IsExist            ファイル/フォルダの存在確認を行う
 ' ==================================================================
 
 '********************************************************************************
@@ -1635,6 +1637,72 @@ End Function
                 shDiff02.Cells(4, 39) _
             ) _
         )
+    End Sub
+
+' ==================================================================
+' = 概要    ファイル/フォルダの存在確認を行う
+' = 引数    sFileDirPath  String  [in]  ファイル/フォルダのパス
+' = 戻値                  Boolean       存在確認結果
+' = 覚書    ローカル環境のファイルパスを指定すること。
+' =         URL を指定した場合、未存在とみなされる。
+' =         ファイルサーバーは指定可能。
+' ==================================================================
+Public Function IsExist( _
+    ByVal sFileDirPath As String _
+) As Boolean
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FolderExists(sFileDirPath) Then
+        IsExist = True
+    Else
+        If objFSO.FileExists(sFileDirPath) Then
+            IsExist = True
+        Else
+            IsExist = False
+        End If
+    End If
+End Function
+    Private Sub Test_IsExist()
+        Dim asTestPath() As String
+        Dim sTestDir As String
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        sTestDir = objWshShell.SpecialFolders("Templates") & "\"
+        ReDim Preserve asTestPath(4)
+        asTestPath(0) = sTestDir & "is_exist_test_path01.txt"
+        asTestPath(1) = sTestDir & "is_exist_test_path02.txt"
+        asTestPath(2) = sTestDir & "is_exist_test_path03"
+        asTestPath(3) = sTestDir & "is_exist_test_path04"
+        asTestPath(4) = "https://www49.atwiki.jp/draemonash/"
+        
+        'ファイルディレクトリ作成
+        Dim objFSO As Object
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Dim i As Long
+        Open asTestPath(0) For Output As #1
+        Print #1, "for Vba IsExist()'s test"
+        Close #1
+        objFSO.CreateFolder (asTestPath(2))
+        
+        'テスト実行
+        Dim sMsg As String
+        For i = LBound(asTestPath) To UBound(asTestPath)
+            sMsg = sMsg & vbNewLine & IsExist(asTestPath(i))
+        Next i
+        Debug.Print sMsg
+        
+        'ファイルディレクトリ削除
+        For i = LBound(asTestPath) To UBound(asTestPath)
+            If objFSO.FolderExists(asTestPath(i)) Then
+                objFSO.DeleteFolder asTestPath(i), True
+            Else
+                If objFSO.FileExists(asTestPath(i)) Then
+                    objFSO.DeleteFile asTestPath(i), True
+                Else
+                    'Do Nothing
+                End If
+            End If
+        Next i
     End Sub
 
 '********************************************************************************
