@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.9
+' user define functions v1.91
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -39,7 +39,7 @@ Option Explicit
 ' =
 ' =    ・DiffRange          指定した２つの範囲を比較して、完全一致かどうかを判定する
 ' =
-' =    ・IsExist            ファイル/フォルダの存在確認を行う
+' =    ・Exists             ファイル/フォルダの存在確認を行う
 ' ==================================================================
 
 '********************************************************************************
@@ -1647,22 +1647,22 @@ End Function
 ' =         URL を指定した場合、未存在とみなされる。
 ' =         ファイルサーバーは指定可能。
 ' ==================================================================
-Public Function IsExist( _
+Public Function Exists( _
     ByVal sFileDirPath As String _
 ) As Boolean
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     If objFSO.FolderExists(sFileDirPath) Then
-        IsExist = True
+        Exists = True
     Else
         If objFSO.FileExists(sFileDirPath) Then
-            IsExist = True
+            Exists = True
         Else
-            IsExist = False
+            Exists = False
         End If
     End If
 End Function
-    Private Sub Test_IsExist()
+    Private Sub Test_Exists()
         Dim asTestPath() As String
         Dim sTestDir As String
         Dim objWshShell
@@ -1687,7 +1687,7 @@ End Function
         'テスト実行
         Dim sMsg As String
         For i = LBound(asTestPath) To UBound(asTestPath)
-            sMsg = sMsg & vbNewLine & IsExist(asTestPath(i))
+            sMsg = sMsg & vbNewLine & Exists(asTestPath(i))
         Next i
         Debug.Print sMsg
         
