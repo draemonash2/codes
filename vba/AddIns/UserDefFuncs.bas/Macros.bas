@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.0
+' user define macros v2.1
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -25,6 +25,8 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =
 ' =    ・フォント色をトグル                 フォント色を「赤」⇔「自動」でトグルする
 ' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
+' =
+' =    ・オートフィル実行                   オートフィルを実行する
 ' =============================================================================
 
 '******************************************************************************
@@ -632,6 +634,27 @@ Public Sub 背景色をトグル()
         Selection.Interior.ColorIndex = 0
     Else
         Selection.Interior.Color = RGB(COLOR_R, COLOR_G, COLOR_B)
+    End If
+End Sub
+
+' =============================================================================
+' = 概要：オートフィルを実行する。
+' =       初回呼び出し時にオートフィル展開元の範囲を保存して、
+' =       次回呼び出し時に選択中のセル範囲に対してオートフィルを実行する
+' =============================================================================
+Public Sub オートフィル実行()
+    Static bIsAutoFillMode As Boolean
+    Static grAutoFillSrcRange As Range
+    
+    If bIsAutoFillMode = False Then
+        Set grAutoFillSrcRange = Selection
+        bIsAutoFillMode = True
+        Application.StatusBar = "オートフィルの展開先を選択してください。"
+    Else
+        grAutoFillSrcRange.AutoFill Destination:=Selection
+        Set grAutoFillSrcRange = Nothing
+        bIsAutoFillMode = False
+        Application.StatusBar = ""
     End If
 End Sub
 
