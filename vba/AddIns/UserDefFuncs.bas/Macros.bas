@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.1
+' user define macros v2.2
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -62,19 +62,45 @@ Dim gtShortcutKey() As T_SHORTCUT_KEY
 ' * ショートカットキー定義
 ' *****************************************************************************
 Private Function InitUserDefShortcut()
+    ' <<ショートカットキー追加方法>>
+    '   (1) 以下の追加先に「AddUserDefShortcut()」呼び出しを追加する。
+    '       第一引数にはショートカットキー、第二引数にマクロ名を指定する。
+    '       ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
+    '         Shift：+
+    '         Ctrl ：^
+    '         Alt  ：%
+    '       詳細は以下 URL 参照。
+    '         https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
+    '   (2) マクロ「ユーザー定義ショートカットキーを設定()」を実行する。
+    '
+    ' <<ショートカットキー解除方法>>
+    '   (1) マクロ「ユーザー定義ショートカットキーを解除()」を実行する。
+    
+    '▼▼▼ 追加先 ▼▼▼
 '   Call AddUserDefShortcut("   ", "選択範囲内で中央")
+
     Call AddUserDefShortcut("^+c", "ダブルクォートを除いてセルコピー")
 '   Call AddUserDefShortcut("   ", "選択範囲をファイルエクスポート")
 '   Call AddUserDefShortcut("   ", "選択範囲をコマンド実行")
+
 '   Call AddUserDefShortcut("   ", "全シート名をコピー")
 '   Call AddUserDefShortcut("   ", "シート表示非表示を切り替え")
 '   Call AddUserDefShortcut("   ", "シート並べ替え作業用シートを作成")
+
 '   Call AddUserDefShortcut("   ", "セル内の丸数字をデクリメント")
 '   Call AddUserDefShortcut("   ", "セル内の丸数字をインクリメント")
+
 '   Call AddUserDefShortcut("   ", "ツリーをグループ化")
 '   Call AddUserDefShortcut("   ", "ハイパーリンク一括オープン")
+
 '   Call AddUserDefShortcut("   ", "フォント色をトグル")
 '   Call AddUserDefShortcut("   ", "背景色をトグル")
+    
+    Call AddUserDefShortcut("%^+{DOWN}", "'オートフィル実行(""Down"")'")
+    Call AddUserDefShortcut("%^+{UP}", "'オートフィル実行(""Up"")'")
+    Call AddUserDefShortcut("%^+{RIGHT}", "'オートフィル実行(""Right"")'")
+    Call AddUserDefShortcut("%^+{LEFT}", "'オートフィル実行(""Left"")'")
+    '▲▲▲ 追加先 ▲▲▲
 End Function
 
 Public Sub ユーザー定義ショートカットキーを設定()
@@ -639,23 +665,90 @@ End Sub
 
 ' =============================================================================
 ' = 概要：オートフィルを実行する。
-' =       初回呼び出し時にオートフィル展開元の範囲を保存して、
-' =       次回呼び出し時に選択中のセル範囲に対してオートフィルを実行する
+' =       指定した方向に応じて選択範囲を広げてオートフィルを実行する。
 ' =============================================================================
-Public Sub オートフィル実行()
-    Static bIsAutoFillMode As Boolean
-    Static grAutoFillSrcRange As Range
+Public Sub オートフィル実行( _
+    ByVal sDirection As String _
+)
+'    Application.ScreenUpdating = False
+'    Application.Calculation = xlCalculationManual
     
-    If bIsAutoFillMode = False Then
-        Set grAutoFillSrcRange = Selection
-        bIsAutoFillMode = True
-        Application.StatusBar = "オートフィルの展開先を選択してください。"
+    On Error Resume Next
+    
+    Dim lErrorNo As Long
+    lErrorNo = 0
+    
+    Dim rSrc As Range
+    Set rSrc = Selection
+    Dim lSrcRow As Long
+    Dim lSrcClm As Long
+    lSrcRow = ActiveCell.Row
+    lSrcClm = ActiveCell.Column
+    
+    '選択範囲拡大
+    If lErrorNo = 0 Then
+        Select Case sDirection
+            Case "Right": Range(Selection, Selection.Offset(0, 1)).Select
+            Case "Left": Range(Selection, Selection.Offset(0, -1)).Select
+            Case "Down": Range(Selection, Selection.Offset(1, 0)).Select
+            Case "Up": Range(Selection, Selection.Offset(-1, 0)).Select
+            Case Else: Debug.Assert 1
+        End Select
+        If Err.Number = 0 Then
+            'Do Nothing
+        Else
+            lErrorNo = 1
+        End If
     Else
-        grAutoFillSrcRange.AutoFill Destination:=Selection
-        Set grAutoFillSrcRange = Nothing
-        bIsAutoFillMode = False
-        Application.StatusBar = ""
+        'Do Nothing
     End If
+    
+    'オートフィル
+    If lErrorNo = 0 Then
+        rSrc.AutoFill Destination:=Selection
+        If Err.Number = 0 Then
+            'Do Nothing
+        Else
+            lErrorNo = 2
+        End If
+    Else
+        'Do Nothing
+    End If
+    
+    '画面スクロール
+    If lErrorNo = 0 Then
+        Select Case sDirection
+            Case "Right": Selection((lSrcRow - Selection(1).Row + 1), Selection.Columns.Count).Activate
+            Case "Left": Selection((lSrcRow - Selection(1).Row + 1), 1).Activate
+            Case "Down": Selection(Selection.Rows.Count, (lSrcClm - Selection(1).Column + 1)).Activate
+            Case "Up": Selection(1, (lSrcClm - Selection(1).Column + 1)).Activate
+'            Case "Right": Cells(lSrcRow, Selection.Columns.Count).Activate
+'            Case "Left": Cells(lSrcRow, 1).Activate
+'            Case "Down": Cells(Selection.Rows.Count, lSrcClm).Activate
+'            Case "Up": Cells(1, lSrcClm).Activate
+            Case Else: Debug.Assert 1
+        End Select
+        If Err.Number = 0 Then
+            'Do Nothing
+        Else
+            lErrorNo = 3
+        End If
+    Else
+        'Do Nothing
+    End If
+    
+    Select Case lErrorNo
+        Case 0: 'Do Nothing
+        Case 1: Debug.Print "【オートフィル展開<" & sDirection & ">】移動時エラー No." & Err.Number & " : " & Err.Description
+        Case 2: Debug.Print "【オートフィル展開<" & sDirection & ">】オートフィル時エラー No." & Err.Number & " : " & Err.Description
+        Case 3: Debug.Print "【オートフィル展開<" & sDirection & ">】スクロール時エラー No." & Err.Number & " : " & Err.Description
+        Case Else: Debug.Assert 1
+    End Select
+    
+    On Error GoTo 0
+    
+'    Application.Calculation = xlCalculationAutomatic
+'    Application.ScreenUpdating = True
 End Sub
 
 ' *****************************************************************************
