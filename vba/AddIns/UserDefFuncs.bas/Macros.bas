@@ -722,10 +722,6 @@ Public Sub オートフィル実行( _
             Case "Left": Selection((lSrcRow - Selection(1).Row + 1), 1).Activate
             Case "Down": Selection(Selection.Rows.Count, (lSrcClm - Selection(1).Column + 1)).Activate
             Case "Up": Selection(1, (lSrcClm - Selection(1).Column + 1)).Activate
-'            Case "Right": Cells(lSrcRow, Selection.Columns.Count).Activate
-'            Case "Left": Cells(lSrcRow, 1).Activate
-'            Case "Down": Cells(Selection.Rows.Count, lSrcClm).Activate
-'            Case "Up": Cells(1, lSrcClm).Activate
             Case Else: Debug.Assert 1
         End Select
         If Err.Number = 0 Then
