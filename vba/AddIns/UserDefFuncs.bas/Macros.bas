@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.2
+' user define macros v2.3
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -27,6 +27,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
 ' =
 ' =    ・オートフィル実行                   オートフィルを実行する
+' =    ・ハイパーリンクで飛ぶ               アクティブセルからハイパーリンク先に飛ぶ
 ' =============================================================================
 
 '******************************************************************************
@@ -100,6 +101,9 @@ Private Function InitUserDefShortcut()
     Call AddUserDefShortcut("%^+{UP}", "'オートフィル実行(""Up"")'")
     Call AddUserDefShortcut("%^+{RIGHT}", "'オートフィル実行(""Right"")'")
     Call AddUserDefShortcut("%^+{LEFT}", "'オートフィル実行(""Left"")'")
+    
+    Call AddUserDefShortcut("^+j", "ハイパーリンクで飛ぶ")
+    
     '▲▲▲ 追加先 ▲▲▲
 End Function
 
@@ -745,6 +749,22 @@ Public Sub オートフィル実行( _
     
 '    Application.Calculation = xlCalculationAutomatic
 '    Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要：アクティブセルからハイパーリンク先に飛ぶ
+' =============================================================================
+Public Sub ハイパーリンクで飛ぶ()
+    On Error Resume Next
+    ActiveCell.Hyperlinks(1).Follow NewWindow:=True
+    If Err.Number = 0 Then
+        'Do Nothing
+    Else
+        Debug.Print "[" & Now & "] Error " & _
+                    "[Macro] ハイパーリンクで飛ぶ " & _
+                    "[Error No." & Err.Number & "] " & Err.Description
+    End If
+    On Error GoTo 0
 End Sub
 
 ' *****************************************************************************
