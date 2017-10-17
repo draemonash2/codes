@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.3
+' user define macros v2.4
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -28,6 +28,12 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =
 ' =    ・オートフィル実行                   オートフィルを実行する
 ' =    ・ハイパーリンクで飛ぶ               アクティブセルからハイパーリンク先に飛ぶ
+' =
+' =    ・自動列幅調整                       列幅を自動調整する
+' =    ・自動行幅調整                       行幅を自動調整する
+' =
+' =    ・最前面へ移動                       最前面へ移動する
+' =    ・最背面へ移動                       最背面へ移動する
 ' =============================================================================
 
 '******************************************************************************
@@ -104,6 +110,11 @@ Private Function InitUserDefShortcut()
     
     Call AddUserDefShortcut("^+j", "ハイパーリンクで飛ぶ")
     
+'   Call AddUserDefShortcut("   ", "自動列幅調整")
+'   Call AddUserDefShortcut("   ", "自動行幅調整")
+    
+    Call AddUserDefShortcut("^+f", "最前面へ移動")
+    Call AddUserDefShortcut("^+b", "最背面へ移動")
     '▲▲▲ 追加先 ▲▲▲
 End Function
 
@@ -765,6 +776,26 @@ Public Sub ハイパーリンクで飛ぶ()
                     "[Error No." & Err.Number & "] " & Err.Description
     End If
     On Error GoTo 0
+End Sub
+
+' =============================================================================
+' = 概要：列幅、行幅を自動調整する
+' =============================================================================
+Public Sub 自動列幅調整()
+    Selection.EntireColumn.AutoFit
+End Sub
+Public Sub 自動行幅調整()
+    Selection.EntireRow.AutoFit
+End Sub
+
+' =============================================================================
+' = 概要：最前面、最背面へ移動する
+' =============================================================================
+Public Sub 最前面へ移動()
+    Selection.ShapeRange.ZOrder msoBringToFront
+End Sub
+Public Sub 最背面へ移動()
+    Selection.ShapeRange.ZOrder msoSendToBack
 End Sub
 
 ' *****************************************************************************
