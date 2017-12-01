@@ -1,4 +1,4 @@
-Attribute VB_Name = "SendKeys"
+Attribute VB_Name = "Mng_SendKeys"
 Option Explicit
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)

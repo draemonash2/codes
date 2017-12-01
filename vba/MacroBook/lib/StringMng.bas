@@ -1,8 +1,8 @@
-Attribute VB_Name = "StringMng"
+Attribute VB_Name = "Mng_String"
 Option Explicit
 
 ' string manage library v1.4
-s
+
 ' ==================================================================
 ' = ŠT—v    ––”ö‹æØ‚è•¶šˆÈ~‚Ì•¶š—ñ‚ğ•Ô‹p‚·‚éB
 ' = ˆø”    sStr        String  [in]  •ªŠ„‚·‚é•¶š—ñ

@@ -1,4 +1,4 @@
-Attribute VB_Name = "VbaMng"
+Attribute VB_Name = "Mng_Vba"
 Option Explicit
  
 ' vba manage library v1.0

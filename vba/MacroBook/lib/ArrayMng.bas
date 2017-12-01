@@ -1,4 +1,4 @@
-Attribute VB_Name = "ArrayMng"
+Attribute VB_Name = "Mng_Array"
 Option Explicit
 
 ' array manage library v1.1

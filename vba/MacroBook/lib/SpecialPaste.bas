@@ -1,4 +1,4 @@
-Attribute VB_Name = "SpecialPaste"
+Attribute VB_Name = "Mng_SpecialPaste"
 Option Explicit
 
 Const EXEC_SEND_KEY As Boolean = False

@@ -1,4 +1,4 @@
-Attribute VB_Name = "RegMng"
+Attribute VB_Name = "Mng_Registory"
 Option Explicit
 
 '「REG_MULTI_SZ」と「REG_EXPAND_SZ」は非対応

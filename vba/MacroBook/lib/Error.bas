@@ -1,4 +1,4 @@
-Attribute VB_Name = "Error"
+Attribute VB_Name = "Mng_Error"
 Option Explicit
  
 ' error ribrary v1.0

@@ -1,4 +1,4 @@
-Attribute VB_Name = "SysCmd"
+Attribute VB_Name = "Mng_SysCmd"
 Option Explicit
 
 ' system command library v1.0

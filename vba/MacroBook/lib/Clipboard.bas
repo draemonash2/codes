@@ -1,4 +1,4 @@
-Attribute VB_Name = "Clipboard"
+Attribute VB_Name = "Mng_Clipboard"
 Option Explicit
 
 'Win32APIéŒ¾

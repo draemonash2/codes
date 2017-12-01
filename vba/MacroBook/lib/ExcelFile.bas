@@ -1,4 +1,4 @@
-Attribute VB_Name = "ExcelFile"
+Attribute VB_Name = "Mng_ExcelFile"
 Option Explicit
  
 ' excel file manage library v1.0

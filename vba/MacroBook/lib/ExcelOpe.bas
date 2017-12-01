@@ -1,4 +1,4 @@
-Attribute VB_Name = "ExcelOpe"
+Attribute VB_Name = "Mng_ExcelOpe"
 Option Explicit
 
 ' excel operation library v2.3
