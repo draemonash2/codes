@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.3
+' file system library v1.31
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -30,7 +30,7 @@ End Enum
 ' ============================================
 Public Function InputTxtFile( _
     ByRef sFilePath As String, _
-    Optional ByVal sCharSet As String _
+    Optional ByVal sCharSet As String = "shift_jis" _
 ) As String()
     Dim lLineCnt As Long: lLineCnt = 0
     Dim asRetStr() As String
@@ -70,7 +70,7 @@ End Function
 Public Function OutputTxtFile( _
     ByVal sFilePath As String, _
     ByRef asFileLine() As String, _
-    Optional ByVal sCharSet As String _
+    Optional ByVal sCharSet As String = "shift_jis" _
 )
     Dim oTxtObj As Object
     Dim lLineIdx As Long
