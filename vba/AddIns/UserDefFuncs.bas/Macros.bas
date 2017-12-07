@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.4
+' user define macros v2.5
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -27,6 +27,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
 ' =
 ' =    ・オートフィル実行                   オートフィルを実行する
+' =    ・アクティブセルのコメントを表示     アクティブセルのコメントを表示する
 ' =    ・ハイパーリンクで飛ぶ               アクティブセルからハイパーリンク先に飛ぶ
 ' =
 ' =    ・自動列幅調整                       列幅を自動調整する
@@ -37,13 +38,16 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =============================================================================
 
 '******************************************************************************
-'* 定数定義
+'* 設定値
 '******************************************************************************
-'=== 以下、セル内の丸数字をデクリメント()/セル内の丸数字をインクリメント() 用定義 ===
+'=== セル内の丸数字をデクリメント()/セル内の丸数字をインクリメント() ===
 Const NUM_MAX = 15
 Const NUM_MIN = 1
 
-'=== 以下、シート並べ替え作業用シートを作成() 用定義 ===
+'=== アクティブセルのコメントを表示() ===
+Const COMMENT_VISIBLE_MODE_ENABLE As Boolean = False
+
+'=== シート並べ替え作業用シートを作成() ===
 Private Const WORK_SHEET_NAME = "シート並べ替え作業用"
 
 Enum E_ROW
@@ -59,6 +63,9 @@ Enum E_CLM
     CLM_SHT_NAME = 2
 End Enum
 
+'******************************************************************************
+'* 定数定義
+'******************************************************************************
 Private Type T_SHORTCUT_KEY
     sKey As String
     sMacroName As String
@@ -107,6 +114,15 @@ Private Function InitUserDefShortcut()
     Call AddUserDefShortcut("%^+{UP}", "'オートフィル実行(""Up"")'")
     Call AddUserDefShortcut("%^+{RIGHT}", "'オートフィル実行(""Right"")'")
     Call AddUserDefShortcut("%^+{LEFT}", "'オートフィル実行(""Left"")'")
+    
+    If COMMENT_VISIBLE_MODE_ENABLE = True Then
+        Call AddUserDefShortcut("{DOWN}", "'アクティブセルのコメントを表示(""Down"")'")
+        Call AddUserDefShortcut("{UP}", "'アクティブセルのコメントを表示(""Up"")'")
+        Call AddUserDefShortcut("{RIGHT}", "'アクティブセルのコメントを表示(""Right"")'")
+        Call AddUserDefShortcut("{LEFT}", "'アクティブセルのコメントを表示(""Left"")'")
+    Else
+        'Do Nothing
+    End If
     
     Call AddUserDefShortcut("^+j", "ハイパーリンクで飛ぶ")
     
@@ -760,6 +776,48 @@ Public Sub オートフィル実行( _
     
 '    Application.Calculation = xlCalculationAutomatic
 '    Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要：アクティブセルのコメントを表示する。
+' =       通ってきた隣接セルのコメントを非表示にする。
+' =============================================================================
+Public Sub アクティブセルのコメントを表示( _
+    ByVal sDirection As String _
+)
+'    Application.ScreenUpdating = False
+'    Application.Calculation = xlCalculationManual
+    
+    On Error Resume Next
+    
+    'セル移動
+    Select Case sDirection
+        Case "Right": ActiveCell.Offset(0, 1).Activate
+        Case "Left": ActiveCell.Offset(0, -1).Activate
+        Case "Down": ActiveCell.Offset(1, 0).Activate
+        Case "Up": ActiveCell.Offset(-1, 0).Activate
+        Case Else: Debug.Assert 1
+    End Select
+    
+    'アクティブセルコメント表示
+    ActiveCell.Comment.Visible = True
+    
+    '隣接セルコメント非表示
+    Select Case sDirection
+        Case "Right": ActiveCell.Offset(0, -1).Comment.Visible = False
+        Case "Left": ActiveCell.Offset(0, 1).Comment.Visible = False
+        Case "Down": ActiveCell.Offset(-1, 0).Comment.Visible = False
+        Case "Up": ActiveCell.Offset(1, 0).Comment.Visible = False
+        Case Else: Debug.Assert 1
+    End Select
+    
+    On Error GoTo 0
+    
+'    Application.Calculation = xlCalculationAutomatic
+'    Application.ScreenUpdating = True
+End Sub
+Sub test()
+    'Call アクティブセルのコメントを表示("Down")
 End Sub
 
 ' =============================================================================
