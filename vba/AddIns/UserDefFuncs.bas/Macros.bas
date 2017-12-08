@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.5
+' user define macros v2.6
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -45,7 +45,8 @@ Const NUM_MAX = 15
 Const NUM_MIN = 1
 
 '=== アクティブセルのコメントを表示() ===
-Const COMMENT_VISIBLE_MODE_ENABLE As Boolean = False
+Const SETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
+Const SHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
 
 '=== シート並べ替え作業用シートを作成() ===
 Private Const WORK_SHEET_NAME = "シート並べ替え作業用"
@@ -63,21 +64,12 @@ Enum E_CLM
     CLM_SHT_NAME = 2
 End Enum
 
-'******************************************************************************
-'* 定数定義
-'******************************************************************************
-Private Type T_SHORTCUT_KEY
-    sKey As String
-    sMacroName As String
-End Type
-Dim gtShortcutKey() As T_SHORTCUT_KEY
-
-' *****************************************************************************
-' * ショートカットキー定義
-' *****************************************************************************
-Private Function InitUserDefShortcut()
+'sOperate: Add/Update/Delete
+Private Function UpdateShortcutKeySettings( _
+    ByVal sOperate As String _
+)
     ' <<ショートカットキー追加方法>>
-    '   (1) 以下の追加先に「AddUserDefShortcut()」呼び出しを追加する。
+    '   (1) 以下の追加先に「UpdateShtcutSetting()」呼び出しを追加する。
     '       第一引数にはショートカットキー、第二引数にマクロ名を指定する。
     '       ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
     '         Shift：+
@@ -91,61 +83,70 @@ Private Function InitUserDefShortcut()
     '   (1) マクロ「ユーザー定義ショートカットキーを解除()」を実行する。
     
     '▼▼▼ 追加先 ▼▼▼
-'   Call AddUserDefShortcut("   ", "選択範囲内で中央")
+    Call UpdateShtcutSetting("", "選択範囲内で中央", sOperate)
 
-    Call AddUserDefShortcut("^+c", "ダブルクォートを除いてセルコピー")
-'   Call AddUserDefShortcut("   ", "選択範囲をファイルエクスポート")
-'   Call AddUserDefShortcut("   ", "選択範囲をコマンド実行")
+    Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてセルコピー", sOperate)
+    Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
+    Call UpdateShtcutSetting("", "選択範囲をコマンド実行", sOperate)
 
-'   Call AddUserDefShortcut("   ", "全シート名をコピー")
-'   Call AddUserDefShortcut("   ", "シート表示非表示を切り替え")
-'   Call AddUserDefShortcut("   ", "シート並べ替え作業用シートを作成")
+    Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
+    Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
+    Call UpdateShtcutSetting("", "シート並べ替え作業用シートを作成", sOperate)
 
-'   Call AddUserDefShortcut("   ", "セル内の丸数字をデクリメント")
-'   Call AddUserDefShortcut("   ", "セル内の丸数字をインクリメント")
+    Call UpdateShtcutSetting("", "セル内の丸数字をデクリメント", sOperate)
+    Call UpdateShtcutSetting("", "セル内の丸数字をインクリメント", sOperate)
 
-'   Call AddUserDefShortcut("   ", "ツリーをグループ化")
-'   Call AddUserDefShortcut("   ", "ハイパーリンク一括オープン")
+    Call UpdateShtcutSetting("", "ツリーをグループ化", sOperate)
+    Call UpdateShtcutSetting("", "ハイパーリンク一括オープン", sOperate)
 
-'   Call AddUserDefShortcut("   ", "フォント色をトグル")
-'   Call AddUserDefShortcut("   ", "背景色をトグル")
+    Call UpdateShtcutSetting("", "フォント色をトグル", sOperate)
+    Call UpdateShtcutSetting("", "背景色をトグル", sOperate)
     
-    Call AddUserDefShortcut("%^+{DOWN}", "'オートフィル実行(""Down"")'")
-    Call AddUserDefShortcut("%^+{UP}", "'オートフィル実行(""Up"")'")
-    Call AddUserDefShortcut("%^+{RIGHT}", "'オートフィル実行(""Right"")'")
-    Call AddUserDefShortcut("%^+{LEFT}", "'オートフィル実行(""Left"")'")
+    Call UpdateShtcutSetting("%^+{DOWN}", "'オートフィル実行(""Down"")'", sOperate)
+    Call UpdateShtcutSetting("%^+{UP}", "'オートフィル実行(""Up"")'", sOperate)
+    Call UpdateShtcutSetting("%^+{RIGHT}", "'オートフィル実行(""Right"")'", sOperate)
+    Call UpdateShtcutSetting("%^+{LEFT}", "'オートフィル実行(""Left"")'", sOperate)
     
-    If COMMENT_VISIBLE_MODE_ENABLE = True Then
-        Call AddUserDefShortcut("{DOWN}", "'アクティブセルのコメントを表示(""Down"")'")
-        Call AddUserDefShortcut("{UP}", "'アクティブセルのコメントを表示(""Up"")'")
-        Call AddUserDefShortcut("{RIGHT}", "'アクティブセルのコメントを表示(""Right"")'")
-        Call AddUserDefShortcut("{LEFT}", "'アクティブセルのコメントを表示(""Left"")'")
+    Call UpdateShtcutSetting("%{F9}", "アクティブセルのコメントを表示_モード切替", sOperate)
+    
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim sValue As String
+    Dim bIsRet As Boolean
+    bIsRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
+    If bIsRet = True Then
+        If sValue = "True" Then
+            Call UpdateShtcutSetting("{DOWN}", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
+            Call UpdateShtcutSetting("{UP}", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
+            Call UpdateShtcutSetting("{RIGHT}", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
+            Call UpdateShtcutSetting("{LEFT}", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
+        ElseIf sValue = "False" Then
+            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
+        Else
+            Debug.Assert False
+        End If
     Else
-        'Do Nothing
+        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
     End If
     
-    Call AddUserDefShortcut("^+j", "ハイパーリンクで飛ぶ")
+    Call UpdateShtcutSetting("^+j", "ハイパーリンクで飛ぶ", sOperate)
     
-'   Call AddUserDefShortcut("   ", "自動列幅調整")
-'   Call AddUserDefShortcut("   ", "自動行幅調整")
+    Call UpdateShtcutSetting("", "自動列幅調整", sOperate)
+    Call UpdateShtcutSetting("", "自動行幅調整", sOperate)
     
-    Call AddUserDefShortcut("^+f", "最前面へ移動")
-    Call AddUserDefShortcut("^+b", "最背面へ移動")
+    Call UpdateShtcutSetting("^+f", "最前面へ移動", sOperate)
+    Call UpdateShtcutSetting("^+b", "最背面へ移動", sOperate)
     '▲▲▲ 追加先 ▲▲▲
 End Function
 
-Public Sub ユーザー定義ショートカットキーを設定()
-    Call InitUserDefShortcut
-    Call EnableUserDefShortcut
-End Sub
-
-Public Sub ユーザー定義ショートカットキーを解除()
-    Call InitUserDefShortcut
-    Call DisableUserDefShortcut
-End Sub
-
 ' *****************************************************************************
-' * マクロ定義
+' * 外部公開用マクロ
 ' *****************************************************************************
 ' =============================================================================
 ' = 概要：選択セルに対して「選択範囲内で中央」を実行する
@@ -816,8 +817,38 @@ Public Sub アクティブセルのコメントを表示( _
 '    Application.Calculation = xlCalculationAutomatic
 '    Application.ScreenUpdating = True
 End Sub
-Sub test()
-    'Call アクティブセルのコメントを表示("Down")
+
+' =============================================================================
+' = 概要：アクティブセルのコメント表示の有効/無効を切り替える
+' =============================================================================
+Public Sub アクティブセルのコメントを表示_モード切替()
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim bRet As Boolean
+    Dim sValue As String
+    bRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
+    If bRet = True Then
+        If sValue = "True" Then
+            MsgBox "アクティブセルのコメントを表示を無効にします"
+            Call DisableShortcutKeys
+            Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "False")
+            Call UpdateShortcutKeySettings("Update")
+            Call EnableShortcutKeys
+        Else
+            MsgBox "アクティブセルのコメントを表示を有効にします"
+            Call DisableShortcutKeys
+            Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "True")
+            Call UpdateShortcutKeySettings("Update")
+            Call EnableShortcutKeys
+        End If
+        Debug.Assert bRet
+    Else
+        MsgBox "アクティブセルのコメントを表示を無効にします"
+        Call DisableShortcutKeys
+        Call clSetting.Add(SETTING_KEY_CMNT_VSBL_ENB, "False")
+        Call UpdateShortcutKeySettings("Update")
+        Call EnableShortcutKeys
+    End If
 End Sub
 
 ' =============================================================================
@@ -854,6 +885,51 @@ Public Sub 最前面へ移動()
 End Sub
 Public Sub 最背面へ移動()
     Selection.ShapeRange.ZOrder msoSendToBack
+End Sub
+
+' *****************************************************************************
+' * 内部用マクロ
+' *****************************************************************************
+'設定項目一覧を出力
+Private Sub OutputSettingList()
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim lSettingNum As Long
+    lSettingNum = clSetting.Count
+    
+    Debug.Print ""
+    Debug.Print "*** 設定項目一覧出力 ***"
+    If lSettingNum = 0 Then
+        'Do Nothing
+    Else
+        Dim lSettingIdx As Long
+        For lSettingIdx = 1 To lSettingNum
+            Dim sSettingKey As String
+            Dim sSettingValue As String
+            Call clSetting.SearchWithIdx(lSettingIdx, sSettingKey, sSettingValue)
+            Debug.Print sSettingKey & " = " & sSettingValue
+        Next lSettingIdx
+    End If
+End Sub
+
+Private Sub ユーザー定義ショートカットキー設定を追加()
+    Call UpdateShortcutKeySettings("Add")
+End Sub
+
+Private Sub ユーザー定義ショートカットキー設定を削除()
+    Call UpdateShortcutKeySettings("Delete")
+End Sub
+
+Private Sub ユーザー定義ショートカットキー設定を更新()
+    Call UpdateShortcutKeySettings("Update")
+End Sub
+
+Private Sub ユーザー定義ショートカットキーを有効化()
+    Call EnableShortcutKeys
+End Sub
+
+Private Sub ユーザー定義ショートカットキーを無効化()
+    Call DisableShortcutKeys
 End Sub
 
 ' *****************************************************************************
@@ -1080,35 +1156,90 @@ End Function
         MsgBox sBuf
     End Sub
 
-'ショートカットキーを追加
-Private Function AddUserDefShortcut( _
+'ショートカットキー設定を追加/削除
+Private Function UpdateShtcutSetting( _
     ByVal sKey As String, _
-    ByVal sMacroName As String _
+    ByVal sMacroName As String, _
+    ByVal sMode As String _
 )
-    If Sgn(gtShortcutKey) = 0 Then
-        ReDim Preserve gtShortcutKey(0)
-    Else
-        ReDim Preserve gtShortcutKey(UBound(gtShortcutKey) + 1)
-    End If
-    gtShortcutKey(UBound(gtShortcutKey)).sKey = sKey
-    gtShortcutKey(UBound(gtShortcutKey)).sMacroName = sMacroName
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim sSettingKey As String
+    Dim sSettingValue As String
+    sSettingKey = SHTCUTKEY_KEYWORD_PREFIX & "_" & sMacroName
+    sSettingValue = sKey
+    Select Case sMode
+        Case "Add": Call clSetting.Add(sSettingKey, sSettingValue)
+        Case "Update": Call clSetting.Update(sSettingKey, sSettingValue)
+        Case "Delete": Call clSetting.Delete(sSettingKey)
+        Case Else: Debug.Assert False
+    End Select
 End Function
 
 'ショートカットキーを有効化
-Private Function EnableUserDefShortcut()
-    Dim lIdx As Long
-    For lIdx = LBound(gtShortcutKey) To UBound(gtShortcutKey)
-        Application.OnKey gtShortcutKey(lIdx).sKey, gtShortcutKey(lIdx).sMacroName
-    Next lIdx
+Private Function EnableShortcutKeys()
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim lNum As Long
+    lNum = clSetting.Count
+    If lNum = 0 Then
+        'Do Nothing
+    Else
+        Dim lLastRow As Long
+        lLastRow = lNum
+        Dim lRowIdx As Long
+        For lRowIdx = 1 To lLastRow
+            Dim sSettingKey As String
+            Dim sSettingValue As String
+            Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
+            '*** ショートカット設定の場合 ***
+            If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
+                Dim sShrcutMacroName As String
+                Dim sShtcutKey As String
+                sShrcutMacroName = Replace(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX & "_", "")
+                sShtcutKey = sSettingValue
+                If sShtcutKey = "" Then
+                    'Do Nothing
+                Else
+                    Application.OnKey sShtcutKey, sShrcutMacroName
+                End If
+            
+            '*** ショートカット設定でない場合 ***
+            Else
+                'Do Nothing
+            End If
+        Next lRowIdx
+    End If
 End Function
 
 'ショートカットキーを無効化
-Private Function DisableUserDefShortcut()
-    Dim lIdx As Long
-    For lIdx = LBound(gtShortcutKey) To UBound(gtShortcutKey)
-        Application.OnKey gtShortcutKey(lIdx).sKey
-    Next lIdx
+Private Function DisableShortcutKeys()
+    Dim clSetting As AddInSetting
+    Set clSetting = New AddInSetting
+    Dim lNum As Long
+    lNum = clSetting.Count
+    If lNum = 0 Then
+        'Do Nothing
+    Else
+        Dim lLastRow As Long
+        lLastRow = lNum
+        Dim lRowIdx As Long
+        For lRowIdx = 1 To lLastRow
+            Dim sSettingKey As String
+            Dim sSettingValue As String
+            Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
+            If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
+                Dim sShtcutKey As String
+                sShtcutKey = sSettingValue
+                If sShtcutKey = "" Then
+                    'Do Nothing
+                Else
+                    Application.OnKey sShtcutKey
+                End If
+            Else
+                'Do Nothing
+            End If
+        Next lRowIdx
+    End If
 End Function
-
-
 
