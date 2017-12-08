@@ -912,23 +912,23 @@ Private Sub OutputSettingList()
     End If
 End Sub
 
-Private Sub ユーザー定義ショートカットキー設定を追加()
+Public Sub ユーザー定義ショートカットキー設定を追加()
     Call UpdateShortcutKeySettings("Add")
 End Sub
 
-Private Sub ユーザー定義ショートカットキー設定を削除()
+Public Sub ユーザー定義ショートカットキー設定を削除()
     Call UpdateShortcutKeySettings("Delete")
 End Sub
 
-Private Sub ユーザー定義ショートカットキー設定を更新()
+Public Sub ユーザー定義ショートカットキー設定を更新()
     Call UpdateShortcutKeySettings("Update")
 End Sub
 
-Private Sub ユーザー定義ショートカットキーを有効化()
+Public Sub ユーザー定義ショートカットキーを有効化()
     Call EnableShortcutKeys
 End Sub
 
-Private Sub ユーザー定義ショートカットキーを無効化()
+Public Sub ユーザー定義ショートカットキーを無効化()
     Call DisableShortcutKeys
 End Sub
 
