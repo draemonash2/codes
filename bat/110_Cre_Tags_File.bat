@@ -8,7 +8,7 @@ echo ###  Create tag sourse is ...
 echo ###    %DIR_PATH%
 pause
 echo ###  Wait for a while...
-cd %DIR_PATH%
+pushd %DIR_PATH%
    if     %TAG_TYPE% == a (
     ctags -R
     gtags -v
