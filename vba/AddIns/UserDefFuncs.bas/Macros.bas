@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.6
+' user define macros v2.7
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -27,7 +27,8 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・背景色をトグル                     背景色を「黄」⇔「背景色なし」でトグルする
 ' =
 ' =    ・オートフィル実行                   オートフィルを実行する
-' =    ・アクティブセルのコメントを表示     アクティブセルのコメントを表示する
+' =    ・アクティブセルコメントのみ表示     アクティブセルコメントのみ表示する
+' =    ・アクティブセルコメントのみ表示および移動  アクティブセルコメントのみ表示し、移動する
 ' =    ・ハイパーリンクで飛ぶ               アクティブセルからハイパーリンク先に飛ぶ
 ' =
 ' =    ・自動列幅調整                       列幅を自動調整する
@@ -44,7 +45,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Const NUM_MAX = 15
 Const NUM_MIN = 1
 
-'=== アクティブセルのコメントを表示() ===
+'=== アクティブセルコメントのみ表示および移動() ===
 Const SETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
 Const SHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
 
@@ -107,7 +108,7 @@ Private Function UpdateShortcutKeySettings( _
     Call UpdateShtcutSetting("%^+{RIGHT}", "'オートフィル実行(""Right"")'", sOperate)
     Call UpdateShtcutSetting("%^+{LEFT}", "'オートフィル実行(""Left"")'", sOperate)
     
-    Call UpdateShtcutSetting("%{F9}", "アクティブセルのコメントを表示_モード切替", sOperate)
+    Call UpdateShtcutSetting("%{F9}", "アクティブセルコメントのみ表示および移動_モード切替", sOperate)
     
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -116,23 +117,23 @@ Private Function UpdateShortcutKeySettings( _
     bIsRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
     If bIsRet = True Then
         If sValue = "True" Then
-            Call UpdateShtcutSetting("{DOWN}", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
-            Call UpdateShtcutSetting("{UP}", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
-            Call UpdateShtcutSetting("{RIGHT}", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
-            Call UpdateShtcutSetting("{LEFT}", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
+            Call UpdateShtcutSetting("{DOWN}", "'アクティブセルコメントのみ表示および移動(""Down"")'", sOperate)
+            Call UpdateShtcutSetting("{UP}", "'アクティブセルコメントのみ表示および移動(""Up"")'", sOperate)
+            Call UpdateShtcutSetting("{RIGHT}", "'アクティブセルコメントのみ表示および移動(""Right"")'", sOperate)
+            Call UpdateShtcutSetting("{LEFT}", "'アクティブセルコメントのみ表示および移動(""Left"")'", sOperate)
         ElseIf sValue = "False" Then
-            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
-            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
-            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
-            Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Down"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Up"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Right"")'", sOperate)
+            Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Left"")'", sOperate)
         Else
             Debug.Assert False
         End If
     Else
-        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Down"")'", sOperate)
-        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Up"")'", sOperate)
-        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Right"")'", sOperate)
-        Call UpdateShtcutSetting("", "'アクティブセルのコメントを表示(""Left"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Down"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Up"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Right"")'", sOperate)
+        Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Left"")'", sOperate)
     End If
     
     Call UpdateShtcutSetting("^+j", "ハイパーリンクで飛ぶ", sOperate)
@@ -780,16 +781,21 @@ Public Sub オートフィル実行( _
 End Sub
 
 ' =============================================================================
-' = 概要：アクティブセルのコメントを表示する。
-' =       通ってきた隣接セルのコメントを非表示にする。
+' = 概要：アクティブセルコメントのみ表示し、移動する。
 ' =============================================================================
-Public Sub アクティブセルのコメントを表示( _
+Public Sub アクティブセルコメントのみ表示および移動( _
     ByVal sDirection As String _
 )
 '    Application.ScreenUpdating = False
 '    Application.Calculation = xlCalculationManual
     
     On Error Resume Next
+    
+    'アクティブセルコメント表示
+    Dim cmComment As Comment
+    For Each cmComment In ActiveSheet.Comments
+        cmComment.Visible = False
+    Next cmComment
     
     'セル移動
     Select Case sDirection
@@ -803,14 +809,29 @@ Public Sub アクティブセルのコメントを表示( _
     'アクティブセルコメント表示
     ActiveCell.Comment.Visible = True
     
-    '隣接セルコメント非表示
-    Select Case sDirection
-        Case "Right": ActiveCell.Offset(0, -1).Comment.Visible = False
-        Case "Left": ActiveCell.Offset(0, 1).Comment.Visible = False
-        Case "Down": ActiveCell.Offset(-1, 0).Comment.Visible = False
-        Case "Up": ActiveCell.Offset(1, 0).Comment.Visible = False
-        Case Else: Debug.Assert 1
-    End Select
+    On Error GoTo 0
+    
+'    Application.Calculation = xlCalculationAutomatic
+'    Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要：アクティブセルコメントのみ表示する。
+' =============================================================================
+Public Sub アクティブセルコメントのみ表示()
+'    Application.ScreenUpdating = False
+'    Application.Calculation = xlCalculationManual
+    
+    On Error Resume Next
+    
+    'アクティブセルコメント表示
+    Dim cmComment As Comment
+    For Each cmComment In ActiveSheet.Comments
+        cmComment.Visible = False
+    Next cmComment
+    
+    'アクティブセルコメント表示
+    ActiveCell.Comment.Visible = True
     
     On Error GoTo 0
     
@@ -821,7 +842,7 @@ End Sub
 ' =============================================================================
 ' = 概要：アクティブセルのコメント表示の有効/無効を切り替える
 ' =============================================================================
-Public Sub アクティブセルのコメントを表示_モード切替()
+Public Sub アクティブセルコメントのみ表示および移動_モード切替()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
     Dim bRet As Boolean
@@ -829,13 +850,13 @@ Public Sub アクティブセルのコメントを表示_モード切替()
     bRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
     If bRet = True Then
         If sValue = "True" Then
-            MsgBox "アクティブセルのコメントを表示を無効にします"
+            MsgBox "アクティブセルコメントのみ表示および移動を無効にします"
             Call DisableShortcutKeys
             Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "False")
             Call UpdateShortcutKeySettings("Update")
             Call EnableShortcutKeys
         Else
-            MsgBox "アクティブセルのコメントを表示を有効にします"
+            MsgBox "アクティブセルコメントのみ表示および移動を有効にします"
             Call DisableShortcutKeys
             Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "True")
             Call UpdateShortcutKeySettings("Update")
@@ -843,7 +864,7 @@ Public Sub アクティブセルのコメントを表示_モード切替()
         End If
         Debug.Assert bRet
     Else
-        MsgBox "アクティブセルのコメントを表示を無効にします"
+        MsgBox "アクティブセルコメントのみ表示および移動を無効にします"
         Call DisableShortcutKeys
         Call clSetting.Add(SETTING_KEY_CMNT_VSBL_ENB, "False")
         Call UpdateShortcutKeySettings("Update")
