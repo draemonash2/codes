@@ -244,17 +244,27 @@ End Function
 Public Function ConvDate2String( _
     ByVal sDateTime _
 )
-    ConvDate2String = Year(sDateTime) & _
-                     String(2 - Len(Month(sDateTime)), "0") & Month(sDateTime) & _
-                     String(2 - Len(Day(sDateTime)), "0") & Day(sDateTime) & _
-                     "-" & _
-                     String(2 - Len(Hour(sDateTime)), "0") & Hour(sDateTime) & _
-                     String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
-                     String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
+    On Error Resume Next
+    Dim sDateStr
+    sDateStr = _
+        String(4 - Len(Year(sDateTime)),   "0") & Year(sDateTime)   & _
+        String(2 - Len(Month(sDateTime)),  "0") & Month(sDateTime)  & _
+        String(2 - Len(Day(sDateTime)),    "0") & Day(sDateTime)    & _
+        "-" & _
+        String(2 - Len(Hour(sDateTime)),   "0") & Hour(sDateTime)   & _
+        String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
+        String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
+    If Err.Number = 0 Then
+        ConvDate2String = sDateStr
+    Else
+        ConvDate2String = ""
+    End If
+    On Error Goto 0
 End Function
     'Call Test_ConvDate2String()
     Private Sub Test_ConvDate2String()
-        MsgBox ConvDate2String(Now())
+        MsgBox  ConvDate2String(Now()) & vbNewLine & _
+                ConvDate2String("2001/12/32 1:00:0")
     End Sub
 
 ' ==================================================================
