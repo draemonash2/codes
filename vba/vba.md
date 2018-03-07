@@ -1,18 +1,16 @@
-&link_edit(text=ここを編集)
+# アドイン
+- [VbePlus](http://www.vector.co.jp/soft/dl/win95/prog/se176543.html)
+	- インストール後、VBEのツールバー→アドイン→アドインマネージャ
+	- VbePlus のロード方法を「起動時/ロード」に変更
+- [MZTools](http://zabi.0am.jp/?p=2676)
+	- インストールしても表示されない場合、HKEY_CURRENT_USER に必要なレジストリキーが登録されていない可能性がある。
+	- Administrator の HKEY_CURRENT_USER からコピーすること。
 
-* アドイン
-- [[VbePlus>http://www.vector.co.jp/soft/dl/win95/prog/se176543.html]]
--- インストール後、VBEのツールバー→アドイン→アドインマネージャ
--- VbePlus のロード方法を「起動時/ロード」に変更
-- [[MZTools>http://zabi.0am.jp/?p=2676]]
--- インストールしても表示されない場合、HKEY_CURRENT_USER に必要なレジストリキーが登録されていない可能性がある。
--- Administrator の HKEY_CURRENT_USER からコピーすること。
-
-* Tips
+# Tips
 - モジュール名と関数名を同じにすることはできない。
 - 二次元配列の再定義について
--- 一次元目の要素数は変更できない。二次元目のサイズのみ拡張できる。
--- 二次元目の要素数を変更した場合、一次元目にまで影響する。&br()（ex. (0, 1)、(1, 1) の要素数を持つ配列に対して (1, 1) ⇒ (1, 3) と要素数を変更した場合、(0, 3)、(1, 3) の配列となる）
+	- 一次元目の要素数は変更できない。二次元目のサイズのみ拡張できる。
+	- 二次元目の要素数を変更した場合、一次元目にまで影響する。&br()（ex. (0, 1)、(1, 1) の要素数を持つ配列に対して (1, 1) ⇒ (1, 3) と要素数を変更した場合、(0, 3)、(1, 3) の配列となる）
 - エラー「定数式が必要です」について
 -- デバッグを途中で停止すると、設定しているはずの値が未定義扱いとなりコンパイルエラーが発生することがある。
 -- 対策は ENUM 定義名を編集して再度戻す。
@@ -112,7 +110,7 @@ End Sub
 -- ポイント：Microsoftが定義する単位（おそらく）。8.38 ポイントはMSゴシック11ポイント(半角) で8文字と少し表示できる幅。
 -- ピクセル：ディスプレイの表示やプリンタの出力を構成する最小単位（小さな点）
 
-* VBE 設定
+# VBE 設定
 - Excel リボンに「開発」を追加
 -- ツール ⇒ オプション ⇒ リボンユーザー設定にて [*] 開発
 - 変数宣言を強制 (変数名が誤りでも実行時までエラーが発生しないため変更)
@@ -124,7 +122,7 @@ End Sub
 - 複数行コメントアウトボタン設置
 -- 表示 ⇒ ツールバー ⇒ [*] 編集 ⇒ オプション
 
-* VBE ショートカットキー
+# VBE ショートカットキー
 | 項目 | キー配置 |h
 | IntelliSense 実行 | Ctrl+Space |
 | IntelliSense 選択 | Tab        |
@@ -132,8 +130,8 @@ End Sub
 | 定義へ移動（≒タグジャンプ）  | Shift+F2 |
 | 元の場所へ移動（≒タグジャンプ）  | Ctrl+Shift+F2 |
 
-* 構文
-** 「～」は改行を示す。
+# 構文
+## 「～」は改行を示す。
 - 【変数強制定義】Option Explicit
 - 【変数/配列定義】Dim aVal(5) As Integer '要素数は０オリジン。左の例では要素数６の配列が作成される
 - 【定数定義】Const NUM As Integer = 1
@@ -409,7 +407,7 @@ End Sub
 -- xxx はフォーカス中のフォーム名。フォーム xxx にフォーカスがある場合だけ、KeyUp イベントが発生する。
 -- どのフォームにフォーカスがあっても動く KeyUp イベントを作りたい場合、全フォームに対して上記イベントを作る！
 
-* ライブラリ
+# ライブラリ
 - [[【ＸＬＳファイル存在確認～オープン～クローズ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelFile.bas]]
 - [[【ＴＸＴファイル存在確認～オープン～クローズ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
 - [[【ＴＸＴファイル存在確認～オープン～クローズ（キャラクタセット指定）】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
@@ -433,7 +431,7 @@ End Sub
 - [[【キー送信】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SendKeys.bas]]
 - [[【特殊貼り付け】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SpecialPaste.bas]]
 
-* サンプルコード
+# サンプルコード
 - [[【プログラムテンプレート】]]
 - [[【シート存在確認】]]
 - [[【セル検索（存在しない場合を考慮）】]]
@@ -451,7 +449,7 @@ End Sub
 -- 連想配列を使用することにより、膨大な件数(※)の検索が劇的に早くなる。
 --- ※ 検索対象 15 件以上（それ未満だと配列検索のほうが早い。.Exists API のオーバーヘッドのせい？）
 
-* その他
+# その他
 - 【型一覧】
 | データ型 | 名称 | 消費メモリ | 格納できる範囲 |h
 | Integer | 整数型 | 2バイト | -32,768 ～ 32,767 |
@@ -485,5 +483,3 @@ End Sub
 | XlErrNum   | 2036       | #NUM!          |
 | XlErrRef   | 2023       | #REF!          |
 | XlErrValue | 2015       | #VALUE!        |
-
-&link_edit(text=ここを編集)
