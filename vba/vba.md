@@ -12,74 +12,74 @@
 	- 一次元目の要素数は変更できない。二次元目のサイズのみ拡張できる。
 	- 二次元目の要素数を変更した場合、一次元目にまで影響する。&br()（ex. (0, 1)、(1, 1) の要素数を持つ配列に対して (1, 1) ⇒ (1, 3) と要素数を変更した場合、(0, 3)、(1, 3) の配列となる）
 - エラー「定数式が必要です」について
--- デバッグを途中で停止すると、設定しているはずの値が未定義扱いとなりコンパイルエラーが発生することがある。
--- 対策は ENUM 定義名を編集して再度戻す。
+	- デバッグを途中で停止すると、設定しているはずの値が未定義扱いとなりコンパイルエラーが発生することがある。
+	- 対策は ENUM 定義名を編集して再度戻す。
 - Sheets と Worksheets の違い
--- Excel のシートには複数の種類がある。（ex.グラフシート、モジュールシート、ワークシート…）
--- Sheets は「上記のすべてを包含した」オブジェクト
--- Worksheets は「ワークシートのみ」のオブジェクト
+	- Excel のシートには複数の種類がある。（ex.グラフシート、モジュールシート、ワークシート…）
+	- Sheets は「上記のすべてを包含した」オブジェクト
+	- Worksheets は「ワークシートのみ」のオブジェクト
 - IntegerとLongどちらが良い？
--- 型の違いによる速度比較
---- ５千万回値の代入を行った結果、Integer型：515ms、Long型：465ms かかった。（10%程Long型の方が早い）
----- 環境：Windows 7 64bit
----- オフィス：Office 2013 32bit
---- 理由は動作環境が 32bit Office のため、 4Byte 型変数の方がアクセスが早いためと思われる。
--- 型の違いによるサイズ比較
---- Integer型変数（2Byte）なら１GB満たすまで５億個変数宣言できる
---- Long型変数（4Byte）なら１GB満たすまで2.5億個変数宣言できる（容量の圧迫は気にならない）
--- 上記を踏まえると Long 型を使用するのが良い！（アクセスも早いし、容量も気にするほど大きくないため）
+	- 型の違いによる速度比較
+		- ５千万回値の代入を行った結果、Integer型：515ms、Long型：465ms かかった。（10%程Long型の方が早い）
+			- 環境：Windows 7 64bit
+			- オフィス：Office 2013 32bit
+		- 理由は動作環境が 32bit Office のため、 4Byte 型変数の方がアクセスが早いためと思われる。
+	- 型の違いによるサイズ比較
+		- Integer型変数（2Byte）なら１GB満たすまで５億個変数宣言できる
+		- Long型変数（4Byte）なら１GB満たすまで2.5億個変数宣言できる（容量の圧迫は気にならない）
+	- 上記を踏まえると Long 型を使用するのが良い！（アクセスも早いし、容量も気にするほど大きくないため）
 - Const配列の作り方
--- Const配列は VBA では定義できないが、Const 文字列を Split することで実現可能。（書き換えられてしまうが。。）
--- Const C_AAA = "Hello!,World!" : asArray = Split(C_AAA, ",")
+	- Const配列は VBA では定義できないが、Const 文字列を Split することで実現可能。（書き換えられてしまうが。。）
+	- Const C_AAA = "Hello!,World!" : asArray = Split(C_AAA, ",")
 - CreateObject 関数について
--- 作成したオブジェクトは、使用後に必ず Nothing を設定すること！
--- オブジェクトが解放されなくなりメモリに残り続けることになる！ 
+	- 作成したオブジェクトは、使用後に必ず Nothing を設定すること！
+	- オブジェクトが解放されなくなりメモリに残り続けることになる！ 
 - 連続した空白を持つ文字列を Split 関数で分割した場合、空文字列の要素ができてしまう問題
--- 事前に連続した空白を一つにまとめてから Split する
---- [[サンプルコード]]
+	- 事前に連続した空白を一つにまとめてから Split する
+		- [[サンプルコード]]
 - クラスモジュールのメリット・デメリット
--- デメリット
---- インスタンス化したオブジェクトを他クラスで参照できない。
----- ⇒オブジェクトを生成したクラスをグローバルにすれば良い
---- Property を使用する場合、コード量が多い
---- 構造体が使えない
----- クラスは入れ子にすることができる。（ [[クラスの入れ子]] ）
---- 列挙体が使えない
--- メリット
---- グローバル変数を隠蔽できる。
----- グローバル変数を変更する場合の影響範囲をクラス内に制限できる
---- 別クラスなら同じ関数名を使える。
----- [[クラスのポリモーフィズム]]
---- 初期化処理呼び出し不要。
+	- デメリット
+		- インスタンス化したオブジェクトを他クラスで参照できない。
+			- ⇒オブジェクトを生成したクラスをグローバルにすれば良い
+		- Property を使用する場合、コード量が多い
+		- 構造体が使えない
+			- クラスは入れ子にすることができる。（ [[クラスの入れ子]] ）
+		- 列挙体が使えない
+	- メリット
+		- グローバル変数を隠蔽できる。
+			- グローバル変数を変更する場合の影響範囲をクラス内に制限できる
+		- 別クラスなら同じ関数名を使える。
+			- [[クラスのポリモーフィズム]]
+		- 初期化処理呼び出し不要。
 - 高速化方法まとめ
--- csv ファイル取り込み方法
--- 一覧へのアクセスは Dictionary を使う。
--- セルへのアクセスは variant 型変数へ代入してから書き戻す。
--- グラフ生成は極力オプションを減らす。
--- 正規表現検索は極力使わない。InStr で代用（先頭にあるかどうかは InStr() = 0 で判定する）
--- 空白埋めは一つ一つセルに代入せず、空白セル選択からの一括値代入。
--- With を使う。
--- Integer ではなく Long を使う。
+	- csv ファイル取り込み方法
+	- 一覧へのアクセスは Dictionary を使う。
+	- セルへのアクセスは variant 型変数へ代入してから書き戻す。
+	- グラフ生成は極力オプションを減らす。
+	- 正規表現検索は極力使わない。InStr で代用（先頭にあるかどうかは InStr() = 0 で判定する）
+	- 空白埋めは一つ一つセルに代入せず、空白セル選択からの一括値代入。
+	- With を使う。
+	- Integer ではなく Long を使う。
 - 配列・Collection・Dictionary の速度
--- 詳細な測定結果は添付ファイル「Array・Collection・Dictionary速度比較.xlsm」参照
---- 配列
----- 全体的に爆速！インデックスアクセスだけなら配列を使うこと！
---- Dictionary
----- インデックスアクセスは遅すぎるので、絶対インデックスアクセスするな！必ず For Each でアクセスすること！
---- Collection
----- 大きな要素番号にアクセスする際は遅くなる！ので、要素数が予想できない場合は基本使わない。ただし、Key アクセスの場合は問題なし！
+	- 詳細な測定結果は添付ファイル「Array・Collection・Dictionary速度比較.xlsm」参照
+		- 配列
+			- 全体的に爆速！インデックスアクセスだけなら配列を使うこと！
+		- Dictionary
+			- インデックスアクセスは遅すぎるので、絶対インデックスアクセスするな！必ず For Each でアクセスすること！
+		- Collection
+			- 大きな要素番号にアクセスする際は遅くなる！ので、要素数が予想できない場合は基本使わない。ただし、Key アクセスの場合は問題なし！
 - CPU 使用率抑える方法
--- 長い処理の間に sleep 1 を追加する。
--- 処理は長くなるが、バックグラウンドでの処理がはかどる。
+	- 長い処理の間に sleep 1 を追加する。
+	- 処理は長くなるが、バックグラウンドでの処理がはかどる。
 - ファイルオープン「バイナリモード」について
--- 改行コードなどを区切り文字として扱わず、１バイト単位でファイルの先頭から逐次読み書きする。
--- バイナリファイルの読み書きをする際に使用する。
+	- 改行コードなどを区切り文字として扱わず、１バイト単位でファイルの先頭から逐次読み書きする。
+	- バイナリファイルの読み書きをする際に使用する。
 - Like 演算子について
--- 正規表現の「ように」比較できる。
--- 使用例：If sAddress Like "[!東京,横浜,千葉]*" Then ～
---- 「東京、横浜、千葉ではない住所」の場合～
+	- 正規表現の「ように」比較できる。
+	- 使用例：If sAddress Like "[!東京,横浜,千葉]*" Then ～
+		- 「東京、横浜、千葉ではない住所」の場合～
 
-| 記号         | 意味                                        | 使用例      | マッチする文字列          |h
+| 記号         | 意味                                        | 使用例      | マッチする文字列          |
 | ?            | 任意の1文字                                 | たな?       | たなか、たなべ、たなし(など)       |
 | *            | 0個以上の任意の文字                         | たか*       | たかだ、たかなか、たかやなぎ(など) |
 | #            | 1文字の数値(0～9)                           | ##          | 01、26、95(など) |
@@ -87,8 +87,8 @@
 | [!charlist]  | charlistに指定した文字の中に含まれない1文字 | [!A-F]      | G 、H、I(など) |
 
 - On Error の入れ子について
--- On Error は関数を跨いだ入れ子をしても問題なし。
--- ただし、関数内の入れ子は適用されない。
+	- On Error は関数を跨いだ入れ子をしても問題なし。
+	- ただし、関数内の入れ子は適用されない。
 #highlight( vb ){{
 Sub main()
     On Error Resume Next
@@ -107,20 +107,20 @@ Sub subfunction()
 End Sub
 }}
 - 大きさの単位「ポイント」と「ピクセル」について
--- ポイント：Microsoftが定義する単位（おそらく）。8.38 ポイントはMSゴシック11ポイント(半角) で8文字と少し表示できる幅。
--- ピクセル：ディスプレイの表示やプリンタの出力を構成する最小単位（小さな点）
+	- ポイント：Microsoftが定義する単位（おそらく）。8.38 ポイントはMSゴシック11ポイント(半角) で8文字と少し表示できる幅。
+	- ピクセル：ディスプレイの表示やプリンタの出力を構成する最小単位（小さな点）
 
 # VBE 設定
 - Excel リボンに「開発」を追加
--- ツール ⇒ オプション ⇒ リボンユーザー設定にて [*] 開発
+	- ツール ⇒ オプション ⇒ リボンユーザー設定にて [*] 開発
 - 変数宣言を強制 (変数名が誤りでも実行時までエラーが発生しないため変更)
--- ツール ⇒ オプション ⇒ 編集 ⇒ [*] 変数の宣言を強制する
+	- ツール ⇒ オプション ⇒ 編集 ⇒ [*] 変数の宣言を強制する
 - 自動構文チェックを無視 (改行の度に警告ウィンドウが発生するため)
--- ツール ⇒ オプション ⇒ 編集 ⇒ [_] 自動構文チェック
+	- ツール ⇒ オプション ⇒ 編集 ⇒ [_] 自動構文チェック
 - エディタ文字・背景色の変更
--- ツール ⇒ オプション ⇒ エディタ ⇒ コードの表示色 を良しなに…
+	- ツール ⇒ オプション ⇒ エディタ ⇒ コードの表示色 を良しなに…
 - 複数行コメントアウトボタン設置
--- 表示 ⇒ ツールバー ⇒ [*] 編集 ⇒ オプション
+	- 表示 ⇒ ツールバー ⇒ [*] 編集 ⇒ オプション
 
 # VBE ショートカットキー
 | 項目 | キー配置 |h
@@ -168,31 +168,31 @@ End Sub
 - 【正規表現】サンプルコード参照
 
 - 【コレクション 定義】Dim cTrgtPaths As Variant ～ Set cTrgtPaths = CreateObject("System.Collections.ArrayList")
--- 【コレクション 追加】cTrgtPaths.Add "c:\test\a.txt"
--- 【コレクション 値取り出し（単一）】cTrgtPaths.Item(0) 'c:\test\a.txt（０オリジン）
--- 【コレクション 値取り出し（ループ）】Dim vTrgtPath As Variant ～ For Each vTrgtPath In cTrgtPaths ～ MsgBox vTrgtPath ～ Next
--- 【コレクション 要素数取得】cTrgtPaths.Count '要素数（末尾の要素番号ではない）
--- 【コレクション 削除】cTrgtPaths.Remove "c:\test\b.xlsx" '要素の値を指定する。要素番号では削除できない。
--- 【コレクション 挿入】cTrgtPaths.Insert 2, "c:\test\e.ppt" '要素番号2へ挿入される（元要素番号2以降が一要素ずれる）
--- 【コレクション ソート】cTrgtPaths.Sort
--- 【コレクション 配列変換】Dim avTrgtPaths As Variant ～ avTrgtPaths = cTrgtPaths.ToArray() 'Variant型配列に変換
--- 【コレクション 全要素削除】cTrgtPaths.Clear
+	- 【コレクション 追加】cTrgtPaths.Add "c:\test\a.txt"
+	- 【コレクション 値取り出し（単一）】cTrgtPaths.Item(0) 'c:\test\a.txt（０オリジン）
+	- 【コレクション 値取り出し（ループ）】Dim vTrgtPath As Variant ～ For Each vTrgtPath In cTrgtPaths ～ MsgBox vTrgtPath ～ Next
+	- 【コレクション 要素数取得】cTrgtPaths.Count '要素数（末尾の要素番号ではない）
+	- 【コレクション 削除】cTrgtPaths.Remove "c:\test\b.xlsx" '要素の値を指定する。要素番号では削除できない。
+	- 【コレクション 挿入】cTrgtPaths.Insert 2, "c:\test\e.ppt" '要素番号2へ挿入される（元要素番号2以降が一要素ずれる）
+	- 【コレクション ソート】cTrgtPaths.Sort
+	- 【コレクション 配列変換】Dim avTrgtPaths As Variant ～ avTrgtPaths = cTrgtPaths.ToArray() 'Variant型配列に変換
+	- 【コレクション 全要素削除】cTrgtPaths.Clear
 
 - 【連想配列 定義】Dim oPriceOfFruit As Object ～ Set oPriceOfFruit = CreateObject("Scripting.Dictionary")&br()（CreateObject 関数でインスタンス化した場合、VBA エディターでの自動補完（インテリセンス）が働かない！）
--- 【連想配列 キー/項目追加】oPriceOfFruit.Add("リンゴ", "100円")
--- 【連想配列 存在確認】oPriceOfFruit.Exists("リンゴ")
--- 【連想配列 キー取得（For Each）】For Each vKey In oPriceOfFruit ～ Debug.print vKey ～ Next 'vKey は variant 型
--- 【連想配列 項目取得（キー）】oPriceOfFruit.Item("リンゴ")
--- 【連想配列 キー取得（インデックス）】oPriceOfFruit.Keys()(0) '０オリジン（アクセスが遅すぎるので注意！）
--- 【連想配列 項目取得（インデックス）】oPriceOfFruit.Items()(0) '０オリジン（アクセスが遅すぎるので注意！）
--- 【連想配列 キー置換】oPriceOfFruit.Key("リンゴ") = "りんご"
--- 【連想配列 キー関連付け】oPriceOfFruit.Item("リンゴ") = "200円"
--- 【連想配列 キー/項目数取得】oPriceOfFruit.Count
--- 【連想配列 キー/項目削除】oPriceOfFruit.Remove("リンゴ") '指定されたキーが存在しない場合はエラー
--- 【連想配列 キー/項目全削除】oPriceOfFruit.RemoveAll
--- 【連想配列 配列変換（項目）】asFruitPrice = oPriceOfFruit.Items 'Variant型配列、０オリジン
--- 【連想配列 配列変換（キー）】asFruitName = oPriceOfFruit.Keys 'Variant型配列、０オリジン
--- 【連想配列 設定変更】oPriceOfFruit.CompareMode = vbBinaryCompare '大/小文字区別 /vbTextCompare（大/小文字区別しない
+	- 【連想配列 キー/項目追加】oPriceOfFruit.Add("リンゴ", "100円")
+	- 【連想配列 存在確認】oPriceOfFruit.Exists("リンゴ")
+	- 【連想配列 キー取得（For Each）】For Each vKey In oPriceOfFruit ～ Debug.print vKey ～ Next 'vKey は variant 型
+	- 【連想配列 項目取得（キー）】oPriceOfFruit.Item("リンゴ")
+	- 【連想配列 キー取得（インデックス）】oPriceOfFruit.Keys()(0) '０オリジン（アクセスが遅すぎるので注意！）
+	- 【連想配列 項目取得（インデックス）】oPriceOfFruit.Items()(0) '０オリジン（アクセスが遅すぎるので注意！）
+	- 【連想配列 キー置換】oPriceOfFruit.Key("リンゴ") = "りんご"
+	- 【連想配列 キー関連付け】oPriceOfFruit.Item("リンゴ") = "200円"
+	- 【連想配列 キー/項目数取得】oPriceOfFruit.Count
+	- 【連想配列 キー/項目削除】oPriceOfFruit.Remove("リンゴ") '指定されたキーが存在しない場合はエラー
+	- 【連想配列 キー/項目全削除】oPriceOfFruit.RemoveAll
+	- 【連想配列 配列変換（項目）】asFruitPrice = oPriceOfFruit.Items 'Variant型配列、０オリジン
+	- 【連想配列 配列変換（キー）】asFruitName = oPriceOfFruit.Keys 'Variant型配列、０オリジン
+	- 【連想配列 設定変更】oPriceOfFruit.CompareMode = vbBinaryCompare '大/小文字区別 /vbTextCompare（大/小文字区別しない
 
 - 【エラー設定】On Error Resume Next
 - 【エラー解除】On Error Goto 0
@@ -202,40 +202,40 @@ End Sub
 - 【ラベル定義】ErrorLabel:
 
 - 【WScriptShellObject 取得】Dim objWshShell ～ Set objWshShell = CreateObject("WScript.Shell")
--- 【バッチ実行①】objWshShell.Exec("C:\test.bat") 'Execは標準入出力できるが、WSH 5.6以降からしかサポートされていないので注意
--- 【バッチ実行②】objWshShell.Run "C:\test.bat", 0, True '第二引数：ウィンドウの表示スタイル（ウィンドウを非表示、別のウィンドウをアクティブ）、第三引数：プログラムの実行が終了するまでスクリプトを待機させるかどうか（詳細は[[こちら>>https://msdn.microsoft.com/ja-jp/library/cc364421.aspx]]）
--- 【レジストリ読込】objWshShell.RegRead("HKCU\WshTest\Test1")
--- 【レジストリ書込】objWshShell.RegWrite("HKCU\WshTest\Test1", "test", "REG_SZ") 'キー/値,設定値,データ型
--- 【環境変数 値取得】objWshShell.ExpandEnvironmentStrings( "%MYPATH_CODES%" )
--- 【特殊フォルダのパス取得】objWshShell.SpecialFolders("Desktop") 'デスクトップフォルダ
---- 取得できるフォルダは「AllUsersDesktop」 「AllUsersStartMenu」 「AllUsersPrograms」 「AllUsersStartup」 「Desktop」 「Favorites」 「Fonts」 「MyDocuments」 「NetHood」 「PrintHood」 「Programs」 「Recent」 「SendTo」 「StartMenu」 「Startup」 「Templates」
--- 【ショートカット作成】With objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ) ～ .TargetPath = "c:\test\dst.txt" ～ .Save ～ End With
--- 【ショートカット 指示先パス取得】objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ).TargetPath '参照だけでなく変更も可
--- 【ショートカット 指示先パス更新】With objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ) ～ .TargetPath = "c:\test\dst2.txt" ～ .Save ～ End With
+	- 【バッチ実行①】objWshShell.Exec("C:\test.bat") 'Execは標準入出力できるが、WSH 5.6以降からしかサポートされていないので注意
+	- 【バッチ実行②】objWshShell.Run "C:\test.bat", 0, True '第二引数：ウィンドウの表示スタイル（ウィンドウを非表示、別のウィンドウをアクティブ）、第三引数：プログラムの実行が終了するまでスクリプトを待機させるかどうか（詳細は[[こちら>>https://msdn.microsoft.com/ja-jp/library/cc364421.aspx]]）
+	- 【レジストリ読込】objWshShell.RegRead("HKCU\WshTest\Test1")
+	- 【レジストリ書込】objWshShell.RegWrite("HKCU\WshTest\Test1", "test", "REG_SZ") 'キー/値,設定値,データ型
+	- 【環境変数 値取得】objWshShell.ExpandEnvironmentStrings( "%MYPATH_CODES%" )
+	- 【特殊フォルダのパス取得】objWshShell.SpecialFolders("Desktop") 'デスクトップフォルダ
+		- 取得できるフォルダは「AllUsersDesktop」 「AllUsersStartMenu」 「AllUsersPrograms」 「AllUsersStartup」 「Desktop」 「Favorites」 「Fonts」 「MyDocuments」 「NetHood」 「PrintHood」 「Programs」 「Recent」 「SendTo」 「StartMenu」 「Startup」 「Templates」
+	- 【ショートカット作成】With objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ) ～ .TargetPath = "c:\test\dst.txt" ～ .Save ～ End With
+	- 【ショートカット 指示先パス取得】objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ).TargetPath '参照だけでなく変更も可
+	- 【ショートカット 指示先パス更新】With objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ) ～ .TargetPath = "c:\test\dst2.txt" ～ .Save ～ End With
 
 - 【FileSystemObject 取得】Dim objFSO As Object ～ Set objFSO = CreateObject("Scripting.FileSystemObject")
--- 【ファイルコピー（自ブック）】objFSO.CopyFile ThisWorkbook.FullName, "c:\temp\test.xlsm"
--- 【ファイル コピー①】objFSO.CopyFile "C:\codes\a.txt", "C:\codes\test\" '<src> <dst> [<overwrite>] 、<dst>の末尾に "\" をつけること！
--- 【ファイル コピー②】objFSO.CopyFile "C:\codes\a.txt", "C:\codes\test\a.txt" '<src> <dst> [<overwrite>]
--- 【ファイル 削除】objFSO.DeleteFile "c:\test", True
--- 【ファイル 移動/リネーム】objFSO.MoveFile "C:\codes\src.txt", "C:\codes\dst.txt"
--- 【ファイル 存在確認①】If Dir("C:\Book1.xlsx") <> "" Then ～(存在)～ Else ～(非存在)～ End If
--- 【ファイル 存在確認②】objFSO.FileExists("c:\codes\a.txt") 'True
--- 【ファイル 情報取得】objFSO.GetFile( "C:\codes\a.txt" ).Attributes '32 (※)値の意味は [[【ファイル・フォルダ情報取得】]] 参照
--- 【ファイル 隠しファイル化】objFSO.GetFile( "C:\codes\a.txt" ).Attributes = 2
--- 【ファイル 絶対パス取得】objFSO.GetAbsolutePathName( "C:\codes\a.txt" ) ' C:\codes\a.txt
--- 【ファイル ドライブ名取得】objFSO.GetDriveName( "C:\codes\a.txt" ) ' C:
--- 【ファイル ファイル名取得】objFSO.GetFileName( "C:\codes\a.txt" ) ' a.txt
--- 【ファイル ファイルベース名取得】objFSO.GetBaseName( "C:\codes\a.txt" ) ' a
--- 【ファイル 拡張子取得】objFSO.GetExtensionName( "C:\codes\a.txt" ) ' txt
--- 【ファイル 親フォルダパス取得】objFSO.GetParentFolderName( "C:\codes\a.txt" ) ' C:\codes
--- 【フォルダ コピー】objFSO.CopyFolder "C:\codes\src", "C:\codes\dst", True '配下フォルダ/ファイルも丸ごとコピー
--- 【フォルダ 削除】objFSO.DeleteFolder "C:\codes\test", True '配下フォルダ/ファイルも丸ごと削除
--- 【フォルダ 作成】objFSO.CreateFolder( "C:\codes\test" ) '親フォルダがない場合、エラーになる
--- 【フォルダ 移動/リネーム】objFSO.MoveFolder "C:\codes\src", "C:\codes\dst" '配下フォルダ/ファイルも丸ごと移動/リネーム
--- 【フォルダ 情報取得】objFSO.GetFolder( "C:\codes" ).Attributes '32 (※)値の意味は [[【ファイル・フォルダ情報取得】]] 参照
--- 【フォルダ 存在確認】objFSO.FolderExists( "C:\codes" ) 'True
--- 【フォルダ 親フォルダパス取得】objFSO.GetParentFolderName( "C:\codes\src" ) ' C:\codes
+	- 【ファイルコピー（自ブック）】objFSO.CopyFile ThisWorkbook.FullName, "c:\temp\test.xlsm"
+	- 【ファイル コピー①】objFSO.CopyFile "C:\codes\a.txt", "C:\codes\test\" '<src> <dst> [<overwrite>] 、<dst>の末尾に "\" をつけること！
+	- 【ファイル コピー②】objFSO.CopyFile "C:\codes\a.txt", "C:\codes\test\a.txt" '<src> <dst> [<overwrite>]
+	- 【ファイル 削除】objFSO.DeleteFile "c:\test", True
+	- 【ファイル 移動/リネーム】objFSO.MoveFile "C:\codes\src.txt", "C:\codes\dst.txt"
+	- 【ファイル 存在確認①】If Dir("C:\Book1.xlsx") <> "" Then ～(存在)～ Else ～(非存在)～ End If
+	- 【ファイル 存在確認②】objFSO.FileExists("c:\codes\a.txt") 'True
+	- 【ファイル 情報取得】objFSO.GetFile( "C:\codes\a.txt" ).Attributes '32 (※)値の意味は [[【ファイル・フォルダ情報取得】]] 参照
+	- 【ファイル 隠しファイル化】objFSO.GetFile( "C:\codes\a.txt" ).Attributes = 2
+	- 【ファイル 絶対パス取得】objFSO.GetAbsolutePathName( "C:\codes\a.txt" ) ' C:\codes\a.txt
+	- 【ファイル ドライブ名取得】objFSO.GetDriveName( "C:\codes\a.txt" ) ' C:
+	- 【ファイル ファイル名取得】objFSO.GetFileName( "C:\codes\a.txt" ) ' a.txt
+	- 【ファイル ファイルベース名取得】objFSO.GetBaseName( "C:\codes\a.txt" ) ' a
+	- 【ファイル 拡張子取得】objFSO.GetExtensionName( "C:\codes\a.txt" ) ' txt
+	- 【ファイル 親フォルダパス取得】objFSO.GetParentFolderName( "C:\codes\a.txt" ) ' C:\codes
+	- 【フォルダ コピー】objFSO.CopyFolder "C:\codes\src", "C:\codes\dst", True '配下フォルダ/ファイルも丸ごとコピー
+	- 【フォルダ 削除】objFSO.DeleteFolder "C:\codes\test", True '配下フォルダ/ファイルも丸ごと削除
+	- 【フォルダ 作成】objFSO.CreateFolder( "C:\codes\test" ) '親フォルダがない場合、エラーになる
+	- 【フォルダ 移動/リネーム】objFSO.MoveFolder "C:\codes\src", "C:\codes\dst" '配下フォルダ/ファイルも丸ごと移動/リネーム
+	- 【フォルダ 情報取得】objFSO.GetFolder( "C:\codes" ).Attributes '32 (※)値の意味は [[【ファイル・フォルダ情報取得】]] 参照
+	- 【フォルダ 存在確認】objFSO.FolderExists( "C:\codes" ) 'True
+	- 【フォルダ 親フォルダパス取得】objFSO.GetParentFolderName( "C:\codes\src" ) ' C:\codes
 
 - 【ＴＸＴファイルオープン/クローズ】Open ファイル名 For [Input|Output|Append] As #1 ～ Close #1
 - 【ＴＸＴファイル読込（一行ずつ）】Do Until EOF(1) ～ Line Input #1, 文字列変数 ～ Loop
@@ -363,34 +363,34 @@ End Sub
 - 【アウトライン設定変更（自動）】.Sheets(シート名).Outline.AutomaticStyles = ( True | False )
 
 - 【ChartObject定義】Dim oChartObj As ChartObject ～ Set oChartObj = ThisWorkbook.Sheets(シート名).ChartObjects(1)
--- 【グラフ 追加】Set oChartObj = .Sheets(シート名).ChartObjects.Add( XPOS, YPOS, WIDTH, HEIGHT ) 'XPOS, YPOS, WIDTH, HEIGHTの単位はポイント
--- 【グラフ 削除】oChartObj.Delete
--- 【グラフ コピー】oChartObj.Chart.ChartArea.Copy
--- 【グラフ 移動（Ｙ軸）】oChartObj.Top = 10
--- 【グラフ 移動（Ｘ軸）】oChartObj.Left = 20
--- 【グラフ サイズ変更（幅）】oChartObj.Width = 200
--- 【グラフ サイズ変更（高さ）】oChartObj.Height = 300
--- 【グラフ 種別】oChartObj.Chart.ChartType = xlXYScatterLines 'xlXYScatterLines:折れ線付き散布図、xlLine:折れ線、...
--- 【グラフ データ範囲変更】oChartObj.Chart.SetSourceData Source:=Union(rXAxsRng, rDataRng) 'データ範囲指定
--- 【グラフ Ｘ軸 タイトル 有無】oChartObj.Chart.Axes(xlCategory).HasTitle = True
--- 【グラフ Ｘ軸 タイトル 変更】oChartObj.Chart.Axes(xlCategory).AxisTitle.Text = "Test Axis X"
--- 【グラフ Ｘ軸 目盛軸 有無】oChartObj.Chart.Axes(xlCategory).HasMajorGridlines = True
--- 【グラフ Ｘ軸 目盛軸 色】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.Color = RGB(217, 217, 217)
--- 【グラフ Ｘ軸 目盛軸 太さ】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.Weight = 2
--- 【グラフ Ｘ軸 目盛軸 スタイル】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.LineStyle = (xlContinuous|xlDot|xlDouble|xlLineStyleNone|...)
--- 【グラフ Ｘ軸 補助目盛軸 〃】上記【グラフ Ｘ軸 目盛軸 ～】の「MajorGridlines」を「MinorGridlines」に変更
--- 【グラフ Ｘ軸 最小値 自動】oChartObj.Chart.Axes(xlCategory).MinimumScaleIsAuto = False
--- 【グラフ Ｘ軸 最大値 自動】oChartObj.Chart.Axes(xlCategory).MaximumScaleIsAuto = False
--- 【グラフ Ｘ軸 最小値 設定】oChartObj.Chart.Axes(xlCategory).MinimumScale = 0
--- 【グラフ Ｘ軸 最大値 設定】oChartObj.Chart.Axes(xlCategory).MaximumScale = 100
--- 【グラフ Ｘ軸 縦軸との交点】oChartObj.Chart.Axes(xlCategory).Crosses = (xlMinimum|xlMaximum|xlAutomatic)
--- 【グラフ Ｙ軸 〃】上記【グラフ Ｘ軸 ～】の「xlCategory」を「xlValue」に変更
--- 【グラフ タイトル 有無】oChartObj.Chart.HasTitle = True
--- 【グラフ タイトル 変更】oChartObj.Chart.ChartTitle.Text = "Test Title"
--- 【グラフ タイトル グラフに重ねる】oChartObj.Chart.ChartTitle.IncludeInLayout = False 'False:重ねる、True:重ねない
--- 【グラフ 凡例 有無】oChartObj.Chart.HasLegend = True
--- 【グラフ 凡例 位置】oChartObj.Chart.Legend.Position = (xlLegendPositionTop|xlLegendPositionBottom|xlLegendPositionLeft|xlLegendPositionRight|...)
--- 【グラフ 凡例 グラフに重ねる】oChartObj.Chart.Legend.IncludeInLayout = False 'False:重ねる、True:重ねない
+	- 【グラフ 追加】Set oChartObj = .Sheets(シート名).ChartObjects.Add( XPOS, YPOS, WIDTH, HEIGHT ) 'XPOS, YPOS, WIDTH, HEIGHTの単位はポイント
+	- 【グラフ 削除】oChartObj.Delete
+	- 【グラフ コピー】oChartObj.Chart.ChartArea.Copy
+	- 【グラフ 移動（Ｙ軸）】oChartObj.Top = 10
+	- 【グラフ 移動（Ｘ軸）】oChartObj.Left = 20
+	- 【グラフ サイズ変更（幅）】oChartObj.Width = 200
+	- 【グラフ サイズ変更（高さ）】oChartObj.Height = 300
+	- 【グラフ 種別】oChartObj.Chart.ChartType = xlXYScatterLines 'xlXYScatterLines:折れ線付き散布図、xlLine:折れ線、...
+	- 【グラフ データ範囲変更】oChartObj.Chart.SetSourceData Source:=Union(rXAxsRng, rDataRng) 'データ範囲指定
+	- 【グラフ Ｘ軸 タイトル 有無】oChartObj.Chart.Axes(xlCategory).HasTitle = True
+	- 【グラフ Ｘ軸 タイトル 変更】oChartObj.Chart.Axes(xlCategory).AxisTitle.Text = "Test Axis X"
+	- 【グラフ Ｘ軸 目盛軸 有無】oChartObj.Chart.Axes(xlCategory).HasMajorGridlines = True
+	- 【グラフ Ｘ軸 目盛軸 色】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.Color = RGB(217, 217, 217)
+	- 【グラフ Ｘ軸 目盛軸 太さ】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.Weight = 2
+	- 【グラフ Ｘ軸 目盛軸 スタイル】oChartObj.Chart.Axes(xlCategory).MajorGridlines.Border.LineStyle = (xlContinuous|xlDot|xlDouble|xlLineStyleNone|...)
+	- 【グラフ Ｘ軸 補助目盛軸 〃】上記【グラフ Ｘ軸 目盛軸 ～】の「MajorGridlines」を「MinorGridlines」に変更
+	- 【グラフ Ｘ軸 最小値 自動】oChartObj.Chart.Axes(xlCategory).MinimumScaleIsAuto = False
+	- 【グラフ Ｘ軸 最大値 自動】oChartObj.Chart.Axes(xlCategory).MaximumScaleIsAuto = False
+	- 【グラフ Ｘ軸 最小値 設定】oChartObj.Chart.Axes(xlCategory).MinimumScale = 0
+	- 【グラフ Ｘ軸 最大値 設定】oChartObj.Chart.Axes(xlCategory).MaximumScale = 100
+	- 【グラフ Ｘ軸 縦軸との交点】oChartObj.Chart.Axes(xlCategory).Crosses = (xlMinimum|xlMaximum|xlAutomatic)
+	- 【グラフ Ｙ軸 〃】上記【グラフ Ｘ軸 ～】の「xlCategory」を「xlValue」に変更
+	- 【グラフ タイトル 有無】oChartObj.Chart.HasTitle = True
+	- 【グラフ タイトル 変更】oChartObj.Chart.ChartTitle.Text = "Test Title"
+	- 【グラフ タイトル グラフに重ねる】oChartObj.Chart.ChartTitle.IncludeInLayout = False 'False:重ねる、True:重ねない
+	- 【グラフ 凡例 有無】oChartObj.Chart.HasLegend = True
+	- 【グラフ 凡例 位置】oChartObj.Chart.Legend.Position = (xlLegendPositionTop|xlLegendPositionBottom|xlLegendPositionLeft|xlLegendPositionRight|...)
+	- 【グラフ 凡例 グラフに重ねる】oChartObj.Chart.Legend.IncludeInLayout = False 'False:重ねる、True:重ねない
 - 【グラフ 画像として貼り付け】.Sheets(シート名).PasteSpecial Format:="図 (JPEG)", Link:=False, DisplayAsIcon:=False
 
 - 【ワークシート関数】Application.WorksheetFunction.VLookup(.Range("C1"), .Range("A1:B7"), 2, False)
@@ -404,8 +404,8 @@ End Sub
 
 - 【チェックボックス値取得（フォームコントロール）】lChk = ThisWorkbook.Sheets(シート名).CheckBoxes(1).Value 'On:1 Off:-4146
 - 【ユーザフォーム表示中のキー操作】Private Sub xxx_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer) ～ End Sub
--- xxx はフォーカス中のフォーム名。フォーム xxx にフォーカスがある場合だけ、KeyUp イベントが発生する。
--- どのフォームにフォーカスがあっても動く KeyUp イベントを作りたい場合、全フォームに対して上記イベントを作る！
+	- xxx はフォーカス中のフォーム名。フォーム xxx にフォーカスがある場合だけ、KeyUp イベントが発生する。
+	- どのフォームにフォーカスがあっても動く KeyUp イベントを作りたい場合、全フォームに対して上記イベントを作る！
 
 # ライブラリ
 - [[【ＸＬＳファイル存在確認～オープン～クローズ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelFile.bas]]
@@ -437,17 +437,17 @@ End Sub
 - [[【セル検索（存在しない場合を考慮）】]]
 - [[【セル重複削除】]]
 - [[【VBA のプロシージャ一覧取得】]]
--- &color(red){2014/05/20 追記：MZToolsの機能でプロシージャ一覧作成が可能}
+	- &color(red){2014/05/20 追記：MZToolsの機能でプロシージャ一覧作成が可能}
 - [[【グラフ作成＆画像変換】]]
 - [[【テキストボックス作成】]]
 - [[【正規表現】]]
--- 正規表現と文字列検索 InStr の速度についての考察…
---- マッチングを 500000 回繰り返すと、正規表現は約 2800 ms、InStr では約 50 ms。
---- 正規表現は 56 倍遅い！
--- 参考URL: http://officetanaka.net/excel/vba/tips/tips38.htm
+	- 正規表現と文字列検索 InStr の速度についての考察…
+		- マッチングを 500000 回繰り返すと、正規表現は約 2800 ms、InStr では約 50 ms。
+		- 正規表現は 56 倍遅い！
+	- 参考URL: http://officetanaka.net/excel/vba/tips/tips38.htm
 - [[【連想配列】]]
--- 連想配列を使用することにより、膨大な件数(※)の検索が劇的に早くなる。
---- ※ 検索対象 15 件以上（それ未満だと配列検索のほうが早い。.Exists API のオーバーヘッドのせい？）
+	- 連想配列を使用することにより、膨大な件数(※)の検索が劇的に早くなる。
+		- ※ 検索対象 15 件以上（それ未満だと配列検索のほうが早い。.Exists API のオーバーヘッドのせい？）
 
 # その他
 - 【型一覧】
@@ -474,7 +474,7 @@ End Sub
 | ＾ | べき乗する | i = 2 ^ 5 ( ｉ の値は32) |
 
 - 【エラー種別】
--- ex) CVErr(xlErrNum)
+	- ex) CVErr(xlErrNum)
 | 定数       | エラー番号 | セルのエラー値 |h
 | xlErrDiv0  | 2007       | #DIV/0!        |
 | XlErrNA    | 2042       | #N/A           |
