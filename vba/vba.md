@@ -36,20 +36,92 @@
 	- オブジェクトが解放されなくなりメモリに残り続けることになる！ 
 - 連続した空白を持つ文字列を Split 関数で分割した場合、空文字列の要素ができてしまう問題
 	- 事前に連続した空白を一つにまとめてから Split する
-		- [[サンプルコード]]
+		```vba
+		'連続した空白を一つにまとめる
+		Do While InStr(sTrgtLine, "  ")
+			sTrgtLine = Replace$(sTrgtLine, "  ", " ")
+		Loop
+		sTrgtLine = Trim$(sTrgtLine)
+		asSplitLine = Split(sTrgtLine, " ")
+		```
 - クラスモジュールのメリット・デメリット
 	- デメリット
 		- インスタンス化したオブジェクトを他クラスで参照できない。
 			- ⇒オブジェクトを生成したクラスをグローバルにすれば良い
 		- Property を使用する場合、コード量が多い
 		- 構造体が使えない
-			- クラスは入れ子にすることができる。（ [[クラスの入れ子]] ）
+			- クラスは入れ子にすることができる。
+				```vba
+				'Classモジュール ClassString
+				Public Function GetDup( _
+					ByVal sVal As String
+				) As String
+					GetDup = sVal & sVal
+				End Function
+				 
+				'Classモジュール ClassCom
+				Public STR As New ClassString
+				 
+				'標準モジュール Module1
+				Public C As New ClassCom
+				Sub Test02()
+					Debug.Print C.STR.GetDup("はい")
+				End Sub
+				```
 		- 列挙体が使えない
 	- メリット
 		- グローバル変数を隠蔽できる。
 			- グローバル変数を変更する場合の影響範囲をクラス内に制限できる
 		- 別クラスなら同じ関数名を使える。
-			- [[クラスのポリモーフィズム]]
+			- インターフェース
+				```vba
+				Private Sub Class_Initialize()
+				End Sub
+				 
+				Public Function Execute() As String
+				End Function
+				```
+			- クラス１
+				```vba
+				Implements ClassCmn
+				 
+				Dim a As String
+				 
+				Private Sub Class_Initialize()
+					a = "A"
+				End Sub
+				 
+				Public Function ClassCmn_Execute() As String
+					ClassCmn_Execute = a
+				End Function
+				```
+			- クラス２
+				```vba
+				Implements ClassCmn
+				 
+				Dim b As String
+				 
+				Private Sub Class_Initialize()
+					b = "B"
+				End Sub
+				 
+				Public Function ClassCmn_Execute() As String
+					ClassCmn_Execute = b
+				End Function
+				```
+			- 使用箇所
+				```vba
+				Sub test()
+					Dim clChkExecTable(1) As ClassCmn
+				 
+					Set clChkExecTable(0) = New Class1
+					Set clChkExecTable(1) = New Class2
+				 
+					Debug.Print clChkExecTable(0).Execute
+					Debug.Print clChkExecTable(1).Execute
+				 
+				End Sub
+				```
 		- 初期化処理呼び出し不要。
 - 高速化方法まとめ
 	- csv ファイル取り込み方法
@@ -78,8 +150,9 @@
 	- 正規表現の「ように」比較できる。
 	- 使用例：If sAddress Like "[!東京,横浜,千葉]\*" Then ～
 		- 「東京、横浜、千葉ではない住所」の場合～
-
+			
 | 記号         | 意味                                        | 使用例      | マッチする文字列          |
+|:---|:---|:---|:---|
 | ?            | 任意の1文字                                 | たな?       | たなか、たなべ、たなし(など)       |
 | \*           | 0個以上の任意の文字                         | たか\*      | たかだ、たかなか、たかやなぎ(など) |
 | #            | 1文字の数値(0～9)                           | ##          | 01、26、95(など) |
@@ -89,23 +162,23 @@
 - On Error の入れ子について
 	- On Error は関数を跨いだ入れ子をしても問題なし。
 	- ただし、関数内の入れ子は適用されない。
-#highlight( vb ){{
-Sub main()
-    On Error Resume Next
-    On Error Resume Next
-    Call subfunction
-    Debug.Print 5 / 0 '⇒実行時エラー無し
-    On Error GoTo 0
-   'Debug.Print 5 / 0 '⇒実行時エラーが発生してプログラムが停止する。
-    On Error GoTo 0
-End Sub
-Sub subfunction()
-    On Error Resume Next
-    Debug.Print 5 / 0 '⇒実行時エラー無し
-    On Error GoTo 0
-    Debug.Print 5 / 0 '⇒実行時エラー無し
-End Sub
-}}
+		```vb
+		Sub main()
+			On Error Resume Next
+			On Error Resume Next
+			Call subfunction
+			Debug.Print 5 / 0 '⇒実行時エラー無し
+			On Error GoTo 0
+		   'Debug.Print 5 / 0 '⇒実行時エラーが発生してプログラムが停止する。
+			On Error GoTo 0
+		End Sub
+		Sub subfunction()
+			On Error Resume Next
+			Debug.Print 5 / 0 '⇒実行時エラー無し
+			On Error GoTo 0
+			Debug.Print 5 / 0 '⇒実行時エラー無し
+		End Sub
+		```
 - 大きさの単位「ポイント」と「ピクセル」について
 	- ポイント：Microsoftが定義する単位（おそらく）。8.38 ポイントはMSゴシック11ポイント(半角) で8文字と少し表示できる幅。
 	- ピクセル：ディスプレイの表示やプリンタの出力を構成する最小単位（小さな点）
@@ -123,7 +196,9 @@ End Sub
 	- 表示 ⇒ ツールバー ⇒ [\*] 編集 ⇒ オプション
 
 # VBE ショートカットキー
-| 項目 | キー配置 |h
+
+| 項目 | キー配置 |
+|:---|:---|
 | IntelliSense 実行 | Ctrl+Space |
 | IntelliSense 選択 | Tab        |
 | マクロ強制終了    | Ctrl+Break |
@@ -433,37 +508,155 @@ End Sub
 
 # サンプルコード
 - [[【プログラムテンプレート】]]
-- [[【シート存在確認】]]
-- [[【セル検索（存在しない場合を考慮）】]]
-- [[【セル重複削除】]]
-- [[【VBA のプロシージャ一覧取得】]]
-	- <font color="Red">2014/05/20 追記：MZToolsの機能でプロシージャ一覧作成が可能</font>
-	- <span style="color: red; ">赤文字</span>
-
-
-<font color="Red">2014/05/20 追記：MZToolsの機能でプロシージャ一覧作成が可能</font>
-<span style="color: red; ">赤文字</span>
-
+- 【シート存在確認】
+	```vba
+	'シート存在確認
+	Dim bIsSheetExist As Boolean
+	bIsSheetExist = False
+	For Each wSheet In ThisWorkbook.Worksheets
+		If wSheet.Name = sTrgtSheetName Then
+			bIsSheetExist = True
+		Else
+			'Do Nothing
+		End If
+	Next wSheet
+	```
+- 【セル検索（存在しない場合を考慮）】
+	- セル検索
+		```vba
+		Dim rFindResult As Range
+		Dim sSrchKeyword As String
+		Dim lSrchCellRow As Long
+		Dim lSrchCellClm As Long
+		
+		With ThisWorkbook.Sheets(INPUT_SHEET_NAME)
+			sSrchKeyword = KYWD_INPUT_DIR_PATH
+			Set rFindResult = .Cells.Find(sSrchKeyword, LookAt:=xlWhole)
+			If rFindResult Is Nothing Then
+				MsgBox sSrchKeyword & "が見つかりませんでした"
+			Else
+				lSrchCellRow = rFindResult.Row
+				lSrchCellClm = rFindResult.Column
+			End If
+		End With
+		```
+	- 直近セル情報取得
+		```vba
+		Public Type T_EXCEL_NEAR_CELL_DATA
+			bIsCellDataExist As Boolean
+			lRow As Long
+			lClm As Long
+			sCellValue As String
+		End Type
+		
+		Public Function GetNearCellData( _
+			ByVal shTrgtSht As Worksheet, _
+			ByVal sSrchKey As String, _
+			ByVal lRowOffset As Long, _
+			ByVal lClmOffset As Long _
+		) As T_EXCEL_NEAR_CELL_DATA
+			Dim rFindResult As Range
+			Set rFindResult = shTrgtSht.Cells.Find(sSrchKey, LookAt:=xlWhole)
+			If rFindResult Is Nothing Then
+				GetNearCellData.bIsCellDataExist = False
+			Else
+				GetNearCellData.bIsCellDataExist = True
+				GetNearCellData.lRow = rFindResult.Row + lRowOffset
+				GetNearCellData.lClm = rFindResult.Column + lClmOffset
+				GetNearCellData.sCellValue = shTrgtSht.Cells( _
+													GetNearCellData.lRow, _
+													GetNearCellData.lClm _
+												 ).Value
+			End If
+		End Function
+		```
+- 【セル重複削除】
+	```vba
+	For iRowIdx = .Cells(Rows.Count, 1).End(xlUp).Row To 2 Step -1
+		For iChkTargetRowIdx = iRowIdx - 1 To 2 Step -1
+			If .Cells(iRowIdx, 1) = .Cells(iChkTargetRowIdx, 1) Then
+				.Cells(iChkTargetRowIdx, 1).EntireRow.Delete Shift:=xlShiftUp
+			Else
+				'Do Nothing
+			End If
+		Next iChkTargetRowIdx
+	Next iRowIdx
+	```
 - [[【グラフ作成＆画像変換】]]
-- [[【テキストボックス作成】]]
-- [[【正規表現】]]
+- 【テキストボックス作成】
+	```vba
+	Dim spTxtBox As Shape
+	Set spTxtBox = shTrgtSht.Shapes.AddTextbox( _
+						Orientation:=msoTextOrientationHorizontal, _
+						Left:=10, _
+						Top:=10, _
+						Width:=10, _
+						Height:=10 _
+				   )
+	With spTxtBox
+		.TextFrame.Characters.Text = "エラーフレームなし"
+		.TextFrame.AutoSize = True
+	End With
+	```
+- 【正規表現】
 	- 正規表現と文字列検索 InStr の速度についての考察…
 		- マッチングを 500000 回繰り返すと、正規表現は約 2800 ms、InStr では約 50 ms。
 		- 正規表現は 56 倍遅い！
 	- 参考URL: http://officetanaka.net/excel/vba/tips/tips38.htm
-- [[【連想配列】]]
+		```vba
+		Dim sSearchPattern As String
+		Dim sTargetStr As String
+		 
+		Dim iMatchIdx As Integer
+		Dim iSubMatchIdx As Integer
+		 
+		Dim oMatchResult As Object
+		Dim oRegExp As Object
+		Set oRegExp = CreateObject("VBScript.RegExp")
+		 
+		sSearchPattern = "(\w+)\((\w+) (\w+)\)"
+		sTargetStr = "TestFunc01(char aaa) TestFunc02(int bbb)"
+		 
+		oRegExp.Pattern = sSearchPattern               '検索パターンを設定
+		oRegExp.IgnoreCase = True                      '大文字と小文字を区別しない
+		oRegExp.Global = True                          '文字列全体を検索
+		Set oMatchResult = oRegExp.Execute(sTargetStr) 'パターンマッチ実行
+		 
+		Debug.Print oMatchResult.Count
+		For iMatchIdx = 0 To oMatchResult.Count - 1
+			Debug.Print oMatchResult(iMatchIdx).SubMatches.Count
+			For iSubMatchIdx = 0 To oMatchResult(iMatchIdx).SubMatches.Count - 1
+				Debug.Print oMatchResult(iMatchIdx).SubMatches(iSubMatchIdx)
+			Next iSubMatchIdx
+		Next iMatchIdx
+		```
+- 【連想配列】
 	- 連想配列を使用することにより、膨大な件数(※)の検索が劇的に早くなる。
 		- ※ 検索対象 15 件以上（それ未満だと配列検索のほうが早い。.Exists API のオーバーヘッドのせい？）
-		
-		
-タグを<span style="color:red">直接記述</span>することで<span style="color:blue">色</span>を変えます。
-- タグを<span style="color:red">直接記述</span>することで<span style="color:blue">色</span>を変えます。
+			```vba
+			Dim oPriceOfFruit As Object
+			Set oPriceOfFruit = CreateObject("Scripting.Dictionary")
+			 
+			'登録
+			oPriceOfFruit.Add "リンゴ", "100円"
+			oPriceOfFruit.Add "イチゴ", "400円"
+			oPriceOfFruit.Add "メロン", "1000円"
+			 
+			'存在確認
+			If oPriceOfFruit.Exists("リンゴ") Then
+				Debug.Print "Exists!"
+			Else
+				Debug.Print "Not Exists!"
+			End If
+			 
+			Set oPriceOfFruit = Nothing
+			```
 
 # その他
 - 【型一覧】
 
 | データ型 | 名称 | 消費メモリ | 格納できる範囲 |
-|:--------:|:----:|:----------:|:--------------:|
+|:---------|:-----|:-----------|:---------------|
 | Integer | 整数型 | 2バイト | -32,768 ～ 32,767 |
 | Long | 長整数型 | 4バイト | -2,147,483,648 ～ 2,147,483,647 |
 | Single | 単精度浮動小数点数型 | 4バイト | -3.402823E38 ～ -1.401298E-45(負の値) 1.401298E-45 ～ 3.402823E38(正の値) |
@@ -478,7 +671,7 @@ End Sub
 - 【演算子】
 
 | 演算子 | 意味 | 変数への代入例 |
-|:------:|:----:|:--------------:|
+|:-------|:-----|:---------------|
 | ＋ | 加算する | i = 15 + 5 ( ｉ の値は20) |
 | － | 減算する | i = 15 - 5 ( ｉ の値は10) |
 | ＊ | 乗算する | i = 5 * 4 ( ｉ の値は20) |
@@ -491,7 +684,7 @@ End Sub
 	- ex) CVErr(xlErrNum)
 	
 | 定数       | エラー番号 | セルのエラー値 |
-|:----------:|:----------:|:--------------:|
+|:-----------|:-----------|:---------------|
 | xlErrDiv0  | 2007       | #DIV/0!        |
 | XlErrNA    | 2042       | #N/A           |
 | xlErrName  | 2029       | #NAME?         |
