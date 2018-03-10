@@ -3,8 +3,8 @@
 	- インストール後、VBEのツールバー→アドイン→アドインマネージャ
 	- VbePlus のロード方法を「起動時/ロード」に変更
 - [MZTools](http://zabi.0am.jp/?p=2676)
-	- インストールしても表示されない場合、HKEY_CURRENT_USER に必要なレジストリキーが登録されていない可能性がある。
-	- Administrator の HKEY_CURRENT_USER からコピーすること。
+	- インストールしても表示されない場合、HKEY\_CURRENT\_USER に必要なレジストリキーが登録されていない可能性がある。
+	- Administrator の HKEY\_CURRENT\_USER からコピーすること。
 
 # Tips
 - モジュール名と関数名を同じにすることはできない。
@@ -30,7 +30,7 @@
 	- 上記を踏まえると Long 型を使用するのが良い！（アクセスも早いし、容量も気にするほど大きくないため）
 - Const配列の作り方
 	- Const配列は VBA では定義できないが、Const 文字列を Split することで実現可能。（書き換えられてしまうが。。）
-	- Const C_AAA = "Hello!,World!" : asArray = Split(C_AAA, ",")
+	- Const C\_AAA = "Hello!,World!" : asArray = Split(C\_AAA, ",")
 - CreateObject 関数について
 	- 作成したオブジェクトは、使用後に必ず Nothing を設定すること！
 	- オブジェクトが解放されなくなりメモリに残り続けることになる！ 
@@ -76,12 +76,12 @@
 	- バイナリファイルの読み書きをする際に使用する。
 - Like 演算子について
 	- 正規表現の「ように」比較できる。
-	- 使用例：If sAddress Like "[!東京,横浜,千葉]*" Then ～
+	- 使用例：If sAddress Like "[!東京,横浜,千葉]\*" Then ～
 		- 「東京、横浜、千葉ではない住所」の場合～
 
 | 記号         | 意味                                        | 使用例      | マッチする文字列          |
 | ?            | 任意の1文字                                 | たな?       | たなか、たなべ、たなし(など)       |
-| *            | 0個以上の任意の文字                         | たか*       | たかだ、たかなか、たかやなぎ(など) |
+| \*           | 0個以上の任意の文字                         | たか\*      | たかだ、たかなか、たかやなぎ(など) |
 | #            | 1文字の数値(0～9)                           | ##          | 01、26、95(など) |
 | [charlist]   | charlistに指定した文字の中の1文字           | [A-F]       | A、B、C、D、E、F |
 | [!charlist]  | charlistに指定した文字の中に含まれない1文字 | [!A-F]      | G 、H、I(など) |
@@ -112,15 +112,15 @@ End Sub
 
 # VBE 設定
 - Excel リボンに「開発」を追加
-	- ツール ⇒ オプション ⇒ リボンユーザー設定にて [*] 開発
+	- ツール ⇒ オプション ⇒ リボンユーザー設定にて [\*] 開発
 - 変数宣言を強制 (変数名が誤りでも実行時までエラーが発生しないため変更)
-	- ツール ⇒ オプション ⇒ 編集 ⇒ [*] 変数の宣言を強制する
+	- ツール ⇒ オプション ⇒ 編集 ⇒ [\*] 変数の宣言を強制する
 - 自動構文チェックを無視 (改行の度に警告ウィンドウが発生するため)
-	- ツール ⇒ オプション ⇒ 編集 ⇒ [_] 自動構文チェック
+	- ツール ⇒ オプション ⇒ 編集 ⇒ [\_] 自動構文チェック
 - エディタ文字・背景色の変更
 	- ツール ⇒ オプション ⇒ エディタ ⇒ コードの表示色 を良しなに…
 - 複数行コメントアウトボタン設置
-	- 表示 ⇒ ツールバー ⇒ [*] 編集 ⇒ オプション
+	- 表示 ⇒ ツールバー ⇒ [\*] 編集 ⇒ オプション
 
 # VBE ショートカットキー
 | 項目 | キー配置 |h
@@ -135,19 +135,19 @@ End Sub
 - 【変数強制定義】Option Explicit
 - 【変数/配列定義】Dim aVal(5) As Integer '要素数は０オリジン。左の例では要素数６の配列が作成される
 - 【定数定義】Const NUM As Integer = 1
-- 【構造体定義】Type T_XXX ～ iVal1 As Integer ～ iVal2 As Integer ～ End Type
+- 【構造体定義】Type T\_XXX ～ iVal1 As Integer ～ iVal2 As Integer ～ End Type
 - 【関数定義】Private Function FuncA ( sVal1 As String, sVal2 As Integer ) ～ End Function
 - 【関数呼出】Call Func()
 - 【関数エラー値返却】Dim vRetVal As Variant ～ vRetVal = CVErr(xlErrRef) '#VALUEを返却
 - 【マクロ定義】Public Sub SubA ( sVal1 As String, sVal2 As Integer ) ～ End Sub
-- 【列挙型定義】Enum E_XXX ～ NUM1 ～ NUM2 ～ End Enum
+- 【列挙型定義】Enum E\_XXX ～ NUM1 ～ NUM2 ～ End Enum
 - 【ブロック脱出（Sub/Function/For/Do）】Exit (Sub|Function|For|Do)
 - 【連続コマンド実行】Dim sStr As String : sStr = "abc"
 - 【一時停止】Stop
 - 【クラスインスタンス生成】Dim cPrfrmMes As New PerformanceMeasurement
 - 【クラスインスタンス破棄】Set cPrfrmMes = Nothing
 - 【プログラム終了】End
-- 【関数エラー値返却】Dim vRetVal As Variant ～ vRetVal = CVErr(xlErrRef) '#VALUEを返却（エラー値の詳細は [[こちら>>https://msdn.microsoft.com/ja-jp/library/office/ff839168.aspx]] 参照）
+- 【関数エラー値返却】Dim vRetVal As Variant ～ vRetVal = CVErr(xlErrRef) '#VALUEを返却（エラー値の詳細は [こちら](https://msdn.microsoft.com/ja-jp/library/office/ff839168.aspx) 参照）
 
 - 【if】If iVal = 1 Or iVal = 2 Then ～ ElseIf iVal = 3 Then ～ Else ～ End If
 - 【if（空オブジェクト確認）】If objTest Is Nothing Then ～ Else ～ End If
@@ -163,7 +163,7 @@ End Sub
 - 【出力１】MsgBox "Hello world", vbExclamation '第二引数入力時に候補が表示される
 - 【出力２】Debug.Print "Hello world"
 - 【チェック処理】Debug.Assert 条件式 'Falseの場合、処理を一時停止
-- 【確認処理】Dim vAnswer As Variant ～ vAnswer = MsgBox("処理を継続しますか？", vbOKCancel, "タイトル") '第二引数は表示ボタンの種類を指定。ボタンの種類は [[こちら>>http://www.kanaya440.com/contents/script/vbs/function/others/msgbox.html]] 参照。
+- 【確認処理】Dim vAnswer As Variant ～ vAnswer = MsgBox("処理を継続しますか？", vbOKCancel, "タイトル") '第二引数は表示ボタンの種類を指定。ボタンの種類は [こちら](http://www.kanaya440.com/contents/script/vbs/function/others/msgbox.html) 参照。
 
 - 【正規表現】サンプルコード参照
 
@@ -203,10 +203,10 @@ End Sub
 
 - 【WScriptShellObject 取得】Dim objWshShell ～ Set objWshShell = CreateObject("WScript.Shell")
 	- 【バッチ実行①】objWshShell.Exec("C:\test.bat") 'Execは標準入出力できるが、WSH 5.6以降からしかサポートされていないので注意
-	- 【バッチ実行②】objWshShell.Run "C:\test.bat", 0, True '第二引数：ウィンドウの表示スタイル（ウィンドウを非表示、別のウィンドウをアクティブ）、第三引数：プログラムの実行が終了するまでスクリプトを待機させるかどうか（詳細は[[こちら>>https://msdn.microsoft.com/ja-jp/library/cc364421.aspx]]）
+	- 【バッチ実行②】objWshShell.Run "C:\test.bat", 0, True '第二引数：ウィンドウの表示スタイル（ウィンドウを非表示、別のウィンドウをアクティブ）、第三引数：プログラムの実行が終了するまでスクリプトを待機させるかどうか（詳細は[こちら](https://msdn.microsoft.com/ja-jp/library/cc364421.aspx)）
 	- 【レジストリ読込】objWshShell.RegRead("HKCU\WshTest\Test1")
-	- 【レジストリ書込】objWshShell.RegWrite("HKCU\WshTest\Test1", "test", "REG_SZ") 'キー/値,設定値,データ型
-	- 【環境変数 値取得】objWshShell.ExpandEnvironmentStrings( "%MYPATH_CODES%" )
+	- 【レジストリ書込】objWshShell.RegWrite("HKCU\WshTest\Test1", "test", "REG\_SZ") 'キー/値,設定値,データ型
+	- 【環境変数 値取得】objWshShell.ExpandEnvironmentStrings( "%MYPATH\_CODES%" )
 	- 【特殊フォルダのパス取得】objWshShell.SpecialFolders("Desktop") 'デスクトップフォルダ
 		- 取得できるフォルダは「AllUsersDesktop」 「AllUsersStartMenu」 「AllUsersPrograms」 「AllUsersStartup」 「Desktop」 「Favorites」 「Fonts」 「MyDocuments」 「NetHood」 「PrintHood」 「Programs」 「Recent」 「SendTo」 「StartMenu」 「Startup」 「Templates」
 	- 【ショートカット作成】With objWshShell.CreateShortcut( "c:\test\src.txt.lnk" ) ～ .TargetPath = "c:\test\dst.txt" ～ .Save ～ End With
@@ -264,7 +264,7 @@ End Sub
 - 【配列 結合】Join(配列, ",")
 - 【配列 分割】文字列配列 = Split("aaa,bbb,ccc", ",") 
 - 【型取得（文字列）】TypeName("Test") 'String
-- 【型取得（値）】VarType("Test") '8（値の詳細は [[こちら>>http://www.kanaya440.com/contents/script/vbs/function/data/var_type.html]] 参照）
+- 【型取得（値）】VarType("Test") '8（値の詳細は [こちら](http://www.kanaya440.com/contents/script/vbs/function/data/var_type.html) 参照）
 - 【10⇒16進数変換】文字列変数 = Hex(734)
 - 【16⇒10進数変換１】Long変数 = CLng("&H" & "FA")
 - 【16⇒10進数変換２】Int変数 = CInt("&H" & "FA")
@@ -403,33 +403,33 @@ End Sub
 - 【Collection 項目取得（For Each）】For Each vItem In cCollection ～ Debug.print vItem ～ Next
 
 - 【チェックボックス値取得（フォームコントロール）】lChk = ThisWorkbook.Sheets(シート名).CheckBoxes(1).Value 'On:1 Off:-4146
-- 【ユーザフォーム表示中のキー操作】Private Sub xxx_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer) ～ End Sub
+- 【ユーザフォーム表示中のキー操作】Private Sub xxx\_KeyUp(ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer) ～ End Sub
 	- xxx はフォーカス中のフォーム名。フォーム xxx にフォーカスがある場合だけ、KeyUp イベントが発生する。
 	- どのフォームにフォーカスがあっても動く KeyUp イベントを作りたい場合、全フォームに対して上記イベントを作る！
 
 # ライブラリ
-- [[【ＸＬＳファイル存在確認～オープン～クローズ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelFile.bas]]
-- [[【ＴＸＴファイル存在確認～オープン～クローズ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【ＴＸＴファイル存在確認～オープン～クローズ（キャラクタセット指定）】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【フォルダ作成（再帰処理）】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【ファイル名一覧取得】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【ファイル・ディレクトリ 判別】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【ファイル・ディレクトリ 選択ダイアログ】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas]]
-- [[【ファイル・フォルダ情報取得】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileInfo.bas]]
-- [[【コマンド実行】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SysCmd.bas]]
-- [[【プログレスバー表示】]]
-- [[【性能測定】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/StopWatch.cls]]
-- [[【エラー処理】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/Error.bas]]
-- [[【配列の Push, Pop 関数】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ArrayMng.bas]]
-- [[【イミディエイトウィンドウクリア】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/VbaMng.bas]]
-- [[【シート一覧】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas]]
-- [[【ツリー図オブジェクト生成】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas]]
-- [[【ファイル名・フォルダ名抽出関数】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/StringMng.bas]]
-- [[【セル範囲文字結合/分割関数】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas]]
-- [[【セル属性取得関数】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas]]
-- [[【ビット演算関数】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas]]
-- [[【キー送信】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SendKeys.bas]]
-- [[【特殊貼り付け】>>https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SpecialPaste.bas]]
+- [【ＸＬＳファイル存在確認～オープン～クローズ】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelFile.bas)
+- [【ＴＸＴファイル存在確認～オープン～クローズ】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【ＴＸＴファイル存在確認～オープン～クローズ（キャラクタセット指定）】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【フォルダ作成（再帰処理）】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【ファイル名一覧取得】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【ファイル・ディレクトリ 判別】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【ファイル・ディレクトリ 選択ダイアログ】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileSys.bas)
+- [【ファイル・フォルダ情報取得】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/FileInfo.bas)
+- [【コマンド実行】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SysCmd.bas)
+- [【プログレスバー表示】]
+- [【性能測定】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/StopWatch.cls)
+- [【エラー処理】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/Error.bas)
+- [【配列の Push, Pop 関数】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ArrayMng.bas)
+- [【イミディエイトウィンドウクリア】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/VbaMng.bas)
+- [【シート一覧】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas)
+- [【ツリー図オブジェクト生成】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas)
+- [【ファイル名・フォルダ名抽出関数】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/StringMng.bas)
+- [【セル範囲文字結合/分割関数】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas)
+- [【セル属性取得関数】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas)
+- [【ビット演算関数】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/ExcelOpe.bas)
+- [【キー送信】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SendKeys.bas)
+- [【特殊貼り付け】](https://github.com/draemonash2/codes/blob/master/vba/MacroBook/lib/SpecialPaste.bas)
 
 # サンプルコード
 - [[【プログラムテンプレート】]]
@@ -451,7 +451,8 @@ End Sub
 
 # その他
 - 【型一覧】
-| データ型 | 名称 | 消費メモリ | 格納できる範囲 |h
+| データ型 | 名称 | 消費メモリ | 格納できる範囲 |
+|:--------:|:----:|:----------:|:--------------:|
 | Integer | 整数型 | 2バイト | -32,768 ～ 32,767 |
 | Long | 長整数型 | 4バイト | -2,147,483,648 ～ 2,147,483,647 |
 | Single | 単精度浮動小数点数型 | 4バイト | -3.402823E38 ～ -1.401298E-45(負の値) 1.401298E-45 ～ 3.402823E38(正の値) |
@@ -464,7 +465,8 @@ End Sub
 | Boolean | ブール型 | 2 バイト | 真 (True) または偽 (False) |
 
 - 【演算子】
-| 演算子 | 意味 | 変数への代入例 |h
+| 演算子 | 意味 | 変数への代入例 |
+|:------:|:----:|:--------------:|
 | ＋ | 加算する | i = 15 + 5 ( ｉ の値は20) |
 | － | 減算する | i = 15 - 5 ( ｉ の値は10) |
 | ＊ | 乗算する | i = 5 * 4 ( ｉ の値は20) |
@@ -475,7 +477,8 @@ End Sub
 
 - 【エラー種別】
 	- ex) CVErr(xlErrNum)
-| 定数       | エラー番号 | セルのエラー値 |h
+| 定数       | エラー番号 | セルのエラー値 |
+|:----------:|:----------:|:--------------:|
 | xlErrDiv0  | 2007       | #DIV/0!        |
 | XlErrNA    | 2042       | #N/A           |
 | xlErrName  | 2029       | #NAME?         |
