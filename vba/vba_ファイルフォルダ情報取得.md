@@ -48,73 +48,73 @@
 | Compressed | 圧縮ファイル                              | Get         | 128（0b10000000） |
 
 ## 実行例
-	``` vba
-	Sub test()
-		Dim sDirPath As String
-		Dim sFileName As String
-		Dim sFilePath As String
-		sDirPath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice"
-		sFileName = "03 Ride Featuring Tony Matterhorn.MP3"
-		sFilePath = sDirPath & "\" & sFileName
-		 
-		Dim objFSO As Object
-		Set objFSO = CreateObject("Scripting.FileSystemObject")
-		
-		'=====================================================
-		' ファイル情報
-		'=====================================================
-		Dim objFile As Object
-		Set objFile = objFSO.GetFile(sFilePath)
-		Debug.Print "＊＊＊ファイル情報＊＊＊"
-		Debug.Print "【ファイル名】" & objFile.Name
-		Debug.Print "【ファイルサイズ】" & objFile.Size
-		Debug.Print "・"
-		Debug.Print "・"
-		Debug.Print "・"
-		Debug.Print ""
-		
-		'=====================================================
-		' フォルダ情報
-		'=====================================================
-		Dim objFolder As Object
-		Set objFolder = objFSO.GetFolder(sDirPath)
-		Debug.Print "＊＊＊フォルダ情報＊＊＊"
-		Debug.Print "【フォルダ名】" & objFolder.Name
-		Debug.Print "【フォルダサイズ】" & objFolder.Size
-		Debug.Print "・"
-		Debug.Print "・"
-		Debug.Print "・"
-		Debug.Print ""
-		
-		'=====================================================
-		' トラック情報
-		'=====================================================
-		Set objFolder = CreateObject("Shell.Application").Namespace(sDirPath & "\")
-		
-		'特定ファイルを対象とする場合
-		Set objFile = objFolder.ParseName(sFileName)    'ファイル名取り出し
+``` vba
+Sub test()
+	Dim sDirPath As String
+	Dim sFileName As String
+	Dim sFilePath As String
+	sDirPath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice"
+	sFileName = "03 Ride Featuring Tony Matterhorn.MP3"
+	sFilePath = sDirPath & "\" & sFileName
+	 
+	Dim objFSO As Object
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	
+	'=====================================================
+	' ファイル情報
+	'=====================================================
+	Dim objFile As Object
+	Set objFile = objFSO.GetFile(sFilePath)
+	Debug.Print "＊＊＊ファイル情報＊＊＊"
+	Debug.Print "【ファイル名】" & objFile.Name
+	Debug.Print "【ファイルサイズ】" & objFile.Size
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print ""
+	
+	'=====================================================
+	' フォルダ情報
+	'=====================================================
+	Dim objFolder As Object
+	Set objFolder = objFSO.GetFolder(sDirPath)
+	Debug.Print "＊＊＊フォルダ情報＊＊＊"
+	Debug.Print "【フォルダ名】" & objFolder.Name
+	Debug.Print "【フォルダサイズ】" & objFolder.Size
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print ""
+	
+	'=====================================================
+	' トラック情報
+	'=====================================================
+	Set objFolder = CreateObject("Shell.Application").Namespace(sDirPath & "\")
+	
+	'特定ファイルを対象とする場合
+	Set objFile = objFolder.ParseName(sFileName)    'ファイル名取り出し
+	Debug.Print "【ファイルサイズ】" & objFolder.GetDetailsOf(objFile, 1)   '⇒ ファイルサイズ：4.08 MB（ファイルサイズ）
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print "・"
+	Debug.Print ""
+	
+	'フォルダ内すべてのファイルを対象とする場合
+	For Each objFile In objFolder.Items
 		Debug.Print "【ファイルサイズ】" & objFolder.GetDetailsOf(objFile, 1)   '⇒ ファイルサイズ：4.08 MB（ファイルサイズ）
 		Debug.Print "・"
 		Debug.Print "・"
 		Debug.Print "・"
-		Debug.Print ""
-		
-		'フォルダ内すべてのファイルを対象とする場合
-		For Each objFile In objFolder.Items
-			Debug.Print "【ファイルサイズ】" & objFolder.GetDetailsOf(objFile, 1)   '⇒ ファイルサイズ：4.08 MB（ファイルサイズ）
-			Debug.Print "・"
-			Debug.Print "・"
-			Debug.Print "・"
-		Next
-		
-		Set objFSO = Nothing
-		Set objFolder = Nothing
-		Set objFile = Nothing
-	End Sub
-	```
+	Next
+	
+	Set objFSO = Nothing
+	Set objFolder = Nothing
+	Set objFile = Nothing
+End Sub
+```
 
 # トラック情報（GetDetailsOf）
-## プロパティ&br()プロパティはＯＳのバージョンによって異なる。以下のコードで取得する。
+## プロパティ（プロパティはＯＳのバージョンによって異なる。以下のコードで取得する。）
 
 | 第二引数 | 説明                   |>         | データ型 | 出力例                          |
 |:---|:---|:---|:---|:---|
@@ -126,31 +126,31 @@
 | ・       | ・                     | ・       | ・       | ・                              |
 
 ## プロパティ情報取得コード
-	```vba
-	'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
-	Public Sub GetDetailsOfGetDetailsOf()
-		Dim sTrgtFolderPath As String
-		Dim sTrgtFileName As String
-		Dim sLogFilePath As String
-		sTrgtFolderPath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice"
-		sTrgtFileName = "03 Ride Featuring Tony Matterhorn.MP3"
-		sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\track_title_names.txt"
-		
-		Dim objFolder As Object
-		Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
-		Dim objFile As Object
-		Set objFile = objFolder.ParseName(sTrgtFileName)
-		
-		Open sLogFilePath For Output As #1
-		Print #1, "[Idx] " & Chr(9) & "[TypeName]" & Chr(9) & "[Title]" & Chr(9) & "[Data]"
-		Dim i As Long
-		For i = 0 To 400
-			Print #1, _
-				i & Chr(9) & _
-				TypeName(objFolder.GetDetailsOf(objFile, i)) & Chr(9) & _
-				objFolder.GetDetailsOf("", i) & Chr(9) & _
-				objFolder.GetDetailsOf(objFile, i)
-		Next i
-		Close #1
-	End Sub
-	```
+```vba
+'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）を取得する
+Public Sub GetDetailsOfGetDetailsOf()
+	Dim sTrgtFolderPath As String
+	Dim sTrgtFileName As String
+	Dim sLogFilePath As String
+	sTrgtFolderPath = "Z:\300_Musics\200_Reggae@Jamaica\Artist\Alaine\Sacrifice"
+	sTrgtFileName = "03 Ride Featuring Tony Matterhorn.MP3"
+	sLogFilePath = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\track_title_names.txt"
+	
+	Dim objFolder As Object
+	Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
+	Dim objFile As Object
+	Set objFile = objFolder.ParseName(sTrgtFileName)
+	
+	Open sLogFilePath For Output As #1
+	Print #1, "[Idx] " & Chr(9) & "[TypeName]" & Chr(9) & "[Title]" & Chr(9) & "[Data]"
+	Dim i As Long
+	For i = 0 To 400
+		Print #1, _
+			i & Chr(9) & _
+			TypeName(objFolder.GetDetailsOf(objFile, i)) & Chr(9) & _
+			objFolder.GetDetailsOf("", i) & Chr(9) & _
+			objFolder.GetDetailsOf(objFile, i)
+	Next i
+	Close #1
+End Sub
+```
