@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.7
+' user define macros v2.8
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -12,6 +12,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ・ダブルクォートを除いてセルコピー   ダブルクオーテーションなしでセルコピーする
 ' =    ・選択範囲をファイルエクスポート     選択範囲をファイルとしてエクスポートする。
 ' =    ・選択範囲をコマンド実行             選択範囲内のコマンドを実行する。
+' =    ・選択範囲内の検索文字色を変更       選択範囲内の検索文字色を変更する
 ' =
 ' =    ・全シート名をコピー                 ブック内のシート名を全てコピーする
 ' =    ・シート表示非表示を切り替え         シート表示/非表示を切り替える
@@ -483,6 +484,70 @@ Public Sub 選択範囲をコマンド実行()
         'Do Nothing
     End If
     objWshShell.Run """" & sOutputFilePath & """", 3
+End Sub
+
+' =============================================================================
+' = 概要：選択範囲内の検索文字色を変更する
+' =============================================================================
+Public Sub 選択範囲内の検索文字色を変更()
+    Const sMACRO_TITLE As String = "選択範囲内の検索文字色を変更"
+    
+    '▼▼▼色設定▼▼▼
+    Const sCOLOR_TYPE As String = "0:黒、1:白、2:赤、3:黄、4:水、5:緑、6:紫、7:橙"
+    Const lCOLOR_NUM As Long = 8
+    Dim vCOLOR_INFO() As Variant
+    vCOLOR_INFO = _
+        Array( _
+            Array(0, 0, 0), _
+            Array(255, 255, 255), _
+            Array(255, 0, 0), _
+            Array(255, 192, 0), _
+            Array(75, 172, 198), _
+            Array(118, 147, 60), _
+            Array(112, 48, 160), _
+            Array(247, 150, 70) _
+        )
+    '▲▲▲色設定▲▲▲
+    
+    Dim sSrchStr As String
+    sSrchStr = InputBox("検索文字列を入力してください", sMACRO_TITLE)
+    
+    Dim lColorIndex As Long
+    lColorIndex = InputBox( _
+        "文字色を選択してください" & vbNewLine & _
+        "  " & sCOLOR_TYPE & vbNewLine _
+        , _
+        sMACRO_TITLE, _
+        1 _
+    )
+    
+    If lColorIndex < lCOLOR_NUM Then
+        Dim oCell As Range
+        For Each oCell In Selection
+            Dim sTrgtStr As String
+            sTrgtStr = oCell.Value
+            Dim lStartIdx As Long
+            lStartIdx = 1
+            Do
+                Dim lIdx As Long
+                lIdx = InStr(lStartIdx, sTrgtStr, sSrchStr)
+                If lIdx = 0 Then
+                    Exit Do
+                Else
+                    lStartIdx = lIdx + Len(sSrchStr)
+                    oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = _
+                        RGB( _
+                            vCOLOR_INFO(lColorIndex)(0), _
+                            vCOLOR_INFO(lColorIndex)(1), _
+                            vCOLOR_INFO(lColorIndex)(2) _
+                        )
+                End If
+            Loop While 1
+        Next
+        MsgBox "完了！", vbOKOnly, sMACRO_TITLE
+    Else
+        MsgBox "文字色は指定の範囲内で選択してください。" & vbNewLine & sCOLOR_TYPE, vbOKOnly, sMACRO_TITLE
+    End If
 End Sub
 
 ' =============================================================================
