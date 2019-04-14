@@ -40,7 +40,8 @@ if %MOVE_TYPE% == e (
 )
 
 set DST_ROOT_PATH=%USERPROFILE%\Documents\Amazon Drive\100_Programs
-set LOGFILE_PATH=%DST_ROOT_PATH%\_script\move_setting_files.log
+set LOGFILE_PATH=%CD%\100_move_setting_files.log
+::set LOGFILE_PATH=%DST_ROOT_PATH%\_script\100_move_setting_files.log
 
 echo.>> "%LOGFILE_PATH%"
 echo _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ >> "%LOGFILE_PATH%"
