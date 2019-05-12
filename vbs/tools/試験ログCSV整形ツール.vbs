@@ -29,9 +29,9 @@ Option Explicit
 '===============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( sMyDirPath & "\..\lib\String.vbs" )		'GetFileExt()
-Call Include( sMyDirPath & "\..\lib\FileSystem.vbs" )	'GetFileList3()
-Call Include( sMyDirPath & "\..\lib\Array.vbs" )		'ReadTxtFileToArray()
+Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileExt()
+Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
+Call Include( sMyDirPath & "\..\_lib\Array.vbs" )		'ReadTxtFileToArray()
 														'WriteTxtFileFrArray()
 
 '===============================================================================
