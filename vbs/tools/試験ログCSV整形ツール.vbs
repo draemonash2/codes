@@ -31,8 +31,8 @@ Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileExt()
 Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
-Call Include( sMyDirPath & "\..\_lib\Array.vbs" )		'ReadTxtFileToArray()
-														'WriteTxtFileFrArray()
+Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection()
+														'WriteTxtFileFrCollection()
 
 '===============================================================================
 ' 設定
@@ -123,7 +123,7 @@ for each sCsvFilePath In cCsvFileList
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
-	call ReadTxtFileToArray(sCsvFilePath, cFileContents)
+	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
 
 	'*** 変数名置換 ***
 	cFileContents(0) = ReplaceKeyword(cFileContents(0))
@@ -157,7 +157,7 @@ for each sCsvFilePath In cCsvFileList
 	End If
 
 	'*** csv出力 ***
-	call WriteTxtFileFrArray(sCsvFilePath, cFileContents)
+	call WriteTxtFileFrCollection(sCsvFilePath, cFileContents)
 next
 
 MsgBox "試験ログCSV整形完了!"

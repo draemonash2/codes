@@ -25,8 +25,8 @@ Option Explicit
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
-Call Include( sMyDirPath & "\..\_lib\Array.vbs" )		'ReadTxtFileToArray()
-														'WriteTxtFileFrArray()
+Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection()
+														'WriteTxtFileFrCollection()
 
 '===============================================================================
 ' 設定
@@ -79,7 +79,7 @@ for each sCsvFilePath In cCsvFileList
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
-	call ReadTxtFileToArray(sCsvFilePath, cFileContents)
+	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
 
 	'*** DataType取得 ***
 	If InStr(cFileContents(1), DATA_ROW_KEYWORD) Then
@@ -106,7 +106,7 @@ next
 '*****************************
 ' DataType一覧出力
 '*****************************
-call WriteTxtFileFrArray(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, oDataTypeList)
+call WriteTxtFileFrCollection(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, oDataTypeList)
 
 MsgBox "DataType一覧出力完了!"
 
