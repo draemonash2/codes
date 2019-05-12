@@ -27,38 +27,50 @@ Dim sDataTypeListFilePath
 sDataTypeListFilePath = sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME
 
 dim objTxtFile
-set objTxtFile = objFSO.OpenTextFile(sDataTypeListFilePath, 1, True)
+If objFSO.FileExists(sDataTypeListFilePath) Then
+	set objTxtFile = objFSO.OpenTextFile(sDataTypeListFilePath, 1, True)
 
-dim objWords
-Dim sTxtLine
-Do Until objTxtFile.AtEndOfStream
-	sTxtLine = objTxtFile.ReadLine
-	objWords = split(sTxtLine, ",")
-	if InStr(objWords(0), "[") Then
-		objWords(0) = ReplaceKeyword(objWords(0))
-	Else
-		'Do Nothing
-	end if
-	oDataTypeList.Add objWords(0), objWords(1)
-Loop
-objTxtFile.Close
+	dim objWords
+	Dim sTxtLine
+	Do Until objTxtFile.AtEndOfStream
+		sTxtLine = objTxtFile.ReadLine
+		objWords = split(sTxtLine, ",")
+		if InStr(objWords(0), "[") Then
+			objWords(0) = ReplaceKeyword(objWords(0))
+		Else
+			'Do Nothing
+		end if
+		oDataTypeList.Add objWords(0), objWords(1)
+	Loop
+	objTxtFile.Close
+Else
+	'Do Nothing
+End If
 
 '*****************************
 ' 結果csvファイルリスト取得
 '*****************************
-dim cFileList
-Set cFileList = CreateObject("System.Collections.ArrayList")
-call GetFileList2(sRootDirPath, cFileList, 1)
-
 dim cCsvFileList
 Set cCsvFileList = CreateObject("System.Collections.ArrayList")
-dim sFilePath
-for each sFilePath in cFileList
-	if objFSO.GetExtensionName(sFilePath) = "csv" And _
-	   objFSO.GetFileName(sFilePath) <> DATA_TYPE_LIST_FILE_NAME then
-		cCsvFileList.add sFilePath
-	end if
-next
+If WScript.Arguments.Count = 0 Then
+	dim cFileList
+	Set cFileList = CreateObject("System.Collections.ArrayList")
+	call GetFileList2(sRootDirPath, cFileList, 1)
+
+	dim sFilePath
+	for each sFilePath in cFileList
+		if objFSO.GetExtensionName(sFilePath) = "csv" And _
+		   objFSO.GetFileName(sFilePath) <> DATA_TYPE_LIST_FILE_NAME then
+			cCsvFileList.add sFilePath
+		end if
+	next
+ElseIf WScript.Arguments.Count = 1 And _
+	objFSO.FileExists(WScript.Arguments(0)) Then
+	cCsvFileList.add WScript.Arguments(0)
+Else
+	WScript.Echo "引数エラー"
+	WScript.Quit
+End If
 
 '*****************************
 ' 試験結果csv整形
@@ -249,30 +261,46 @@ End Function
 ' = 概要	テキストファイルの中身を配列に格納
 ' = 引数	sTrgtFilePath	String		[in]	ファイルパス
 ' = 引数	cFileContents	Collections [out]	ファイルの中身
-' = 戻値	なし
+' = 戻値	読み出し結果	Boolean				読み出し結果
+' =													True:ファイル存在
+' =													False:それ以外
 ' = 覚書	なし
 ' ==================================================================
 Public Function ReadTxtFileToArray( _
 	ByVal sTrgtFilePath, _
 	ByRef cFileContents _
 )
+	On Error Resume Next
 	Dim objFSO
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
-	Dim objTxtFile
-	Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 1, True)
 	
-	Do Until objTxtFile.AtEndOfStream
-		cFileContents.add objTxtFile.ReadLine
-	Loop
-	
-	objTxtFile.Close
+	If objFSO.FileExists(sTrgtFilePath) Then
+		Dim objTxtFile
+		Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 1, True)
+		
+		If Err.Number = 0 Then
+			Do Until objTxtFile.AtEndOfStream
+				cFileContents.add objTxtFile.ReadLine
+			Loop
+			ReadTxtFileToArray = True
+		Else
+			ReadTxtFileToArray = False
+		'	WScript.Echo "エラー " & Err.Description
+		End If
+		
+		objTxtFile.Close
+	Else
+		ReadTxtFileToArray = False
+	End If
+	On Error Goto 0
 End Function
 '	Call Test_OpenTxtFile2Array()
 	Private Sub Test_OpenTxtFile2Array()
 		Dim cFileList
 		Set cFileList = CreateObject("System.Collections.ArrayList")
-		sFilePath = "C:\codes\vbs\試験結果CSV整形ツール\data_type_list.csv"
-		call ReadTxtFileToArray( sFilePath, cFileList )
+		sFilePath = "C:\codes\vbs\試験結果CSV整形ツール\data_type_list_.csv"
+		Dim bRet
+		bRet = ReadTxtFileToArray( sFilePath, cFileList )
 		
 		dim sFilePath
 		dim sOutput
@@ -280,6 +308,7 @@ End Function
 		for each sFilePath in cFileList
 			sOutput = sOutput & vbNewLine & sFilePath
 		next
+		MsgBox bRet
 		MsgBox sOutput
 	End Sub
 
@@ -287,24 +316,35 @@ End Function
 ' = 概要	配列の中身をテキストファイルに書き出し
 ' = 引数	sTrgtFilePath	String		[in]	ファイルパス
 ' = 引数	cFileContents	Collections [in]	ファイルの中身
-' = 戻値	なし
+' = 戻値	書き出し結果	Boolean				書き出し結果
+' =													True:書き出し成功
+' =													False:それ以外
 ' = 覚書	なし
 ' ==================================================================
 Public Function WriteTxtFileFrArray( _
 	ByVal sTrgtFilePath, _
 	ByRef cFileContents _
 )
+	On Error Resume Next
 	Dim objFSO
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	
 	Dim objTxtFile
 	Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 2, True)
 	
-	Dim sFileLine
-	For Each sFileLine In cFileContents
-		objTxtFile.WriteLine sFileLine
-	Next
+	If Err.Number = 0 Then
+		Dim sFileLine
+		For Each sFileLine In cFileContents
+			objTxtFile.WriteLine sFileLine
+		Next
+		WriteTxtFileFrArray = True
+	Else
+		WriteTxtFileFrArray = False
+	'	WScript.Echo "エラー " & Err.Description
+	End If
 	
 	objTxtFile.Close
+	On Error Goto 0
 End Function
 '	Call Test_WriteTxtFileFrArray()
 	Private Sub Test_WriteTxtFileFrArray()
