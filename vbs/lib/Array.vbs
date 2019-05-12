@@ -110,3 +110,75 @@ End Function
         MsgBox Result
     End Sub
 
+' ==================================================================
+' = 概要    テキストファイルの中身を配列に格納
+' = 引数    sTrgtFilePath   String      [in]    ファイルパス
+' = 引数    cFileContents   Collections [out]   ファイルの中身
+' = 戻値    なし
+' = 覚書    なし
+' ==================================================================
+Public Function ReadTxtFileToArray( _
+    ByVal sTrgtFilePath, _
+    ByRef cFileContents _
+)
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim objTxtFile
+    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 1, True)
+    
+    Do Until objTxtFile.AtEndOfStream
+        cFileContents.add objTxtFile.ReadLine
+    Loop
+    
+    objTxtFile.Close
+End Function
+'   Call Test_OpenTxtFile2Array()
+    Private Sub Test_OpenTxtFile2Array()
+        Dim cFileList
+        Set cFileList = CreateObject("System.Collections.ArrayList")
+        sFilePath = "C:\codes\vbs\試験結果CSV整形ツール\data_type_list.csv"
+        call ReadTxtFileToArray( sFilePath, cFileList )
+        
+        dim sFilePath
+        dim sOutput
+        sOutput = ""
+        for each sFilePath in cFileList
+            sOutput = sOutput & vbNewLine & sFilePath
+        next
+        MsgBox sOutput
+    End Sub
+
+' ==================================================================
+' = 概要    配列の中身をテキストファイルに書き出し
+' = 引数    sTrgtFilePath   String      [in]    ファイルパス
+' = 引数    cFileContents   Collections [in]    ファイルの中身
+' = 戻値    なし
+' = 覚書    なし
+' ==================================================================
+Public Function WriteTxtFileFrArray( _
+    ByVal sTrgtFilePath, _
+    ByRef cFileContents _
+)
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim objTxtFile
+    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 2, True)
+    
+    Dim sFileLine
+    For Each sFileLine In cFileContents
+        objTxtFile.WriteLine sFileLine
+    Next
+    
+    objTxtFile.Close
+End Function
+'   Call Test_WriteTxtFileFrArray()
+    Private Sub Test_WriteTxtFileFrArray()
+        Dim cFileContents
+        Set cFileContents = CreateObject("System.Collections.ArrayList")
+        cFileContents.Add "a"
+        cFileContents.Add "b"
+        cFileContents.Insert 1, "c"
+        DIm sTrgtFilePath
+        sTrgtFilePath = "C:\codes\vbs\試験結果CSV整形ツール\Test.csv"
+        call WriteTxtFileFrArray( sTrgtFilePath, cFileContents )
+    End Sub
