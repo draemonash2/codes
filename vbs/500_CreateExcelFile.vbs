@@ -5,8 +5,8 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( sMyDirPath & "\lib\Excel.vbs" )
-Call Include( sMyDirPath & "\lib\String.vbs" )
+Call Include( sMyDirPath & "\_lib\Excel.vbs" )
+Call Include( sMyDirPath & "\_lib\String.vbs" )
 
 '==========================================================
 '= ñ{èàóù

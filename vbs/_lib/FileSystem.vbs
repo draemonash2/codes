@@ -967,7 +967,7 @@ End Function
 		Dim vFileInfo
 		sBuf = ""
 		Dim sTrgtPath
-		sTrgtPath = "C:\codes\vbs\lib\FileSystem.vbs"
+		sTrgtPath = "C:\codes\vbs\_lib\FileSystem.vbs"
 		sBuf = sBuf & vbNewLine & sTrgtPath
 		bRet = GetFileInfo( sTrgtPath,	1, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	ファイル名："			  & vFileInfo
 		bRet = GetFileInfo( sTrgtPath,	2, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	ファイルサイズ："		  & vFileInfo
@@ -982,7 +982,7 @@ End Function
 		bRet = GetFileInfo( sTrgtPath, 11, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	更新日時："				  & vFileInfo
 		bRet = GetFileInfo( sTrgtPath, 12, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	属性："					  & vFileInfo
 		bRet = GetFileInfo( sTrgtPath, 13, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	："						  & vFileInfo
-		sTrgtPath = "C:\codes\vbs\lib\dummy.vbs"
+		sTrgtPath = "C:\codes\vbs\_lib\dummy.vbs"
 		sBuf = sBuf & vbNewLine & sTrgtPath
 		bRet = GetFileInfo( sTrgtPath,	1, vFileInfo) : sBuf = sBuf & vbNewLine & bRet & "	ファイル名："			  & vFileInfo
 		MsgBox sBuf
@@ -1184,7 +1184,7 @@ End Function
 		Dim sErrorDetail
 		sBuf = ""
 		Dim sTrgtPath
-		sTrgtPath = "C:\codes\vbs\lib\FileSystem.vbs"
+		sTrgtPath = "C:\codes\vbs\_lib\FileSystem.vbs"
 		sBuf = sBuf & vbNewLine & sTrgtPath
 		bRet = GetFileDetailInfo(sTrgtPath, 1, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail
 		bRet = GetFileDetailInfo(sTrgtPath, 2, vFileInfoValue, vFileInfoTitle, sErrorDetail): sBuf = sBuf & vbNewLine & bRet & "  " & vFileInfoTitle & "：" & vFileInfoValue & "：" & sErrorDetail

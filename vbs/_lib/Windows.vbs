@@ -115,5 +115,5 @@ End Function
 '   Call Test_ExecDosCmd()
     Private Sub Test_ExecDosCmd()
         Msgbox ExecDosCmd( "copy ""C:\Users\draem_000\Desktop\test.txt"" ""C:\Users\draem_000\Desktop\test2.txt""" )
-        'Msgbox ExecDosCmd( "C:\codes\vbs\lib\test.bat" )
+        'Msgbox ExecDosCmd( "C:\codes\vbs\_lib\test.bat" )
     End Sub

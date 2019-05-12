@@ -30,9 +30,9 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( sMyDirPath & "\lib\FileSystem.vbs" )
-Call Include( sMyDirPath & "\lib\Windows.vbs" )
-Call Include( sMyDirPath & "\lib\Log.vbs" )
+Call Include( sMyDirPath & "\_lib\FileSystem.vbs" )
+Call Include( sMyDirPath & "\_lib\Windows.vbs" )
+Call Include( sMyDirPath & "\_lib\Log.vbs" )
 
 '==========================================================
 '= ñ{èàóù
