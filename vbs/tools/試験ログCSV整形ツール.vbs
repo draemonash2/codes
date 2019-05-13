@@ -21,7 +21,7 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	1.0.0	2019/05/12	新規作成
+'	1.0.0	2019/05/13	新規作成
 '===============================================================================
 
 '===============================================================================
@@ -38,12 +38,14 @@ Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection(
 ' 設定
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
+CONST CREATE_BACKUP_FILE = False
+CONST DEFAULT_DATA_TYPE = "uint8"
 
 '===============================================================================
 ' 本処理
 '===============================================================================
-Const DATA_ROW_KEYWORD = "DataType"
-Const RAMNAME_ROW_KEYWORD = "Data"
+Const RAMNAME_ROW_KEYWORD = "TimeStamp"
+Const DATATYPE_ROW_KEYWORD = "DataType"
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -74,7 +76,9 @@ If objFSO.FileExists(sDataTypeListFilePath) Then
 		Else
 			'Do Nothing
 		end if
+		On Error Resume Next '重複キーがあったら無視
 		oDataTypeList.Add objWords(0), objWords(1)
+		On Error Goto 0
 	Loop
 	objTxtFile.Close
 Else
@@ -98,6 +102,7 @@ If WScript.Arguments.Count = 0 Then
 			cCsvFileList.add sFilePath
 		end if
 	next
+	Set cFileList = Nothing
 ElseIf WScript.Arguments.Count = 1 And _
 	objFSO.FileExists(WScript.Arguments(0)) Then
 	cCsvFileList.add WScript.Arguments(0)
@@ -112,24 +117,27 @@ End If
 dim sCsvFilePath
 for each sCsvFilePath In cCsvFileList
 	'*** 試験ログCSVバックアップ出力 ***
-	Dim sCsvBakFilePath
-	sCsvBakFilePath = sCsvFilePath & ".bak"
-	If objFSO.FileExists(sCsvBakFilePath) Then
-		'Do Nothing
-	Else
-		objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
+	
+	If CREATE_BACKUP_FILE = True then
+		Dim sCsvBakFilePath
+		sCsvBakFilePath = sCsvFilePath & ".bak"
+		If objFSO.FileExists(sCsvBakFilePath) Then
+			'Do Nothing
+		Else
+			objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
+		End If
 	End If
-
+	
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
 	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
-
+	
 	'*** 変数名置換 ***
 	cFileContents(0) = ReplaceKeyword(cFileContents(0))
-
+	
 	'*** Datatype挿入 ***
-	If InStr(cFileContents(1), DATA_ROW_KEYWORD) Then
+	If InStr(cFileContents(1), DATATYPE_ROW_KEYWORD) Then
 		'Do Nothing
 	Else
 		Dim vRamNames
@@ -137,7 +145,7 @@ for each sCsvFilePath In cCsvFileList
 		Dim sRamNameRaw
 		Dim sRamNameRep
 		Dim sDataTypeLine
-		sDataTypeLine = DATA_ROW_KEYWORD
+		sDataTypeLine = DATATYPE_ROW_KEYWORD
 		for each sRamNameRaw In vRamNames
 			If sRamNameRaw = RAMNAME_ROW_KEYWORD Then
 				'Do Nothing
@@ -149,18 +157,24 @@ for each sCsvFilePath In cCsvFileList
 				elseif oDataTypeList.Exists(sRamNameRep) then
 					sDataTypeLine = sDataTypeLine & "," & oDataTypeList.Item(sRamNameRep)
 				else
-					sDataTypeLine = sDataTypeLine & ",uint8"
+					sDataTypeLine = sDataTypeLine & "," & DEFAULT_DATA_TYPE
 				end if
 			end if
 		next
 		cFileContents.Insert 1, sDataTypeLine
 	End If
-
+	
 	'*** csv出力 ***
 	call WriteTxtFileFrCollection(sCsvFilePath, cFileContents)
+	
+	Set cFileContents = Nothing
 next
 
-MsgBox "試験ログCSV整形完了!"
+Set objFSO = Nothing
+Set cCsvFileList = Nothing
+set oDataTypeList = Nothing
+
+MsgBox "試験ログCSV 整形完了!"
 
 '===============================================================================
 ' 関数

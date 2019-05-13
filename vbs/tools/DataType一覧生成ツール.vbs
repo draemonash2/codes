@@ -16,7 +16,7 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	0.1.0	2019/05/12	ベータ版（TODO:要重複削除処理）
+'	1.0.0	2019/05/13	新規作成
 '===============================================================================
 
 '===============================================================================
@@ -36,8 +36,8 @@ CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
 '===============================================================================
 ' 本処理
 '===============================================================================
-Const DATA_ROW_KEYWORD = "DataType"
-Const RAMNAME_ROW_KEYWORD = "Data"
+Const RAMNAME_ROW_KEYWORD = "TimeStamp"
+Const DATATYPE_ROW_KEYWORD = "DataType"
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -53,7 +53,7 @@ If WScript.Arguments.Count = 0 Then
 	dim cFileList
 	Set cFileList = CreateObject("System.Collections.ArrayList")
 	call GetFileList3(sRootDirPath, cFileList, 1)
-
+	
 	dim sFilePath
 	for each sFilePath in cFileList
 		if objFSO.GetExtensionName(sFilePath) = "csv" And _
@@ -61,6 +61,7 @@ If WScript.Arguments.Count = 0 Then
 			cCsvFileList.add sFilePath
 		end if
 	next
+	Set cFileList = Nothing
 ElseIf WScript.Arguments.Count = 1 And _
 	objFSO.FileExists(WScript.Arguments(0)) Then
 	cCsvFileList.add WScript.Arguments(0)
@@ -74,33 +75,44 @@ End If
 '*****************************
 dim oDataTypeList
 Set oDataTypeList = CreateObject("System.Collections.ArrayList")
+dim oDataTypeListDupChk '重複チェック用
+set oDataTypeListDupChk = CreateObject("Scripting.Dictionary")
 dim sCsvFilePath
 for each sCsvFilePath In cCsvFileList
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
 	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
-
+	
 	'*** DataType取得 ***
-	If InStr(cFileContents(1), DATA_ROW_KEYWORD) Then
+	If InStr(cFileContents(1), DATATYPE_ROW_KEYWORD) Then
 		Dim vRamNames
 		Dim vDataTypes
 		vRamNames = Split(cFileContents(0), ",")
 		vDataTypes = Split(cFileContents(1), ",")
 		Dim sRamNameRaw
+		Dim sRamNameRep
 		Dim lIdx
 		lIdx = 0
 		for each sRamNameRaw In vRamNames
 			If sRamNameRaw = RAMNAME_ROW_KEYWORD Then
 				'Do Nothing
 			else
-				oDataTypeList.Add sRamNameRaw & "," & vDataTypes(lIdx)
+				sRamNameRep = sRamNameRaw
+				sRamNameRep = ReplaceKeyword(sRamNameRep)
+				Dim sDataTypeListLine
+				sDataTypeListLine = sRamNameRep & "," & vDataTypes(lIdx)
+				If Not oDataTypeListDupChk.Exists( sDataTypeListLine ) Then
+					oDataTypeList.Add sDataTypeListLine
+					oDataTypeListDupChk.Add sDataTypeListLine, ""
+				end if
 			end if
 			lIdx = lIdx + 1
 		next
 	Else
 		'Do Nothing
 	End If
+	Set cFileContents = Nothing
 next
 
 '*****************************
@@ -108,7 +120,12 @@ next
 '*****************************
 call WriteTxtFileFrCollection(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, oDataTypeList)
 
-MsgBox "DataType一覧出力完了!"
+MsgBox "DataType一覧 生成完了!"
+
+Set objFSO = Nothing
+Set cCsvFileList = Nothing
+Set oDataTypeList = Nothing
+set oDataTypeListDupChk = Nothing
 
 '===============================================================================
 ' 関数
