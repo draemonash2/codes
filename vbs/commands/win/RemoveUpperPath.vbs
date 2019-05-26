@@ -1,43 +1,53 @@
 Option Explicit
 
-'==================================================
-' = 例）
-' =	  【入力】
-' =		クリップボード値："C:\t_endo\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c"
-' =		SOURCE_DIR_NAME："900_ソースコード"
-' =		REMOVE_DIR_LEVEL：2
-' =   【出力】
-' =		クリップボード値："src_b\sid\sid_can_2E.c"
-'==================================================
+'usage
+' cscript.exe .\RemoveUpperPath.vbs <src_path> <dir_name> <remeve_dir_level>
+'
+'usage ex.
+' cscript.exe .\RemoveUpperPath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 2
+'   →"src_b\sid\sid_can_2E.c"
+' cscript.exe .\RemoveUpperPath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 3 | clip
+'   →"sid\sid_can_2E.c" をクリップボードにコピー
 
 '==================================================
 '= 設定
 '==================================================
-Const SOURCE_DIR_NAME = "codes"
-Const REMOVE_DIR_LEVEL = 1
+Const DEFAULT_MATCH_DIR_NAME = "codes"
+Const DEFAULT_REMOVE_DIR_LEVEL = 2
 
 '==================================================
 '= 本処理
 '==================================================
 Dim sInputPath
-Dim objHTML
-Set objHTML = CreateObject("htmlfile")
-'sInputPath = Trim(objHTML.ParentWindow.ClipboardData.GetData("text"))
-sInputPath = "C:\codes\vbs\test.vbs"
-
-'msgbox sInputPath
+Dim sMatchDirName
+Dim lRemeveDirLevel
+sMatchDirName = DEFAULT_MATCH_DIR_NAME
+lRemeveDirLevel = DEFAULT_REMOVE_DIR_LEVEL
+If WScript.Arguments.Count = 1 Then
+	sInputPath = WScript.Arguments(0)
+ElseIf WScript.Arguments.Count = 2 Then
+	sInputPath = WScript.Arguments(0)
+	sMatchDirName = WScript.Arguments(1)
+ElseIf WScript.Arguments.Count = 3 Then
+	sInputPath = WScript.Arguments(0)
+	sMatchDirName = WScript.Arguments(1)
+	lRemeveDirLevel = WScript.Arguments(2)
+Else
+	WScript.StdOut.WriteLine "指定する引数が異なります：" & WScript.Arguments.Count
+	WScript.StdOut.WriteLine "処理を中断します"
+	WScript.Quit
+End If
 
 Dim sRemoveDirLevelPath
 sRemoveDirLevelPath = ""
 Dim lIdx
-For lIdx = 0 To REMOVE_DIR_LEVEL - 1
+For lIdx = 0 To lRemeveDirLevel - 1
 	sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
 Next
 
 Dim sSearchPattern
 Dim sTargetStr
-sSearchPattern = ".*\\" & SOURCE_DIR_NAME & sRemoveDirLevelPath & "\\"
-'Msgbox sSearchPattern
+sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
 sTargetStr = sInputPath
 
 Dim oRegExp
@@ -57,11 +67,8 @@ Else
 	sOutPath = sInputPath
 End If
 
-'msgbox sOutPath
-
-'With CreateObject("Wscript.Shell").Exec("clip")
-'  .StdIn.Write sOutPath
-'End With
-Wscript.StdOut.WriteLine sOutPath
-
-test
+If sOutPath = "" Then
+	'Do Nothing
+Else
+	Wscript.StdOut.WriteLine sOutPath
+End If
