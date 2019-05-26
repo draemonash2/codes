@@ -63,3 +63,5 @@ End If
 '  .StdIn.Write sOutPath
 'End With
 Wscript.StdOut.WriteLine sOutPath
+
+test

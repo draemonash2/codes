@@ -16,7 +16,9 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	1.0.0	2019/05/13	新規作成
+'	1.0.0	2019/05/13	・新規作成
+'	1.1.0	2019/05/26	・DataType一覧のバックアップ作成を選択できるように変更
+'						・試験ログCSVファイル判定処理変更
 '===============================================================================
 
 '===============================================================================
@@ -27,11 +29,13 @@ sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
 Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection()
 														'WriteTxtFileFrCollection()
+Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileNotExistPath()
 
 '===============================================================================
 ' 設定
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
+CONST CREATE_BACKUP_FILE = False
 
 '===============================================================================
 ' 本処理
@@ -47,8 +51,10 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 '*****************************
 dim cCsvFileList
 Set cCsvFileList = CreateObject("System.Collections.ArrayList")
+
 Dim sRootDirPath
 sRootDirPath = objFSO.GetParentFolderName( WScript.ScriptFullName )
+
 If WScript.Arguments.Count = 0 Then
 	dim cFileList
 	Set cFileList = CreateObject("System.Collections.ArrayList")
@@ -75,36 +81,46 @@ End If
 '*****************************
 dim oDataTypeList
 Set oDataTypeList = CreateObject("System.Collections.ArrayList")
-dim oDataTypeListDupChk '重複チェック用
-set oDataTypeListDupChk = CreateObject("Scripting.Dictionary")
+dim dDataTypeListDupChk '重複チェック用
+set dDataTypeListDupChk = CreateObject("Scripting.Dictionary")
 dim sCsvFilePath
 for each sCsvFilePath In cCsvFileList
+	
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
 	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
 	
-	'*** DataType取得 ***
-	If InStr(cFileContents(1), DATATYPE_ROW_KEYWORD) Then
+	'*** 試験ログファイルチェック ***
+	If Left(cFileContents(0), len(RAMNAME_ROW_KEYWORD)) = RAMNAME_ROW_KEYWORD And _
+	   Left(cFileContents(1), len(DATATYPE_ROW_KEYWORD)) = DATATYPE_ROW_KEYWORD Then
+		
+		'*** バックアップ出力 ***
+		If CREATE_BACKUP_FILE = True then
+			Dim sCsvBakFilePath
+			sCsvBakFilePath = sCsvFilePath & ".bak"
+			sCsvBakFilePath = GetFileNotExistPath(sCsvBakFilePath)
+			objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
+		End If
+		
+		'*** DataType取得 ***
 		Dim vRamNames
 		Dim vDataTypes
 		vRamNames = Split(cFileContents(0), ",")
 		vDataTypes = Split(cFileContents(1), ",")
-		Dim sRamNameRaw
-		Dim sRamNameRep
+		Dim sRamName
 		Dim lIdx
 		lIdx = 0
-		for each sRamNameRaw In vRamNames
-			If sRamNameRaw = RAMNAME_ROW_KEYWORD Then
+		for each sRamName In vRamNames
+			If lIdx = 0 Then '1列目は無視
 				'Do Nothing
 			else
-				sRamNameRep = sRamNameRaw
-				sRamNameRep = ReplaceKeyword(sRamNameRep)
+				sRamName = ReplaceKeyword(sRamName)
 				Dim sDataTypeListLine
-				sDataTypeListLine = sRamNameRep & "," & vDataTypes(lIdx)
-				If Not oDataTypeListDupChk.Exists( sDataTypeListLine ) Then
+				sDataTypeListLine = sRamName & "," & vDataTypes(lIdx)
+				If Not dDataTypeListDupChk.Exists( sDataTypeListLine ) Then
 					oDataTypeList.Add sDataTypeListLine
-					oDataTypeListDupChk.Add sDataTypeListLine, ""
+					dDataTypeListDupChk.Add sDataTypeListLine, ""
 				end if
 			end if
 			lIdx = lIdx + 1
@@ -112,20 +128,21 @@ for each sCsvFilePath In cCsvFileList
 	Else
 		'Do Nothing
 	End If
+	
 	Set cFileContents = Nothing
 next
 
 '*****************************
 ' DataType一覧出力
 '*****************************
-call WriteTxtFileFrCollection(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, oDataTypeList)
-
-MsgBox "DataType一覧 生成完了!"
+call WriteTxtFileFrCollection(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, oDataTypeList, True)
 
 Set objFSO = Nothing
 Set cCsvFileList = Nothing
 Set oDataTypeList = Nothing
-set oDataTypeListDupChk = Nothing
+set dDataTypeListDupChk = Nothing
+
+MsgBox "DataType一覧 生成完了!"
 
 '===============================================================================
 ' 関数

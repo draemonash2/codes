@@ -21,7 +21,9 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	1.0.0	2019/05/13	新規作成
+'	1.0.0	2019/05/13	・新規作成
+'	1.1.0	2019/05/26	・試験ログCSVバックアップ出力条件変更
+'						・その他リファクタリング
 '===============================================================================
 
 '===============================================================================
@@ -33,6 +35,7 @@ Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileExt()
 Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
 Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection()
 														'WriteTxtFileFrCollection()
+Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileNotExistPath()
 
 '===============================================================================
 ' 設定
@@ -51,50 +54,19 @@ Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 '*****************************
-' DataType一覧取得
-'*****************************
-dim oDataTypeList
-set oDataTypeList = CreateObject("Scripting.Dictionary")
-
-Dim sRootDirPath
-sRootDirPath = objFSO.GetParentFolderName( WScript.ScriptFullName )
-
-Dim sDataTypeListFilePath
-sDataTypeListFilePath = sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME
-
-dim objTxtFile
-If objFSO.FileExists(sDataTypeListFilePath) Then
-	set objTxtFile = objFSO.OpenTextFile(sDataTypeListFilePath, 1, True)
-
-	dim objWords
-	Dim sTxtLine
-	Do Until objTxtFile.AtEndOfStream
-		sTxtLine = objTxtFile.ReadLine
-		objWords = split(sTxtLine, ",")
-		if InStr(objWords(0), "[") Then
-			objWords(0) = ReplaceKeyword(objWords(0))
-		Else
-			'Do Nothing
-		end if
-		On Error Resume Next '重複キーがあったら無視
-		oDataTypeList.Add objWords(0), objWords(1)
-		On Error Goto 0
-	Loop
-	objTxtFile.Close
-Else
-	'Do Nothing
-End If
-
-'*****************************
 ' 試験ログCSVファイルリスト取得
 '*****************************
 dim cCsvFileList
 Set cCsvFileList = CreateObject("System.Collections.ArrayList")
+
+Dim sRootDirPath
+sRootDirPath = objFSO.GetParentFolderName( WScript.ScriptFullName )
+
 If WScript.Arguments.Count = 0 Then
 	dim cFileList
 	Set cFileList = CreateObject("System.Collections.ArrayList")
 	call GetFileList3(sRootDirPath, cFileList, 1)
-
+	
 	dim sFilePath
 	for each sFilePath in cFileList
 		if objFSO.GetExtensionName(sFilePath) = "csv" And _
@@ -112,67 +84,96 @@ Else
 End If
 
 '*****************************
+' DataType一覧取得
+'*****************************
+dim dDataTypeList
+Set dDataTypeList = CreateObject("Scripting.Dictionary")
+
+Dim sDataTypeListFilePath
+sDataTypeListFilePath = sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME
+
+dim objTxtFile
+If objFSO.FileExists(sDataTypeListFilePath) Then
+	set objTxtFile = objFSO.OpenTextFile(sDataTypeListFilePath, 1)
+
+	dim objWords
+	Dim sTxtLine
+	Do Until objTxtFile.AtEndOfStream
+		sTxtLine = objTxtFile.ReadLine
+		objWords = split(sTxtLine, ",")
+		objWords(0) = ReplaceKeyword(objWords(0))
+		On Error Resume Next '重複キーがあったら無視
+		dDataTypeList.Add objWords(0), objWords(1) 'RamName DataType
+		On Error Goto 0
+	Loop
+	objTxtFile.Close
+Else
+	'Do Nothing
+End If
+
+'*****************************
 ' 試験ログCSV整形
 '*****************************
 dim sCsvFilePath
 for each sCsvFilePath In cCsvFileList
-	'*** 試験ログCSVバックアップ出力 ***
-	
-	If CREATE_BACKUP_FILE = True then
-		Dim sCsvBakFilePath
-		sCsvBakFilePath = sCsvFilePath & ".bak"
-		If objFSO.FileExists(sCsvBakFilePath) Then
-			'Do Nothing
-		Else
-			objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
-		End If
-	End If
 	
 	'*** 試験ログCSVオープン ***
 	dim cFileContents
 	Set cFileContents = CreateObject("System.Collections.ArrayList")
 	call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
 	
-	'*** 変数名置換 ***
-	cFileContents(0) = ReplaceKeyword(cFileContents(0))
-	
-	'*** Datatype挿入 ***
-	If InStr(cFileContents(1), DATATYPE_ROW_KEYWORD) Then
-		'Do Nothing
-	Else
+	'*** 試験ログファイルチェック ***
+	If Left(cFileContents(0), len(RAMNAME_ROW_KEYWORD)) = RAMNAME_ROW_KEYWORD Then
+		
+		'*** バックアップ出力 ***
+		If CREATE_BACKUP_FILE = True then
+			Dim sCsvBakFilePath
+			sCsvBakFilePath = sCsvFilePath & ".bak"
+			sCsvBakFilePath = GetFileNotExistPath(sCsvBakFilePath)
+			objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
+		End If
+		
+		'*** 変数名置換 ***
+		cFileContents(0) = ReplaceKeyword(cFileContents(0))
+		
+		'*** Datatype置換or挿入 ***
 		Dim vRamNames
 		vRamNames = Split(cFileContents(0), ",")
-		Dim sRamNameRaw
-		Dim sRamNameRep
+		Dim sRamName
 		Dim sDataTypeLine
-		sDataTypeLine = DATATYPE_ROW_KEYWORD
-		for each sRamNameRaw In vRamNames
-			If sRamNameRaw = RAMNAME_ROW_KEYWORD Then
-				'Do Nothing
+		Dim lIdx
+		lIdx = 0
+		for each sRamName In vRamNames
+			If lIdx = 0 Then '1列目は無視
+				sDataTypeLine = DATATYPE_ROW_KEYWORD
 			else
-				sRamNameRep = sRamNameRaw
-				sRamNameRep = ReplaceKeyword(sRamNameRep)
-				if oDataTypeList.Exists(sRamNameRaw) then
-					sDataTypeLine = sDataTypeLine & "," & oDataTypeList.Item(sRamNameRaw)
-				elseif oDataTypeList.Exists(sRamNameRep) then
-					sDataTypeLine = sDataTypeLine & "," & oDataTypeList.Item(sRamNameRep)
+				'sRamName = ReplaceKeyword(sRamName) 'すでに置換済み
+				if dDataTypeList.Exists(sRamName) then
+					sDataTypeLine = sDataTypeLine & "," & dDataTypeList.Item(sRamName)
 				else
 					sDataTypeLine = sDataTypeLine & "," & DEFAULT_DATA_TYPE
 				end if
 			end if
+			lIdx = lIdx + 1
 		next
-		cFileContents.Insert 1, sDataTypeLine
+		If Left(cFileContents(1), len(DATATYPE_ROW_KEYWORD)) = DATATYPE_ROW_KEYWORD Then
+			cFileContents(1) = sDataTypeLine
+		Else
+			cFileContents.Insert 1, sDataTypeLine
+		End If
+		
+		'*** CSV出力 ***
+		call WriteTxtFileFrCollection(sCsvFilePath, cFileContents, True)
+	Else
+		'Do Nothing
 	End If
-	
-	'*** csv出力 ***
-	call WriteTxtFileFrCollection(sCsvFilePath, cFileContents)
 	
 	Set cFileContents = Nothing
 next
 
 Set objFSO = Nothing
 Set cCsvFileList = Nothing
-set oDataTypeList = Nothing
+Set dDataTypeList = Nothing
 
 MsgBox "試験ログCSV 整形完了!"
 
