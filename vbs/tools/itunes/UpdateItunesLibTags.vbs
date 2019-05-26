@@ -79,12 +79,12 @@ Dim objWshShell
 Dim sCurDir
 Set objWshShell = WScript.CreateObject( "WScript.Shell" )
 sCurDir = objWshShell.CurrentDirectory
-Call Include( sCurDir & "\_lib\String.vbs" )
-Call Include( sCurDir & "\_lib\StopWatch.vbs" )
-Call Include( sCurDir & "\_lib\ProgressBar.vbs" )
-Call Include( sCurDir & "\_lib\FileSystem.vbs" )
-Call Include( sCurDir & "\_lib\iTunes.vbs" )
-Call Include( sCurDir & "\_lib\Array.vbs" )
+Call Include( "C:\codes\vbs\_lib\String.vbs" )
+Call Include( "C:\codes\vbs\_lib\StopWatch.vbs" )
+Call Include( "C:\codes\vbs\_lib\ProgressBar.vbs" )
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
+Call Include( "C:\codes\vbs\_lib\iTunes.vbs" )
+Call Include( "C:\codes\vbs\_lib\Array.vbs" )
 
 ' ******************************************
 ' * èàóùëIë                               *

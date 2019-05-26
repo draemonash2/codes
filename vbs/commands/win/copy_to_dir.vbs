@@ -37,8 +37,8 @@ Option Explicit
 '==============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetDirPath()
-Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'CreateDirectry()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )			'GetDirPath()
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )		'CreateDirectry()
 														'GetFileOrFolder()
 
 '==============================================================================

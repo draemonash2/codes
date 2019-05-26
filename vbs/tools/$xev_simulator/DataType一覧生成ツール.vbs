@@ -26,10 +26,10 @@ Option Explicit
 '===============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( sMyDirPath & "\..\_lib\FileSystem.vbs" )	'GetFileList3()
-Call Include( sMyDirPath & "\..\_lib\Collection.vbs" )	'ReadTxtFileToCollection()
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )		'GetFileList3()
+Call Include( "C:\codes\vbs\_lib\Collection.vbs" )		'ReadTxtFileToCollection()
 														'WriteTxtFileFrCollection()
-Call Include( sMyDirPath & "\..\_lib\String.vbs" )		'GetFileNotExistPath()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )			'GetFileNotExistPath()
 
 '===============================================================================
 ' ê›íË
