@@ -1,12 +1,12 @@
 Option Explicit
 
 'usage
-' cscript.exe .\AddToPathOfEnvVariable.vbs <env_value> [<env_name>] [<target_group>]
+' cscript.exe .\AddEnvVariable.vbs <env_value> [<env_name>] [<target_group>]
 ' 
 'usage ex.
-' cscript.exe .\AddToPathOfEnvVariable.vbs c:\codes
-' cscript.exe .\AddToPathOfEnvVariable.vbs c:\codes CODES
-' cscript.exe .\AddToPathOfEnvVariable.vbs c:\codes CODES System
+' cscript.exe .\AddEnvVariable.vbs c:\codes
+' cscript.exe .\AddEnvVariable.vbs c:\codes CODES
+' cscript.exe .\AddEnvVariable.vbs c:\codes CODES System
 
 '==========================================================
 '= ê›íË
