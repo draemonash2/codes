@@ -1,4 +1,4 @@
-$script_path = "C:\\codes\\bat\\win\\clipboard\\CpyRlvtFilePath_codes.bat";
+$script_path = "C:\\codes\\bat\\win\\clipboard\\CpyRmvdFilePath_codes.bat";
 $file_path = filename2;
 
 runsync2 $script_path + " " + $file_path;

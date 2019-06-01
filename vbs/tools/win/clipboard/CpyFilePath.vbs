@@ -1,6 +1,22 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
 
+'使い方
+'	CpyFilePath.vbs <file_path1> [<file_path2>]...
+'
+'応用的な使用方法
+'	あらかじめ「MATCH_DIR_NAME」と「REMOVE_DIR_LEVEL」を設定している
+'	場合は、該当する文字列を除去してコピーする。
+'	それ以外の場合は、そのままコピーする。
+'		ex1)
+'			set REMOVE_DIR_LEVEL=codes
+'			set REMOVE_DIR_LEVEL=1
+'			c\codes\aaa\bbb\ccc\test.txt
+'				→ bbb\ccc\test.txt をコピー
+'		ex2)
+'			c\codes\aaa\bbb\ccc\test.txt
+'				→ c\codes\aaa\bbb\ccc\test.txt をコピー
+
 '####################################################################
 '### 設定
 '####################################################################
