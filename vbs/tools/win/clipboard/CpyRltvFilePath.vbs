@@ -1,18 +1,18 @@
 Option Explicit
 
 'usage
-' cscript.exe .\RemoveUpperPath.vbs <src_path> <dir_name> <remeve_dir_level>
+' cscript.exe .\CpyRltvFilePath.vbs <src_path> <dir_name> <remeve_dir_level>
 '
 'usage ex.
-' cscript.exe .\RemoveUpperPath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 2
+' cscript.exe .\CpyRltvFilePath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 2
 '   →"src_b\sid\sid_can_2E.c"
-' cscript.exe .\RemoveUpperPath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 3 | clip
+' cscript.exe .\CpyRltvFilePath.vbs "C:\test\900_ソースコード\5A45V\for_PDC-0154\src_b\sid\sid_can_2E.c" "900_ソースコード" 3
 '   →"sid\sid_can_2E.c" をクリップボードにコピー
 
 '==================================================
 '= 設定
 '==================================================
-Const DEFAULT_MATCH_DIR_NAME = "codes"
+Const DEFAULT_MATCH_DIR_NAME = "900_ソースコード"
 Const DEFAULT_REMOVE_DIR_LEVEL = 2
 
 '==================================================
@@ -33,8 +33,8 @@ ElseIf WScript.Arguments.Count = 3 Then
 	sMatchDirName = WScript.Arguments(1)
 	lRemeveDirLevel = WScript.Arguments(2)
 Else
-	WScript.StdOut.WriteLine "指定する引数が異なります：" & WScript.Arguments.Count
-	WScript.StdOut.WriteLine "処理を中断します"
+	WScript.Echo "指定する引数が異なります：" & WScript.Arguments.Count
+	WScript.Echo "処理を中断します"
 	WScript.Quit
 End If
 
@@ -70,5 +70,6 @@ End If
 If sOutPath = "" Then
 	'Do Nothing
 Else
-	Wscript.StdOut.WriteLine sOutPath
+'	Wscript.Echo sOutPath
+	CreateObject("WScript.Shell").Run "cmd /c ""echo " & sOutPath & "| clip""", 0
 End If
