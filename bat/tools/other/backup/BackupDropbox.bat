@@ -1,2 +1,2 @@
 @echo off
-call %~dp0020_Backup_Common.bat /d /suspend 5
+call %~dp0BackupCommon.bat /d /suspend 5
