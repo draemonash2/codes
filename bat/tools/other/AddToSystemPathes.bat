@@ -10,9 +10,9 @@
 ::	  ２．本バッチファイルを「管理者として実行」する
 
 :: ### 設定情報 ###
-set ADD_TO_PATH_SCRIPT_PATH=C:\codes\vbs\700_AddToPathOfEnvVariable.vbs
+set ADD_TO_PATH_SCRIPT_PATH=C:\codes\vbs\tools\win\sys_ope\AddEnvVariable.vbs
 set TARGET_DIR_PATH=C:\prg_exe\
-set KEY_FILE_NAME=_add_to_sys_env_directory
+set KEY_FILE_NAME=_path_env_directory
 
 :: ### 処理 ###
 FOR /R "%TARGET_DIR_PATH%" %%i IN (%KEY_FILE_NAME%) DO (

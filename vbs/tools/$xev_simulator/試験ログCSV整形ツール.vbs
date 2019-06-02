@@ -21,9 +21,10 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	1.0.0	2019/05/13	・新規作成
-'	1.1.0	2019/05/26	・試験ログCSVバックアップ出力条件変更
+'	0.1.0	2019/05/13	・新規作成
+'	0.1.1	2019/05/26	・試験ログCSVバックアップ出力条件変更
 '						・その他リファクタリング
+'	0.2.0	2019/06/2	・プログレスバー実装
 '===============================================================================
 
 '===============================================================================
@@ -31,11 +32,12 @@ Option Explicit
 '===============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\String.vbs" )			'GetFileExt()
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )		'GetFileList3()
-Call Include( "C:\codes\vbs\_lib\Collection.vbs" )		'ReadTxtFileToCollection()
-														'WriteTxtFileFrCollection()
-Call Include( "C:\codes\vbs\_lib\String.vbs" )			'GetFileNotExistPath()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )				'GetFileExt()
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )			'GetFileList3()
+Call Include( "C:\codes\vbs\_lib\Collection.vbs" )			'ReadTxtFileToCollection()
+															'WriteTxtFileFrCollection()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )				'GetFileNotExistPath()
+Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )	'Class ProgressBar
 
 '===============================================================================
 ' 設定
@@ -49,6 +51,10 @@ CONST DEFAULT_DATA_TYPE = "uint8"
 '===============================================================================
 Const RAMNAME_ROW_KEYWORD = "TimeStamp"
 Const DATATYPE_ROW_KEYWORD = "DataType"
+
+Dim objPrgrsBar
+Set objPrgrsBar = New ProgressBar
+objPrgrsBar.Message = "試験ログCSV整形中..."
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -115,6 +121,11 @@ End If
 ' 試験ログCSV整形
 '*****************************
 dim sCsvFilePath
+Dim lProcIdx
+Dim lProcNum
+lProcIdx = 0
+lProcNum = cCsvFileList.Count
+Call objPrgrsBar.Update(lProcIdx, lProcNum)
 for each sCsvFilePath In cCsvFileList
 	
 	'*** 試験ログCSVオープン ***
@@ -167,6 +178,9 @@ for each sCsvFilePath In cCsvFileList
 	Else
 		'Do Nothing
 	End If
+	
+	lProcIdx = lProcIdx + 1
+	Call objPrgrsBar.Update(lProcIdx, lProcNum)
 	
 	Set cFileContents = Nothing
 next
