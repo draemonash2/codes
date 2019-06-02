@@ -84,7 +84,7 @@ End Function
 		sCurDir = objWshShell.CurrentDirectory
 		Call FileSysem_Include( sCurDir & "\Array.vbs" )
 		Call FileSysem_Include( sCurDir & "\iTunes.vbs" )
-		Call FileSysem_Include( sCurDir & "\ProgressBar.vbs" )
+		Call FileSysem_Include( sCurDir & "\ProgressBarIE.vbs" )
 		Call FileSysem_Include( sCurDir & "\StopWatch.vbs" )
 		Call FileSysem_Include( sCurDir & "\String.vbs" )
 		
@@ -167,7 +167,7 @@ End Function
 		sCurDir = objWshShell.CurrentDirectory
 		Call FileSysem_Include( sCurDir & "\Array.vbs" )
 		Call FileSysem_Include( sCurDir & "\iTunes.vbs" )
-		Call FileSysem_Include( sCurDir & "\ProgressBar.vbs" )
+		Call FileSysem_Include( sCurDir & "\ProgressBarIE.vbs" )
 		Call FileSysem_Include( sCurDir & "\StopWatch.vbs" )
 		Call FileSysem_Include( sCurDir & "\String.vbs" )
 		
