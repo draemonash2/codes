@@ -75,7 +75,10 @@ If bIsContinue = True Then
         Dim sDiffPath1
         Dim sDiffPath2
         Dim objTxtFile
-        If cSelected.Count > 1 Then
+        If cSelected.Count >= 3 Then
+            sExecCmd = """" & sExePath & """ -r """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """ """ & cSelected.Item(2) & """"
+            objWshShell.Run sExecCmd, 3, False
+        ElseIf cSelected.Count = 2 Then
             sExecCmd = """" & sExePath & """ -r """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """"
             objWshShell.Run sExecCmd, 3, False
         ElseIf cSelected.Count = 1 Then
