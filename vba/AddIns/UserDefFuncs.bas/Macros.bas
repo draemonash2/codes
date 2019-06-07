@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.9
+' user define macros v2.10
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -497,19 +497,19 @@ Public Sub 選択範囲内の検索文字色を変更()
     Const sMACRO_TITLE As String = "選択範囲内の検索文字色を変更"
     
     '▼▼▼色設定▼▼▼
-    Const sCOLOR_TYPE As String = "0:黒、1:白、2:赤、3:黄、4:水、5:緑、6:紫、7:橙"
+    Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
     Const lCOLOR_NUM As Long = 8
     Dim vCOLOR_INFO() As Variant
     vCOLOR_INFO = _
         Array( _
-            Array(0, 0, 0), _
-            Array(255, 255, 255), _
             Array(255, 0, 0), _
-            Array(255, 192, 0), _
             Array(75, 172, 198), _
             Array(118, 147, 60), _
             Array(112, 48, 160), _
-            Array(247, 150, 70) _
+            Array(247, 150, 70), _
+            Array(255, 192, 0), _
+            Array(255, 255, 255), _
+            Array(0, 0, 0) _
         )
     '▲▲▲色設定▲▲▲
     
