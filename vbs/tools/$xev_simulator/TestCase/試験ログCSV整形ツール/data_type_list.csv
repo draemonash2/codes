@@ -1,0 +1,9 @@
+ramA:1,uint8
+ramB:1,uint16
+ram_4:1,uint32
+ram:1[1],uint8
+ram:1[3],uint8
+ram1:1,uint8
+ram:1[2],uint8
+ram[4]:1,uint32
+ram_1:1,uint8
