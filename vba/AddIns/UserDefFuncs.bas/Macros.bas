@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.10
+' user define macros v2.11
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -299,6 +299,8 @@ End Sub
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
     Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
+    Const FILE_EXTENTION As String = "csv"
+    Const DELIMITER As String = ","
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -343,7 +345,7 @@ Public Sub 選択範囲をファイルエクスポート()
     
     '*** ファイル名作成 ***
     Dim sOutputFilePath As String
-    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & ".txt"
+    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & FILE_EXTENTION
     
     '*** ファイル上書き判定 ***
     If objFSO.FileExists(sOutputFilePath) Then
@@ -373,16 +375,13 @@ Public Sub 選択範囲をファイルエクスポート()
 '    End If
     
     '*** ファイル出力処理 ***
-    Dim sDelimiter As String
-    sDelimiter = Chr(9) '列間の区切り文字は「タブ文字」固定
-    
     'Range型からString()型へ変換
     Dim asRange() As String
     Call ConvRange2Array( _
                 Selection, _
                 asRange, _
                 bIsInvisibleCellIgnore, _
-                sDelimiter _
+                DELIMITER _
             )
     
     On Error Resume Next
