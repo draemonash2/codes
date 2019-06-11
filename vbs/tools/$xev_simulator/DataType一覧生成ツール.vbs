@@ -16,9 +16,11 @@ Option Explicit
 '	なし
 '
 '【改訂履歴】
-'	1.0.0	2019/05/13	・新規作成
-'	1.1.0	2019/05/26	・DataType一覧のバックアップ作成を選択できるように変更
+'	0.0.0	2019/05/13	・新規作成
+'	0.1.0	2019/05/26	・DataType一覧のバックアップ作成を選択できるように変更
 '						・試験ログCSVファイル判定処理変更
+'	0.2.0	2019/06/11	・配列指定[]記号置換処理削除
+'						・プログレスバー実装
 '===============================================================================
 
 '===============================================================================
@@ -26,10 +28,11 @@ Option Explicit
 '===============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )		'GetFileList3()
-Call Include( "C:\codes\vbs\_lib\Collection.vbs" )		'ReadTxtFileToCollection()
-														'WriteTxtFileFrCollection()
-Call Include( "C:\codes\vbs\_lib\String.vbs" )			'GetFileNotExistPath()
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )			'GetFileList3()
+Call Include( "C:\codes\vbs\_lib\Collection.vbs" )			'ReadTxtFileToCollection()
+															'WriteTxtFileFrCollection()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )				'GetFileNotExistPath()
+Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )	'Class ProgressBar
 
 '===============================================================================
 ' 設定
@@ -45,6 +48,10 @@ Const DATATYPE_ROW_KEYWORD = "DataType"
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Dim objPrgrsBar
+Set objPrgrsBar = New ProgressBar
+objPrgrsBar.Message = "試験ログCSV整形中..."
 
 '*****************************
 ' 試験ログCSVファイルリスト取得
@@ -84,6 +91,11 @@ Set oDataTypeList = CreateObject("System.Collections.ArrayList")
 dim dDataTypeListDupChk '重複チェック用
 set dDataTypeListDupChk = CreateObject("Scripting.Dictionary")
 dim sCsvFilePath
+Dim lProcIdx
+Dim lProcNum
+lProcIdx = 0
+lProcNum = cCsvFileList.Count
+Call objPrgrsBar.Update(lProcIdx, lProcNum)
 for each sCsvFilePath In cCsvFileList
 	
 	'*** 試験ログCSVオープン ***
@@ -115,7 +127,6 @@ for each sCsvFilePath In cCsvFileList
 			If lIdx = 0 Then '1列目は無視
 				'Do Nothing
 			else
-				sRamName = ReplaceKeyword(sRamName)
 				Dim sDataTypeListLine
 				sDataTypeListLine = sRamName & "," & vDataTypes(lIdx)
 				If Not dDataTypeListDupChk.Exists( sDataTypeListLine ) Then
@@ -128,6 +139,9 @@ for each sCsvFilePath In cCsvFileList
 	Else
 		'Do Nothing
 	End If
+	
+	lProcIdx = lProcIdx + 1
+	Call objPrgrsBar.Update(lProcIdx, lProcNum)
 	
 	Set cFileContents = Nothing
 next
@@ -143,19 +157,6 @@ Set oDataTypeList = Nothing
 set dDataTypeListDupChk = Nothing
 
 MsgBox "DataType一覧 生成完了!"
-
-'===============================================================================
-' 関数
-'===============================================================================
-Private Function ReplaceKeyword( _
-	byval sTrgtWord _
-)
-	Dim sOutWord
-	sOutWord = sTrgtWord
-	sOutWord = Replace(sOutWord, "[", "_")
-	sOutWord = Replace(sOutWord, "]", "")
-	ReplaceKeyword = sOutWord
-End Function
 
 '===============================================================================
 '= インクルード関数
