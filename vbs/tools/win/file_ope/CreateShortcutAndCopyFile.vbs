@@ -25,16 +25,14 @@ Dim objFSO
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
         Dim sArg
-        Dim sDefaultPath
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
         For Each sArg In WScript.Arguments
             cSelectedPaths.add sArg
-            If sDefaultPath = "" Then
-                sDefaultPath = objFSO.GetParentFolderName( sArg )
+            If sOrgDirPath = "" Then
+                sOrgDirPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sOrgDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sOrgDirPath = WScript.Env("Current")
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
@@ -196,7 +194,7 @@ End If
 ' ==================================================================
 ' = 概要    日時文字列をファイル/フォルダ名に適用できる形式に変換する
 ' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
-' = 戻値                String          日時（例：20170805_125958）
+' = 戻値                String          日時（例：20170805-125958）
 ' = 覚書    なし
 ' ==================================================================
 Public Function ConvDate2String( _
