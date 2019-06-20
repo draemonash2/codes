@@ -1,7 +1,7 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
 
-' [Path]	[Name]	[DateLastModified]	[DateCreated]	[DateLastAccessed]	[Size]	[Type]	[Attributes]
+' [ObjectPath]	[ObjectDirPath]	[ObjectName]	[DateLastModified]	[DateCreated]	[DateLastAccessed]	[Size]	[Type]	[Attributes]
 
 '####################################################################
 '### 設定
@@ -57,6 +57,7 @@ If bIsContinue = True Then
 	Dim bFirstStore
 	bFirstStore = True
 	Dim oFilePath
+	Dim oDirPath
 	Dim sObjName
 	Dim sModDate
 	Dim sObjInfo
@@ -73,11 +74,13 @@ If bIsContinue = True Then
 				call GetFileInfo(oFilePath, 1, sObjName)
 				call GetFileInfo(oFilePath, 2, sObjSize)
 				call GetFileInfo(oFilePath, 3, sObjType)
+				call GetFileInfo(oFilePath, 6, oDirPath)
 				call GetFileInfo(oFilePath, 9, sCreateDate)
 				call GetFileInfo(oFilePath, 10, sAccessDate)
 				call GetFileInfo(oFilePath, 11, sModDate)
 				call GetFileInfo(oFilePath, 12, sAttribute)
 				sObjInfo = oFilePath & _
+					vbTab & oDirPath & _
 					vbTab & sObjName & _
 					vbTab & sModDate & _
 					vbTab & sCreateDate & _
@@ -93,7 +96,9 @@ If bIsContinue = True Then
 				call GetFolderInfo(oFilePath, 10, sAccessDate)
 				call GetFolderInfo(oFilePath, 11, sModDate)
 				call GetFolderInfo(oFilePath, 12, sAttribute)
+				oDirPath = Left(oFilePath, len(oFilePath) - len(sObjName) - 1)
 				sObjInfo = oFilePath & _
+					vbTab & oDirPath & _
 					vbTab & sObjName & _
 					vbTab & sModDate & _
 					vbTab & sCreateDate & _
