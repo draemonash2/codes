@@ -6,6 +6,7 @@ Option Explicit
 '	整形する内容は以下の通り。
 '		- 「Datatype」列を付与
 '			「DataType」は data_type_list.csv より取得する。
+'		- RAM名を置換する（ex. ram[0]:1 → ram_0:1）
 '	data_type_list.csv が存在しない場合は、すべて uint8 と解釈して変換する。
 '
 '【使用方法】
@@ -25,6 +26,7 @@ Option Explicit
 '						・その他リファクタリング
 '	0.2.0	2019/06/02	・プログレスバー実装
 '	0.3.0	2019/06/11	・配列指定[]記号置換処理削除
+'	0.4.0	2019/06/30	・RAM名置換モード追加
 '===============================================================================
 
 '===============================================================================
@@ -43,8 +45,9 @@ Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )	'Class ProgressBar
 ' 設定
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
-CONST CREATE_BACKUP_FILE = False
 CONST DEFAULT_DATA_TYPE = "uint8"
+CONST CREATE_BACKUP_FILE = False
+CONST REPLACE_RAM_NAME = False
 
 '===============================================================================
 ' 本処理
@@ -107,6 +110,9 @@ If objFSO.FileExists(sDataTypeListFilePath) Then
 	Do Until objTxtFile.AtEndOfStream
 		sTxtLine = objTxtFile.ReadLine
 		objWords = split(sTxtLine, ",")
+		if REPLACE_RAM_NAME = True then
+			objWords(0) = ReplaceKeyword(objWords(0))
+		end if
 		On Error Resume Next '重複キーがあったら無視
 		dDataTypeList.Add objWords(0), objWords(1) 'RamName DataType
 		On Error Goto 0
@@ -143,6 +149,11 @@ for each sCsvFilePath In cCsvFileList
 			objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
 		End If
 		
+		'*** 変数名置換 ***
+		if REPLACE_RAM_NAME = True then
+			cFileContents(0) = ReplaceKeyword(cFileContents(0))
+		end if
+		
 		'*** Datatype置換or挿入 ***
 		Dim vRamNames
 		vRamNames = Split(cFileContents(0), ",")
@@ -154,6 +165,10 @@ for each sCsvFilePath In cCsvFileList
 			If lIdx = 0 Then '1列目は無視
 				sDataTypeLine = DATATYPE_ROW_KEYWORD
 			else
+				'すでに置換済み
+				'if REPLACE_RAM_NAME = True then
+				'	sRamName = ReplaceKeyword(sRamName)
+				'end if
 				if dDataTypeList.Exists(sRamName) then
 					sDataTypeLine = sDataTypeLine & "," & dDataTypeList.Item(sRamName)
 				else
@@ -185,6 +200,19 @@ Set cCsvFileList = Nothing
 Set dDataTypeList = Nothing
 
 MsgBox "試験ログCSV 整形完了!"
+
+'===============================================================================
+' 関数
+'===============================================================================
+Private Function ReplaceKeyword( _
+	byval sTrgtWord _
+)
+	Dim sOutWord
+	sOutWord = sTrgtWord
+	sOutWord = Replace(sOutWord, "[", "_")
+	sOutWord = Replace(sOutWord, "]", "")
+	ReplaceKeyword = sOutWord
+End Function
 
 '===============================================================================
 '= インクルード関数

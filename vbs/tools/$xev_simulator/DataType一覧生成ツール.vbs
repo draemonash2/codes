@@ -21,6 +21,7 @@ Option Explicit
 '						・試験ログCSVファイル判定処理変更
 '	0.2.0	2019/06/11	・配列指定[]記号置換処理削除
 '						・プログレスバー実装
+'	0.3.0	2019/06/30	・RAM名置換モード追加
 '===============================================================================
 
 '===============================================================================
@@ -39,6 +40,7 @@ Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )	'Class ProgressBar
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
 CONST CREATE_BACKUP_FILE = False
+CONST REPLACE_RAM_NAME = False
 
 '===============================================================================
 ' 本処理
@@ -127,6 +129,9 @@ for each sCsvFilePath In cCsvFileList
 			If lIdx = 0 Then '1列目は無視
 				'Do Nothing
 			else
+				if REPLACE_RAM_NAME = True then
+					sRamName = ReplaceKeyword(sRamName)
+				end if
 				Dim sDataTypeListLine
 				sDataTypeListLine = sRamName & "," & vDataTypes(lIdx)
 				If Not dDataTypeListDupChk.Exists( sDataTypeListLine ) Then
@@ -157,6 +162,19 @@ Set oDataTypeList = Nothing
 set dDataTypeListDupChk = Nothing
 
 MsgBox "DataType一覧 生成完了!"
+
+'===============================================================================
+' 関数
+'===============================================================================
+Private Function ReplaceKeyword( _
+	byval sTrgtWord _
+)
+	Dim sOutWord
+	sOutWord = sTrgtWord
+	sOutWord = Replace(sOutWord, "[", "_")
+	sOutWord = Replace(sOutWord, "]", "")
+	ReplaceKeyword = sOutWord
+End Function
 
 '===============================================================================
 '= インクルード関数
