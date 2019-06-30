@@ -18,28 +18,36 @@ Const PROG_NAME = "ショートカット＆コピーファイル作成"
 Dim bIsContinue
 bIsContinue = True
 
-Dim sOrgDirPath
+Dim sSrcParDirPath
+Dim sIniDstParDirPath
 Dim cSelectedPaths
 Dim objFSO
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Dim objWshShell
+Set objWshShell = CreateObject("WScript.Shell")
 
 '*** 選択ファイル取得 ***
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
         Dim sArg
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
         For Each sArg In WScript.Arguments
             cSelectedPaths.add sArg
-            If sOrgDirPath = "" Then
-                sOrgDirPath = objFSO.GetParentFolderName( sArg )
+            If sSrcParDirPath = "" Then
+                sSrcParDirPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
+        '出力先フォルダパスをクリップボードから取得
+        sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
+        If objFSO.FolderExists( sIniDstParDirPath ) = False Then
+            sIniDstParDirPath = objWshShell.SpecialFolders("Desktop")
+        End If
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-        sOrgDirPath = WScript.Env("Current")
+        sSrcParDirPath = WScript.Env("Current")
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
-        sOrgDirPath = "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿"
+        sSrcParDirPath = "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿"
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
         cSelectedPaths.Add "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿\H20年度 ゼミ出席簿.xls"
         cSelectedPaths.Add "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿\H21年度 ゼミ出席簿.xls"
@@ -79,8 +87,8 @@ End If
 '*** 出力先選択 ***
 If bIsContinue = True Then
     Dim sDstParDirPath
-    sDstParDirPath = ShowFolderSelectDialog( sOrgDirPath )
-
+    sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
+    
     If objFSO.FolderExists( sDstParDirPath ) = False Then 'キャンセルの場合
         MsgBox "実行がキャンセルされました。", vbOKOnly, PROG_NAME
         bIsContinue = False
@@ -109,10 +117,6 @@ End If
 
 '*** ショートカット作成 ***
 If bIsContinue = True Then
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim objWshShell
-    Set objWshShell = WScript.CreateObject("WScript.Shell")
-    
     Dim sSelectedPath
     For Each sSelectedPath In cSelectedPaths
         'ファイル/フォルダ判定
@@ -158,7 +162,7 @@ If bIsContinue = True Then
             
             'ショートカット作成
             With objWshShell.CreateShortcut( sDstShrtctFilePath )
-                .TargetPath = sOrgDirPath
+                .TargetPath = sSrcParDirPath
                 .Save
             End With
             
@@ -190,7 +194,7 @@ If bIsContinue = True Then
             
             'ショートカット作成
             With objWshShell.CreateShortcut( sDstShrtctFilePath )
-                .TargetPath = sOrgDirPath
+                .TargetPath = sSrcParDirPath
                 .Save
             End With
             
