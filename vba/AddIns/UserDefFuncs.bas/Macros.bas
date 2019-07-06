@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.11
+' user define macros v2.2
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -11,7 +11,8 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =
 ' =    ダブルクォートを除いてセルコピー             ダブルクオーテーションなしでセルコピーする
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
-' =    選択範囲をコマンド実行                       選択範囲内のコマンドを実行する。
+' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
+' =    選択範囲をそれぞれコマンド実行               選択範囲内のコマンドをそれぞれ実行する。
 ' =    選択範囲内の検索文字色を変更                 選択範囲内の検索文字色を変更する
 ' =
 ' =    全シート名をコピー                           ブック内のシート名を全てコピーする
@@ -91,7 +92,8 @@ Private Function UpdateShortcutKeySettings( _
 
     Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてセルコピー", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
-    Call UpdateShtcutSetting("", "選択範囲をコマンド実行", sOperate)
+    Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
+    Call UpdateShtcutSetting("", "選択範囲をまとめてコマンド実行", sOperate)
 
     Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
     Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
@@ -418,10 +420,90 @@ Public Sub 選択範囲をファイルエクスポート()
 End Sub
 
 ' =============================================================================
-' = 概要：選択範囲内のコマンドを実行する。
+' = 概要：選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
 ' =       単一列選択時のみ有効。
 ' =============================================================================
-Public Sub 選択範囲をコマンド実行()
+Public Sub 選択範囲をまとめてコマンド実行()
+    Const BAT_FILE_NAME As String = "command.bat"
+    
+    '*** セル選択判定 ***
+    If Selection.Count = 0 Then
+        MsgBox "セルが選択されていません"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '*** 範囲チェック ***
+    If Selection.Columns.Count = 1 Then
+        'Do Nothing
+    Else
+        MsgBox "単一列のみ選択してください"
+        MsgBox "処理を中断します"
+        End
+    End If
+    
+    '*** 非表示セル出力判定 ***
+    Dim bIsInvisibleCellIgnore As Boolean
+    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
+'    If vAnswer = vbYes Then
+'        bIsInvisibleCellIgnore = True
+'    ElseIf vAnswer = vbNo Then
+'        bIsInvisibleCellIgnore = False
+'    Else
+'        MsgBox "処理を中断します"
+'        End
+'    End If
+    
+    'Range型からString()型へ変換
+    Dim asRange() As String
+    Call ConvRange2Array( _
+                Selection, _
+                asRange, _
+                bIsInvisibleCellIgnore, _
+                "" _
+            )
+    
+    Dim sBatFileDirPath As String
+    Dim sBatFilePath As String
+    sBatFileDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
+    sBatFilePath = sBatFileDirPath & "\" & BAT_FILE_NAME
+    
+    Call OutputTxtFile(sBatFilePath, asRange)
+    
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sOutputFilePath As String
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\redirect.log"
+    
+    '*** コマンド実行 ***
+    Open sOutputFilePath For Append As #1
+    Print #1, "****************************************************"
+    Print #1, Now()
+    Print #1, "****************************************************"
+    Print #1, ExecDosCmd(sBatFilePath)
+    Print #1, ""
+    Close #1
+    
+    '*** バッチファイル削除 ***
+    Kill sBatFilePath
+    
+    MsgBox "実行完了！"
+    
+    '*** 出力ファイルを開く ***
+    If Left(sOutputFilePath, 1) = "" Then
+        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+    Else
+        'Do Nothing
+    End If
+    objWshShell.Run """" & sOutputFilePath & """", 3
+End Sub
+
+' =============================================================================
+' = 概要：選択範囲内のコマンドをそれぞれ実行する。
+' =       単一列選択時のみ有効。
+' =============================================================================
+Public Sub 選択範囲をそれぞれコマンド実行()
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
         MsgBox "セルが選択されていません"
@@ -1345,4 +1427,42 @@ Private Function DisableShortcutKeys()
         Next lRowIdx
     End If
 End Function
+
+' ============================================
+' = 概要    配列の内容をファイルに書き込む。
+' = 引数    sFilePath     String  [in]  出力するファイルパス
+' =         asFileLine()  String  [in]  出力するファイルの内容
+' = 戻値    なし
+' = 覚書    なし
+' ============================================
+Private Function OutputTxtFile( _
+    ByVal sFilePath As String, _
+    ByRef asFileLine() As String, _
+    Optional ByVal sCharSet As String = "shift_jis" _
+)
+    Dim oTxtObj As Object
+    Dim lLineIdx As Long
+    
+    If Sgn(asFileLine) = 0 Then
+        'Do Nothing
+    Else
+        Set oTxtObj = CreateObject("ADODB.Stream")
+        With oTxtObj
+            .Type = 2
+            .Charset = sCharSet
+            .Open
+            
+            '配列を1行ずつオブジェクトに書き込む
+            For lLineIdx = 0 To UBound(asFileLine)
+                .WriteText asFileLine(lLineIdx), 1
+            Next lLineIdx
+            
+            .SaveToFile (sFilePath), 2    'オブジェクトの内容をファイルに保存
+            .Close
+        End With
+    End If
+    
+    Set oTxtObj = Nothing
+End Function
+
 
