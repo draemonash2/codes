@@ -2,39 +2,24 @@ Option Explicit
 
 '===============================================================================
 '【概要】
-'   xEVシミュレータが出力した試験ログCSVを整形し、CANapeでインポートできる形式に変換する。
-'       ・「Datatype」列を付与
-'           （DataTypeは data_type_list.csv より取得）
-'       ・変数シンボル名から配列識別子を除去
-'           ex) ram[0]:1 → ram_0:1
+'   試験ログCSVから変数シンボル名とDataTypeを抽出して「data_type_list.csv」を生成する
 '
 '【使用方法】
 '   使用方法は２通り。
-'       ◆フォルダ配下の全試験ログ(CSV)を整形したい場合
-'           １．「data_type_list.csv」を作成。
-'                 ex) AAA:1[1],uint8
-'                     AAA:1[2],uint8
-'                     BBB:1,sint16
-'                     CCC:2,double
-'           ２．整形対象の試験ログ(CSV)と同階層以上のフォルダに
-'               「試験ログCSV整形ツール.vbs」と「data_type_list.csv」を格納。
-'           ３．「試験ログCSV整形ツール.vbs」を実行。
-'       ◆１ファイルのみ整形したい場合
-'           １．「data_type_list.csv」を作成。
-'           ２. 整形したい試験ログ(CSV)を「試験ログCSV整形ツール.vbs」へdrag&dropする。
+'       ◆フォルダ配下の全試験ログ(CSV)からDataTypeを抽出したい場合
+'           １．抽出対象の試験ログ(CSV)と同階層以上のフォルダに
+'               「DataType一覧生成ツール.vbs」を格納。
+'           ２．「DataType一覧生成ツール.vbs」を実行する。
+'       ◆１ファイルからのみ抽出したい場合
+'           １．抽出したい試験ログ(CSV)を「DataType一覧生成ツール.vbs」へdrag&dropする。
 '
 '【詳細仕様】
 '   ・ファイルの先頭に"TimeStamp"と記載された.csvファイルを試験ログ(CSV)と解釈する。
 '   ・以下のような追加設定が可能。
 '     - 変数シンボル名から配列識別子を除去する機能の有効無効
 '         → REPLACE_RAM_NAME = True:有効 / False:無効
-'     - 試験ログ(CSV)のバックアップを作成有無
-'         → CREATE_BACKUP_FILE = True:バックアップファイル作成 / False:上書き
 '     - 整形完了時のメッセージ出力有無
 '         → OUTPUT_FINISH_MESSAGE = True:出力 / False:出力しない
-'   ・data_type_list.csv について
-'     - data_type_list.csv が存在しない場合は、すべて uint8 と解釈する。
-'     - data_type_list.csv に存在しないRAMは、uint8 と解釈する。
 '
 '【改訂履歴】
 '   1.0.0   2019/07/01  遠藤    ・新規作成
@@ -43,8 +28,6 @@ Option Explicit
 ' 設定
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
-CONST DEFAULT_DATA_TYPE = "uint8"
-CONST CREATE_BACKUP_FILE = False
 CONST REPLACE_RAM_NAME = False
 CONST OUTPUT_FINISH_MESSAGE = True
 
@@ -59,7 +42,7 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 Dim objPrgrsBar
 Set objPrgrsBar = New ProgressBar
-objPrgrsBar.Message = "試験ログCSV整形中..."
+objPrgrsBar.Message = "DataType一覧生成中..."
 
 '*****************************
 ' 試験ログCSVファイルリスト取得
@@ -92,38 +75,12 @@ Else
 End If
 
 '*****************************
-' DataType一覧取得
+' DataType取得
 '*****************************
-dim dDataTypeList
-Set dDataTypeList = CreateObject("Scripting.Dictionary")
-
-Dim sDataTypeListFilePath
-sDataTypeListFilePath = sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME
-
-dim objTxtFile
-If objFSO.FileExists(sDataTypeListFilePath) Then
-    set objTxtFile = objFSO.OpenTextFile(sDataTypeListFilePath, 1)
-
-    dim objWords
-    Dim sTxtLine
-    Do Until objTxtFile.AtEndOfStream
-        sTxtLine = objTxtFile.ReadLine
-        objWords = split(sTxtLine, ",")
-        if REPLACE_RAM_NAME = True then
-            objWords(0) = ReplaceKeyword(objWords(0))
-        end if
-        On Error Resume Next '重複キーがあったら無視
-        dDataTypeList.Add objWords(0), objWords(1) 'RamName DataType
-        On Error Goto 0
-    Loop
-    objTxtFile.Close
-Else
-    'Do Nothing
-End If
-
-'*****************************
-' 試験ログCSV整形
-'*****************************
+dim cDataTypeList
+Set cDataTypeList = CreateObject("System.Collections.ArrayList")
+dim dDataTypeListDupChk '重複チェック用
+set dDataTypeListDupChk = CreateObject("Scripting.Dictionary")
 dim sCsvFilePath
 Dim lProcIdx
 Dim lProcNum
@@ -138,59 +95,33 @@ for each sCsvFilePath In cCsvFileList
     call ReadTxtFileToCollection(sCsvFilePath, cFileContents)
     
     '*** 試験ログファイルチェック ***
-    If Left(cFileContents(0), len(RAMNAME_ROW_KEYWORD)) = RAMNAME_ROW_KEYWORD Then
+    If Left(cFileContents(0), len(RAMNAME_ROW_KEYWORD)) = RAMNAME_ROW_KEYWORD And _
+       Left(cFileContents(1), len(DATATYPE_ROW_KEYWORD)) = DATATYPE_ROW_KEYWORD Then
         
-        '*** バックアップ出力 ***
-        If CREATE_BACKUP_FILE = True then
-            Dim sCsvBakFilePathRaw
-            Dim sCsvBakFilePath
-            Dim lBakFileIdx
-            sCsvBakFilePathRaw = sCsvFilePath & ".bak"
-            sCsvBakFilePath = sCsvBakFilePathRaw
-            lBakFileIdx = 1
-            Do While objFSO.FileExists( sCsvBakFilePath )
-                sCsvBakFilePath = sCsvBakFilePathRaw & lBakFileIdx
-                lBakFileIdx = lBakFileIdx + 1
-            Loop
-            objFSO.CopyFile sCsvFilePath, sCsvBakFilePath
-        End If
-        
-        '*** 変数名置換 ***
-        if REPLACE_RAM_NAME = True then
-            cFileContents(0) = ReplaceKeyword(cFileContents(0))
-        end if
-        
-        '*** Datatype置換or挿入 ***
+        '*** DataType取得 ***
         Dim vRamNames
+        Dim vDataTypes
         vRamNames = Split(cFileContents(0), ",")
+        vDataTypes = Split(cFileContents(1), ",")
         Dim sRamName
-        Dim sDataTypeLine
         Dim lIdx
         lIdx = 0
         for each sRamName In vRamNames
-            If lIdx = 0 Then
-                sDataTypeLine = DATATYPE_ROW_KEYWORD
+            If lIdx = 0 Then '1列目は無視
+                'Do Nothing
             else
-                'すでに置換済み
-                'if REPLACE_RAM_NAME = True then
-                '   sRamName = ReplaceKeyword(sRamName)
-                'end if
-                if dDataTypeList.Exists(sRamName) then
-                    sDataTypeLine = sDataTypeLine & "," & dDataTypeList.Item(sRamName)
-                else
-                    sDataTypeLine = sDataTypeLine & "," & DEFAULT_DATA_TYPE
+                if REPLACE_RAM_NAME = True then
+                    sRamName = ReplaceKeyword(sRamName)
+                end if
+                Dim sDataTypeListLine
+                sDataTypeListLine = sRamName & "," & vDataTypes(lIdx)
+                If Not dDataTypeListDupChk.Exists( sDataTypeListLine ) Then
+                    cDataTypeList.Add sDataTypeListLine
+                    dDataTypeListDupChk.Add sDataTypeListLine, ""
                 end if
             end if
             lIdx = lIdx + 1
         next
-        If Left(cFileContents(1), len(DATATYPE_ROW_KEYWORD)) = DATATYPE_ROW_KEYWORD Then
-            cFileContents(1) = sDataTypeLine
-        Else
-            cFileContents.Insert 1, sDataTypeLine
-        End If
-        
-        '*** CSV出力 ***
-        call WriteTxtFileFrCollection(sCsvFilePath, cFileContents, True)
     Else
         'Do Nothing
     End If
@@ -201,12 +132,18 @@ for each sCsvFilePath In cCsvFileList
     Set cFileContents = Nothing
 next
 
+'*****************************
+' DataType一覧出力
+'*****************************
+call WriteTxtFileFrCollection(sRootDirPath & "\" & DATA_TYPE_LIST_FILE_NAME, cDataTypeList, True)
+
 Set objFSO = Nothing
 Set cCsvFileList = Nothing
-Set dDataTypeList = Nothing
+Set cDataTypeList = Nothing
+set dDataTypeListDupChk = Nothing
 
 IF OUTPUT_FINISH_MESSAGE = True Then
-    MsgBox "試験ログCSV 整形完了!"
+    MsgBox "DataType一覧 生成完了!"
 End If
 
 '===============================================================================

@@ -5,21 +5,20 @@ Option Explicit
 '   xEVシミュレータが出力した試験ログCSVを整形し、CANapeでインポートできる形式に変換する。
 '       ・「Datatype」列を付与
 '           （DataTypeは data_type_list.csv より取得）
-'       ・RAM名から配列識別子を除去
+'       ・変数シンボル名から配列識別子を除去
 '           ex) ram[0]:1 → ram_0:1
 '
 '【使用方法】
 '   使用方法は２通り。
-'       ◆フォルダ配下の全csvすべてを置換したい場合
+'       ◆フォルダ配下の全試験ログ(CSV)を整形したい場合
 '           １．「data_type_list.csv」を作成。
 '                 ex) AAA:1[1],uint8
 '                     AAA:1[2],uint8
 '                     BBB:1,sint16
 '                     CCC:2,double
-'           ２．整形対象の試験ログ(CSV)と同じフォルダに
+'           ２．整形対象の試験ログ(CSV)と同階層以上のフォルダに
 '               「試験ログCSV整形ツール.vbs」と「data_type_list.csv」を格納。
 '           ３．「試験ログCSV整形ツール.vbs」を実行。
-'               （ダブルクリック or コマンドプロンプトで実行）
 '       ◆１ファイルのみ整形したい場合
 '           １．「data_type_list.csv」を作成。
 '           ２. 整形したい試験ログ(CSV)を「試験ログCSV整形ツール.vbs」へdrag&dropする。
@@ -27,12 +26,12 @@ Option Explicit
 '【詳細仕様】
 '   ・ファイルの先頭に"TimeStamp"と記載された.csvファイルを試験ログ(CSV)と解釈する。
 '   ・以下のような追加設定が可能。
-'     - RAM名から配列識別子を除去する機能の有効無効
+'     - 変数シンボル名から配列識別子を除去する機能の有効無効
 '         → REPLACE_RAM_NAME = True:有効 / False:無効
 '     - 試験ログ(CSV)のバックアップを作成有無
 '         → CREATE_BACKUP_FILE = True:バックアップファイル作成 / False:上書き
 '     - 整形完了時のメッセージ出力有無
-'         → FINISH_MESSAGE_OUTPUT = True:出力 / False:出力しない
+'         → OUTPUT_FINISH_MESSAGE = True:出力 / False:出力しない
 '   ・data_type_list.csv について
 '     - data_type_list.csv が存在しない場合は、すべて uint8 と解釈する。
 '     - data_type_list.csv に存在しないRAMは、uint8 と解釈する。
@@ -46,7 +45,6 @@ Option Explicit
 '===============================================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\String.vbs" )              'GetFileExt()
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )          'GetFileList3()
                                                             'GetFileNotExistPath()
 Call Include( "C:\codes\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
@@ -60,7 +58,7 @@ CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
 CONST DEFAULT_DATA_TYPE = "uint8"
 CONST CREATE_BACKUP_FILE = False
 CONST REPLACE_RAM_NAME = False
-CONST FINISH_MESSAGE_OUTPUT = True
+CONST OUTPUT_FINISH_MESSAGE = True
 
 '===============================================================================
 ' 本処理
@@ -68,12 +66,12 @@ CONST FINISH_MESSAGE_OUTPUT = True
 Const RAMNAME_ROW_KEYWORD = "TimeStamp,"
 Const DATATYPE_ROW_KEYWORD = "DataType"
 
+Dim objFSO
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
 Dim objPrgrsBar
 Set objPrgrsBar = New ProgressBar
 objPrgrsBar.Message = "試験ログCSV整形中..."
-
-Dim objFSO
-Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 '*****************************
 ' 試験ログCSVファイルリスト取得
@@ -101,7 +99,7 @@ ElseIf WScript.Arguments.Count = 1 And _
     objFSO.FileExists(WScript.Arguments(0)) Then
     cCsvFileList.add WScript.Arguments(0)
 Else
-    WScript.Echo "引数エラー"
+    WScript.Echo "指定する引数の数が誤っています:" & WScript.Arguments.Count
     WScript.Quit
 End If
 
@@ -182,7 +180,7 @@ for each sCsvFilePath In cCsvFileList
         Dim lIdx
         lIdx = 0
         for each sRamName In vRamNames
-            If lIdx = 0 Then '1列目は無視
+            If lIdx = 0 Then
                 sDataTypeLine = DATATYPE_ROW_KEYWORD
             else
                 'すでに置換済み
@@ -219,7 +217,7 @@ Set objFSO = Nothing
 Set cCsvFileList = Nothing
 Set dDataTypeList = Nothing
 
-IF FINISH_MESSAGE_OUTPUT = True Then
+IF OUTPUT_FINISH_MESSAGE = True Then
     MsgBox "試験ログCSV 整形完了!"
 End If
 
