@@ -2,10 +2,10 @@ Option Explicit
 
 '===============================================================================
 '【概要】
-'   xEVシミュレータが出力した試験ログCSVを整形し、CANapeでインポートできる形式に変換する。
+'   xEVシミュレータが出力した試験ログCSVを整形し、CANapeログ波形出力用の形式に変換する。
 '       ・「Datatype」列を付与
 '           （DataTypeは data_type_list.csv より取得）
-'       ・変数シンボル名から配列識別子を除去
+'       ・変数シンボル名から配列識別子を除去 (デフォルトで機能OFF)
 '           ex) ram[0]:1 → ram_0:1
 '
 '【使用方法】
@@ -21,13 +21,15 @@ Option Explicit
 '           ３．「試験ログCSV整形ツール.vbs」を実行。
 '       ◆１ファイルのみ整形したい場合
 '           １．「data_type_list.csv」を作成。
-'           ２. 整形したい試験ログ(CSV)を「試験ログCSV整形ツール.vbs」へdrag&dropする。
+'           ２．「試験ログCSV整形ツール.vbs」と同階層のフォルダに
+'               「data_type_list.csv」を格納。
+'           ３. 整形したい試験ログ(CSV)を「試験ログCSV整形ツール.vbs」へdrag&dropする。
 '
 '【詳細仕様】
 '   ・ファイルの先頭に"TimeStamp"と記載された.csvファイルを試験ログ(CSV)と解釈する。
 '   ・以下のような追加設定が可能。
 '     - 変数シンボル名から配列識別子を除去する機能の有効無効
-'         → REPLACE_RAM_NAME = True:有効 / False:無効
+'         → REPLACE_RAM_SYMBOL = True:有効 / False:無効
 '     - 試験ログ(CSV)のバックアップを作成有無
 '         → CREATE_BACKUP_FILE = True:バックアップファイル作成 / False:上書き
 '     - 整形完了時のメッセージ出力有無
@@ -57,7 +59,7 @@ Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )  'Class ProgressBar
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
 CONST DEFAULT_DATA_TYPE = "uint8"
 CONST CREATE_BACKUP_FILE = False
-CONST REPLACE_RAM_NAME = False
+CONST REPLACE_RAM_SYMBOL = False
 CONST OUTPUT_FINISH_MESSAGE = True
 
 '===============================================================================
@@ -121,8 +123,8 @@ If objFSO.FileExists(sDataTypeListFilePath) Then
     Do Until objTxtFile.AtEndOfStream
         sTxtLine = objTxtFile.ReadLine
         objWords = split(sTxtLine, ",")
-        if REPLACE_RAM_NAME = True then
-            objWords(0) = ReplaceKeyword(objWords(0))
+        if REPLACE_RAM_SYMBOL = True then
+            objWords(0) = RenameRamSymbol(objWords(0))
         end if
         On Error Resume Next '重複キーがあったら無視
         dDataTypeList.Add objWords(0), objWords(1) 'RamName DataType
@@ -168,8 +170,8 @@ for each sCsvFilePath In cCsvFileList
         End If
         
         '*** 変数名置換 ***
-        if REPLACE_RAM_NAME = True then
-            cFileContents(0) = ReplaceKeyword(cFileContents(0))
+        if REPLACE_RAM_SYMBOL = True then
+            cFileContents(0) = RenameRamSymbol(cFileContents(0))
         end if
         
         '*** Datatype置換or挿入 ***
@@ -184,8 +186,8 @@ for each sCsvFilePath In cCsvFileList
                 sDataTypeLine = DATATYPE_ROW_KEYWORD
             else
                 'すでに置換済み
-                'if REPLACE_RAM_NAME = True then
-                '   sRamName = ReplaceKeyword(sRamName)
+                'if REPLACE_RAM_SYMBOL = True then
+                '   sRamName = RenameRamSymbol(sRamName)
                 'end if
                 if dDataTypeList.Exists(sRamName) then
                     sDataTypeLine = sDataTypeLine & "," & dDataTypeList.Item(sRamName)
@@ -224,14 +226,14 @@ End If
 '===============================================================================
 ' 関数
 '===============================================================================
-Private Function ReplaceKeyword( _
+Private Function RenameRamSymbol( _
     byval sTrgtWord _
 )
     Dim sOutWord
     sOutWord = sTrgtWord
     sOutWord = Replace(sOutWord, "[", "_")
     sOutWord = Replace(sOutWord, "]", "")
-    ReplaceKeyword = sOutWord
+    RenameRamSymbol = sOutWord
 End Function
 
 '===============================================================================

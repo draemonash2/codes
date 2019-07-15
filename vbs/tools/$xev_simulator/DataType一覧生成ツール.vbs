@@ -17,7 +17,7 @@ Option Explicit
 '   ・ファイルの先頭に"TimeStamp"と記載された.csvファイルを試験ログ(CSV)と解釈する。
 '   ・以下のような追加設定が可能。
 '     - 変数シンボル名から配列識別子を除去する機能の有効無効
-'         → REPLACE_RAM_NAME = True:有効 / False:無効
+'         → REPLACE_RAM_SYMBOL = True:有効 / False:無効
 '     - 整形完了時のメッセージ出力有無
 '         → OUTPUT_FINISH_MESSAGE = True:出力 / False:出力しない
 '
@@ -40,7 +40,7 @@ Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )  'Class ProgressBar
 ' 設定
 '===============================================================================
 CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"
-CONST REPLACE_RAM_NAME = False
+CONST REPLACE_RAM_SYMBOL = False
 CONST OUTPUT_FINISH_MESSAGE = True
 
 '===============================================================================
@@ -122,8 +122,8 @@ for each sCsvFilePath In cCsvFileList
             If lIdx = 0 Then '1列目は無視
                 'Do Nothing
             else
-                if REPLACE_RAM_NAME = True then
-                    sRamName = ReplaceKeyword(sRamName)
+                if REPLACE_RAM_SYMBOL = True then
+                    sRamName = RenameRamSymbol(sRamName)
                 end if
                 Dim sDataTypeListLine
                 sDataTypeListLine = sRamName & "," & vDataTypes(lIdx)
@@ -161,14 +161,14 @@ End If
 '===============================================================================
 ' 関数
 '===============================================================================
-Private Function ReplaceKeyword( _
+Private Function RenameRamSymbol( _
     byval sTrgtWord _
 )
     Dim sOutWord
     sOutWord = sTrgtWord
     sOutWord = Replace(sOutWord, "[", "_")
     sOutWord = Replace(sOutWord, "]", "")
-    ReplaceKeyword = sOutWord
+    RenameRamSymbol = sOutWord
 End Function
 
 '===============================================================================
