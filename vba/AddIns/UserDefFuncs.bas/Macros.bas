@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.2
+' user define macros v2.3
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -34,6 +34,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
 ' =
 ' =    Excel方眼紙                                  Excel方眼紙
+' =    EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
 ' =
 ' =    自動列幅調整                                 列幅を自動調整する
 ' =    自動行幅調整                                 行幅を自動調整する
@@ -107,6 +108,9 @@ Private Function UpdateShortcutKeySettings( _
 
     Call UpdateShtcutSetting("", "フォント色をトグル", sOperate)
     Call UpdateShtcutSetting("", "背景色をトグル", sOperate)
+    
+    Call UpdateShtcutSetting("", "Excel方眼紙", sOperate)
+    Call UpdateShtcutSetting("", "EpTreeの関数ツリーをExcelで取り込む", sOperate)
     
     Call UpdateShtcutSetting("%^+{DOWN}", "'オートフィル実行(""Down"")'", sOperate)
     Call UpdateShtcutSetting("%^+{UP}", "'オートフィル実行(""Up"")'", sOperate)
@@ -1072,6 +1076,105 @@ Public Sub 最背面へ移動()
     Selection.ShapeRange.ZOrder msoSendToBack
 End Sub
 
+' =============================================================================
+' = 概要：EpTreeの関数ツリーをExcelで取り込む
+' =============================================================================
+'Mng_FileSys/ShowFilesSelectDialog()
+'Mng_Collection/ReadTxtFileToCollection()
+'Mng_String/ExecRegExp()
+'Mng_ExcelOpe/CreateNewWorksheet()
+Public Sub EpTreeの関数ツリーをExcelで取り込む()
+    Const STRT_ROW As Long = 2
+    Const STRT_CLM As Long = 2
+    Const SHEET_NAME As String = "関数ツリー"
+    Const MAX_FUNC_LEVEL_INI As Long = 10
+    Const CLM_WIDTH As Long = 2
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    
+    'ファイルパス入力
+    Dim sTrgtFilePath As String
+    Dim asSelectedFiles() As String
+    Call ShowFilesSelectDialog(asSelectedFiles)
+    sTrgtFilePath = asSelectedFiles(0)
+    
+    'シート追加
+    Dim sSheetName As String
+    Dim shTrgtSht As Worksheet
+    sSheetName = CreateNewWorksheet(SHEET_NAME)
+    Set shTrgtSht = ActiveWorkbook.Sheets(sSheetName)
+    
+    'テキストファイル読み出し
+    Dim cFileContents As Collection
+    Set cFileContents = New Collection
+    Call ReadTxtFileToCollection(sTrgtFilePath, cFileContents)
+    
+    'ファイルツリー出力
+    Dim lRowIdx As Long
+    Dim lStrtClm As Long
+    lRowIdx = STRT_ROW
+    lStrtClm = STRT_CLM
+    
+    With shTrgtSht
+        .Cells(lRowIdx, lStrtClm + 0).Value = "ファイルパス"
+        .Cells(lRowIdx, lStrtClm + 1).Value = "行数"
+        .Cells(lRowIdx, lStrtClm + 2).Value = "関数名"
+        .Cells(lRowIdx, lStrtClm + 3).Value = "関数ツリー"
+    End With
+    lRowIdx = lRowIdx + 1
+    
+    Dim lMaxFuncLevel As Long
+    lMaxFuncLevel = MAX_FUNC_LEVEL_INI
+    Dim vFileLine As Variant
+    For Each vFileLine In cFileContents
+        Dim oMatchResult As Object
+        Call ExecRegExp( _
+            vFileLine, _
+            "^([\w\\:\.]+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
+            oMatchResult _
+        )
+        
+        Dim sFilePath As String
+        Dim sLineNo As String
+        Dim lFuncLevel As Long
+        Dim sFuncName As String
+        Dim sOmission As String
+        sFilePath = oMatchResult(0).SubMatches(0)
+        sLineNo = oMatchResult(0).SubMatches(1)
+        If sLineNo = 0 Then
+            sLineNo = ""
+        End If
+        lFuncLevel = LenB(oMatchResult(0).SubMatches(3)) / 2
+        sFuncName = oMatchResult(0).SubMatches(4)
+        sOmission = String(LenB(oMatchResult(0).SubMatches(5)) / 2, "▲")
+        
+        With shTrgtSht
+            .Cells(lRowIdx, lStrtClm + 0).Value = sFilePath
+            .Cells(lRowIdx, lStrtClm + 1).Value = sLineNo
+            .Cells(lRowIdx, lStrtClm + 2).Value = sFuncName
+            .Cells(lRowIdx, lStrtClm + 3 + lFuncLevel).Value = sFuncName & sOmission
+        End With
+        If lFuncLevel > lMaxFuncLevel Then
+            lMaxFuncLevel = lFuncLevel
+        End If
+        
+        lRowIdx = lRowIdx + 1
+    Next
+    
+    With shTrgtSht
+        .Range(.Cells(1, STRT_CLM + 0), .Cells(lRowIdx, STRT_CLM + 0)).Columns.AutoFit
+        .Range(.Cells(1, STRT_CLM + 1), .Cells(lRowIdx, STRT_CLM + 1)).Columns.AutoFit
+        .Range(.Cells(1, STRT_CLM + 2), .Cells(lRowIdx, STRT_CLM + 2)).Columns.AutoFit
+        .Range(.Cells(1, STRT_CLM + 3), .Cells(lRowIdx, STRT_CLM + 3 + lMaxFuncLevel)).ColumnWidth = CLM_WIDTH
+    End With
+    
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    
+    MsgBox "関数ツリー作成完了！"
+End Sub
+
 ' *****************************************************************************
 ' * 内部用マクロ
 ' *****************************************************************************
@@ -1465,4 +1568,263 @@ Private Function OutputTxtFile( _
     Set oTxtObj = Nothing
 End Function
 
+' ==================================================================
+' = 概要    ファイル（複数）選択ダイアログを表示する
+' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
+' = 引数    sInitPath       String      [in]  デフォルトファイルパス（省略可）
+' = 引数    sFilters　      String      [in]  選択時のフィルタ（省略可）(※)
+' = 戻値    なし
+' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
+' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+' =                    ・拡張子が複数ある場合は、";"で区切る
+' =                    ・ファイル種別と拡張子は"/"で区切る
+' =                    ・フィルタが複数ある場合、","で区切る
+' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' ==================================================================
+Private Function ShowFilesSelectDialog( _
+    ByRef asSelectedFiles() As String, _
+    Optional ByVal sInitPath As String = "", _
+    Optional ByVal sFilters As String = "" _
+)
+    Dim fdDialog As Office.FileDialog
+    Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
+    fdDialog.Title = "ファイルを選択してください（複数可）"
+    fdDialog.AllowMultiSelect = True
+    If sInitPath = "" Then
+        'Do Nothing
+    Else
+        fdDialog.InitialFileName = sInitPath
+    End If
+    Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
+ 
+    'ダイアログ表示
+    Dim lResult As Long
+    lResult = fdDialog.Show()
+    If lResult <> -1 Then 'キャンセル押下
+        ReDim Preserve asSelectedFiles(0)
+        asSelectedFiles(0) = ""
+    Else
+        Dim lSelNum As Long
+        lSelNum = fdDialog.SelectedItems.Count
+        ReDim Preserve asSelectedFiles(lSelNum - 1)
+        Dim lSelIdx As Long
+        For lSelIdx = 0 To lSelNum - 1
+            Dim sSelectedPath As String
+            sSelectedPath = fdDialog.SelectedItems(lSelIdx + 1)
+            If CreateObject("Scripting.FileSystemObject").FileExists(sSelectedPath) Then
+                asSelectedFiles(lSelIdx) = sSelectedPath
+            Else
+                asSelectedFiles(lSelIdx) = ""
+            End If
+        Next lSelIdx
+    End If
+ 
+    Set fdDialog = Nothing
+End Function
+    Private Sub Test_ShowFilesSelectDialog()
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        Dim sFilters As String
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
+        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
+        sFilters = "全てのファイル/*.*,画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
+ 
+        Dim asSelectedFiles() As String
+        Call ShowFilesSelectDialog( _
+                    asSelectedFiles, _
+                    objWshShell.SpecialFolders("Desktop") & "\test.txt", _
+                    sFilters _
+                )
+        Dim sBuf As String
+        sBuf = ""
+        sBuf = sBuf & vbNewLine & UBound(asSelectedFiles) + 1
+        Dim lSelIdx As Long
+        For lSelIdx = 0 To UBound(asSelectedFiles)
+            sBuf = sBuf & vbNewLine & asSelectedFiles(lSelIdx)
+        Next lSelIdx
+        MsgBox sBuf
+    End Sub
+ 
+'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
+'ダイアログのフィルタを追加する。指定方法は以下。
+'  ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+'      ・拡張子が複数ある場合は、";"で区切る
+'      ・ファイル種別と拡張子は"/"で区切る
+'      ・フィルタが複数ある場合、","で区切る
+'sFilters が空文字の場合、フィルタをクリアする。
+Private Function SetDialogFilters( _
+    ByVal sFilters As String, _
+    ByRef fdDialog As FileDialog _
+)
+    fdDialog.Filters.Clear
+    If sFilters = "" Then
+        'Do Nothing
+    Else
+        Dim vFilter As Variant
+        If InStr(sFilters, ",") > 0 Then
+            Dim vFilters As Variant
+            vFilters = Split(sFilters, ",")
+            Dim lFilterIdx As Long
+            For lFilterIdx = 0 To UBound(vFilters)
+                If InStr(vFilters(lFilterIdx), "/") > 0 Then
+                    vFilter = Split(vFilters(lFilterIdx), "/")
+                    If UBound(vFilter) = 1 Then
+                        fdDialog.Filters.Add vFilter(0), vFilter(1), lFilterIdx + 1
+                    Else
+                        MsgBox _
+                            "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                            """/"" は一つだけ指定してください" & vbNewLine & _
+                            "  " & vFilters(lFilterIdx)
+                        MsgBox "処理を中断します。"
+                        End
+                    End If
+                Else
+                    MsgBox _
+                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                        "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
+                        "  " & vFilters(lFilterIdx)
+                    MsgBox "処理を中断します。"
+                    End
+                End If
+            Next lFilterIdx
+        Else
+            If InStr(sFilters, "/") > 0 Then
+                vFilter = Split(sFilters, "/")
+                If UBound(vFilter) = 1 Then
+                    fdDialog.Filters.Add vFilter(0), vFilter(1), 1
+                Else
+                    MsgBox _
+                        "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                        """/"" は一つだけ指定してください" & vbNewLine & _
+                        "  " & sFilters
+                    MsgBox "処理を中断します。"
+                    End
+                End If
+            Else
+                MsgBox _
+                    "ファイル選択ダイアログのフィルタの指定方法が誤っています" & vbNewLine & _
+                    "種別と拡張子を ""/"" で区切ってください。" & vbNewLine & _
+                    "  " & sFilters
+                MsgBox "処理を中断します。"
+                End
+            End If
+        End If
+    End If
+End Function
+
+'ワークシートを新規作成
+'重複したワークシートがある場合、_1, _2 ...と連番になる。
+'呼び出し側には作成したワークシート名を返す。
+Private Function CreateNewWorksheet( _
+    ByVal sSheetName As String _
+) As String
+    Dim lShtIdx As Long
+    
+    lShtIdx = 0
+    Dim bExistWorkSht As Boolean
+    Do
+        bExistWorkSht = ExistsWorksheet(sSheetName)
+        If bExistWorkSht Then
+            sSheetName = sSheetName & "_"
+        Else
+            lShtIdx = lShtIdx + 1 '連番用の変数
+        End If
+    Loop While bExistWorkSht
+    
+    With ActiveWorkbook
+        .Worksheets.Add(after:=.Worksheets(.Worksheets.Count)).Name = sSheetName
+    End With
+    CreateNewWorksheet = sSheetName
+End Function
+
+'重複したWorksheetが有るかチェックする。
+Private Function ExistsWorksheet( _
+    ByVal sTrgtShtName As String _
+) As Boolean
+    Dim lShtIdx As Long
+    
+    With ActiveWorkbook
+        ExistsWorksheet = False
+        For lShtIdx = 1 To .Worksheets.Count
+            If .Worksheets(lShtIdx).Name = sTrgtShtName Then
+                ExistsWorksheet = True
+                Exit For
+            End If
+        Next
+    End With
+End Function
+
+' ==================================================================
+' = 概要    テキストファイルの中身を配列に格納
+' = 引数    sTrgtFilePath   String      [in]    ファイルパス
+' = 引数    cFileContents   Collections [out]   ファイルの中身
+' = 戻値    読み出し結果    Boolean             読み出し結果
+' =                                                 True:ファイル存在
+' =                                                 False:それ以外
+' = 覚書    なし
+' ==================================================================
+Private Function ReadTxtFileToCollection( _
+    ByVal sTrgtFilePath As String, _
+    ByRef cFileContents As Collection _
+)
+    On Error Resume Next
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    If objFSO.FileExists(sTrgtFilePath) Then
+        Dim objTxtFile As Object
+        Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 1, True)
+        
+        If Err.Number = 0 Then
+            Do Until objTxtFile.AtEndOfStream
+                cFileContents.Add objTxtFile.ReadLine
+            Loop
+            ReadTxtFileToCollection = True
+        Else
+            ReadTxtFileToCollection = False
+        '   WScript.Echo "エラー " & Err.Description
+        End If
+        
+        objTxtFile.Close
+    Else
+        ReadTxtFileToCollection = False
+    End If
+    On Error GoTo 0
+End Function
+    Private Sub Test_OpenTxtFile2Array()
+        Dim cFileContents As Collection
+        Set cFileContents = New Collection
+        Dim sInFilePath As String
+        sInFilePath = "C:\codes\vbs\_lib\Test.csv"
+        Dim bRet As Boolean
+        bRet = ReadTxtFileToCollection(sInFilePath, cFileContents)
+    End Sub
+
+' ==================================================================
+' = 概要    正規表現検索する
+' = 引数    sTargetStr      String  [in]  検索対象文字列
+' = 引数    sSearchPattern  String  [in]  検索パターン
+' = 引数    oMatchResult    Object  [out] 検索結果
+' = 戻値    なし
+' = 覚書    なし
+' ==================================================================
+Private Function ExecRegExp( _
+    ByVal sTargetStr As String, _
+    ByVal sSearchPattern As String, _
+    ByRef oMatchResult As Object, _
+    Optional ByVal bIgnoreCase As Boolean = True, _
+    Optional ByVal bGlobal As Boolean = True _
+)
+    Dim oRegExp As Object
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.IgnoreCase = bIgnoreCase
+    oRegExp.Global = bGlobal
+    oRegExp.Pattern = sSearchPattern
+    Set oMatchResult = oRegExp.Execute(sTargetStr)
+End Function
+    Private Sub Test_ExecRegExp()
+        '★
+    End Sub
 
