@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.3
+' user define macros v2.4
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -71,6 +71,8 @@ Enum E_CLM
 End Enum
 
 'sOperate: Add/Update/Delete
+'★/UpdateShtcutSetting
+'AddInSetting.cls/SearchWithKey()
 Private Function UpdateShortcutKeySettings( _
     ByVal sOperate As String _
 )
@@ -170,6 +172,8 @@ End Sub
 ' =============================================================================
 ' = 概要：①～⑭を指定して、指定番号以降をデクリメントする
 ' =============================================================================
+'★/NumConvStr2Lng
+'★/NumConvLng2Str
 Public Sub セル内の丸数字をデクリメント()
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
@@ -194,6 +198,8 @@ End Sub
 ' =============================================================================
 ' = 概要：②～⑮を指定して、指定番号以降をインクリメントする
 ' =============================================================================
+'★/NumConvStr2Lng
+'★/NumConvLng2Str
 Public Sub セル内の丸数字をインクリメント()
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
@@ -243,6 +249,7 @@ End Sub
 ' =============================================================================
 ' = 概要：シート表示/非表示を切り替える
 ' =============================================================================
+'SheetVisibleSetting.frx/SheetVisibleSetting()
 Public Sub シート表示非表示を切り替え()
     SheetVisibleSetting.Show
 End Sub
@@ -251,6 +258,7 @@ End Sub
 ' = 概要：ダブルクオーテーションなしでセルコピーする
 ' =       非表示セルは無視する。複数範囲は未対応。
 ' =============================================================================
+'★/ConvRange2Array
 Public Sub ダブルクォートを除いてセルコピー()
     '*** 非表示セル出力判定 ***
     Dim bIsInvisibleCellIgnore As Boolean
@@ -303,6 +311,8 @@ End Sub
 ' = 概要：選択範囲をファイルとしてエクスポートする。
 ' =       隣り合った列のセルにはタブ文字を挿入して出力する。
 ' =============================================================================
+'★/ShowFolderSelectDialog
+'★/ConvRange2Array
 Public Sub 選択範囲をファイルエクスポート()
     Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
     Const FILE_EXTENTION As String = "csv"
@@ -427,6 +437,8 @@ End Sub
 ' = 概要：選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
 ' =       単一列選択時のみ有効。
 ' =============================================================================
+'★/ConvRange2Array
+'★/OutputTxtFile
 Public Sub 選択範囲をまとめてコマンド実行()
     Const BAT_FILE_NAME As String = "command.bat"
     
@@ -507,6 +519,8 @@ End Sub
 ' = 概要：選択範囲内のコマンドをそれぞれ実行する。
 ' =       単一列選択時のみ有効。
 ' =============================================================================
+'★/ConvRange2Array
+'★/ExecDosCmd
 Public Sub 選択範囲をそれぞれコマンド実行()
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -643,6 +657,7 @@ End Sub
 ' = 概要：行をツリー構造にしてグループ化
 ' = Usage：ツリーグループ化したい範囲を選択し、マクロ「ツリーをグループ化」を実行する
 ' =============================================================================
+'★/TreeGroupSub
 Public Sub ツリーをグループ化()
     Dim lStrtRow As Long
     Dim lLastRow As Long
@@ -671,7 +686,6 @@ End Sub
 ' = 概要：シートを並び替える。
 ' =       本処理を実行すると、シート並べ替え作業用シートを作成する。
 ' =============================================================================
-'並べ替えシート 作業用シート作成
 Public Sub シート並べ替え作業用シートを作成()
     Dim lShtIdx As Long
     Dim asShtName() As String
@@ -706,7 +720,7 @@ Public Sub シート並べ替え作業用シートを作成()
             MsgBox "処理を中断します。"
             End
         Else
-            Set shWorkSht = .Sheets.Add(After:=.Sheets(.Sheets.Count))
+            Set shWorkSht = .Sheets.Add(after:=.Sheets(.Sheets.Count))
             shWorkSht.Name = WORK_SHEET_NAME
         End If
 
@@ -996,6 +1010,12 @@ End Sub
 ' =============================================================================
 ' = 概要：アクティブセルのコメント表示の有効/無効を切り替える
 ' =============================================================================
+'AddInSetting.cls/SearchWithKey()
+'AddInSetting.cls/Update()
+'AddInSetting.cls/Add()
+'★/DisableShortcutKeys
+'★/UpdateShortcutKeySettings
+'★/EnableShortcutKeys
 Public Sub アクティブセルコメントのみ表示および移動_モード切替()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1089,6 +1109,11 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Const SHEET_NAME As String = "関数ツリー"
     Const MAX_FUNC_LEVEL_INI As Long = 10
     Const CLM_WIDTH As Long = 2
+    Dim lRowIdx As Long
+    Dim lStrtRow As Long
+    Dim lLastRow As Long
+    Dim lStrtClm As Long
+    Dim lLastClm As Long
     
     Application.Calculation = xlCalculationManual
     Application.ScreenUpdating = False
@@ -1111,10 +1136,9 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call ReadTxtFileToCollection(sTrgtFilePath, cFileContents)
     
     'ファイルツリー出力
-    Dim lRowIdx As Long
-    Dim lStrtClm As Long
-    lRowIdx = STRT_ROW
+    lStrtRow = STRT_ROW
     lStrtClm = STRT_CLM
+    lRowIdx = lStrtRow
     
     With shTrgtSht
         .Cells(lRowIdx, lStrtClm + 0).Value = "ファイルパス"
@@ -1131,7 +1155,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         Dim oMatchResult As Object
         Call ExecRegExp( _
             vFileLine, _
-            "^([\w\\:\.]+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
+            "^(.+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
             oMatchResult _
         )
         
@@ -1163,10 +1187,30 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Next
     
     With shTrgtSht
-        .Range(.Cells(1, STRT_CLM + 0), .Cells(lRowIdx, STRT_CLM + 0)).Columns.AutoFit
-        .Range(.Cells(1, STRT_CLM + 1), .Cells(lRowIdx, STRT_CLM + 1)).Columns.AutoFit
-        .Range(.Cells(1, STRT_CLM + 2), .Cells(lRowIdx, STRT_CLM + 2)).Columns.AutoFit
-        .Range(.Cells(1, STRT_CLM + 3), .Cells(lRowIdx, STRT_CLM + 3 + lMaxFuncLevel)).ColumnWidth = CLM_WIDTH
+        lLastClm = STRT_CLM + 3 + lMaxFuncLevel
+        lLastRow = lRowIdx
+        
+        'タイトル行 中央揃え
+        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lStrtRow, lStrtClm + 2)).HorizontalAlignment = xlCenter
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lStrtRow, lLastClm)).HorizontalAlignment = xlCenterAcrossSelection
+        
+        '列幅調整
+        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = CLM_WIDTH
+    
+        'オートフィルタ
+        .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
+        
+        '行高さ
+        .Rows(lStrtRow).RowHeight = .Rows(lStrtRow).RowHeight * 3
+        
+        'タイトル列固定
+        ActiveWindow.FreezePanes = False
+        .Rows(lStrtRow + 1).Select
+        ActiveWindow.FreezePanes = True
+        .Cells(1, 1).Select
     End With
     
     Application.ScreenUpdating = True
@@ -1178,7 +1222,7 @@ End Sub
 ' *****************************************************************************
 ' * 内部用マクロ
 ' *****************************************************************************
-'設定項目一覧を出力
+'AddInSetting.cls/SearchWithIdx()
 Private Sub OutputSettingList()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1200,22 +1244,27 @@ Private Sub OutputSettingList()
     End If
 End Sub
 
+'★/UpdateShortcutKeySettings
 Public Sub ユーザー定義ショートカットキー設定を追加()
     Call UpdateShortcutKeySettings("Add")
 End Sub
 
+'★/UpdateShortcutKeySettings
 Public Sub ユーザー定義ショートカットキー設定を削除()
     Call UpdateShortcutKeySettings("Delete")
 End Sub
 
+'★/UpdateShortcutKeySettings
 Public Sub ユーザー定義ショートカットキー設定を更新()
     Call UpdateShortcutKeySettings("Update")
 End Sub
 
+'★/EnableShortcutKeys
 Public Sub ユーザー定義ショートカットキーを有効化()
     Call EnableShortcutKeys
 End Sub
 
+'★/DisableShortcutKeys
 Public Sub ユーザー定義ショートカットキーを無効化()
     Call DisableShortcutKeys
 End Sub
@@ -1445,6 +1494,9 @@ End Function
     End Sub
 
 'ショートカットキー設定を追加/削除
+'AddInSetting.cls/Add()
+'AddInSetting.cls/Update()
+'AddInSetting.cls/Delete()
 Private Function UpdateShtcutSetting( _
     ByVal sKey As String, _
     ByVal sMacroName As String, _
@@ -1465,6 +1517,8 @@ Private Function UpdateShtcutSetting( _
 End Function
 
 'ショートカットキーを有効化
+'AddInSetting.cls/Count()
+'AddInSetting.cls/SearchWithIdx()
 Private Function EnableShortcutKeys()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1501,6 +1555,8 @@ Private Function EnableShortcutKeys()
 End Function
 
 'ショートカットキーを無効化
+'AddInSetting.cls/Count()
+'AddInSetting.cls/SearchWithIdx()
 Private Function DisableShortcutKeys()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1572,7 +1628,7 @@ End Function
 ' = 概要    ファイル（複数）選択ダイアログを表示する
 ' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
 ' = 引数    sInitPath       String      [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters　      String      [in]  選択時のフィルタ（省略可）(※)
+' = 引数    sFilters        String      [in]  選択時のフィルタ（省略可）(※)
 ' = 戻値    なし
 ' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
 ' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
@@ -1581,6 +1637,7 @@ End Function
 ' =                    ・フィルタが複数ある場合、","で区切る
 ' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
 ' ==================================================================
+'★/SetDialogFilters
 Private Function ShowFilesSelectDialog( _
     ByRef asSelectedFiles() As String, _
     Optional ByVal sInitPath As String = "", _
@@ -1716,6 +1773,7 @@ End Function
 'ワークシートを新規作成
 '重複したワークシートがある場合、_1, _2 ...と連番になる。
 '呼び出し側には作成したワークシート名を返す。
+'★/ExistsWorksheet
 Private Function CreateNewWorksheet( _
     ByVal sSheetName As String _
 ) As String
@@ -1817,7 +1875,6 @@ Private Function ExecRegExp( _
     Optional ByVal bGlobal As Boolean = True _
 )
     Dim oRegExp As Object
-    Set oRegExp = CreateObject("VBScript.RegExp")
     Set oRegExp = CreateObject("VBScript.RegExp")
     oRegExp.IgnoreCase = bIgnoreCase
     oRegExp.Global = bGlobal
