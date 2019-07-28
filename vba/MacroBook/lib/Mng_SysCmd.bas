@@ -3,6 +3,13 @@ Option Explicit
 
 ' system command library v1.0
 
+' ==================================================================
+' = 概要    コマンドを実行
+' = 引数    sCommand    String   [in]   コマンド
+' = 戻値                String          標準出力
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function ExecDosCmd( _
     ByVal sCommand As String _
 ) As String
@@ -15,7 +22,12 @@ Private Function ExecDosCmd( _
     ExecDosCmd = sStrOut
     Set oExeResult = Nothing
 End Function
- 
+    Private Sub Test_ExecDosCmd()
+        Dim sBuf As String
+        sBuf = sBuf & vbNewLine & ExecDosCmd("copy C:\Users\draem_000\Desktop\test.txt C:\Users\draem_000\Desktop\test2.txt")
+        MsgBox sBuf
+    End Sub
+
 Private Function ShowCommitDialog()
     Dim sCmdRslt As String
     Dim sCmd As String

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.4
+' user define macros v2.41
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -70,9 +70,14 @@ Enum E_CLM
     CLM_SHT_NAME = 2
 End Enum
 
-'sOperate: Add/Update/Delete
-'★/UpdateShtcutSetting
-'AddInSetting.cls/SearchWithKey()
+' ==================================================================
+' = 概要    ショートカットキー設定を更新する
+' = 引数    sOperate    String  [in] 操作種別(Add/Update/Delete)
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    Macros/UpdateShtcutSetting()
+' =         AddInSetting.cls/SearchWithKey()
+' ==================================================================
 Private Function UpdateShortcutKeySettings( _
     ByVal sOperate As String _
 )
@@ -92,22 +97,22 @@ Private Function UpdateShortcutKeySettings( _
     
     '▼▼▼ 追加先 ▼▼▼
     Call UpdateShtcutSetting("", "選択範囲内で中央", sOperate)
-
+    
     Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてセルコピー", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をまとめてコマンド実行", sOperate)
-
+    
     Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
     Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
     Call UpdateShtcutSetting("", "シート並べ替え作業用シートを作成", sOperate)
-
+    
     Call UpdateShtcutSetting("", "セル内の丸数字をデクリメント", sOperate)
     Call UpdateShtcutSetting("", "セル内の丸数字をインクリメント", sOperate)
-
+    
     Call UpdateShtcutSetting("", "ツリーをグループ化", sOperate)
     Call UpdateShtcutSetting("", "ハイパーリンク一括オープン", sOperate)
-
+    
     Call UpdateShtcutSetting("", "フォント色をトグル", sOperate)
     Call UpdateShtcutSetting("", "背景色をトグル", sOperate)
     
@@ -163,17 +168,20 @@ End Function
 ' * 外部公開用マクロ
 ' *****************************************************************************
 ' =============================================================================
-' = 概要：選択セルに対して「選択範囲内で中央」を実行する
+' = 概要    選択セルに対して「選択範囲内で中央」を実行する
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub 選択範囲内で中央()
     Selection.HorizontalAlignment = xlCenterAcrossSelection
 End Sub
 
 ' =============================================================================
-' = 概要：①～⑭を指定して、指定番号以降をデクリメントする
+' = 概要    ①～⑭を指定して、指定番号以降をデクリメントする
+' = 覚書    なし
+' = 依存    Mng_String/NumConvStr2Lng()
+' =         Mng_String/NumConvLng2Str()
 ' =============================================================================
-'★/NumConvStr2Lng
-'★/NumConvLng2Str
 Public Sub セル内の丸数字をデクリメント()
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
@@ -196,10 +204,11 @@ Public Sub セル内の丸数字をデクリメント()
 End Sub
 
 ' =============================================================================
-' = 概要：②～⑮を指定して、指定番号以降をインクリメントする
+' = 概要    ②～⑮を指定して、指定番号以降をインクリメントする
+' = 覚書    なし
+' = 依存    Mng_String/NumConvStr2Lng()
+' =         Mng_String/NumConvLng2Str()
 ' =============================================================================
-'★/NumConvStr2Lng
-'★/NumConvLng2Str
 Public Sub セル内の丸数字をインクリメント()
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
@@ -222,10 +231,11 @@ Public Sub セル内の丸数字をインクリメント()
 End Sub
 
 ' =============================================================================
-' = 概要：ブック内のシート名を全てコピーする
-' = 備考：本マクロがエラーとなる場合、以下のいずれかを実施すること。
-' =       ・ツール->参照設定 にて「Microsoft Forms 2.0 Object Library」を選択
-' =       ・ツール->参照設定 内の「参照」にて system32 内の「FM20.DLL」を選択
+' = 概要    ブック内のシート名を全てコピーする
+' = 覚書    本マクロがエラーとなる場合、以下のいずれかを実施すること。
+' =           ・ツール->参照設定 にて「Microsoft Forms 2.0 Object Library」を選択
+' =           ・ツール->参照設定 内の「参照」にて system32 内の「FM20.DLL」を選択
+' = 依存    なし
 ' =============================================================================
 Public Sub 全シート名をコピー()
     Dim oSheet As Object
@@ -247,18 +257,20 @@ Public Sub 全シート名をコピー()
 End Sub
 
 ' =============================================================================
-' = 概要：シート表示/非表示を切り替える
+' = 概要    シート表示/非表示を切り替える
+' = 覚書    なし
+' = 依存    SheetVisibleSetting/SheetVisibleSetting()
 ' =============================================================================
-'SheetVisibleSetting.frx/SheetVisibleSetting()
 Public Sub シート表示非表示を切り替え()
     SheetVisibleSetting.Show
 End Sub
 
 ' =============================================================================
-' = 概要：ダブルクオーテーションなしでセルコピーする
-' =       非表示セルは無視する。複数範囲は未対応。
+' = 概要    ダブルクオーテーションなしでセルコピーする
+' =         非表示セルは無視する。複数範囲は未対応。
+' = 覚書    なし
+' = 依存    Mng_Array/ConvRange2Array()
 ' =============================================================================
-'★/ConvRange2Array
 Public Sub ダブルクォートを除いてセルコピー()
     '*** 非表示セル出力判定 ***
     Dim bIsInvisibleCellIgnore As Boolean
@@ -308,11 +320,12 @@ Public Sub ダブルクォートを除いてセルコピー()
 End Sub
 
 ' =============================================================================
-' = 概要：選択範囲をファイルとしてエクスポートする。
-' =       隣り合った列のセルにはタブ文字を挿入して出力する。
+' = 概要    選択範囲をファイルとしてエクスポートする。
+' =         隣り合った列のセルにはタブ文字を挿入して出力する。
+' = 覚書    なし
+' = 依存    Mng_FileSys/ShowFolderSelectDialog() 
+' =         Mng_Array/ConvRange2Array()          
 ' =============================================================================
-'★/ShowFolderSelectDialog
-'★/ConvRange2Array
 Public Sub 選択範囲をファイルエクスポート()
     Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
     Const FILE_EXTENTION As String = "csv"
@@ -434,11 +447,13 @@ Public Sub 選択範囲をファイルエクスポート()
 End Sub
 
 ' =============================================================================
-' = 概要：選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
-' =       単一列選択時のみ有効。
+' = 概要    選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
+' =         単一列選択時のみ有効。
+' = 覚書    なし
+' = 依存    Mng_Array/ConvRange2Array()
+' =         Mng_FileSys/OutputTxtFile()
+' =         Mng_SysCmd/ExecDosCmd()
 ' =============================================================================
-'★/ConvRange2Array
-'★/OutputTxtFile
 Public Sub 選択範囲をまとめてコマンド実行()
     Const BAT_FILE_NAME As String = "command.bat"
     
@@ -516,11 +531,12 @@ Public Sub 選択範囲をまとめてコマンド実行()
 End Sub
 
 ' =============================================================================
-' = 概要：選択範囲内のコマンドをそれぞれ実行する。
-' =       単一列選択時のみ有効。
+' = 概要    選択範囲内のコマンドをそれぞれ実行する。
+' =         単一列選択時のみ有効。
+' = 覚書    なし
+' = 依存    Mng_Array/ConvRange2Array()
+' =         Mng_SysCmd/ExecDosCmd()
 ' =============================================================================
-'★/ConvRange2Array
-'★/ExecDosCmd
 Public Sub 選択範囲をそれぞれコマンド実行()
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -590,7 +606,9 @@ Public Sub 選択範囲をそれぞれコマンド実行()
 End Sub
 
 ' =============================================================================
-' = 概要：選択範囲内の検索文字色を変更する
+' = 概要    選択範囲内の検索文字色を変更する
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub 選択範囲内の検索文字色を変更()
     Const sMACRO_TITLE As String = "選択範囲内の検索文字色を変更"
@@ -654,10 +672,11 @@ Public Sub 選択範囲内の検索文字色を変更()
 End Sub
 
 ' =============================================================================
-' = 概要：行をツリー構造にしてグループ化
-' = Usage：ツリーグループ化したい範囲を選択し、マクロ「ツリーをグループ化」を実行する
+' = 概要    行をツリー構造にしてグループ化
+' =         Usage：ツリーグループ化したい範囲を選択し、マクロ「ツリーをグループ化」を実行する
+' = 覚書    なし
+' = 依存    Macros/TreeGroupSub()
 ' =============================================================================
-'★/TreeGroupSub
 Public Sub ツリーをグループ化()
     Dim lStrtRow As Long
     Dim lLastRow As Long
@@ -683,8 +702,10 @@ Public Sub ツリーをグループ化()
 End Sub
 
 ' =============================================================================
-' = 概要：シートを並び替える。
-' =       本処理を実行すると、シート並べ替え作業用シートを作成する。
+' = 概要    シートを並び替える。
+' =         本処理を実行すると、シート並べ替え作業用シートを作成する。
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub シート並べ替え作業用シートを作成()
     Dim lShtIdx As Long
@@ -697,13 +718,13 @@ Public Sub シート並べ替え作業用シートを作成()
     
     With ActiveWorkbook
         Application.ScreenUpdating = False
-
+        
         ' === シート情報取得 ===
         ReDim Preserve asShtName(.Worksheets.Count - 1)
         For lShtIdx = 1 To .Worksheets.Count
             asShtName(lShtIdx - 1) = .Sheets(lShtIdx).Name
         Next lShtIdx
-
+        
         ' === 作業用シート作成 ===
         bExistWorkSht = False
         For lShtIdx = 1 To .Worksheets.Count
@@ -723,7 +744,7 @@ Public Sub シート並べ替え作業用シートを作成()
             Set shWorkSht = .Sheets.Add(after:=.Sheets(.Sheets.Count))
             shWorkSht.Name = WORK_SHEET_NAME
         End If
-
+        
         'シート情報書き込み
         shWorkSht.Cells(ROW_TEXT_1, CLM_SHT_NAME).Value = "希望通りにシート名を並べ替えてください。（上から順に並べ替えます）"
         shWorkSht.Cells(ROW_TEXT_2, CLM_SHT_NAME).Value = "並べ替えが終わったら、「並べ替え実行！！」ボタンを押してください。"
@@ -734,7 +755,7 @@ Public Sub シート並べ替え作業用シートを作成()
             shWorkSht.Cells(lRowIdx, CLM_SHT_NAME).Value = asShtName(lArrIdx)
             lArrIdx = lArrIdx + 1
         Next lRowIdx
-
+        
         'ボタン追加
         With shWorkSht.Buttons.Add( _
             shWorkSht.Cells(ROW_BTN, CLM_BTN).Left, _
@@ -745,7 +766,7 @@ Public Sub シート並べ替え作業用シートを作成()
             .OnAction = "SortSheetPost"
             .Characters.Text = "並べ替え実行！！"
         End With
-
+        
         '書式設定
         With ActiveSheet
             .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).Interior.ColorIndex = 34
@@ -768,9 +789,11 @@ Public Sub シート並べ替え作業用シートを作成()
 End Sub
 
 ' =============================================================================
-' = 概要：シートを並び替える。
-' =       シート並べ替え作業用シートに記載の通り、シートを並び替える。
-' =       必ずシート並べ替え作業用シートから呼び出すこと！
+' = 概要    シートを並び替える。
+' =         シート並べ替え作業用シートに記載の通り、シートを並び替える。
+' =         必ずシート並べ替え作業用シートから呼び出すこと！
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub SortSheetPost()
     Dim asShtName() As String
@@ -822,7 +845,9 @@ Public Sub SortSheetPost()
 End Sub
 
 ' =============================================================================
-' = 概要：選択した範囲のハイパーリンクを一括で開く
+' = 概要    選択した範囲のハイパーリンクを一括で開く
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub ハイパーリンク一括オープン()
     Dim Rng As Range
@@ -837,7 +862,9 @@ Public Sub ハイパーリンク一括オープン()
 End Sub
 
 ' =============================================================================
-' = 概要：フォント色を「赤」⇔「自動」でトグルする
+' = 概要    フォント色を「赤」⇔「自動」でトグルする
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub フォント色をトグル()
     Const COLOR_R As Long = 255
@@ -851,7 +878,9 @@ Public Sub フォント色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要：背景色を「黄」⇔「背景色なし」でトグルする
+' = 概要    背景色を「黄」⇔「背景色なし」でトグルする
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub 背景色をトグル()
     Const COLOR_R As Long = 255
@@ -865,8 +894,10 @@ Public Sub 背景色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要：オートフィルを実行する。
-' =       指定した方向に応じて選択範囲を広げてオートフィルを実行する。
+' = 概要    オートフィルを実行する。
+' =         指定した方向に応じて選択範囲を広げてオートフィルを実行する。
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub オートフィル実行( _
     ByVal sDirection As String _
@@ -949,7 +980,9 @@ Public Sub オートフィル実行( _
 End Sub
 
 ' =============================================================================
-' = 概要：アクティブセルコメントのみ表示し、移動する。
+' = 概要    アクティブセルコメントのみ表示し、移動する。
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub アクティブセルコメントのみ表示および移動( _
     ByVal sDirection As String _
@@ -984,7 +1017,9 @@ Public Sub アクティブセルコメントのみ表示および移動( _
 End Sub
 
 ' =============================================================================
-' = 概要：アクティブセルコメントのみ表示する。
+' = 概要    アクティブセルコメントのみ表示する。
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub アクティブセルコメントのみ表示()
 '    Application.ScreenUpdating = False
@@ -1008,14 +1043,15 @@ Public Sub アクティブセルコメントのみ表示()
 End Sub
 
 ' =============================================================================
-' = 概要：アクティブセルのコメント表示の有効/無効を切り替える
+' = 概要    アクティブセルのコメント表示の有効/無効を切り替える
+' = 覚書    なし
+' = 依存    AddInSetting.cls/SearchWithKey()
+' =         AddInSetting.cls/Update()
+' =         AddInSetting.cls/Add()
+' =         Macros/DisableShortcutKeys()
+' =         Macros/UpdateShortcutKeySettings()
+' =         Macros/EnableShortcutKeys()
 ' =============================================================================
-'AddInSetting.cls/SearchWithKey()
-'AddInSetting.cls/Update()
-'AddInSetting.cls/Add()
-'★/DisableShortcutKeys
-'★/UpdateShortcutKeySettings
-'★/EnableShortcutKeys
 Public Sub アクティブセルコメントのみ表示および移動_モード切替()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1047,7 +1083,9 @@ Public Sub アクティブセルコメントのみ表示および移動_モード切替()
 End Sub
 
 ' =============================================================================
-' = 概要：アクティブセルからハイパーリンク先に飛ぶ
+' = 概要    アクティブセルからハイパーリンク先に飛ぶ
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub ハイパーリンクで飛ぶ()
     On Error Resume Next
@@ -1063,7 +1101,9 @@ Public Sub ハイパーリンクで飛ぶ()
 End Sub
 
 ' =============================================================================
-' = 概要：Excel方眼紙
+' = 概要    Excel方眼紙
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub Excel方眼紙()
     ActiveSheet.Cells.Select
@@ -1077,7 +1117,9 @@ Public Sub Excel方眼紙()
 End Sub
 
 ' =============================================================================
-' = 概要：列幅、行幅を自動調整する
+' = 概要    列幅、行幅を自動調整する
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub 自動列幅調整()
     Selection.EntireColumn.AutoFit
@@ -1087,7 +1129,9 @@ Public Sub 自動行幅調整()
 End Sub
 
 ' =============================================================================
-' = 概要：最前面、最背面へ移動する
+' = 概要    最前面、最背面へ移動する
+' = 覚書    なし
+' = 依存    なし
 ' =============================================================================
 Public Sub 最前面へ移動()
     Selection.ShapeRange.ZOrder msoBringToFront
@@ -1097,12 +1141,13 @@ Public Sub 最背面へ移動()
 End Sub
 
 ' =============================================================================
-' = 概要：EpTreeの関数ツリーをExcelで取り込む
+' = 概要    EpTreeの関数ツリーをExcelで取り込む
+' = 覚書    なし
+' = 依存    Mng_FileSys/ShowFilesSelectDialog()
+' =         Mng_Collection/ReadTxtFileToCollection()
+' =         Mng_String/ExecRegExp()
+' =         Mng_ExcelOpe/CreateNewWorksheet()
 ' =============================================================================
-'Mng_FileSys/ShowFilesSelectDialog()
-'Mng_Collection/ReadTxtFileToCollection()
-'Mng_String/ExecRegExp()
-'Mng_ExcelOpe/CreateNewWorksheet()
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Const STRT_ROW As Long = 2
     Const STRT_CLM As Long = 2
@@ -1222,7 +1267,11 @@ End Sub
 ' *****************************************************************************
 ' * 内部用マクロ
 ' *****************************************************************************
-'AddInSetting.cls/SearchWithIdx()
+' =============================================================================
+' = 概要    設定項目一覧を出力
+' = 覚書    なし
+' = 依存    AddInSetting.cls/SearchWithIdx()
+' =============================================================================
 Private Sub OutputSettingList()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1244,27 +1293,47 @@ Private Sub OutputSettingList()
     End If
 End Sub
 
-'★/UpdateShortcutKeySettings
+' =============================================================================
+' = 概要    ユーザー定義ショートカットキー設定を追加
+' = 覚書    なし
+' = 依存    Macros/UpdateShortcutKeySettings()
+' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を追加()
     Call UpdateShortcutKeySettings("Add")
 End Sub
 
-'★/UpdateShortcutKeySettings
+' =============================================================================
+' = 概要    ユーザー定義ショートカットキー設定を削除
+' = 覚書    なし
+' = 依存    Macros/UpdateShortcutKeySettings()
+' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を削除()
     Call UpdateShortcutKeySettings("Delete")
 End Sub
 
-'★/UpdateShortcutKeySettings
+' =============================================================================
+' = 概要    ユーザー定義ショートカットキー設定を更新
+' = 覚書    なし
+' = 依存    Macros/UpdateShortcutKeySettings()
+' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を更新()
     Call UpdateShortcutKeySettings("Update")
 End Sub
 
-'★/EnableShortcutKeys
+' =============================================================================
+' = 概要    ユーザー定義ショートカットキーを有効化
+' = 覚書    なし
+' = 依存    Macros/EnableShortcutKeys()
+' =============================================================================
 Public Sub ユーザー定義ショートカットキーを有効化()
     Call EnableShortcutKeys
 End Sub
 
-'★/DisableShortcutKeys
+' =============================================================================
+' = 概要    ユーザー定義ショートカットキーを無効化
+' = 覚書    なし
+' = 依存    Macros/DisableShortcutKeys()
+' =============================================================================
 Public Sub ユーザー定義ショートカットキーを無効化()
     Call DisableShortcutKeys
 End Sub
@@ -1272,18 +1341,43 @@ End Sub
 ' *****************************************************************************
 ' * 内部関数定義
 ' *****************************************************************************
+' ==================================================================
+' = 概要    数字 型変換(String→Long)
+' = 引数    sNum            String  [in]  数字(String型)
+' = 戻値                    Long          数字(Long型)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function NumConvStr2Lng( _
     ByVal sNum As String _
 ) As Long
     NumConvStr2Lng = Asc(sNum) + 30913
 End Function
 
+' ==================================================================
+' = 概要    数字 型変換(Long→String)
+' = 引数    lNum            Long    [in]    数字(Long型)
+' = 戻値                    String          数字(String型)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function NumConvLng2Str( _
     ByVal lNum As Long _
 ) As String
     NumConvLng2Str = Chr(lNum - 30913)
 End Function
 
+' ==================================================================
+' = 概要    ツリーをグループ化
+' = 引数    shTrgtSht       Worksheet   [in,out]    ワークシート
+' = 引数    lGrpStrtRow     Long        [in]        先頭行
+' = 引数    lGrpLastRow     Long        [in]        末尾行
+' = 引数    lGrpStrtClm     Long        [in]        先頭列
+' = 引数    lGrpLastClm     Long        [in]        末尾列
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    Macros/IsGroupParent()
+' ==================================================================
 Private Function TreeGroupSub( _
     ByRef shTrgtSht As Worksheet, _
     ByVal lGrpStrtRow As Long, _
@@ -1338,8 +1432,16 @@ Private Function TreeGroupSub( _
     End If
 End Function
 
-' 指定したセルの直下セルが空白で、右下セルが空白でない場合、
-' グループの親であると判断する。
+' ==================================================================
+' = 概要    指定したセルの直下セルが空白で、右下セルが空白でない場合、
+' =         グループの親であると判断する。
+' = 引数    shTrgtSht   Worksheet   [in,out]    ワークシート
+' = 引数    lRow        Long        [in]        行
+' = 引数    lClm        Long        [in]        列
+' = 戻値                Boolean                 
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function IsGroupParent( _
     ByRef shTrgtSht As Worksheet, _
     ByVal lRow As Long, _
@@ -1372,6 +1474,7 @@ End Function
 ' = 引数    sDelimiter              String  [in]  区切り文字
 ' = 戻値    なし
 ' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
+' = 依存    なし
 ' ==================================================================
 Private Function ConvRange2Array( _
     ByRef rCellsRange As Range, _
@@ -1432,6 +1535,7 @@ End Function
 ' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
 ' = 戻値                String        フォルダ選択結果
 ' = 覚書    なし
+' = 依存    なし
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
     Optional ByVal sInitPath As String = "" _
@@ -1474,7 +1578,13 @@ End Function
                 )
     End Sub
 
-'コマンドを実行
+' ==================================================================
+' = 概要    コマンドを実行
+' = 引数    sCommand    String   [in]   コマンド
+' = 戻値                String          標準出力
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function ExecDosCmd( _
     ByVal sCommand As String _
 ) As String
@@ -1493,10 +1603,17 @@ End Function
         MsgBox sBuf
     End Sub
 
-'ショートカットキー設定を追加/削除
-'AddInSetting.cls/Add()
-'AddInSetting.cls/Update()
-'AddInSetting.cls/Delete()
+' ==================================================================
+' = 概要    ショートカットキー設定を追加/削除
+' = 引数    sKey        String   [in]   キー
+' = 引数    sMacroName  String   [in]   マクロ名
+' = 引数    sMode       String   [in]   モード(Add/Update/Delete)
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    AddInSetting.cls/Add()
+' =         AddInSetting.cls/Update()
+' =         AddInSetting.cls/Delete()
+' ==================================================================
 Private Function UpdateShtcutSetting( _
     ByVal sKey As String, _
     ByVal sMacroName As String, _
@@ -1516,9 +1633,14 @@ Private Function UpdateShtcutSetting( _
     End Select
 End Function
 
-'ショートカットキーを有効化
-'AddInSetting.cls/Count()
-'AddInSetting.cls/SearchWithIdx()
+' ==================================================================
+' = 概要    ショートカットキーを有効化
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    AddInSetting.cls/Count()
+' =         AddInSetting.cls/SearchWithIdx()
+' ==================================================================
 Private Function EnableShortcutKeys()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1554,9 +1676,14 @@ Private Function EnableShortcutKeys()
     End If
 End Function
 
-'ショートカットキーを無効化
-'AddInSetting.cls/Count()
-'AddInSetting.cls/SearchWithIdx()
+' ==================================================================
+' = 概要    ショートカットキーを無効化
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    AddInSetting.cls/Count()
+' =         AddInSetting.cls/SearchWithIdx()
+' ==================================================================
 Private Function DisableShortcutKeys()
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
@@ -1593,6 +1720,7 @@ End Function
 ' =         asFileLine()  String  [in]  出力するファイルの内容
 ' = 戻値    なし
 ' = 覚書    なし
+' = 依存    なし
 ' ============================================
 Private Function OutputTxtFile( _
     ByVal sFilePath As String, _
@@ -1636,8 +1764,8 @@ End Function
 ' =                    ・ファイル種別と拡張子は"/"で区切る
 ' =                    ・フィルタが複数ある場合、","で区切る
 ' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' = 依存    Mng_FileSys/SetDialogFilters()
 ' ==================================================================
-'★/SetDialogFilters
 Private Function ShowFilesSelectDialog( _
     ByRef asSelectedFiles() As String, _
     Optional ByVal sInitPath As String = "", _
@@ -1703,13 +1831,20 @@ End Function
         MsgBox sBuf
     End Sub
  
-'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
-'ダイアログのフィルタを追加する。指定方法は以下。
-'  ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
-'      ・拡張子が複数ある場合は、";"で区切る
-'      ・ファイル種別と拡張子は"/"で区切る
-'      ・フィルタが複数ある場合、","で区切る
-'sFilters が空文字の場合、フィルタをクリアする。
+' ==================================================================
+' = 概要    ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
+' =         ダイアログのフィルタを追加する。指定方法は以下。
+' =           ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+' =               ・拡張子が複数ある場合は、";"で区切る
+' =               ・ファイル種別と拡張子は"/"で区切る
+' =               ・フィルタが複数ある場合、","で区切る
+' =         sFilters が空文字の場合、フィルタをクリアする。
+' = 引数    sFilters    String  [in]    フィルタ
+' = 引数    fdDialog    String  [out]   ダイアログ
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function SetDialogFilters( _
     ByVal sFilters As String, _
     ByRef fdDialog As FileDialog _
@@ -1770,10 +1905,15 @@ Private Function SetDialogFilters( _
     End If
 End Function
 
-'ワークシートを新規作成
-'重複したワークシートがある場合、_1, _2 ...と連番になる。
-'呼び出し側には作成したワークシート名を返す。
-'★/ExistsWorksheet
+' ==================================================================
+' = 概要    ワークシートを新規作成
+' =         重複したワークシートがある場合、_1, _2 ...と連番になる。
+' =         呼び出し側には作成したワークシート名を返す。
+' = 引数    sSheetName  String  [in]    シート名
+' = 戻値                                シート名
+' = 覚書    なし
+' = 依存    Mng_ExcelOpe/ExistsWorksheet()
+' ==================================================================
 Private Function CreateNewWorksheet( _
     ByVal sSheetName As String _
 ) As String
@@ -1796,7 +1936,13 @@ Private Function CreateNewWorksheet( _
     CreateNewWorksheet = sSheetName
 End Function
 
-'重複したWorksheetが有るかチェックする。
+' ==================================================================
+' = 概要    重複したWorksheetが有るかチェックする。
+' = 引数    sTrgtShtName    String  [in]    シート名
+' = 戻値                                    存在チェック結果
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
 Private Function ExistsWorksheet( _
     ByVal sTrgtShtName As String _
 ) As Boolean
@@ -1821,6 +1967,7 @@ End Function
 ' =                                                 True:ファイル存在
 ' =                                                 False:それ以外
 ' = 覚書    なし
+' = 依存    なし
 ' ==================================================================
 Private Function ReadTxtFileToCollection( _
     ByVal sTrgtFilePath As String, _
@@ -1866,6 +2013,7 @@ End Function
 ' = 引数    oMatchResult    Object  [out] 検索結果
 ' = 戻値    なし
 ' = 覚書    なし
+' = 依存    なし
 ' ==================================================================
 Private Function ExecRegExp( _
     ByVal sTargetStr As String, _
@@ -1881,7 +2029,4 @@ Private Function ExecRegExp( _
     oRegExp.Pattern = sSearchPattern
     Set oMatchResult = oRegExp.Execute(sTargetStr)
 End Function
-    Private Sub Test_ExecRegExp()
-        '★
-    End Sub
 

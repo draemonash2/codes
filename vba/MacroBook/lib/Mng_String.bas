@@ -293,3 +293,60 @@ End Function
     Private Sub Test_ConvDate2String()
         Debug.Print ConvDate2String(Now())
     End Sub
+
+' ==================================================================
+' = 概要    正規表現検索する
+' = 引数    sTargetStr      String  [in]  検索対象文字列
+' = 引数    sSearchPattern  String  [in]  検索パターン
+' = 引数    oMatchResult    Object  [out] 検索結果
+' = 戻値    なし
+' = 覚書    なし
+' ==================================================================
+Public Function ExecRegExp( _
+    ByVal sTargetStr As String, _
+    ByVal sSearchPattern As String, _
+    ByRef oMatchResult As Object, _
+    Optional ByVal bIgnoreCase As Boolean = True, _
+    Optional ByVal bGlobal As Boolean = True _
+)
+    Dim oRegExp As Object
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.IgnoreCase = bIgnoreCase
+    oRegExp.Global = bGlobal
+    oRegExp.Pattern = sSearchPattern
+    Set oMatchResult = oRegExp.Execute(sTargetStr)
+End Function
+    Private Sub Test_ExecRegExp()
+        '★
+    End Sub
+
+' ==================================================================
+' = 概要    数字 型変換(String→Long)
+' = 引数    sNum            String  [in]  数字(String型)
+' = 戻値                    Long          数字(Long型)
+' = 覚書    なし
+' ==================================================================
+Public Function NumConvStr2Lng( _
+    ByVal sNum As String _
+) As Long
+    NumConvStr2Lng = Asc(sNum) + 30913
+End Function
+    Private Sub Test_NumConvStr2Lng()
+        '★
+    End Sub
+
+' ==================================================================
+' = 概要    数字 型変換(Long→String)
+' = 引数    sNum            Long    [in]    数字(Long型)
+' = 戻値                    String          数字(String型)
+' = 覚書    なし
+' ==================================================================
+Public Function NumConvLng2Str( _
+    ByVal lNum As Long _
+) As String
+    NumConvLng2Str = Chr(lNum - 30913)
+End Function
+    Private Sub Test_NumConvLng2Str()
+        '★
+    End Sub

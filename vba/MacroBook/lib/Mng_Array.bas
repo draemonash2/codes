@@ -172,20 +172,20 @@ End Function
         Call Test_InsRepToStrArraySub02(asBaseArr, asRepArr): Call InsRepToStrArray(2, asRepArr, asBaseArr)
         Call Test_InsRepToStrArraySub02(asBaseArr, asRepArr): Call InsRepToStrArray(3, asRepArr, asBaseArr)
        'Call Test_InsRepToStrArraySub02(asBaseArr, asRepArr): Call InsRepToStrArray(4, asRepArr, asBaseArr)
-
+        
         'asBaseArr(0),asRepArr(3)
         Call Test_InsRepToStrArraySub03(asBaseArr, asRepArr): Call InsRepToStrArray(0, asRepArr, asBaseArr)
        'Call Test_InsRepToStrArraySub03(asBaseArr, asRepArr): Call InsRepToStrArray(1, asRepArr, asBaseArr)
-
+        
         'asBaseArr(0),asRepArr(0)
         Call Test_InsRepToStrArraySub04(asBaseArr, asRepArr): Call InsRepToStrArray(0, asRepArr, asBaseArr)
        'Call Test_InsRepToStrArraySub04(asBaseArr, asRepArr): Call InsRepToStrArray(1, asRepArr, asBaseArr)
-
+        
         'asBaseArr(2),asRepArr(未初期化)
         Call Test_InsRepToStrArraySub05(asBaseArr, asRepArr05): Call InsRepToStrArray(0, asRepArr05, asBaseArr)
         Call Test_InsRepToStrArraySub05(asBaseArr, asRepArr05): Call InsRepToStrArray(1, asRepArr05, asBaseArr)
         Call Test_InsRepToStrArraySub05(asBaseArr, asRepArr05): Call InsRepToStrArray(2, asRepArr05, asBaseArr)
-
+        
     End Function
         Private Function Test_InsRepToStrArraySub01( _
             ByRef asBaseArr() As String, _
@@ -245,7 +245,6 @@ End Function
             asBaseArr(2) = "2"
             'asRepArr(0) = "a"
         End Function
-
 
 ' ============================================
 ' = 概要    挿入先配列の中身からキーワードを検索して挿入配列で置換する
@@ -366,4 +365,71 @@ End Function
         End If
         
         Call OutputTxtFile(objWshShell.SpecialFolders("Desktop") & "\" & "temp2.vbs", asBaseFileLine)
+    End Sub
+
+' ==================================================================
+' = 概要    セル範囲（Range型）を文字列配列（String配列型）に変換する。
+' =         主にセル範囲をテキストファイルに出力する時に使用する。
+' = 引数    rCellsRange             Range   [in]  対象のセル範囲
+' = 引数    asLine()                String  [out] 文字列返還後のセル範囲
+' = 引数    bIsInvisibleCellIgnore  String  [in]  非表示セル無視実行可否
+' = 引数    sDelimiter              String  [in]  区切り文字
+' = 戻値    なし
+' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
+' ==================================================================
+Public Function ConvRange2Array( _
+    ByRef rCellsRange As Range, _
+    ByRef asLine() As String, _
+    ByVal bIsInvisibleCellIgnore As Boolean, _
+    ByVal sDelimiter As String _
+)
+    Dim lLineIdx As Long
+    lLineIdx = 0
+    ReDim Preserve asLine(lLineIdx)
+    
+    Dim lRowIdx As Long
+    For lRowIdx = 1 To rCellsRange.Rows.Count
+        Dim lIgnoreCnt As Long
+        lIgnoreCnt = 0
+        Dim lClmIdx As Long
+        For lClmIdx = 1 To rCellsRange.Columns.Count
+            Dim sCurCellValue As String
+            sCurCellValue = rCellsRange(lRowIdx, lClmIdx).Value
+            '非表示セルは無視する
+            Dim bIsIgnoreCurExec As Boolean
+            If bIsInvisibleCellIgnore = True Then
+                If rCellsRange(lRowIdx, lClmIdx).EntireRow.Hidden = True Or _
+                   rCellsRange(lRowIdx, lClmIdx).EntireColumn.Hidden = True Then
+                    bIsIgnoreCurExec = True
+                Else
+                    bIsIgnoreCurExec = False
+                End If
+            Else
+                bIsIgnoreCurExec = False
+            End If
+            
+            If bIsIgnoreCurExec = True Then
+                lIgnoreCnt = lIgnoreCnt + 1
+            Else
+                If lClmIdx = 1 Then
+                    asLine(lLineIdx) = sCurCellValue
+                Else
+                    asLine(lLineIdx) = asLine(lLineIdx) & sDelimiter & sCurCellValue
+                End If
+            End If
+        Next lClmIdx
+        If lIgnoreCnt = rCellsRange.Columns.Count Then '非表示行は行加算しない
+            'Do Nothing
+        Else
+            If lRowIdx = rCellsRange.Rows.Count Then '最終行は行加算しない
+                'Do Nothing
+            Else
+                lLineIdx = lLineIdx + 1
+                ReDim Preserve asLine(lLineIdx)
+            End If
+        End If
+    Next lRowIdx
+End Function
+    Private Sub Test_ConvRange2Array()
+        '★
     End Sub

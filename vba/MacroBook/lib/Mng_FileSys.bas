@@ -566,6 +566,47 @@ End Function
         MsgBox sOutStr
     End Sub
 
+Public Function GetFileNotExistPath( _
+    ByVal sTrgtPath As String _
+) As String
+    Dim lIdx As Long
+    Dim objFSO As Object
+    Dim sFileParDirPath As String
+    Dim sFileBaseName As String
+    Dim sFileExtName As String
+    Dim sCreFilePath As String
+    Dim bIsTrgtPathExists As Boolean
+    
+    lIdx = 0
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    sCreFilePath = sTrgtPath
+    bIsTrgtPathExists = False
+    Do While objFSO.FileExists(sCreFilePath)
+        bIsTrgtPathExists = True
+        lIdx = lIdx + 1
+        sFileParDirPath = objFSO.GetParentFolderName(sTrgtPath)
+        sFileBaseName = objFSO.GetBaseName(sTrgtPath) & "_" & String(3 - Len(CStr(lIdx)), "0") & CStr(lIdx)
+        sFileExtName = objFSO.GetExtensionName(sTrgtPath)
+        If sFileExtName = "" Then
+            sCreFilePath = sFileParDirPath & "\" & sFileBaseName
+        Else
+            sCreFilePath = sFileParDirPath & "\" & sFileBaseName & "." & sFileExtName
+        End If
+    Loop
+    GetFileNotExistPath = sCreFilePath
+End Function
+    Private Sub Test_GetFileNotExistPath()
+        Dim sOutStr As String
+        sOutStr = ""
+        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
+        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
+        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
+        MsgBox sOutStr
+    End Sub
+
 '*********************************************************************
 '* ÉçÅ[ÉJÉãä÷êîíËã`
 '*********************************************************************
@@ -603,48 +644,4 @@ End Function
         MsgBox sOutStr
     End Sub
 
-Private Function GetFileNotExistPath( _
-    ByVal sTrgtPath As String _
-) As String
-    Dim lIdx As Long
-    Dim objFSO As Object
-    Dim sFileParDirPath As String
-    Dim sFileBaseName As String
-    Dim sFileExtName As String
-    Dim sCreFilePath As String
-    Dim bIsTrgtPathExists As Boolean
-    
-    lIdx = 0
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sCreFilePath = sTrgtPath
-    bIsTrgtPathExists = False
-    Do While objFSO.FileExists(sCreFilePath)
-        bIsTrgtPathExists = True
-        lIdx = lIdx + 1
-        sFileParDirPath = objFSO.GetParentFolderName(sTrgtPath)
-        sFileBaseName = objFSO.GetBaseName(sTrgtPath) & "_" & String(3 - Len(CStr(lIdx)), "0") & CStr(lIdx)
-        sFileExtName = objFSO.GetExtensionName(sTrgtPath)
-        If sFileExtName = "" Then
-            sCreFilePath = sFileParDirPath & "\" & sFileBaseName
-        Else
-            sCreFilePath = sFileParDirPath & "\" & sFileBaseName & "." & sFileExtName
-        End If
-    Loop
-    If bIsTrgtPathExists = True Then
-        GetFileNotExistPath = sCreFilePath
-    Else
-        GetFileNotExistPath = ""
-    End If
-End Function
-    Private Sub Test_GetFileNotExistPath()
-        Dim sOutStr As String
-        sOutStr = ""
-        sOutStr = sOutStr & vbNewLine & "*** test start! ***"
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba")
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSys.bas")
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\MacroBook\lib\FileSy.bas")
-        sOutStr = sOutStr & vbNewLine & GetFileNotExistPath("C:\codes\vba\AddIns\UserDefFuncs.bas")
-        sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
-        MsgBox sOutStr
-    End Sub
 
