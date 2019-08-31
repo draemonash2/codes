@@ -73,6 +73,8 @@ MsgBox "リポジトリへのショートカットを作成しました。"
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        抽出文字列
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ExtractTailWord( _
     ByVal sStr, _

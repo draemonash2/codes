@@ -8,6 +8,8 @@ Option Explicit
 ' oLog.Puts "test"
 ' Set oLog = Nothing
 
+' = ˆË‘¶    ‚È‚µ
+' = Š‘®    Log.vbs
 Class LogMng
     Private gbLogFileEnable
     Private goLogFile

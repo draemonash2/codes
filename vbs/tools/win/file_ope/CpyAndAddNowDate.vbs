@@ -149,6 +149,8 @@ End If
 ' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
 ' = 戻値                String        日時（YYYYMMDD-HHMMSS）
 ' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateTime _

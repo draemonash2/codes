@@ -30,9 +30,10 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
-Call Include( "C:\codes\vbs\_lib\Windows.vbs" )
-Call Include( "C:\codes\vbs\_lib\Log.vbs" )
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileOrFolder()
+                                                    'DeleteEmptyFolder()
+Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'ExecRunas()
+Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
 
 '==========================================================
 '= ñ{èàóù
@@ -150,6 +151,8 @@ Function Include( _
     Set objFSO = Nothing
 End Function
 
+' = àÀë∂    Ç»Çµ
+' = èäëÆ    RestoreSettingFiles.vbs
 Function ErrorCheck( _
     ByVal sErrorPlace _
 )

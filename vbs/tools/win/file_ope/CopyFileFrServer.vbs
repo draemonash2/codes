@@ -219,6 +219,8 @@ End If
 ' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
 ' = 戻値                String          日時（例：20170805-125958）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateRaw _
@@ -254,6 +256,8 @@ End Function
 ' = 戻値                String        フォルダ選択結果
 ' = 覚書    ・存在しないフォルダパスを選択した場合、空文字列を返却する
 ' =         ・キャンセルを押下した場合、空文字列を返却する
+' = 依存    なし
+' = 所属    FileSystem.vbs
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
     ByVal sInitPath _
@@ -308,6 +312,8 @@ End Function
         MsgBox ShowFolderSelectDialog( sInitPath )
     End Sub
 
+' = 依存    なし
+' = 所属    CopyFileFrServer.vbs
 Public Function SetFileAttributes( _
     ByVal sFilePath, _
     ByVal sDateRaw _

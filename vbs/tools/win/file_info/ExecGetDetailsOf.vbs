@@ -6,7 +6,7 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetDetailsOfGetDetailsOf()
 
 '==========================================================
 '= ñ{èàóù

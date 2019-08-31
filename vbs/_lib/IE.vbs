@@ -1,5 +1,8 @@
 Option Explicit
 
+' = ˆË‘¶	‚È‚µ
+' = Š‘®	IE.vbs
+
 ' ’è”‚ÍŽÀŒ±‚µ‚Ä“±‚«o‚µ‚½‚à‚Ì
 Const IE_LINE_HEIGHT_RATIO = 1.22
 Const IE_WIN_LINE_HEIGHT_RATIO = 1.27

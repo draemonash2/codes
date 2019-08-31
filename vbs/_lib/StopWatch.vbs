@@ -4,6 +4,8 @@ Private Const STPWTCH_ONEDAYSEC = 86400 '60[s] * 60[m] * 24[h]
 Private Const STPWTCH_ONEHOURSEC = 3600 '60[s] * 60[m]
 Private Const STPWTCH_ONEMINSEC = 60    '60[s]
 
+' = 依存    なし
+' = 所属    StopWatch.vbs
 '時間計測＆時刻取得（数十ミリ秒程度の誤差有り）
 Class StopWatch
     Dim gbIsMeasuring

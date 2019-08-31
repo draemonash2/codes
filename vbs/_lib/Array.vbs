@@ -5,6 +5,8 @@ Option Explicit
 ' = 引数    asOutTrgtArray  String()    [in]    出力対象配列
 ' = 戻値    なし
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Array.vbs
 ' ==================================================================
 Public Function OutputAllElement2Console( _
     ByRef asOutTrgtArray _
@@ -24,6 +26,8 @@ End Function
 ' = 戻値    なし
 ' = 覚書    ログファイル名は実行スクリプト名の拡張子を「.txt」に
 ' =         変えたものを出力する。
+' = 依存    なし
+' = 所属    Array.vbs
 ' ==================================================================
 Public Function OutputAllElement2LogFile( _
     ByRef asOutTrgtArray _
@@ -63,6 +67,8 @@ End Function
 ' = 引数    asChkTrgtArray  String()    [in]    確認対象配列
 ' = 戻値                    Bool                結果（True:定義済み、False:未定義）
 ' = 覚書    配列でない場合、False が返却される。
+' = 依存    なし
+' = 所属    Array.vbs
 ' ==================================================================
 Public Function IsArrayDefined( _
     ByRef asChkTrgtArray _

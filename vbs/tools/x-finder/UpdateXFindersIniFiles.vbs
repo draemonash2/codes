@@ -5,9 +5,10 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\Log.vbs" )
-Call Include( "C:\codes\vbs\_lib\X-Finder.vbs" )
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
+Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
+Call Include( "C:\codes\vbs\_lib\X-Finder.vbs" )    'UpdateIniFile()
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileList()
+                                                    'GetFileOrFolder()
 
 '==========================================================
 '= ñ{èàóù

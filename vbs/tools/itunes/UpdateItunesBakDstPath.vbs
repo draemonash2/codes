@@ -5,7 +5,7 @@ Option Explicit
 '==========================================================
 Dim sMyDirPath
 sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-Call Include( "C:\codes\vbs\_lib\Windows.vbs" )
+Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'RunasCheck()
 
 '==========================================================
 '= ê›íËíl

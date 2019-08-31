@@ -11,6 +11,9 @@ Option Explicit
 ' = 引数    sItemExt        String  [in]    追加アイテム（拡張）
 ' = 戻値                    String              フォルダパス
 ' = 覚書    X-Finder の初期設定 ini ファイルでは使えないことに注意！
+' = 依存    X-Finder.vbs/TextFile2VariantArray()
+' =         X-Finder.vbs/GetTailIdx()
+' = 所属    X-Finder.vbs
 ' ==================================================================
 Public Function UpdateIniFile( _
     ByVal sTrgtIniPath, _
@@ -92,6 +95,8 @@ End Function
 '*********************************************************************
 '* ローカル関数定義
 '*********************************************************************
+' = 依存    なし
+' = 所属    X-Finder.vbs
 Private Function GetTailIdx( _
     ByRef vTextAll _
 )
@@ -120,6 +125,8 @@ End Function
         MsgBox sOutStr
     End Sub
 
+' = 依存    なし
+' = 所属    X-Finder.vbs
 Private Function TextFile2VariantArray( _
     ByVal sTrgtPath _
 )

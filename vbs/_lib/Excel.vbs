@@ -2,6 +2,8 @@ Option Explicit
 
 'マクロ実行
 '引数は未対応
+' = 依存    なし
+' = 所属    Excel.vbs
 Public Function ExecExcelMacro( _
     ByVal sExcelFilePath, _
     ByVal sMacroName _
@@ -64,6 +66,8 @@ End Function
     End Sub
 
 '新しいエクセルファイルを作成する
+' = 依存    なし
+' = 所属    Excel.vbs
 Public Function CreateNewExcelFile( _
     ByVal sBookPath _
 )
@@ -112,6 +116,8 @@ End Function
     End Sub
 
 'Excel シート印刷
+' = 依存    なし
+' = 所属    Excel.vbs
 Public Function PrintExcelSheet( _
     ByVal sTrgtBookPath, _
     ByVal sTrgtSheetName, _

@@ -18,12 +18,13 @@ Dim objWshShell
 Dim sCurDir
 Set objWshShell = WScript.CreateObject( "WScript.Shell" )
 sCurDir = objWshShell.CurrentDirectory
-Call Include( "C:\codes\vbs\_lib\String.vbs" )
-Call Include( "C:\codes\vbs\_lib\StopWatch.vbs" )
-Call Include( "C:\codes\vbs\_lib\ProgressBarIE.vbs" )
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
-Call Include( "C:\codes\vbs\_lib\iTunes.vbs" )
-Call Include( "C:\codes\vbs\_lib\Array.vbs" )
+Call Include( "C:\codes\vbs\_lib\String.vbs" )          'GetDirPath()
+                                                        'GetFileName()
+Call Include( "C:\codes\vbs\_lib\StopWatch.vbs" )       'class StopWatch
+Call Include( "C:\codes\vbs\_lib\ProgressBarIE.vbs" )   'class ProgressBar
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )      'GetFileList2()
+Call Include( "C:\codes\vbs\_lib\iTunes.vbs" )          '★←インクルードいる？
+Call Include( "C:\codes\vbs\_lib\Array.vbs" )           '★←インクルードいる？
 
 ' ******************************************
 ' * 事前処理                               *

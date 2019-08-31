@@ -1,5 +1,7 @@
 Option Explicit
 
+' = àÀë∂    Ç»Çµ
+' = èäëÆ    iTunes.vbs
 Function GetObjFromPerID( sID )
     Set GetObjFromPerID = objItunes.LibraryPlaylist.Tracks.ItemByPersistentID( _
                             Eval( "&H" & Left( sID, 8 ) ), _
@@ -7,6 +9,8 @@ Function GetObjFromPerID( sID )
                         )
 End Function
 
+' = àÀë∂    Ç»Çµ
+' = èäëÆ    iTunes.vbs
 Function GetPerIDFromObj( objTrack )
     GetPerIDFromObj = Right( "0000000" & Hex( objItunes.ITObjectPersistentIDHigh( objTrack ) ), 8 ) & _
                       Right( "0000000" & Hex( objItunes.ITObjectPersistentIDLow( objTrack ) ), 8 )

@@ -6,6 +6,8 @@ Option Explicit
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        抽出文字列
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ExtractTailWord( _
     ByVal sStr, _
@@ -44,6 +46,8 @@ End Function
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        除去文字列
 ' = 覚書    なし
+' = 依存    String.vbs/ExtractTailWord()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function RemoveTailWord( _
     ByVal sStr, _
@@ -91,6 +95,8 @@ End Function
 ' = 戻値                String        フォルダパス
 ' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
 ' =         が指定可能
+' = 依存    String.vbs/RemoveTailWord()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function GetDirPath( _
     ByVal sFilePath _
@@ -119,6 +125,8 @@ End Function
 ' = 戻値                String        ファイル名
 ' = 覚書    ローカルファイルパス（例：c:\test）や URL （例：https://test）
 ' =         が指定可能
+' = 依存    String.vbs/ExtractTailWord()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function GetFileName( _
     ByVal sFilePath _
@@ -147,6 +155,9 @@ End Function
 ' = 戻値                String        拡張子
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    String.vbs/ExtractTailWord()
+' =         String.vbs/GetFileName()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function GetFileExt( _
     ByVal sFilePath _
@@ -178,6 +189,9 @@ End Function
 ' = 戻値                String        ファイルベース名
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    String.vbs/RemoveTailWord()
+' =         String.vbs/GetFileName()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function GetFileBase( _
     ByVal sFilePath _
@@ -209,6 +223,11 @@ End Function
 ' =                                     4) ファイル拡張子
 ' = 戻値                String        抽出した一部
 ' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' = 依存    String.vbs/GetDirPath()
+' =         String.vbs/GetFileName()
+' =         String.vbs/GetFileBase()
+' =         String.vbs/GetFileExt()
+' = 所属    String.vbs
 ' ==================================================================
 Public Function GetFilePart( _
     ByVal sFilePath, _
@@ -240,6 +259,8 @@ End Function
 ' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
 ' = 戻値                String        日時（YYYYMMDD-HHMMSS）
 ' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateTime _
@@ -275,6 +296,8 @@ End Function
 ' =         バイト数を返却するため半角文字も２文字としてカウントする。
 ' =           （例：LenB("ファイルサイズ ") ⇒ 16）
 ' =         そのため、半角文字を１文字としてカウントする本関数を用意。
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function LenByte( _
     ByVal sInStr _

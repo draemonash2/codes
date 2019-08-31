@@ -1,5 +1,7 @@
 Option Explicit
 
+' = 依存	なし
+' = 所属	Windows.vbs
 Private Function RunasCheck()
     Dim flgRunasMode
     Dim objWMI, osInfo, flag, objShell, os
@@ -48,6 +50,8 @@ Const osWinXP = 5.1
 Const osWin7  = 6.1
 Const osWin8  = 6.2
 
+' = 依存	なし
+' = 所属	Windows.vbs
 Public Function GetOSVersion
     Dim objWMI, osInfo, os
     Set objWMI = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
@@ -57,6 +61,8 @@ Public Function GetOSVersion
     Next
 End Function
 
+' = 依存	なし
+' = 所属	Windows.vbs
 ' 管理者に昇格して実行する
 Public Function ExecRunas( _
     ByVal bIsExecGui _
@@ -99,6 +105,8 @@ Public Function ExecRunas( _
     ExecRunas = True
 End Function
 
+' = 依存	なし
+' = 所属	Windows.vbs
 'Dos コマンド実行
 Public Function ExecDosCmd( _
     ByVal sCommand _

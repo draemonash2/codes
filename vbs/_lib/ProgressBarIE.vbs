@@ -8,6 +8,8 @@ Private Const PROGBAR_ONEDAYSEC = 86400 '60[s] * 60[m] * 24[h]
 Private Const PROGBAR_ONEHOURSEC = 3600 '60[s] * 60[m]
 Private Const PROGBAR_ONEMINSEC = 60    '60[s]
 
+' = àÀë∂	Ç»Çµ
+' = èäëÆ	ProgressBarIE.vbs
 Class ProgressBar
     Dim gobjExplorer
     Dim glWinHeight

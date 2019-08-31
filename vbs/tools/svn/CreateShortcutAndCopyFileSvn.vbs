@@ -198,6 +198,8 @@ End If
 ' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
 ' = 戻値                String          日時（例：20170805_125958）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    CreateShortcutAndCopyFileSvn.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateRaw _

@@ -152,6 +152,8 @@ End If
 ' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
 ' = 戻値                String        日時（YYYYMMDD-HHMMSS）
 ' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' = 依存    なし
+' = 所属    String.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateTime _
@@ -205,6 +207,8 @@ End Function
 ' =         32 （0b00100000）   前回のバックアップ以降に変更されていれば1   Archive     Get/Set
 ' =         64 （0b01000000）   リンク／ショートカット                      Alias       Get
 ' =         128（0b10000000）   圧縮ファイル                                Compressed  Get
+' = 依存    なし
+' = 所属    FileSystem.vbs
 ' ==================================================================
 Public Function GetFileInfo( _
     ByVal sTrgtPath, _
@@ -274,6 +278,8 @@ End Function
 'しかし、以下のメソッドにて変更可能なため、実装しない
 '  ファイル名： objFSO.MoveFile
 '  属性： objFSO.GetFile( "C:\codes\a.txt" ).Attributes
+' = 依存    なし
+' = 所属    FileSystem.vbs
 Public Function SetFileInfo( _
    ByVal sTrgtPath, _
    ByVal lSetInfoType, _
@@ -313,6 +319,8 @@ End Function
 ' =         32 （0b00100000）   前回のバックアップ以降に変更されていれば1   Archive     Get/Set
 ' =         64 （0b01000000）   リンク／ショートカット                      Alias       Get
 ' =         128（0b10000000）   圧縮ファイル                                Compressed  Get
+' = 依存    なし
+' = 所属    FileSystem.vbs
 ' ==================================================================
 Public Function GetFolderInfo( _
     ByVal sTrgtPath, _
