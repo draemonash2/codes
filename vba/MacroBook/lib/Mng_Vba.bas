@@ -1,13 +1,13 @@
 Attribute VB_Name = "Mng_Vba"
 Option Explicit
- 
-' vba manage library v1.0
- 
+
+' vba manage library v1.01
+
 Private Type T_INPUT_TYPE
     lType As Long
     bytXi(0 To 23) As Byte
 End Type
- 
+
 Private Type T_KEY_BD_INPUT
     iVk As Integer
     iScan As Integer
@@ -15,15 +15,23 @@ Private Type T_KEY_BD_INPUT
     lTime As Long
     lExtraInfo As Long
 End Type
- 
+
 Declare Function SendInput Lib "user32" (ByVal nInputs As Long, pInputs As T_INPUT_TYPE, ByVal cbSize As Long) As Long
 Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
- 
+
 Private Const INPUT_KEYBOARD = 1
 Private Const KEYEVENTF_KEYDOWN = 0
 Private Const KEYEVENTF_KEYUP = &H2
 Private Const VK_CONTROL = &H11
- 
+
+' ==================================================================
+' = 概要    イミディエイトウィンドウクリア
+' = 引数    なし
+' = 戻値    なし
+' = 依存    user32/SendInput()
+' = 依存    kernel32/CopyMemory()
+' = 所属    Mng_Vba.bas
+' ==================================================================
 Public Function ClearImmidiateWindow()
     Dim atInputEvents(0 To 7) As T_INPUT_TYPE
     Dim tKeyEvent As T_KEY_BD_INPUT

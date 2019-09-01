@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Itunes"
 Option Explicit
 
-' itunes libary v1.1
+' itunes libary v1.11
 
 Public gvItunes As Variant
 Public gvPlayList As Variant
@@ -24,6 +24,8 @@ End Function
 ' = 引数    なし
 ' = 戻値                String          バックアップディレクトリパス
 ' = 覚書    なし
+' = 依存    Mng_FileSys.bas/CreateDirectry()
+' = 所属    Mng_Itunes.bas
 ' ==================================================================
 Public Function BackUpItunesPlaylist( _
     Optional ByVal sBackupDirName As String _
@@ -67,6 +69,8 @@ End Function
 ' = 戻値                  Boolean           取得結果
 ' = 覚書    指定したタグが見つからなかった場合、または、objTrack が
 ' =         空オブジェクトの場合、取得結果 False を返却する。
+' = 依存    なし
+' = 所属    Mng_Itunes.bas
 ' ==================================================================
 Public Function GetTagValue( _
     ByRef vTrack As Variant, _
@@ -169,6 +173,8 @@ End Function
 ' = 戻値                  Boolean           取得結果
 ' = 覚書    指定したタグが見つからなかった場合、または、objTrack が
 ' =         空オブジェクトの場合、取得結果 False を返却する。
+' = 依存    なし
+' = 所属    Mng_Itunes.bas
 ' ==================================================================
 Public Function SetTagValue( _
     ByVal vTrack As Variant, _
@@ -303,6 +309,10 @@ End Function
 ' =           使い方としては、本関数初回呼び出し前に FileSystem.bas の
 ' =           GetFileDetailInfoIndex() にて lInFileInfoTagIndex を取得して
 ' =           おいてから本関数を呼び出すとよい｡
+' = 依存    Mng_FileInfo.bas/GetFileDetailInfoIndex()
+' =         Mng_FileInfo.bas/GetFileDetailInfo()
+' =         Mng_Itunes.bas/SearchTrack()
+' = 所属    Mng_Itunes.bas
 ' ==================================================================
 Public Function GetTrackInfo( _
     ByVal sInTrgtPath As String, _
@@ -447,6 +457,8 @@ End Function
 ' = 引数    vTrack        Variant   [out]   トラック情報オブジェクト
 ' = 戻値                  Boolean           取得結果
 ' = 覚書    取得したいトラックが見つからなかった場合、取得結果 False を返却する。
+' = 依存    なし
+' = 所属    Mng_Itunes.bas
 ' ==================================================================
 Private Function SearchTrack( _
     ByVal sTrackName As String, _
@@ -503,22 +515,20 @@ End Function
         Call ItunesTerminate
     End Function
 
-Private Sub test()
-    Call ItunesInit
-    
-    Dim sTrgtPath As String
-    Dim bRet As Boolean
-    Dim sErrorDetail As String
-    Dim vTrackInfo As Variant
-    
-    sTrgtPath = "Z:\300_Musics\999_Other\test\test album\01 test track 1.mp3"
-    'sTrgtPath = "Z:\300_Musics\290_Reggae@Riddim\Jim Screechie\Riddim Mix (Jim Screechie Riddim).mp3"
-    bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
-    'vTrackInfo.Lyrics = "aaa"
-    Debug.Print vTrackInfo.Lyrics
-    
-    Call ItunesTerminate
-End Sub
-
-    
+'Private Sub test()
+'    Call ItunesInit
+'    
+'    Dim sTrgtPath As String
+'    Dim bRet As Boolean
+'    Dim sErrorDetail As String
+'    Dim vTrackInfo As Variant
+'    
+'    sTrgtPath = "Z:\300_Musics\999_Other\test\test album\01 test track 1.mp3"
+'    'sTrgtPath = "Z:\300_Musics\290_Reggae@Riddim\Jim Screechie\Riddim Mix (Jim Screechie Riddim).mp3"
+'    bRet = GetTrackInfo(sTrgtPath, vTrackInfo, sErrorDetail)
+'    'vTrackInfo.Lyrics = "aaa"
+'    Debug.Print vTrackInfo.Lyrics
+'    
+'    Call ItunesTerminate
+'End Sub
 

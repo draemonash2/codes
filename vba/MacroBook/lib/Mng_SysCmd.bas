@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_SysCmd"
 Option Explicit
 
-' system command library v1.0
+' system command library v1.01
 
 ' ==================================================================
 ' = 概要    コマンドを実行
@@ -9,6 +9,8 @@ Option Explicit
 ' = 戻値                String          標準出力
 ' = 覚書    なし
 ' = 依存    なし
+' = 依存    なし
+' = 所属    Mng_SysCmd.bas
 ' ==================================================================
 Private Function ExecDosCmd( _
     ByVal sCommand As String _
@@ -28,6 +30,15 @@ End Function
         MsgBox sBuf
     End Sub
 
+' ==================================================================
+' = 概要    コミットダイアログを表示
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 依存    Mng_SysCmd.bas/ExecDosCmd()
+' = 所属    Mng_SysCmd.bas
+' ==================================================================
 Private Function ShowCommitDialog()
     Dim sCmdRslt As String
     Dim sCmd As String

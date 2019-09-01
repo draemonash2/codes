@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Array"
 Option Explicit
 
-' array manage library v1.3
+' array manage library v1.31
 
 Public Enum E_INSERT_TYPE
     E_INSERT_TOP
@@ -9,12 +9,14 @@ Public Enum E_INSERT_TYPE
     E_INSERT_BOTTOM
 End Enum
 
-'===========================================================
-'= 概要：String 配列に対して Push する。
-'= 引数：sPushStr  [in]  String      Push する文字列
-'= 引数：asTrgtStr [Out] StrArray    Push 対象配列
-'= 戻値：なし
-'===========================================================
+' ==================================================================
+' = 概要    String 配列に対して Push する。
+' = 引数    sPushStr  [in]  String      Push する文字列
+' = 引数    asTrgtStr [Out] StrArray    Push 対象配列
+' = 戻値    なし
+' = 依存    なし
+' = 所属    Mng_Array.bas
+' ==================================================================
 Public Function PushToStrArray( _
     ByVal sPushStr As String, _
     ByRef asTrgtStr() As String _
@@ -31,13 +33,15 @@ Public Function PushToStrArray( _
     End If
 End Function
  
-'===========================================================
-'= 概要：String 配列に対して Pop する。
-'=       初期化なし配列が指定された場合、"" を返却する。
-'= 引数：asSrcStr [In]  StrArray    Pop 対象配列
-'= 引数：sPopStr  [Out] String      Pop した文字列
-'= 戻値：なし
-'===========================================================
+' ==================================================================
+' = 概要    String 配列に対して Pop する。
+' =         初期化なし配列が指定された場合、"" を返却する。
+' = 引数    asSrcStr [In]  StrArray    Pop 対象配列
+' = 引数    sPopStr  [Out] String      Pop した文字列
+' = 戻値    なし
+' = 依存    なし
+' = 所属    Mng_Array.bas
+' ==================================================================
 Public Function PopToStrArray( _
     ByRef asSrcStr() As String, _
     ByRef sPopStr As String _
@@ -56,24 +60,26 @@ Public Function PopToStrArray( _
     End If
 End Function
 
-'===========================================================
-'= 概要：String 配列に対して指定位置に配列を挿入する。
-'= 引数：eInsertType    [In]        Enum        挿入種別（先頭/中間/末尾）
-'= 引数：lTrgtIdx       [In]        Long        挿入したい要素番号
-'= 引数：asTrgtStr()    [Out]       String      挿入したい文字配列
-'= 引数：asBaseStr()    [In,Out]    String()    挿入元文字配列、挿入後の文字配列
-'= 戻値：なし
-'= 覚書：
-'=         例１）配列番号 0～3 の配列に対して、挿入種別「先頭」を
-'=               指定した場合
-'=                 0, 1, 2, 3 ⇒ _, 0, 1, 2, 3
-'=         例２）配列番号 0～3 の配列に対して、挿入種別「末尾」を
-'=               指定した場合
-'=                 0, 1, 2, 3 ⇒ 0, 1, 2, 3, _
-'=         例３）配列番号 0～3 の配列に対して、挿入種別「中間」、
-'=               lTrgtIdx = 2 を指定した場合
-'=                 0, 1, 2, 3 ⇒ 0, 1, _, 2, 3
-'===========================================================
+' ==================================================================
+' = 概要    String 配列に対して指定位置に配列を挿入する。
+' = 引数    eInsertType    [In]        Enum        挿入種別（先頭/中間/末尾）
+' = 引数    lTrgtIdx       [In]        Long        挿入したい要素番号
+' = 引数    asTrgtStr()    [Out]       String      挿入したい文字配列
+' = 引数    asBaseStr()    [In,Out]    String()    挿入元文字配列、挿入後の文字配列
+' = 戻値    なし
+' = 覚書    
+' =         例１）配列番号 0～3 の配列に対して、挿入種別「先頭」を
+' =               指定した場合
+' =                 0, 1, 2, 3 ⇒ _, 0, 1, 2, 3
+' =         例２）配列番号 0～3 の配列に対して、挿入種別「末尾」を
+' =               指定した場合
+' =                 0, 1, 2, 3 ⇒ 0, 1, 2, 3, _
+' =         例３）配列番号 0～3 の配列に対して、挿入種別「中間」、
+' =               lTrgtIdx = 2 を指定した場合
+' =                 0, 1, 2, 3 ⇒ 0, 1, _, 2, 3
+' = 依存    なし
+' = 所属    Mng_Array.bas
+' ==================================================================
 Public Function InsertToStrArray( _
     ByRef eInsertType As E_INSERT_TYPE, _
     ByRef lTrgtIdx As Long, _
@@ -83,28 +89,30 @@ Public Function InsertToStrArray( _
     'TODO：要実装
 End Function
 
-'===========================================================
-'= 概要：String 配列に対して指定位置に配列を挿入する。（指定要素置き換え）
-'= 引数：lTrgtIdx       [In]        Long        置き換えたい要素番号
-'= 引数：asRepArr()     [In]        String()    置き換えたい文字配列
-'= 引数：asBaseArr()    [In,Out]    String()    置き換え元文字配列、挿入後の文字配列
-'= 戻値：                           Boolean     置き換え結果
-'= 覚書：
-'=         例１）配列A（asBaseArr要素0～4）に対して、配列B（asRepArr要素0～2)、
-'=               lTrgtIdx = 2 を指定した場合
-'=                     0     1     2     3     4
-'=                 A = A[0], A[1], A[2], A[3], A[4]
-'=                 ↓
-'=                     0     1     2     3     4     5     6
-'=                 A = A[0], A[1], B[0], B[1], B[2], A[3], A[4]
-'=         例２）配列A（asBaseArr要素0～4）に対して、配列B（asRepArr空配列)、
-'=               lTrgtIdx = 2 を指定した場合
-'=                     0     1     2     3     4
-'=                 A = A[0], A[1], A[2], A[3], A[4]
-'=                 ↓
-'=                     0     1     2     3
-'=                 A = A[0], A[1], A[3], A[4]
-'===========================================================
+' ==================================================================
+' = 概要    String 配列に対して指定位置に配列を挿入する。（指定要素置き換え）
+' = 引数    lTrgtIdx       [In]        Long        置き換えたい要素番号
+' = 引数    asRepArr()     [In]        String()    置き換えたい文字配列
+' = 引数    asBaseArr()    [In,Out]    String()    置き換え元文字配列、挿入後の文字配列
+' = 戻値                               Boolean     置き換え結果
+' = 覚書    
+' =           例１）配列A（asBaseArr要素0～4）に対して、配列B（asRepArr要素0～2)、
+' =                 lTrgtIdx = 2 を指定した場合
+' =                       0     1     2     3     4
+' =                   A = A[0], A[1], A[2], A[3], A[4]
+' =                   ↓
+' =                       0     1     2     3     4     5     6
+' =                   A = A[0], A[1], B[0], B[1], B[2], A[3], A[4]
+' =           例２）配列A（asBaseArr要素0～4）に対して、配列B（asRepArr空配列)、
+' =                 lTrgtIdx = 2 を指定した場合
+' =                       0     1     2     3     4
+' =                   A = A[0], A[1], A[2], A[3], A[4]
+' =                   ↓
+' =                       0     1     2     3
+' =                   A = A[0], A[1], A[3], A[4]
+' = 依存    なし
+' = 所属    Mng_Array.bas
+' ==================================================================
 Public Function InsRepToStrArray( _
     ByRef lTrgtIdx As Long, _
     ByRef asRepArr() As String, _
@@ -246,7 +254,7 @@ End Function
             'asRepArr(0) = "a"
         End Function
 
-' ============================================
+' ==================================================================
 ' = 概要    挿入先配列の中身からキーワードを検索して挿入配列で置換する
 ' =         （テンプレートファイルを元にファイルを生成する際に使用する）
 ' = 引数    sKeyword        String      [in]    キーワード
@@ -256,7 +264,9 @@ End Function
 ' = 戻値                    Boolean             一致結果
 ' = 覚書    asBaseArr の中に同じ  が複数含まれている場合、
 ' =         先頭の sKeyword のみ置き換える
-' ============================================
+' = 依存    Mng_Array.bas/InsRepToStrArray()
+' = 所属    Mng_Array.bas
+' ==================================================================
 Public Function ReplaceArray( _
     ByVal sKeyword As String, _
     ByRef asRepArr() As String, _
@@ -376,6 +386,8 @@ End Function
 ' = 引数    sDelimiter              String  [in]  区切り文字
 ' = 戻値    なし
 ' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
+' = 依存    なし
+' = 所属    Mng_Array.bas
 ' ==================================================================
 Public Function ConvRange2Array( _
     ByRef rCellsRange As Range, _

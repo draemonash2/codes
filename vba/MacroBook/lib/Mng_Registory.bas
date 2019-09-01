@@ -1,6 +1,8 @@
 Attribute VB_Name = "Mng_Registory"
 Option Explicit
 
+' registory manage library v1.01
+
 '「REG_MULTI_SZ」と「REG_EXPAND_SZ」は非対応
 Public Enum E_REG_ENUM
     REG_SZ = 0
@@ -35,14 +37,39 @@ Private gbIsRegWrite As Boolean
 '********************************************************************************
 '* 外部関数定義
 '********************************************************************************
+' ==================================================================
+' = 概要    レジストリ変更有効化
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_Registory.bas
+' ==================================================================
 Public Sub EnableRegWrite()
     gbIsRegWrite = True
 End Sub
 
+' ==================================================================
+' = 概要    レジストリ変更無効化
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_Registory.bas
+' ==================================================================
 Public Sub DisableRegWrite()
     gbIsRegWrite = False
 End Sub
 
+' ==================================================================
+' = 概要    レジストリ変更
+' = 引数    sRegFileTitle   [in]    String          ファイル名
+' = 引数    tRegStruct      [in]    T_REG_STRUCT    値、キー
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    Mng_Registory.bas/GetRegKeysText()
+' = 所属    Mng_Registory.bas
+' ==================================================================
 Public Sub SetRegistry( _
     ByVal sRegFileTitle As String, _
     ByRef tRegStruct As T_REG_STRUCT _
@@ -52,7 +79,7 @@ Public Sub SetRegistry( _
     sRegFilePath = Environ("tmp") & "\" & sRegFileTitle & ".reg"
     Debug.Print sRegFilePath
     Open sRegFilePath For Output As #1
-
+    
     Dim sOutText As String
     sOutText = ""
     sOutText = sOutText & "Windows Registry Editor Version 5.00" & vbCrLf & vbCrLf
@@ -132,6 +159,14 @@ End Sub
 '********************************************************************************
 '* 内部関数定義
 '********************************************************************************
+' ==================================================================
+' = 概要    レジストリ 値取得
+' = 引数    atRegKeys       [in]    T_REG_KEYS()    キー
+' = 戻値                    [out]   String          値
+' = 覚書    なし
+' = 依存    Mng_Registory.bas/GetRegValuesText()
+' = 所属    Mng_Registory.bas
+' ==================================================================
 Private Function GetRegKeysText( _
     ByRef atRegKeys() As T_REG_KEYS _
 ) As String
@@ -154,6 +189,14 @@ Private Function GetRegKeysText( _
     GetRegKeysText = sOutText
 End Function
 
+' ==================================================================
+' = 概要    レジストリ キー取得
+' = 引数    atRegValues     [in]    T_REG_VALUES()  値
+' = 戻値                    [out]   String          キー
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_Registory.bas
+' ==================================================================
 Private Function GetRegValuesText( _
     ByRef atRegValues() As T_REG_VALUES _
 ) As String

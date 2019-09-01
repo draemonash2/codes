@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_String"
 Option Explicit
 
-' string manage library v1.4
+' string manage library v1.41
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
@@ -9,6 +9,8 @@ Option Explicit
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        抽出文字列
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ExtractTailWord( _
     ByVal sStr As String, _
@@ -48,6 +50,8 @@ End Function
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        除去文字列
 ' = 覚書    なし
+' = 依存    Mng_String.bas/ExtractTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function RemoveTailWord( _
     ByVal sStr As String, _
@@ -101,6 +105,8 @@ End Function
 ' =         変えることが出来る｡
 ' =            True  : sFilePath を返却
 ' =            False : エラー値（xlErrNA）を返却
+' = 依存    Mng_String.bas/RemoveTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetDirPath( _
     ByVal sFilePath As String, _
@@ -147,6 +153,8 @@ End Function
 ' =         変えることが出来る｡
 ' =            True  : sFilePath を返却
 ' =            False : エラー値（xlErrNA）を返却
+' = 依存    Mng_String.bas/ExtractTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileName( _
     ByVal sFilePath As String, _
@@ -188,6 +196,9 @@ End Function
 ' = 戻値                String        拡張子
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    Mng_String.bas/ExtractTailWord()
+' =         Mng_String.bas/GetFileName()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileExt( _
     ByVal sFilePath As String _
@@ -218,6 +229,9 @@ End Function
 ' = 戻値                String        ファイルベース名
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    Mng_String.bas/RemoveTailWord()
+' =         Mng_String.bas/GetFileName()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileBase( _
     ByVal sFilePath As String _
@@ -248,6 +262,11 @@ End Function
 ' =                                     4) ファイル拡張子
 ' = 戻値                String        抽出した一部
 ' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' = 依存    Mng_String.bas/GetDirPath()
+' =         Mng_String.bas/GetFileName()
+' =         Mng_String.bas/GetFileBase()
+' =         Mng_String.bas/GetFileExt()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFilePart( _
     ByVal sFilePath As String, _
@@ -278,6 +297,8 @@ End Function
 ' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
 ' = 戻値                String        日時（YYYYMMDD-HHMMSS）
 ' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ConvDate2String( _
     ByVal sDateTime As String _
@@ -301,6 +322,8 @@ End Function
 ' = 引数    oMatchResult    Object  [out] 検索結果
 ' = 戻値    なし
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ExecRegExp( _
     ByVal sTargetStr As String, _
@@ -326,6 +349,8 @@ End Function
 ' = 引数    sNum            String  [in]  数字(String型)
 ' = 戻値                    Long          数字(Long型)
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function NumConvStr2Lng( _
     ByVal sNum As String _
@@ -341,6 +366,8 @@ End Function
 ' = 引数    sNum            Long    [in]    数字(Long型)
 ' = 戻値                    String          数字(String型)
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function NumConvLng2Str( _
     ByVal lNum As Long _
@@ -350,3 +377,4 @@ End Function
     Private Sub Test_NumConvLng2Str()
         '★
     End Sub
+

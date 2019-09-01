@@ -1,8 +1,18 @@
 Attribute VB_Name = "Mng_SendKeys"
 Option Explicit
 
+' sendkey manage library v1.01
+
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
+' ==================================================================
+' = 概要    待ち時間経過後にキーを送信する。
+' = 引数    sSendKeys   [in]  String    送信キー
+' = 引数    lWaitTime   [in]  Long      待ち時間
+' = 戻値    なし
+' = 依存    kernel32/Sleep()
+' = 所属    Mng_SendKeys.bas
+' ==================================================================
 Public Sub SendKeysBetweenWait( _
     ByVal sSendKeys As String, _
     ByVal lWaitTime As Long _

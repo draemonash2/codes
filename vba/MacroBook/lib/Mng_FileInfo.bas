@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileInfo"
 Option Explicit
 
-' file info libary v1.4
+' file info libary v1.41
 
 ' CreateFile 関数
 Private Declare Function CreateFile Lib "KERNEL32.DLL" Alias "CreateFileA" ( _
@@ -64,7 +64,14 @@ Private Const FILE_SHARE_READ As Long = &H1
 Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80
 Private Const OPEN_EXISTING As Long = 3
 
-' FileTime を取得する
+' ==================================================================
+' = 概要    FileTime を取得する
+' = 引数    dtSetting   [in]    Date    ★
+' = 戻値    なし
+' = 依存    KERNEL32.DLL/SystemTimeToFileTime()
+' =         KERNEL32.DLL/LocalFileTimeToFileTime()
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Private Function GetFileTime(ByVal dtSetting As Date) As FileTime
     Dim tSystemTime As SystemTime
     
@@ -87,7 +94,13 @@ Private Function GetFileTime(ByVal dtSetting As Date) As FileTime
     GetFileTime = tFileTime
 End Function
 
-' ファイルのハンドルを取得する
+' ==================================================================
+' = 概要    ファイルのハンドルを取得する
+' = 引数    stFilePath  [in]    String  ファイルパス
+' = 戻値                        Long    ファイルハンドル
+' = 依存    KERNEL32.DLL/CreateFile()
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Private Function GetFileHandle(ByVal stFilePath As String) As Long
     GetFileHandle = CreateFile( _
         stFilePath, GENERIC_READ Or GENERIC_WRITE, _
@@ -96,12 +109,17 @@ Private Function GetFileHandle(ByVal stFilePath As String) As Long
     )
 End Function
 
-' -------------------------------------------------------------------------------
-' 作成日時を指定した日付と時間に設定します。
-'
-' @Param stFilePath 作成日時を設定するファイルまでのパス。
-' @Param stCreateTime 作成日時に設定する日付と時間。
-' -------------------------------------------------------------------------------
+' ==================================================================
+' = 概要    作成日時を指定した日付と時間に設定します。
+' = 引数    stFilePath      [in]    String  ファイルパス
+' = 引数    stCreateTime    [in]    String  作成日時
+' = 戻値    なし
+' = 依存    Mng_FileInfo.bas/GetFileHandle()
+' =         Mng_FileInfo.bas/GetFileTime()
+' =         KERNEL32.DLL/SetFileTime()
+' =         KERNEL32.DLL/CloseHandle()
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function SetCreationTime( _
     ByVal stFilePath As String, _
     ByVal stCreateTime As String _
@@ -123,12 +141,17 @@ Public Function SetCreationTime( _
     End If
 End Function
 
-' -------------------------------------------------------------------------------
-' 更新日時を指定した日付と時間に設定します。
-'
-' @Param stFilePath 更新日時を設定するファイルまでのパス。
-' @Param stUpdateTime 更新日時に設定する日付と時間。
-' -------------------------------------------------------------------------------
+' ==================================================================
+' = 概要    更新日時を指定した日付と時間に設定します。
+' = 引数    stFilePath      [in]    String  ファイルパス
+' = 引数    stUpdateTime    [in]    String  更新日時
+' = 戻値    なし
+' = 依存    Mng_FileInfo.bas/GetFileHandle()
+' =         Mng_FileInfo.bas/GetFileTime()
+' =         KERNEL32.DLL/SetFileTime()
+' =         KERNEL32.DLL/CloseHandle()
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function SetLastWriteTime( _
     ByVal stFilePath As String, _
     ByVal stUpdateTime As String _
@@ -150,12 +173,17 @@ Public Function SetLastWriteTime( _
     End If
 End Function
 
-' -------------------------------------------------------------------------------
-' アクセス日時を指定した日付と時間に設定します。
-'
-' @Param stFilePath アクセス日時を設定するファイルまでのパス。
-' @Param stAccessTime アクセス日時に設定する日付と時間。
-' -------------------------------------------------------------------------------
+' ==================================================================
+' = 概要    アクセス日時を指定した日付と時間に設定します。
+' = 引数    stFilePath      [in]    String  ファイルパス
+' = 引数    stAccessTime    [in]    String  アクセス日時
+' = 戻値    なし
+' = 依存    Mng_FileInfo.bas/GetFileHandle()
+' =         Mng_FileInfo.bas/GetFileTime()
+' =         KERNEL32.DLL/SetFileTime()
+' =         KERNEL32.DLL/CloseHandle()
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function SetLastAccessTime( _
     ByVal stFilePath As String, _
     ByVal stAccessTime As String _
@@ -177,18 +205,39 @@ Public Function SetLastAccessTime( _
     End If
 End Function
 
+' ==================================================================
+' = 概要    作成日時取得
+' = 引数    sFilePath   [in]    String  ファイルパス
+' = 戻値                        String  作成日時
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function GetCreationTime( _
     ByVal sFilePath As String _
 ) As String
     GetCreationTime = CreateObject("Scripting.FileSystemObject").GetFile(sFilePath).DateCreated
 End Function
 
+' ==================================================================
+' = 概要    更新日時取得
+' = 引数    sFilePath   [in]    String  ファイルパス
+' = 戻値                        String  更新日時
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function GetLastWriteTime( _
     ByVal sFilePath As String _
 ) As String
     GetLastWriteTime = CreateObject("Scripting.FileSystemObject").GetFile(sFilePath).DateLastModified
 End Function
 
+' ==================================================================
+' = 概要    アクセス日時取得
+' = 引数    sFilePath   [in]    String  ファイルパス
+' = 戻値                        String  アクセス日時
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Function GetLastAccessTime( _
     ByVal sFilePath As String _
 ) As String
@@ -226,6 +275,8 @@ End Function
 ' =         32 （0b00100000）   前回のバックアップ以降に変更されていれば1   Archive     Get/Set
 ' =         64 （0b01000000）   リンク／ショートカット                      Alias       Get
 ' =         128（0b10000000）   圧縮ファイル                                Compressed  Get
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
 ' ==================================================================
 Public Function GetFileInfo( _
     ByVal sTrgtPath As String, _
@@ -332,6 +383,8 @@ End Function
 ' =         32 （0b00100000）   前回のバックアップ以降に変更されていれば1   Archive     Get/Set
 ' =         64 （0b01000000）   リンク／ショートカット                      Alias       Get
 ' =         128（0b10000000）   圧縮ファイル                                Compressed  Get
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
 ' ==================================================================
 Public Function GetFolderInfo( _
     ByVal sTrgtPath As String, _
@@ -425,6 +478,8 @@ End Function
 ' =                   Success!             : 取得成功
 ' =                   File is not exist!   : ファイルが見つからない
 ' =                   Get info type error! : ファイル詳細情報タイトルが見つからない
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
 ' ==================================================================
 Public Function GetFileDetailInfo( _
     ByVal sTrgtPath As String, _
@@ -509,6 +564,8 @@ End Function
 ' =         ただし、このエラーはlTagInfoIndexMaxが小さいことが理由で
 ' =         発生する可能性がある｡その場合､lTagInfoIndexMax を十分に
 ' =         大きくして実行すること｡
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
 ' ==================================================================
 Public Function GetFileDetailInfoIndex( _
     ByRef vFileInfoTitle As Variant, _
@@ -582,8 +639,15 @@ End Function
 ' ******************************************************************
 ' *** マクロ
 ' ******************************************************************
-'GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）の一覧を
-'デスクトップ配下に出力する
+' ==================================================================
+' = 概要    GetDetailsOf()の詳細情報（要素番号、タイトル情報、型名、データ）の
+' =         一覧をデスクトップ配下に出力する
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileInfo.bas
+' ==================================================================
 Public Sub GetDetailsOfGetDetailsOf()
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")

@@ -1,9 +1,20 @@
 Attribute VB_Name = "Mng_SpecialPaste"
 Option Explicit
 
+' specialpaste manage library v1.01
+
 Const EXEC_SEND_KEY As Boolean = False
 Const SENDKEY_SLEEPTIME As Long = 50
 
+' ==================================================================
+' = 概要    条件付き書式対応モード切り替え
+' = 引数    なし
+' = 戻値    なし
+' = 依存    Mng_SpecialPaste.bas/NewInsert()
+' =         Mng_SpecialPaste.bas/NewPaste()
+' =         Mng_SpecialPaste.bas/NewDelete()
+' = 所属    Mng_SpecialPaste.bas
+' ==================================================================
 Public Sub EnableSpetialKeyMode()
     MsgBox "以下のショートカットキーを「条件付き書式対応モード」に切り替えます。" & vbNewLine & _
            "・Shift + Ctrl + ""+""" & vbNewLine & _
@@ -15,6 +26,14 @@ Public Sub EnableSpetialKeyMode()
     Application.OnKey "^v", "NewPaste"
     Application.OnKey "^-", "NewDelete"
 End Sub
+
+' ==================================================================
+' = 概要    ノーマルモード切り替え
+' = 引数    なし
+' = 戻値    なし
+' = 依存    なし
+' = 所属    Mng_SpecialPaste.bas
+' ==================================================================
 Public Sub DisableSpetialKeyMode()
     MsgBox "以下のショートカットキーを「ノーマルモード」に切り替えます。" & vbNewLine & _
            "・Shift + Ctrl + ""+""" & vbNewLine & _
@@ -24,8 +43,15 @@ Public Sub DisableSpetialKeyMode()
     Application.OnKey "^v"
     Application.OnKey "^-"
 End Sub
+
+' ==================================================================
+' = 概要    挿入貼り付け
+' = 引数    なし
+' = 戻値    なし
+' = 依存    Mng_SendKeys.bas/SendKeysBetweenWait()
+' = 所属    Mng_SpecialPaste.bas
+' ==================================================================
 Private Sub NewInsert()
-    '挿入貼り付け処理を無効にする
     Select Case Application.CutCopyMode
         Case xlCopy
             MsgBox "挿入貼り付けは無効です。"
@@ -41,6 +67,14 @@ Private Sub NewInsert()
             End If
     End Select
 End Sub
+
+' ==================================================================
+' = 概要    挿入貼り付け
+' = 引数    なし
+' = 戻値    なし
+' = 依存    Mng_SendKeys.bas/SendKeysBetweenWait()
+' = 所属    Mng_SpecialPaste.bas
+' ==================================================================
 Private Sub NewPaste()
     Select Case Application.CutCopyMode
         Case xlCopy
@@ -76,6 +110,14 @@ Private Sub NewPaste()
             End If
     End Select
 End Sub
+
+' ==================================================================
+' = 概要    削除
+' = 引数    なし
+' = 戻値    なし
+' = 依存    Mng_SendKeys.bas/SendKeysBetweenWait()
+' = 所属    Mng_SpecialPaste.bas
+' ==================================================================
 Private Sub NewDelete()
     '「一行削除」時は「行挿入→二行削除」とする。
     '（一行のみの削除は条件付き書式が増殖されてしまうため）
@@ -104,3 +146,4 @@ Private Sub NewDelete()
         End If
     End If
 End Sub
+

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.31
+' file system library v1.32
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -21,13 +21,15 @@ Public Enum T_SYSOBJ_TYPE
 End Enum
   
 '参照設定「Microsoft ActiveX Data Objects 6.1 Liblary」をチェックすること！
-' ============================================
+' ==================================================================
 ' = 概要    ファイルの内容を配列に読み込む。
 ' = 引数    sFilePath   String   入力するファイルパス
 ' =         sCharSet    String   キャラクタセット
 ' = 戻値                String() ファイル内容
 ' = 覚書    なし
-' ============================================
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function InputTxtFile( _
     ByRef sFilePath As String, _
     Optional ByVal sCharSet As String = "shift_jis" _
@@ -60,13 +62,15 @@ Public Function InputTxtFile( _
     
 End Function
 
-' ============================================
+' ==================================================================
 ' = 概要    配列の内容をファイルに書き込む。
 ' = 引数    sFilePath     String  [in]  出力するファイルパス
 ' =         asFileLine()  String  [in]  出力するファイルの内容
 ' = 戻値    なし
 ' = 覚書    なし
-' ============================================
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function OutputTxtFile( _
     ByVal sFilePath As String, _
     ByRef asFileLine() As String, _
@@ -97,7 +101,14 @@ Public Function OutputTxtFile( _
     Set oTxtObj = Nothing
 End Function
 
-'フォルダが既に存在している場合は何もしない
+' ==================================================================
+' = 概要    ディレクトリを作成する。親ディレクトリも自動生成する。
+' = 引数    sDirPath    String  [in]  フォルダパス
+' = 戻値    なし
+' = 覚書    フォルダが既に存在している場合は何もしない
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function CreateDirectry( _
     ByVal sDirPath As String _
 )
@@ -121,7 +132,15 @@ Public Function CreateDirectry( _
     Set oFileSys = Nothing
 End Function
 
-'atPathList() にファイルリストが格納される。
+' ==================================================================
+' = 概要    ファイル/フォルダパス一覧を取得する
+' = 引数    sTrgtDir        String      [in]    対象フォルダ
+' = 引数    atPathList      T_PATH_LIST [out]   ファイル/フォルダパス一覧
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function GetFileList( _
     ByVal sTargetDir As String, _
     ByRef atPathList() As T_PATH_LIST _
@@ -177,6 +196,8 @@ End Function
 ' = 覚書    ・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
 ' =         ・asFileList は配列型ではなくバリアント型として定義する
 ' =           必要があることに注意！
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Public Function GetFileList2( _
     ByVal sTrgtDir, _
@@ -233,6 +254,14 @@ End Function
         Call GetFileList2("Z:\300_Musics", asFileList, 2)
     End Sub
 
+' ==================================================================
+' = 概要    ファイル/フォルダを判定する
+' = 引数    sChkTrgtPath    String          [in]    対象ファイルパス
+' = 戻値                    T_SYSOBJ_TYPE           ファイルorフォルダ
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function GetFileOrFolder( _
     ByVal sChkTrgtPath As String _
 ) As T_SYSOBJ_TYPE
@@ -257,6 +286,8 @@ End Function
 ' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
 ' = 戻値                String        フォルダ選択結果
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
     Optional ByVal sInitPath As String = "" _
@@ -302,7 +333,7 @@ End Function
 ' ==================================================================
 ' = 概要    ファイル（単一）選択ダイアログを表示する
 ' = 引数    sInitPath   String  [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters　  String  [in]  選択時のフィルタ（省略可）(※)
+' = 引数    sFilters    String  [in]  選択時のフィルタ（省略可）(※)
 ' = 戻値                String        ファイル選択結果
 ' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
 ' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
@@ -310,6 +341,8 @@ End Function
 ' =                    ・ファイル種別と拡張子は"/"で区切る
 ' =                    ・フィルタが複数ある場合、","で区切る
 ' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' = 依存    Mng_FileSys.bas/SetDialogFilters()
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFileSelectDialog( _
     Optional ByVal sInitPath As String = "", _
@@ -365,7 +398,7 @@ End Function
 ' = 概要    ファイル（複数）選択ダイアログを表示する
 ' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
 ' = 引数    sInitPath       String      [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters　      String      [in]  選択時のフィルタ（省略可）(※)
+' = 引数    sFilters        String      [in]  選択時のフィルタ（省略可）(※)
 ' = 戻値    なし
 ' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
 ' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
@@ -373,6 +406,8 @@ End Function
 ' =                    ・ファイル種別と拡張子は"/"で区切る
 ' =                    ・フィルタが複数ある場合、","で区切る
 ' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
+' = 依存    Mng_FileSys.bas/SetDialogFilters()
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFilesSelectDialog( _
     ByRef asSelectedFiles() As String, _
@@ -438,14 +473,21 @@ End Function
         Next lSelIdx
         MsgBox sBuf
     End Sub
- 
-'ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
-'ダイアログのフィルタを追加する。指定方法は以下。
-'  ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
-'      ・拡張子が複数ある場合は、";"で区切る
-'      ・ファイル種別と拡張子は"/"で区切る
-'      ・フィルタが複数ある場合、","で区切る
-'sFilters が空文字の場合、フィルタをクリアする。
+
+' ==================================================================
+' = 概要    ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
+' =         ダイアログのフィルタを追加する。指定方法は以下。
+' =           ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
+' =               ・拡張子が複数ある場合は、";"で区切る
+' =               ・ファイル種別と拡張子は"/"で区切る
+' =               ・フィルタが複数ある場合、","で区切る
+' = 引数    sFilters    String      [in]    フィルタ
+' = 引数    fdDialog    FileDialog  [in]    ファイルダイアログ
+' = 戻値    なし
+' = 覚書    sFilters が空文字の場合、フィルタをクリアする。
+' = 依存    Mng_FileSys.bas/SetDialogFilters()
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Private Function SetDialogFilters( _
     ByVal sFilters As String, _
     ByRef fdDialog As FileDialog _
@@ -515,6 +557,9 @@ End Function
 ' =                                               2: フォルダ
 ' = 戻値                    Boolean             取得結果
 ' = 覚書    本関数では、ファイル/フォルダは作成しない。
+' = 依存    Mng_FileSys.bas/GetFileNotExistPath()
+' =         Mng_FileSys.bas/GetFolderNotExistPath()
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Public Function GetNotExistPath( _
     ByVal sTrgtPath As String, _
@@ -566,6 +611,14 @@ End Function
         MsgBox sOutStr
     End Sub
 
+' ==================================================================
+' = 概要    指定ファイルパスが存在する場合、"_XXX" を付与して返却する
+' = 引数    sTrgtPath       String      [in]    対象パス
+' = 戻値                    String              付与後パス
+' = 覚書    本関数では、ファイルは作成しない。
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Public Function GetFileNotExistPath( _
     ByVal sTrgtPath As String _
 ) As String
@@ -610,6 +663,14 @@ End Function
 '*********************************************************************
 '* ローカル関数定義
 '*********************************************************************
+' ==================================================================
+' = 概要    指定フォルダパスが存在する場合、"_XXX" を付与して返却する
+' = 引数    sTrgtPath       String      [in]    対象パス
+' = 戻値                    String              付与後パス
+' = 覚書    本関数では、フォルダは作成しない。
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
 Private Function GetFolderNotExistPath( _
     ByVal sTrgtPath As String _
 ) As String
@@ -643,5 +704,3 @@ End Function
         sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
-
-

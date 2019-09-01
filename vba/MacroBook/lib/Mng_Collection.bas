@@ -1,6 +1,8 @@
 Attribute VB_Name = "Mng_Collection"
 Option Explicit
 
+' collection manage library v1.01
+
 ' ==================================================================
 ' = 概要    テキストファイルの中身を配列に格納
 ' = 引数    sTrgtFilePath   String      [in]    ファイルパス
@@ -9,6 +11,8 @@ Option Explicit
 ' =                                                 True:ファイル存在
 ' =                                                 False:それ以外
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_Collection.bas
 ' ==================================================================
 Public Function ReadTxtFileToCollection( _
     ByVal sTrgtFilePath As String, _
@@ -56,7 +60,8 @@ End Function
 ' =                                                 True:書き出し成功
 ' =                                                 False:それ以外
 ' = 覚書    なし
-' = 依存lib FileSystem.vbs/GetFileNotExistPath
+' = 依存    Mng_FileSys.bas/GetFileNotExistPath()
+' = 所属    Mng_Collection.bas
 ' ==================================================================
 Public Function WriteTxtFileFrCollection( _
     ByVal sTrgtFilePath As String, _
