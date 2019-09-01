@@ -37,7 +37,7 @@ End Sub
 ' =         呼び出し側には作成したワークシート名を返す。
 ' = 引数    sSheetName  [in]    String  作成するシート名
 ' = 戻値                        String  作成したシート名
-' = 依存    なし
+' = 依存    Mng_ExcelOpe.bas/ExistsWorksheet()
 ' = 所属    Mng_ExcelOpe.bas
 ' ==================================================================
 Public Function CreateNewWorksheet( _

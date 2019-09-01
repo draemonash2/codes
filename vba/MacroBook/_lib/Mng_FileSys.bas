@@ -485,7 +485,7 @@ End Function
 ' = 引数    fdDialog    FileDialog  [in]    ファイルダイアログ
 ' = 戻値    なし
 ' = 覚書    sFilters が空文字の場合、フィルタをクリアする。
-' = 依存    Mng_FileSys.bas/SetDialogFilters()
+' = 依存    なし
 ' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function SetDialogFilters( _
