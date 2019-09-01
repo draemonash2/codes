@@ -1,45 +1,45 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.91
+' user define functions v1.92
 
 ' ==================================================================
 ' =  <<関数一覧>>
-' =    ・ConcStr            指定した範囲の文字列を結合する。
-' =    ・SplitStr           文字列を分割し、指定した要素の文字列を返却する。
-' =    ・GetStrNum          指定文字列の個数を返却する。
+' =    ConcStr              指定した範囲の文字列を結合する。
+' =    SplitStr             文字列を分割し、指定した要素の文字列を返却する。
+' =    GetStrNum            指定文字列の個数を返却する。
 ' =
-' =    ・RemoveTailWord     末尾区切り文字以降の文字列を除去する｡
-' =    ・ExtractTailWord    末尾区切り文字以降の文字列を返却する｡
-' =    ・GetDirPath         指定されたファイルパスからフォルダパスを抽出する。
-' =    ・GetFileName        指定されたファイルパスからファイル名を抽出する。
-' =    ・GetFileExt         指定されたファイルパスから拡張子を抽出する｡
-' =    ・GetFileBase        指定されたファイルパスからファイルベース名を抽出する｡
-' =    ・GetFilePart        指定されたファイルパスから指定された一部を抽出する｡
+' =    RemoveTailWord       末尾区切り文字以降の文字列を除去する｡
+' =    ExtractTailWord      末尾区切り文字以降の文字列を返却する｡
+' =    GetDirPath           指定されたファイルパスからフォルダパスを抽出する。
+' =    GetFileName          指定されたファイルパスからファイル名を抽出する。
+' =    GetFileExt           指定されたファイルパスから拡張子を抽出する｡
+' =    GetFileBase          指定されたファイルパスからファイルベース名を抽出する｡
+' =    GetFilePart          指定されたファイルパスから指定された一部を抽出する｡
 ' =
-' =    ・GetStrikeExist     取り消し線の有無を判定する。
-' =    ・GetFontColor       フォントカラーを返却する。
-' =    ・GetInteriorColor   背景色を返却する。
+' =    GetStrikeExist       取り消し線の有無を判定する。
+' =    GetFontColor         フォントカラーを返却する。
+' =    GetInteriorColor     背景色を返却する。
 ' =
-' =    ・BitAndVal          ビットＡＮＤ演算を行う。（数値）
-' =    ・BitAndStrHex       ビットＡＮＤ演算を行う。（文字列１６進数）
-' =    ・BitAndStrBin       ビットＡＮＤ演算を行う。（文字列２進数）
-' =    ・BitOrVal           ビットＯＲ演算を行う。（数値）
-' =    ・BitOrStrHex        ビットＯＲ演算を行う。（文字列１６進数）
-' =    ・BitOrStrBin        ビットＯＲ演算を行う。（文字列２進数）
-' =    ・BitShiftVal        ビットＳＨＩＦＴ演算を行う。（数値）
-' =    ・BitShiftStrHex     ビットＳＨＩＦＴ演算を行う。（文字列１６進数）
-' =    ・BitShiftStrBin     ビットＳＨＩＦＴ演算を行う。（文字列２進数）
+' =    BitAndVal            ビットＡＮＤ演算を行う。（数値）
+' =    BitAndStrHex         ビットＡＮＤ演算を行う。（文字列１６進数）
+' =    BitAndStrBin         ビットＡＮＤ演算を行う。（文字列２進数）
+' =    BitOrVal             ビットＯＲ演算を行う。（数値）
+' =    BitOrStrHex          ビットＯＲ演算を行う。（文字列１６進数）
+' =    BitOrStrBin          ビットＯＲ演算を行う。（文字列２進数）
+' =    BitShiftVal          ビットＳＨＩＦＴ演算を行う。（数値）
+' =    BitShiftStrHex       ビットＳＨＩＦＴ演算を行う。（文字列１６進数）
+' =    BitShiftStrBin       ビットＳＨＩＦＴ演算を行う。（文字列２進数）
 ' =
-' =    ・RegExpSearch       正規表現検索を行う。
+' =    RegExpSearch         正規表現検索を行う。
 ' =
-' =    ・ConvSnakeToPascal  命名規則変換を行う（スネークケース⇒パスカルケース）
-' =    ・ConvSnakeToCamel   命名規則変換を行う（スネークケース⇒キャメルケース）
-' =    ・ConvCamelToSnake   命名規則変換を行う（キャメルケース⇒スネークケース）
+' =    ConvSnakeToPascal    命名規則変換を行う（スネークケース⇒パスカルケース）
+' =    ConvSnakeToCamel     命名規則変換を行う（スネークケース⇒キャメルケース）
+' =    ConvCamelToSnake     命名規則変換を行う（キャメルケース⇒スネークケース）
 ' =
-' =    ・DiffRange          指定した２つの範囲を比較して、完全一致かどうかを判定する
+' =    DiffRange            指定した２つの範囲を比較して、完全一致かどうかを判定する
 ' =
-' =    ・Exists             ファイル/フォルダの存在確認を行う
+' =    Exists               ファイル/フォルダの存在確認を行う
 ' ==================================================================
 
 '********************************************************************************
@@ -76,9 +76,11 @@ End Enum
 ' = 概要    指定した範囲の文字列を結合する
 ' =         区切り文字を指定した場合、結合する間に文字を挿入する
 ' = 引数    rConcRange    Range   [in]  結合する範囲
-' = 引数    sDlmtr        String  [in]  区切り文字
+' = 引数    sDlmtr        String  [in]  区切り文字（省略可）
 ' = 戻値                  Variant       結合後の文字列
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function ConcStr( _
     ByRef rConcRange As Range, _
@@ -160,6 +162,8 @@ End Function
 ' = 引数    iExtIndex   String  [in]  抽出する要素 ( 0 origin )
 ' = 戻値                Variant       抽出文字列
 ' = 覚書    iExtIndex が要素を超える場合、空文字列を返却する
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function SplitStr( _
     ByVal sStr As String, _
@@ -206,6 +210,8 @@ End Function
 ' =           ex) B1 = C:\codes\c\Try04.c
 ' =               B2 = SplitStr( B1, "\", GetStrNum( B2, "\" ) )
 ' =                 ⇒ Try04.c
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function GetStrNum( _
     ByVal sTrgtStr As String, _
@@ -238,6 +244,8 @@ End Function
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        抽出文字列
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ExtractTailWord( _
     ByVal sStr As String, _
@@ -277,6 +285,8 @@ End Function
 ' = 引数    sDlmtr      String  [in]  区切り文字
 ' = 戻値                String        除去文字列
 ' = 覚書    なし
+' = 依存    Mng_String.bas/ExtractTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function RemoveTailWord( _
     ByVal sStr As String, _
@@ -330,6 +340,8 @@ End Function
 ' =         変えることが出来る｡
 ' =            True  : sFilePath を返却
 ' =            False : エラー値（xlErrNA）を返却
+' = 依存    Mng_String.bas/RemoveTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetDirPath( _
     ByVal sFilePath As String, _
@@ -376,6 +388,8 @@ End Function
 ' =         変えることが出来る｡
 ' =            True  : sFilePath を返却
 ' =            False : エラー値（xlErrNA）を返却
+' = 依存    Mng_String.bas/ExtractTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileName( _
     ByVal sFilePath As String, _
@@ -417,6 +431,9 @@ End Function
 ' = 戻値                String        拡張子
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    Mng_String.bas/GetFileName()
+' =         Mng_String.bas/ExtractTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileExt( _
     ByVal sFilePath As String _
@@ -447,6 +464,9 @@ End Function
 ' = 戻値                String        ファイルベース名
 ' = 覚書    ・拡張子がない場合、空文字を返却する
 ' =         ・ファイル名も指定可能
+' = 依存    Mng_String.bas/GetFileName()
+' =         Mng_String.bas/RemoveTailWord()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFileBase( _
     ByVal sFilePath As String _
@@ -477,6 +497,11 @@ End Function
 ' =                                     4) ファイル拡張子
 ' = 戻値                String        抽出した一部
 ' = 覚書    ・抽出種別が誤っている場合、空文字を返却する
+' = 依存    Mng_String.bas/GetDirPath()
+' =         Mng_String.bas/GetFileName()
+' =         Mng_String.bas/GetFileBase)
+' =         Mng_String.bas/GetFileExt()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetFilePart( _
     ByVal sFilePath As String, _
@@ -507,6 +532,8 @@ End Function
 ' = 引数    rRange   Range     [in]  セル
 ' = 戻値             Variant         取り消し線有無
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function GetStrikeExist( _
     ByRef rRange As Range _
@@ -547,6 +574,8 @@ End Function
 ' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
 ' = 戻値                Variant         フォント色
 ' = 覚書    なし
+' = 依存    Funcs.bas/ConvRgb2X()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function GetFontColor( _
     ByRef rTrgtCell As Range, _
@@ -621,6 +650,8 @@ End Function
 ' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
 ' = 戻値                Variant         背景色
 ' = 覚書    なし
+' = 依存    Funcs.bas/ConvRgb2X()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function GetInteriorColor( _
     ByRef rTrgtCell As Range, _
@@ -694,6 +725,8 @@ End Function
 ' = 引数    cInVal2   Currency   [in]  入力値 右項（10進数数値）
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitAndVal( _
     ByVal cInVal1 As Currency, _
@@ -731,6 +764,10 @@ End Function
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
+' = 依存    Funcs.bas/Hex2Bin()
+' =         Funcs.bas/BitAndStrBin()
+' =         Funcs.bas/Bin2Hex()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitAndStrHex( _
     ByVal sInHexVal1 As String, _
@@ -811,6 +848,8 @@ End Function
 ' = 引数    lInBitLen   Long       [in]  出力ビット数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitAndStrBin( _
     ByVal sInBinVal1 As String, _
@@ -887,6 +926,8 @@ End Function
 ' = 引数    cInVal2   Currency   [in]  入力値 右項（10進数数値）
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitOrVal( _
     ByVal cInVal1 As Currency, _
@@ -925,6 +966,10 @@ End Function
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
+' = 依存    Funcs.bas/Hex2Bin()
+' =         Funcs.bas/BitOrStrBin()
+' =         Funcs.bas/Bin2Hex()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitOrStrHex( _
     ByVal sInHexVal1 As String, _
@@ -1004,6 +1049,8 @@ End Function
 ' = 引数    lInBitLen   Long       [in]  出力ビット数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitOrStrBin( _
     ByVal sInBinVal1 As String, _
@@ -1088,6 +1135,12 @@ End Function
 ' = 戻値                    Variant         シフト結果（10進数数値）
 ' = 覚書    32ビットのみ対応する。そのため、左シフトの結果が32ビットを
 ' =         超える場合、下位32ビットのシフト結果を返却する。
+' = 依存    Funcs.bas/Dec2Hex()
+' =         Funcs.bas/BitShiftStrBin()
+' =         Funcs.bas/Hex2Bin()
+' =         Funcs.bas/Bin2Hex()
+' =         Funcs.bas/Hex2Dec()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitShiftVal( _
     ByVal cInDecVal As Currency, _
@@ -1197,6 +1250,10 @@ End Function
 ' =               符号ビットを保持するか、無視して切り捨てるかを選択する。
 ' =           ex1) 10101011 を出力桁数4として右1算術(符号ビット保持)シフト ⇒ 1101
 ' =           ex2) 10101011 を出力桁数4として右1算術(符号ビット切捨)シフト ⇒ 0101
+' = 依存    Funcs.bas/BitShiftStrBin()
+' =         Funcs.bas/Hex2Bin()
+' =         Funcs.bas/Bin2Hex()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitShiftStrHex( _
     ByVal sInHexVal As String, _
@@ -1312,6 +1369,9 @@ End Function
 ' =              ⇒ "D"(0b1101)
 ' =           ex2) "AB"(0b10101011) を出力桁数1として右1算術(符号ビット切捨)シフト
 ' =              ⇒ "5"(0b0101)
+' = 依存    Funcs.bas/BitShiftLogStrBin()
+' =         Funcs.bas/BitShiftAriStrBin()
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function BitShiftStrBin( _
     ByVal sInBinVal As String, _
@@ -1397,6 +1457,8 @@ End Function
 ' = 引数    bIsGlobal       Boolean  [in]  文字列全体を検索するか（引数省略可）
 ' = 戻値                    Variant        検索結果
 ' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function RegExpSearch( _
     ByVal sTargetStr As String, _
@@ -1439,6 +1501,8 @@ End Function
 ' =             - パスカルケース … GetInputReader
 ' =               （＝アッパーキャメルケース）
 ' =         ・sInStr は単語のみを指定すること。（空白を含めない）
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ConvSnakeToPascal( _
     ByVal sInStr As String _
@@ -1475,6 +1539,8 @@ End Function
 ' =             - キャメルケース … getInputReader
 ' =               （＝ローワーキャメルケース）
 ' =         ・sInStr は単語のみを指定すること。（空白を含めない）
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ConvSnakeToCamel( _
     ByVal sInStr As String _
@@ -1514,6 +1580,8 @@ End Function
 ' =             - スネークケース … get_input_reader
 ' =         ・sInStr は単語のみを指定すること。（空白を含めない）
 ' =         ・アッパーキャメルケースも指定可能。
+' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function ConvCamelToSnake( _
     ByVal sInStr As String _
@@ -1573,6 +1641,8 @@ End Function
 ' =           ・範囲内の列数が不一致
 ' =           ・範囲内の各セルの値が不一致
 ' =           ・範囲内の開始セルと末尾セルのセル位置が不一致
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function DiffRange( _
     ByRef rTrgtRange01 As Range, _
@@ -1646,6 +1716,8 @@ End Function
 ' = 覚書    ローカル環境のファイルパスを指定すること。
 ' =         URL を指定した場合、未存在とみなされる。
 ' =         ファイルサーバーは指定可能。
+' = 依存    なし
+' = 所属    Funcs.bas
 ' ==================================================================
 Public Function Exists( _
     ByVal sFileDirPath As String _
@@ -1708,8 +1780,17 @@ End Function
 '********************************************************************************
 '* 内部関数定義
 '********************************************************************************
-'Mod 演算子は 2,147,483,647 より大きい数字はオーバーフローする。
-'本関数は上記以上の数値を扱うことができる。
+' ==================================================================
+' = 概要    余り演算
+' =         Mod 演算子は 2,147,483,647 より大きい数字はオーバーフローする。
+' =         本関数は上記以上の数値を扱うことができる。
+' = 引数    cNum1   Currency    [in]    値1
+' = 引数    cNum2   Currency    [in]    値2
+' = 戻値            Currency            演算結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function ModEx( _
     ByVal cNum1 As Currency, _
     ByVal cNum2 As Currency _
@@ -1732,7 +1813,14 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'32bit用
+' ==================================================================
+' = 概要    基数変換 10進数→16進数(32bit用)
+' = 引数    cInDecVal   Currency    [in]    10進数
+' = 戻値                String              変換結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Dec2Hex( _
     ByVal cInDecVal As Currency _
 ) As String
@@ -1790,7 +1878,15 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'32bit用
+' ==================================================================
+' = 概要    基数変換 16進数→10進数(32bit用)
+' = 引数    sInHexVal       String      [in]    16進数
+' = 引数    bIsSignEnable   Boolean     [in]    符号有無
+' = 戻値                    Variant             変換結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Hex2Dec( _
     ByVal sInHexVal As String, _
     ByVal bIsSignEnable As Boolean _
@@ -1852,7 +1948,14 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'指定範囲以外の値を指定すると文字列 "error" を返却する。
+' ==================================================================
+' = 概要    基数変換 16進数→10進数
+' = 引数    sHexVal         String      [in]    16進数
+' = 戻値                    String              変換結果
+' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
+' = 依存    Funcs.bas/Hex2BinMap()
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Hex2Bin( _
     ByVal sHexVal As String _
 ) As String
@@ -1892,7 +1995,15 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'指定範囲以外の値を指定すると文字列 "error" を返却する。
+' ==================================================================
+' = 概要    基数変換 2進数→16進数
+' = 引数    sBinVal         String      [in]    2進数
+' = 引数    bIsUcase        Boolean     [in]    大文字小文字
+' = 戻値                    String              変換結果
+' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
+' = 依存    Funcs.bas/Bin2HexMap()
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Bin2Hex( _
     ByVal sBinVal As String, _
     ByVal bIsUcase As Boolean _
@@ -1937,7 +2048,14 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'指定範囲以外の値を指定すると文字列 "error" を返却する。
+' ==================================================================
+' = 概要    基数変換用マップ 16進数→2進数
+' = 引数    sHexVal         String      [in]    16進数
+' = 戻値                    String              変換結果
+' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Hex2BinMap( _
     ByVal sHexVal As String _
 ) As String
@@ -1962,7 +2080,15 @@ Private Function Hex2BinMap( _
     End Select
 End Function
 
-'指定範囲以外の値を指定すると文字列 "error" を返却する。
+' ==================================================================
+' = 概要    基数変換用マップ 2進数→16進数
+' = 引数    sBinVal         String      [in]    2進数
+' = 引数    bIsUcase        Boolean     [in]    大文字小文字
+' = 戻値                    String              変換結果
+' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function Bin2HexMap( _
     ByVal sBinVal As String, _
     ByVal bIsUcase As Boolean _
@@ -2010,7 +2136,17 @@ Private Function Bin2HexMap( _
     End If
 End Function
 
-'論理ビットシフト（文字列版）
+' ==================================================================
+' = 概要    論理ビットシフト（文字列版）
+' = 引数    sInBinVal       String              [in]    2進数
+' = 引数    lInShiftNum     Long                [in]    シフト数
+' = 引数    eInDirection    E_SHIFT_DIRECTiON   [in]    シフト方向
+' = 引数    lInBitLen       Long                [in]    ビットサイズ
+' = 戻値                    String                      シフト結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function BitShiftLogStrBin( _
     ByVal sInBinVal As String, _
     ByVal lInShiftNum As Long, _
@@ -2084,7 +2220,19 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
-'算術ビットシフト（文字列版）
+' ==================================================================
+' = 概要    算術ビットシフト（文字列版）
+' = 引数    sInBinVal           String              [in]    2進数
+' = 引数    lInShiftNum         Long                [in]    シフト数
+' = 引数    eInDirection        E_SHIFT_DIRECTiON   [in]    シフト方向
+' = 引数    lInBitLen           Long                [in]    ビットサイズ
+' = 引数    bIsSaveSignBit      Boolean             [in]    以下、参照
+' = 引数    bIsExecAutoAlign    Boolean             [in]    以下、参照
+' = 戻値                        String                      シフト結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function BitShiftAriStrBin( _
     ByVal sInBinVal As String, _
     ByVal lInShiftNum As Long, _
@@ -2369,6 +2517,15 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
+' ==================================================================
+' = 概要    RGB値変換
+' = 引数    lColorRGB       Long             [in]    RGB値
+' = 引数    sColorType      String           [in]    色種別(r/g/b)
+' = 戻値                    Long                     変換結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
 Private Function ConvRgb2X( _
     ByVal lColorRGB As Long, _
     ByVal sColorType As String _

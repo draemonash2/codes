@@ -1,6 +1,8 @@
 Attribute VB_Name = "Clipboard"
 Option Explicit
 
+' clipboard library v1.01
+
 'Win32API宣言
 Public Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Public Declare Function EmptyClipboard Lib "user32" () As Long
@@ -30,6 +32,15 @@ Public Const CF_OEMTEXT            As Long = 7
 ' =            のみで CF_TEXTへは貼り付けされない）
 ' =            上記のように DataObject を使用したくない場合に本関数
 ' =            を利用すること｡
+' = 依存    user32/OpenClipboard()
+' =         user32/EmptyClipboard()
+' =         user32/CloseClipboard()
+' =         user32/SetClipboardData()
+' =         kernel32/GlobalAlloc()
+' =         kernel32/GlobalLock()
+' =         kernel32/GlobalUnlock()
+' =         kernel32/lstrcpy()
+' = 所属    Mng_Clipboard.bas
 ' ==================================================================
 Public Function CopyText( _
     sText As String _

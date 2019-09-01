@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.41
+' user define macros v2.42
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -75,8 +75,9 @@ End Enum
 ' = 引数    sOperate    String  [in] 操作種別(Add/Update/Delete)
 ' = 戻値    なし
 ' = 覚書    なし
-' = 依存    Macros/UpdateShtcutSetting()
+' = 依存    Macros.bas/UpdateShtcutSetting()
 ' =         AddInSetting.cls/SearchWithKey()
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function UpdateShortcutKeySettings( _
     ByVal sOperate As String _
@@ -171,6 +172,7 @@ End Function
 ' = 概要    選択セルに対して「選択範囲内で中央」を実行する
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲内で中央()
     Selection.HorizontalAlignment = xlCenterAcrossSelection
@@ -179,8 +181,9 @@ End Sub
 ' =============================================================================
 ' = 概要    ①～⑭を指定して、指定番号以降をデクリメントする
 ' = 覚書    なし
-' = 依存    Mng_String/NumConvStr2Lng()
-' =         Mng_String/NumConvLng2Str()
+' = 依存    Mng_String.bas/NumConvStr2Lng()
+' =         Mng_String.bas/NumConvLng2Str()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をデクリメント()
     Dim lTrgtNum As Long
@@ -206,8 +209,9 @@ End Sub
 ' =============================================================================
 ' = 概要    ②～⑮を指定して、指定番号以降をインクリメントする
 ' = 覚書    なし
-' = 依存    Mng_String/NumConvStr2Lng()
-' =         Mng_String/NumConvLng2Str()
+' = 依存    Mng_String.bas/NumConvStr2Lng()
+' =         Mng_String.bas/NumConvLng2Str()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をインクリメント()
     Dim lTrgtNum As Long
@@ -236,6 +240,7 @@ End Sub
 ' =           ・ツール->参照設定 にて「Microsoft Forms 2.0 Object Library」を選択
 ' =           ・ツール->参照設定 内の「参照」にて system32 内の「FM20.DLL」を選択
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 全シート名をコピー()
     Dim oSheet As Object
@@ -259,7 +264,8 @@ End Sub
 ' =============================================================================
 ' = 概要    シート表示/非表示を切り替える
 ' = 覚書    なし
-' = 依存    SheetVisibleSetting/SheetVisibleSetting()
+' = 依存    SheetVisibleSetting.cls/SheetVisibleSetting()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート表示非表示を切り替え()
     SheetVisibleSetting.Show
@@ -269,7 +275,8 @@ End Sub
 ' = 概要    ダブルクオーテーションなしでセルコピーする
 ' =         非表示セルは無視する。複数範囲は未対応。
 ' = 覚書    なし
-' = 依存    Mng_Array/ConvRange2Array()
+' = 依存    Mng_Array.bas/ConvRange2Array()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ダブルクォートを除いてセルコピー()
     '*** 非表示セル出力判定 ***
@@ -323,8 +330,9 @@ End Sub
 ' = 概要    選択範囲をファイルとしてエクスポートする。
 ' =         隣り合った列のセルにはタブ文字を挿入して出力する。
 ' = 覚書    なし
-' = 依存    Mng_FileSys/ShowFolderSelectDialog() 
-' =         Mng_Array/ConvRange2Array()          
+' = 依存    Mng_FileSys.bas/ShowFolderSelectDialog() 
+' =         Mng_Array.bas/ConvRange2Array()          
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
     Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
@@ -450,9 +458,10 @@ End Sub
 ' = 概要    選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
 ' =         単一列選択時のみ有効。
 ' = 覚書    なし
-' = 依存    Mng_Array/ConvRange2Array()
-' =         Mng_FileSys/OutputTxtFile()
-' =         Mng_SysCmd/ExecDosCmd()
+' = 依存    Mng_Array.bas/ConvRange2Array()
+' =         Mng_FileSys.bas/OutputTxtFile()
+' =         Mng_SysCmd.bas/ExecDosCmd()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をまとめてコマンド実行()
     Const BAT_FILE_NAME As String = "command.bat"
@@ -534,8 +543,9 @@ End Sub
 ' = 概要    選択範囲内のコマンドをそれぞれ実行する。
 ' =         単一列選択時のみ有効。
 ' = 覚書    なし
-' = 依存    Mng_Array/ConvRange2Array()
-' =         Mng_SysCmd/ExecDosCmd()
+' = 依存    Mng_Array.bas/ConvRange2Array()
+' =         Mng_SysCmd.bas/ExecDosCmd()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をそれぞれコマンド実行()
     '*** セル選択判定 ***
@@ -609,6 +619,7 @@ End Sub
 ' = 概要    選択範囲内の検索文字色を変更する
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲内の検索文字色を変更()
     Const sMACRO_TITLE As String = "選択範囲内の検索文字色を変更"
@@ -675,7 +686,8 @@ End Sub
 ' = 概要    行をツリー構造にしてグループ化
 ' =         Usage：ツリーグループ化したい範囲を選択し、マクロ「ツリーをグループ化」を実行する
 ' = 覚書    なし
-' = 依存    Macros/TreeGroupSub()
+' = 依存    Macros.bas/TreeGroupSub()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ツリーをグループ化()
     Dim lStrtRow As Long
@@ -706,6 +718,7 @@ End Sub
 ' =         本処理を実行すると、シート並べ替え作業用シートを作成する。
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート並べ替え作業用シートを作成()
     Dim lShtIdx As Long
@@ -794,6 +807,7 @@ End Sub
 ' =         必ずシート並べ替え作業用シートから呼び出すこと！
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub SortSheetPost()
     Dim asShtName() As String
@@ -848,6 +862,7 @@ End Sub
 ' = 概要    選択した範囲のハイパーリンクを一括で開く
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ハイパーリンク一括オープン()
     Dim Rng As Range
@@ -865,6 +880,7 @@ End Sub
 ' = 概要    フォント色を「赤」⇔「自動」でトグルする
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub フォント色をトグル()
     Const COLOR_R As Long = 255
@@ -881,6 +897,7 @@ End Sub
 ' = 概要    背景色を「黄」⇔「背景色なし」でトグルする
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 背景色をトグル()
     Const COLOR_R As Long = 255
@@ -898,6 +915,7 @@ End Sub
 ' =         指定した方向に応じて選択範囲を広げてオートフィルを実行する。
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub オートフィル実行( _
     ByVal sDirection As String _
@@ -983,6 +1001,7 @@ End Sub
 ' = 概要    アクティブセルコメントのみ表示し、移動する。
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメントのみ表示および移動( _
     ByVal sDirection As String _
@@ -1020,6 +1039,7 @@ End Sub
 ' = 概要    アクティブセルコメントのみ表示する。
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメントのみ表示()
 '    Application.ScreenUpdating = False
@@ -1048,9 +1068,10 @@ End Sub
 ' = 依存    AddInSetting.cls/SearchWithKey()
 ' =         AddInSetting.cls/Update()
 ' =         AddInSetting.cls/Add()
-' =         Macros/DisableShortcutKeys()
-' =         Macros/UpdateShortcutKeySettings()
-' =         Macros/EnableShortcutKeys()
+' =         Macros.bas/DisableShortcutKeys()
+' =         Macros.bas/UpdateShortcutKeySettings()
+' =         Macros.bas/EnableShortcutKeys()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメントのみ表示および移動_モード切替()
     Dim clSetting As AddInSetting
@@ -1086,6 +1107,7 @@ End Sub
 ' = 概要    アクティブセルからハイパーリンク先に飛ぶ
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ハイパーリンクで飛ぶ()
     On Error Resume Next
@@ -1104,6 +1126,7 @@ End Sub
 ' = 概要    Excel方眼紙
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub Excel方眼紙()
     ActiveSheet.Cells.Select
@@ -1120,6 +1143,7 @@ End Sub
 ' = 概要    列幅、行幅を自動調整する
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 自動列幅調整()
     Selection.EntireColumn.AutoFit
@@ -1132,6 +1156,7 @@ End Sub
 ' = 概要    最前面、最背面へ移動する
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 最前面へ移動()
     Selection.ShapeRange.ZOrder msoBringToFront
@@ -1143,10 +1168,11 @@ End Sub
 ' =============================================================================
 ' = 概要    EpTreeの関数ツリーをExcelで取り込む
 ' = 覚書    なし
-' = 依存    Mng_FileSys/ShowFilesSelectDialog()
-' =         Mng_Collection/ReadTxtFileToCollection()
-' =         Mng_String/ExecRegExp()
-' =         Mng_ExcelOpe/CreateNewWorksheet()
+' = 依存    Mng_FileSys.bas/ShowFilesSelectDialog()
+' =         Mng_Collection.bas/ReadTxtFileToCollection()
+' =         Mng_String.bas/ExecRegExp()
+' =         Mng_ExcelOpe.bas/CreateNewWorksheet()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Const STRT_ROW As Long = 2
@@ -1271,6 +1297,7 @@ End Sub
 ' = 概要    設定項目一覧を出力
 ' = 覚書    なし
 ' = 依存    AddInSetting.cls/SearchWithIdx()
+' = 所属    Macros.bas
 ' =============================================================================
 Private Sub OutputSettingList()
     Dim clSetting As AddInSetting
@@ -1296,7 +1323,8 @@ End Sub
 ' =============================================================================
 ' = 概要    ユーザー定義ショートカットキー設定を追加
 ' = 覚書    なし
-' = 依存    Macros/UpdateShortcutKeySettings()
+' = 依存    Macros.bas/UpdateShortcutKeySettings()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を追加()
     Call UpdateShortcutKeySettings("Add")
@@ -1305,7 +1333,8 @@ End Sub
 ' =============================================================================
 ' = 概要    ユーザー定義ショートカットキー設定を削除
 ' = 覚書    なし
-' = 依存    Macros/UpdateShortcutKeySettings()
+' = 依存    Macros.bas/UpdateShortcutKeySettings()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を削除()
     Call UpdateShortcutKeySettings("Delete")
@@ -1314,7 +1343,8 @@ End Sub
 ' =============================================================================
 ' = 概要    ユーザー定義ショートカットキー設定を更新
 ' = 覚書    なし
-' = 依存    Macros/UpdateShortcutKeySettings()
+' = 依存    Macros.bas/UpdateShortcutKeySettings()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ユーザー定義ショートカットキー設定を更新()
     Call UpdateShortcutKeySettings("Update")
@@ -1323,7 +1353,8 @@ End Sub
 ' =============================================================================
 ' = 概要    ユーザー定義ショートカットキーを有効化
 ' = 覚書    なし
-' = 依存    Macros/EnableShortcutKeys()
+' = 依存    Macros.bas/EnableShortcutKeys()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ユーザー定義ショートカットキーを有効化()
     Call EnableShortcutKeys
@@ -1332,7 +1363,8 @@ End Sub
 ' =============================================================================
 ' = 概要    ユーザー定義ショートカットキーを無効化
 ' = 覚書    なし
-' = 依存    Macros/DisableShortcutKeys()
+' = 依存    Macros.bas/DisableShortcutKeys()
+' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ユーザー定義ショートカットキーを無効化()
     Call DisableShortcutKeys
@@ -1347,6 +1379,7 @@ End Sub
 ' = 戻値                    Long          数字(Long型)
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function NumConvStr2Lng( _
     ByVal sNum As String _
@@ -1360,6 +1393,7 @@ End Function
 ' = 戻値                    String          数字(String型)
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function NumConvLng2Str( _
     ByVal lNum As Long _
@@ -1376,7 +1410,8 @@ End Function
 ' = 引数    lGrpLastClm     Long        [in]        末尾列
 ' = 戻値    なし
 ' = 覚書    なし
-' = 依存    Macros/IsGroupParent()
+' = 依存    Macros.bas/IsGroupParent()
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function TreeGroupSub( _
     ByRef shTrgtSht As Worksheet, _
@@ -1441,6 +1476,7 @@ End Function
 ' = 戻値                Boolean                 
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function IsGroupParent( _
     ByRef shTrgtSht As Worksheet, _
@@ -1475,6 +1511,7 @@ End Function
 ' = 戻値    なし
 ' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
 ' = 依存    なし
+' = 所属    Mng_Array.bas
 ' ==================================================================
 Private Function ConvRange2Array( _
     ByRef rCellsRange As Range, _
@@ -1536,6 +1573,7 @@ End Function
 ' = 戻値                String        フォルダ選択結果
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
     Optional ByVal sInitPath As String = "" _
@@ -1584,6 +1622,7 @@ End Function
 ' = 戻値                String          標準出力
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_SysCmd.bas
 ' ==================================================================
 Private Function ExecDosCmd( _
     ByVal sCommand As String _
@@ -1613,6 +1652,7 @@ End Function
 ' = 依存    AddInSetting.cls/Add()
 ' =         AddInSetting.cls/Update()
 ' =         AddInSetting.cls/Delete()
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function UpdateShtcutSetting( _
     ByVal sKey As String, _
@@ -1640,6 +1680,7 @@ End Function
 ' = 覚書    なし
 ' = 依存    AddInSetting.cls/Count()
 ' =         AddInSetting.cls/SearchWithIdx()
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function EnableShortcutKeys()
     Dim clSetting As AddInSetting
@@ -1683,6 +1724,7 @@ End Function
 ' = 覚書    なし
 ' = 依存    AddInSetting.cls/Count()
 ' =         AddInSetting.cls/SearchWithIdx()
+' = 所属    Macros.bas
 ' ==================================================================
 Private Function DisableShortcutKeys()
     Dim clSetting As AddInSetting
@@ -1721,6 +1763,7 @@ End Function
 ' = 戻値    なし
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Macros.bas
 ' ============================================
 Private Function OutputTxtFile( _
     ByVal sFilePath As String, _
@@ -1764,7 +1807,8 @@ End Function
 ' =                    ・ファイル種別と拡張子は"/"で区切る
 ' =                    ・フィルタが複数ある場合、","で区切る
 ' =         sFilters が省略もしくは空文字の場合、フィルタをクリアする。
-' = 依存    Mng_FileSys/SetDialogFilters()
+' = 依存    Mng_FileSys.bas/SetDialogFilters()
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFilesSelectDialog( _
     ByRef asSelectedFiles() As String, _
@@ -1844,6 +1888,7 @@ End Function
 ' = 戻値    なし
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function SetDialogFilters( _
     ByVal sFilters As String, _
@@ -1912,7 +1957,8 @@ End Function
 ' = 引数    sSheetName  String  [in]    シート名
 ' = 戻値                                シート名
 ' = 覚書    なし
-' = 依存    Mng_ExcelOpe/ExistsWorksheet()
+' = 依存    Mng_ExcelOpe.bas/ExistsWorksheet()
+' = 所属    Mng_ExcelOpe.bas
 ' ==================================================================
 Private Function CreateNewWorksheet( _
     ByVal sSheetName As String _
@@ -1942,6 +1988,7 @@ End Function
 ' = 戻値                                    存在チェック結果
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_ExcelOpe.bas
 ' ==================================================================
 Private Function ExistsWorksheet( _
     ByVal sTrgtShtName As String _
@@ -1968,6 +2015,7 @@ End Function
 ' =                                                 False:それ以外
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_Collection.bas
 ' ==================================================================
 Private Function ReadTxtFileToCollection( _
     ByVal sTrgtFilePath As String, _
@@ -2014,6 +2062,7 @@ End Function
 ' = 戻値    なし
 ' = 覚書    なし
 ' = 依存    なし
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function ExecRegExp( _
     ByVal sTargetStr As String, _
