@@ -90,8 +90,15 @@ MsgBox "シンボリックリンクを作成しました", vbYes, PROG_NAME
 '####################################################################
 '### 関数定義
 '####################################################################
+' ==================================================================
+' = 概要    管理者権限で実行する
+' = 引数    なし
+' = 戻値    なし
+' = 戻値                Boolean     [out]   実行結果
+' = 覚書    自動的に引数に影響を及ぼすため、要注意
 ' = 依存    なし
 ' = 所属    Windows.vbs
+' ==================================================================
 Public Function ExecRunas()
     Dim oArgs
     Dim bIsRunas
@@ -122,6 +129,7 @@ Public Function ExecRunas()
     
     Dim oWshShell
     Set oWshShell = CreateObject("Shell.Application")
+    ExecRunas = False
     If bIsRunas = False Then
         If bIsExecutableOs = True Then
             oWshShell.ShellExecute _
@@ -129,14 +137,20 @@ Public Function ExecRunas()
             """" & WScript.ScriptFullName & """" & " /RUNAS " & sArgs, "", _
             "runas", _
             1
+            ExecRunas = True
             Wscript.Quit
         End If
     End If
 End Function
 
+' ==================================================================
+' = 概要    Dos コマンド実行
+' = 引数    なし
+' = 戻値    なし
+' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Windows.vbs
-'Dos コマンド実行
+' ==================================================================
 Public Function ExecDosCmd( _
     ByVal sCommand _
 )
