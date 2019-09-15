@@ -11,9 +11,6 @@ Const OBJECT_SUFFIX = " - シンボリックリンク"
 '####################################################################
 Const PROG_NAME = "シンボリックリンク作成"
 
-'*** 管理者として実行 ***
-Call ExecRunas()
-
 '*** ファイル/フォルダ名取得 ***
 DIm cFilePaths
 If EXECUTION_MODE = 0 Then 'Explorerから実行
@@ -27,7 +24,10 @@ If EXECUTION_MODE = 0 Then 'Explorerから実行
         End If
     Next
 ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-    Set cFilePaths = WScript.Col( WScript.Env("Selected") )
+    'Set cFilePaths = WScript.Col( WScript.Env("Selected") )
+    MsgBox "X-Finderからは実行できません", vbYes, PROG_NAME
+    MsgBox "処理を中断します", vbYes, PROG_NAME
+    WScript.Quit
 Else 'デバッグ実行
     MsgBox "デバッグモードです。"
     Set cFilePaths = CreateObject("System.Collections.ArrayList")
@@ -45,6 +45,9 @@ End If
 '    msgbox sArg
 'Next
 '▲▲▲debug▲▲▲
+
+'*** 管理者として実行 ***
+Call ExecRunas()
 
 '*** ファイルパスチェック ***
 If cFilePaths.Count = 0 Then
