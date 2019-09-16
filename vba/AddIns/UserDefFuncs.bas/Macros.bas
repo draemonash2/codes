@@ -1,15 +1,15 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.42
-
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+' user define macros v2.5
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
 ' =    選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
 ' =
-' =    ダブルクォートを除いてセルコピー             ダブルクオーテーションなしでセルコピーする
+' =    ダブルクォートを除いてコピー                 ダブルクオーテーションなしでセルをコピーする
+' =    ダブルクォートを除いて追加コピー             ダブルクオーテーションなしでセルを追加コピーする
+' =
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
 ' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
 ' =    選択範囲をそれぞれコマンド実行               選択範囲内のコマンドをそれぞれ実行する。
@@ -42,6 +42,24 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' =    最前面へ移動                                 最前面へ移動する
 ' =    最背面へ移動                                 最背面へ移動する
 ' =============================================================================
+
+'******************************************************************************
+'* インクルード
+'******************************************************************************
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+
+'▼▼▼Mng_Clipboard.bas/SetToClipboard()▼▼▼
+'Win32API宣言
+Public Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function EmptyClipboard Lib "user32" () As Long
+Public Declare Function CloseClipboard Lib "user32" () As Long
+Public Declare Function SetClipboardData Lib "user32" (ByVal uFormat As Long, ByVal hData As Long) As Long
+Public Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlag As Long, ByVal dwBytes As Long) As Long
+Public Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+'本来はＣ言語用の文字列コピーだが、２つ目の引数をStringとしているので変換が行われた上でコピーされる。
+Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
+'▲▲▲Mng_Clipboard.bas/SetToClipboard()▲▲▲
 
 '******************************************************************************
 '* 設定値
@@ -86,9 +104,7 @@ Private Function UpdateShortcutKeySettings( _
     '   (1) 以下の追加先に「UpdateShtcutSetting()」呼び出しを追加する。
     '       第一引数にはショートカットキー、第二引数にマクロ名を指定する。
     '       ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
-    '         Shift：+
-    '         Ctrl ：^
-    '         Alt  ：%
+    '         Shift：+、Ctrl ：^、Alt  ：%
     '       詳細は以下 URL 参照。
     '         https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
     '   (2) マクロ「ユーザー定義ショートカットキーを設定()」を実行する。
@@ -99,7 +115,8 @@ Private Function UpdateShortcutKeySettings( _
     '▼▼▼ 追加先 ▼▼▼
     Call UpdateShtcutSetting("", "選択範囲内で中央", sOperate)
     
-    Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてセルコピー", sOperate)
+    Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてコピー", sOperate)
+    Call UpdateShtcutSetting("^%c", "ダブルクォートを除いて追加コピー", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をまとめてコマンド実行", sOperate)
@@ -276,9 +293,10 @@ End Sub
 ' =         非表示セルは無視する。複数範囲は未対応。
 ' = 覚書    なし
 ' = 依存    Mng_Array.bas/ConvRange2Array()
+' =         Mng_Clipboard.bas/SetToClipboard()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub ダブルクォートを除いてセルコピー()
+Public Sub ダブルクォートを除いてコピー()
     '*** 非表示セル出力判定 ***
     Dim bIsInvisibleCellIgnore As Boolean
     'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
@@ -318,10 +336,63 @@ Public Sub ダブルクォートを除いてセルコピー()
             sBuf = sBuf & vbNewLine & asLine(lLineIdx)
         End If
     Next lLineIdx
-    Call CopyText(sBuf)
+    Call SetToClipboard(sBuf)
     
     'フィードバック
     Application.StatusBar = "■■■■■■■■ コピー完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' ==================================================================
+' = 概要    選択範囲をクリップボードへ追加コピー
+' =         ダブルクオーテーションなしでセルコピーする
+' =         非表示セルは無視する。複数範囲は未対応。
+' = 覚書    なし
+' = 依存    Mng_Array.bas/ConvRange2Array()
+' =         Mng_Clipboard.bas/SetToClipboard()
+' = 所属    Macros.bas
+' ==================================================================
+Public Sub ダブルクォートを除いて追加コピー()
+    Dim bIsInvisibleCellIgnore As Boolean
+    Dim sDelimiter As String
+    bIsInvisibleCellIgnore = True
+    sDelimiter = Chr(9)
+    
+    '*** 既存テキスト取得 ***
+    Dim sOrgText As String
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .GetFromClipboard
+        sOrgText = .GetText
+    End With
+    
+    '*** 追加テキスト取得 ***
+    Dim asLine() As String
+    Call ConvRange2Array( _
+        Selection, _
+        asLine, _
+        bIsInvisibleCellIgnore, _
+        sDelimiter _
+    )
+    
+    Dim sNewText As String
+    sNewText = ""
+    Dim lLineIdx As Long
+    For lLineIdx = LBound(asLine) To UBound(asLine)
+        If lLineIdx = LBound(asLine) Then
+            sNewText = asLine(lLineIdx)
+        Else
+            sNewText = sNewText & vbNewLine & asLine(lLineIdx)
+        End If
+    Next lLineIdx
+    
+    '*** クリップボード設定 ***
+    Dim sOutText As String
+    sOutText = sOrgText & vbNewLine & sNewText
+    Call SetToClipboard(sOutText)
+
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ 追加コピー完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
 End Sub
@@ -330,8 +401,8 @@ End Sub
 ' = 概要    選択範囲をファイルとしてエクスポートする。
 ' =         隣り合った列のセルにはタブ文字を挿入して出力する。
 ' = 覚書    なし
-' = 依存    Mng_FileSys.bas/ShowFolderSelectDialog() 
-' =         Mng_Array.bas/ConvRange2Array()          
+' = 依存    Mng_FileSys.bas/ShowFolderSelectDialog()
+' =         Mng_Array.bas/ConvRange2Array()
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
@@ -1473,7 +1544,7 @@ End Function
 ' = 引数    shTrgtSht   Worksheet   [in,out]    ワークシート
 ' = 引数    lRow        Long        [in]        行
 ' = 引数    lClm        Long        [in]        列
-' = 戻値                Boolean                 
+' = 戻値                Boolean
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
@@ -2055,27 +2126,94 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    正規表現検索する
+' = 概要    正規表現検索を行う（Vbaマクロ関数用）
 ' = 引数    sTargetStr      String  [in]  検索対象文字列
 ' = 引数    sSearchPattern  String  [in]  検索パターン
 ' = 引数    oMatchResult    Object  [out] 検索結果
-' = 戻値    なし
+' = 戻値                    Boolean       ヒット有無
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Mng_String.bas
 ' ==================================================================
-Private Function ExecRegExp( _
+Public Function ExecRegExp( _
     ByVal sTargetStr As String, _
     ByVal sSearchPattern As String, _
     ByRef oMatchResult As Object, _
     Optional ByVal bIgnoreCase As Boolean = True, _
     Optional ByVal bGlobal As Boolean = True _
-)
+) As Boolean
     Dim oRegExp As Object
     Set oRegExp = CreateObject("VBScript.RegExp")
     oRegExp.IgnoreCase = bIgnoreCase
     oRegExp.Global = bGlobal
     oRegExp.Pattern = sSearchPattern
     Set oMatchResult = oRegExp.Execute(sTargetStr)
+    If oMatchResult.Count = 0 Then
+        ExecRegExp = False
+    Else
+        ExecRegExp = True
+    End If
+End Function
+    Private Sub Test_ExecRegExp()
+        Dim sTargetStr As String
+        Dim oMatchResult As Object
+        sTargetStr = "void TestFunc(int arg1, char arg2);"
+        Debug.Print "*** test start! ***"
+        Debug.Print ExecRegExp(sTargetStr, " \w+\(", oMatchResult)
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+' ==================================================================
+' = 概要    クリップボードにテキストをコピー（Win32Apiを使用）
+' = 引数    sText       String  [in]  コピー対象文字列
+' = 戻値                Boolean       コピー結果
+' = 覚書    Win32APIを使用する。
+' =         ※ クリップボードは DataObject の PutInClipboard でも利用
+' =            可能｡しかし､DataObject は参照設定が必要なうえ､特定のク
+' =            リップボード形式には貼り付けされない｡（CF_UNICODETEXT
+' =            のみで CF_TEXTへは貼り付けされない）
+' =            上記のように DataObject を使用したくない場合に本関数
+' =            を利用すること｡
+' = 依存    user32/OpenClipboard()
+' =         user32/EmptyClipboard()
+' =         user32/CloseClipboard()
+' =         user32/SetClipboardData()
+' =         kernel32/GlobalAlloc()
+' =         kernel32/GlobalLock()
+' =         kernel32/GlobalUnlock()
+' =         kernel32/lstrcpy()
+' = 所属    Mng_Clipboard.bas
+' ==================================================================
+Public Function SetToClipboard( _
+    sText As String _
+) As Boolean
+    '定数宣言
+    Const GMEM_MOVEABLE         As Long = &H2
+    Const GMEM_ZEROINIT         As Long = &H40
+    Const GHND                  As Long = (GMEM_MOVEABLE Or GMEM_ZEROINIT)
+    Const CF_TEXT               As Long = 1
+    Const CF_OEMTEXT            As Long = 7
+    
+    Dim hGlobal As Long
+    Dim lTextLen As Long
+    Dim p As Long
+    
+    '戻り値をとりあえず、Falseに設定しておく。
+    If OpenClipboard(0) <> 0 Then
+        If EmptyClipboard() <> 0 Then
+            lTextLen = LenB(sText) + 1 '長さの算出(本来はUnicodeから変換後の長さを使うほうがよい)
+            hGlobal = GlobalAlloc(GHND, lTextLen) 'コピー先の領域確保
+            p = GlobalLock(hGlobal)
+            Call lstrcpy(p, sText) '文字列をコピー
+            Call GlobalUnlock(hGlobal) 'クリップボードに渡すときにはUnlockしておく必要がある
+            Call SetClipboardData(CF_TEXT, hGlobal) 'クリップボードへ貼り付ける
+            Call CloseClipboard 'クリップボードをクローズ
+            SetToClipboard = True 'コピー成功
+        Else
+            SetToClipboard = False
+        End If
+    Else
+        SetToClipboard = False
+    End If
 End Function
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_String"
 Option Explicit
 
-' string manage library v1.41
+' string manage library v1.42
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
@@ -315,34 +315,6 @@ End Function
         Debug.Print ConvDate2String(Now())
     End Sub
 
-' ==================================================================
-' = 概要    正規表現検索する
-' = 引数    sTargetStr      String  [in]  検索対象文字列
-' = 引数    sSearchPattern  String  [in]  検索パターン
-' = 引数    oMatchResult    Object  [out] 検索結果
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Mng_String.bas
-' ==================================================================
-Public Function ExecRegExp( _
-    ByVal sTargetStr As String, _
-    ByVal sSearchPattern As String, _
-    ByRef oMatchResult As Object, _
-    Optional ByVal bIgnoreCase As Boolean = True, _
-    Optional ByVal bGlobal As Boolean = True _
-)
-    Dim oRegExp As Object
-    Set oRegExp = CreateObject("VBScript.RegExp")
-    Set oRegExp = CreateObject("VBScript.RegExp")
-    oRegExp.IgnoreCase = bIgnoreCase
-    oRegExp.Global = bGlobal
-    oRegExp.Pattern = sSearchPattern
-    Set oMatchResult = oRegExp.Execute(sTargetStr)
-End Function
-    Private Sub Test_ExecRegExp()
-        '★
-    End Sub
 
 ' ==================================================================
 ' = 概要    数字 型変換(String→Long)
@@ -379,7 +351,7 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    正規表現検索を行う
+' = 概要    正規表現検索を行う（Excel関数用）
 ' = 引数    sSearchPattern  String   [in]  検索パターン
 ' = 引数    sTargetStr      String   [in]  検索対象文字列
 ' = 引数    lMatchIdx       Long     [in]  検索結果インデックス（引数省略可）
@@ -419,6 +391,44 @@ End Function
         sTargetStr = "void TestFunc(int arg1, char arg2);"
         Debug.Print "*** test start! ***"
         Debug.Print RegExpSearch(sTargetStr, " \w+\(")
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+' ==================================================================
+' = 概要    正規表現検索を行う（Vbaマクロ関数用）
+' = 引数    sTargetStr      String  [in]  検索対象文字列
+' = 引数    sSearchPattern  String  [in]  検索パターン
+' = 引数    oMatchResult    Object  [out] 検索結果
+' = 戻値                    Boolean       ヒット有無
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function ExecRegExp( _
+    ByVal sTargetStr As String, _
+    ByVal sSearchPattern As String, _
+    ByRef oMatchResult As Object, _
+    Optional ByVal bIgnoreCase As Boolean = True, _
+    Optional ByVal bGlobal As Boolean = True _
+) As Boolean
+    Dim oRegExp As Object
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.IgnoreCase = bIgnoreCase
+    oRegExp.Global = bGlobal
+    oRegExp.Pattern = sSearchPattern
+    Set oMatchResult = oRegExp.Execute(sTargetStr)
+    If oMatchResult.Count = 0 Then
+        ExecRegExp = False
+    Else
+        ExecRegExp = True
+    End If
+End Function
+    Private Sub Test_ExecRegExp()
+        Dim sTargetStr As String
+        Dim oMatchResult As Object
+        sTargetStr = "void TestFunc(int arg1, char arg2);"
+        Debug.Print "*** test start! ***"
+        Debug.Print ExecRegExp(sTargetStr, " \w+\(", oMatchResult)
         Debug.Print "*** test finished! ***"
     End Sub
 

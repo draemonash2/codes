@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.92
+' user define functions v1.92a
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -1449,7 +1449,7 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    正規表現検索を行う
+' = 概要    正規表現検索を行う（Excel関数用）
 ' = 引数    sSearchPattern  String   [in]  検索パターン
 ' = 引数    sTargetStr      String   [in]  検索対象文字列
 ' = 引数    lMatchIdx       Long     [in]  検索結果インデックス（引数省略可）

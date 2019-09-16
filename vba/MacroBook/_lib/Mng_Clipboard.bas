@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Clipboard"
 Option Explicit
 
-' clipboard library v1.01
+' clipboard library v1.1
 
 'Win32API宣言
 Public Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
@@ -13,13 +13,6 @@ Public Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 '本来はＣ言語用の文字列コピーだが、２つ目の引数をStringとしているので変換が行われた上でコピーされる。
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
-
-'定数宣言
-Public Const GMEM_MOVEABLE         As Long = &H2
-Public Const GMEM_ZEROINIT         As Long = &H40
-Public Const GHND                  As Long = (GMEM_MOVEABLE Or GMEM_ZEROINIT)
-Public Const CF_TEXT               As Long = 1
-Public Const CF_OEMTEXT            As Long = 7
 
 ' ==================================================================
 ' = 概要    クリップボードにテキストをコピー（Win32Apiを使用）
@@ -42,9 +35,16 @@ Public Const CF_OEMTEXT            As Long = 7
 ' =         kernel32/lstrcpy()
 ' = 所属    Mng_Clipboard.bas
 ' ==================================================================
-Public Function CopyText( _
+Public Function SetToClipboard( _
     sText As String _
 ) As Boolean
+    '定数宣言
+    Const GMEM_MOVEABLE         As Long = &H2
+    Const GMEM_ZEROINIT         As Long = &H40
+    Const GHND                  As Long = (GMEM_MOVEABLE Or GMEM_ZEROINIT)
+    Const CF_TEXT               As Long = 1
+    Const CF_OEMTEXT            As Long = 7
+    
     Dim hGlobal As Long
     Dim lTextLen As Long
     Dim p As Long
@@ -59,11 +59,12 @@ Public Function CopyText( _
             Call GlobalUnlock(hGlobal) 'クリップボードに渡すときにはUnlockしておく必要がある
             Call SetClipboardData(CF_TEXT, hGlobal) 'クリップボードへ貼り付ける
             Call CloseClipboard 'クリップボードをクローズ
-            CopyText = True 'コピー成功
+            SetToClipboard = True 'コピー成功
         Else
-            CopyText = False
+            SetToClipboard = False
         End If
     Else
-        CopyText = False
+        SetToClipboard = False
     End If
 End Function
+
