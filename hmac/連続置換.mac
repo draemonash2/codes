@@ -1,0 +1,18 @@
+//replaceallfast 検索文字列, 置換文字列 [,word] [,casesense | nocasesense] [,regular | noregular] [,fuzzy] [,inselect] [,linknext] [,ask] [, hilight | nohilight] [,incolormarker]
+//  askを指定すると確認が入ります。
+//  casesenseは大文字／小文字の区別をするという意味です。
+//  nocasesenseは大文字／小文字の区別をしません。
+//  casesenseとnocasesenseのいずれも指定しない場合は、正規表現(regular)の指定があるときは自動的にcasesenseの指定になり、正規表現の指定がないときは自動的にnocasesenseの指定になります。
+//  regularを付けると正規表現で検索します。
+//  noregularを付けると正規表現でない通常の検索をします。
+//  fuzzyを付けるとあいまい検索をします。
+//  inselectを付けると範囲選択しているときの「選択した範囲内のみ」をチェックした状態と同じ動作になります。 inselectで検索した後は、finddown,findup,finddown2,findup2は「選択した範囲内のみ」の動作になります。これを解除するにはescapeinselect文を使います。
+//  linknextを付けると次の秀丸エディタも続けて検索します。
+//  askによって確認にダイアログが出るとき、どのようにして確認ダイアログが閉じられたかをgetresultexで知ることができます。
+//    linknextとaskを同時に指定することはできません。
+//  hilightを付けると「検索文字列の強調」になります。nohilightを付けると「検索文字列の強調」が無効になります。（V5.00以降）
+//  incolormarkerは、追加の条件の「指定の範囲/カラーマーカー内」を有効にします。（V8.56以降）
+
+begingroupundo;
+replaceallfast "検索文字", "置換文字";
+endgroupundo;

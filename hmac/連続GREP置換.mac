@@ -1,0 +1,20 @@
+//grepreplace 検索文字列, 置換文字列, 検索するファイル, カレントフォルダ [,各種フラグ] [,backup] [,preview]
+//  検索するファイルはgrep対象ファイルを指定します。(ex."*.cpp;*.c")
+//  カレントフォルダはルートフォルダを指定します。(ex."." ex."c:\test")
+//  casesenseは大文字／小文字の区別をするという意味です。
+//  nocasesenseは大文字／小文字の区別をしません。
+//    casesenseとnocasesenseのいずれも指定しない場合は、正規表現(regular)の指定があるときは自動的にcasesenseの指定になり、正規表現の指定がないときは自動的にnocasesenseの指定になります。
+//  regularを付けると正規表現で検索します。
+//  fuzzyを付けるとあいまい検索をします。
+//  subdirはサブフォルダも検索をします。
+//  iconは最小化状態で実行します。
+//  filelistはファイル名一覧だけ作成します。
+//  fullpathはファイル名をフルパスで出力します。（V4.00以降）
+//  hilightを付けると「検索文字列の強調」になります。nohilightを付けると「検索文字列の強調」が無効になります。（V5.00以降）
+//  backupを指定すると、「バックアップ」がONになります。
+//  previewを指定すると、「保存の前に確認」がONになります。
+//  resultには見つかった個数が入ります。途中で中断された場合はresultは-1になります。
+
+begingroupundo;
+grepreplace "[abc]", "d", "*.cpp;*.c", ".", regular, backup;
+endgroupundo;
