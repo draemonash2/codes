@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.5
+' user define macros v2.5a
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1450,7 +1450,7 @@ End Sub
 ' = 戻値                    Long          数字(Long型)
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Macros.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function NumConvStr2Lng( _
     ByVal sNum As String _
@@ -1464,7 +1464,7 @@ End Function
 ' = 戻値                    String          数字(String型)
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Macros.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function NumConvLng2Str( _
     ByVal lNum As Long _
@@ -1834,7 +1834,7 @@ End Function
 ' = 戻値    なし
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Macros.bas
+' = 所属    Mng_Array.bas
 ' ============================================
 Private Function OutputTxtFile( _
     ByVal sFilePath As String, _

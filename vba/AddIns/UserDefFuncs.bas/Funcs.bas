@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.92a
+' user define functions v1.92b
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -163,7 +163,7 @@ End Function
 ' = 戻値                Variant       抽出文字列
 ' = 覚書    iExtIndex が要素を超える場合、空文字列を返却する
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function SplitStr( _
     ByVal sStr As String, _
@@ -211,7 +211,7 @@ End Function
 ' =               B2 = SplitStr( B1, "\", GetStrNum( B2, "\" ) )
 ' =                 ⇒ Try04.c
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function GetStrNum( _
     ByVal sTrgtStr As String, _
@@ -726,7 +726,7 @@ End Function
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitAndVal( _
     ByVal cInVal1 As Currency, _
@@ -764,10 +764,10 @@ End Function
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
-' = 依存    Funcs.bas/Hex2Bin()
-' =         Funcs.bas/BitAndStrBin()
-' =         Funcs.bas/Bin2Hex()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/Hex2Bin()
+' =         Mng_String.bas/BitAndStrBin()
+' =         Mng_String.bas/Bin2Hex()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitAndStrHex( _
     ByVal sInHexVal1 As String, _
@@ -849,7 +849,7 @@ End Function
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitAndStrBin( _
     ByVal sInBinVal1 As String, _
@@ -927,7 +927,7 @@ End Function
 ' = 戻値              Variant          演算結果（10進数数値）
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitOrVal( _
     ByVal cInVal1 As Currency, _
@@ -966,10 +966,10 @@ End Function
 ' = 引数    lInDigitNum Long       [in]  出力桁数
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
-' = 依存    Funcs.bas/Hex2Bin()
-' =         Funcs.bas/BitOrStrBin()
-' =         Funcs.bas/Bin2Hex()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/Hex2Bin()
+' =         Mng_String.bas/BitOrStrBin()
+' =         Mng_String.bas/Bin2Hex()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitOrStrHex( _
     ByVal sInHexVal1 As String, _
@@ -1050,7 +1050,7 @@ End Function
 ' = 戻値                Variant          演算結果（文字列）
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitOrStrBin( _
     ByVal sInBinVal1 As String, _
@@ -1135,12 +1135,12 @@ End Function
 ' = 戻値                    Variant         シフト結果（10進数数値）
 ' = 覚書    32ビットのみ対応する。そのため、左シフトの結果が32ビットを
 ' =         超える場合、下位32ビットのシフト結果を返却する。
-' = 依存    Funcs.bas/Dec2Hex()
-' =         Funcs.bas/BitShiftStrBin()
-' =         Funcs.bas/Hex2Bin()
-' =         Funcs.bas/Bin2Hex()
-' =         Funcs.bas/Hex2Dec()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/Dec2Hex()
+' =         Mng_String.bas/BitShiftStrBin()
+' =         Mng_String.bas/Hex2Bin()
+' =         Mng_String.bas/Bin2Hex()
+' =         Mng_String.bas/Hex2Dec()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitShiftVal( _
     ByVal cInDecVal As Currency, _
@@ -1250,10 +1250,10 @@ End Function
 ' =               符号ビットを保持するか、無視して切り捨てるかを選択する。
 ' =           ex1) 10101011 を出力桁数4として右1算術(符号ビット保持)シフト ⇒ 1101
 ' =           ex2) 10101011 を出力桁数4として右1算術(符号ビット切捨)シフト ⇒ 0101
-' = 依存    Funcs.bas/BitShiftStrBin()
-' =         Funcs.bas/Hex2Bin()
-' =         Funcs.bas/Bin2Hex()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/BitShiftStrBin()
+' =         Mng_String.bas/Hex2Bin()
+' =         Mng_String.bas/Bin2Hex()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitShiftStrHex( _
     ByVal sInHexVal As String, _
@@ -1369,9 +1369,9 @@ End Function
 ' =              ⇒ "D"(0b1101)
 ' =           ex2) "AB"(0b10101011) を出力桁数1として右1算術(符号ビット切捨)シフト
 ' =              ⇒ "5"(0b0101)
-' = 依存    Funcs.bas/BitShiftLogStrBin()
-' =         Funcs.bas/BitShiftAriStrBin()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/BitShiftLogStrBin()
+' =         Mng_String.bas/BitShiftAriStrBin()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Public Function BitShiftStrBin( _
     ByVal sInBinVal As String, _
@@ -1789,7 +1789,7 @@ End Function
 ' = 戻値            Currency            演算結果
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_Math.bas
 ' ==================================================================
 Private Function ModEx( _
     ByVal cNum1 As Currency, _
@@ -1819,7 +1819,7 @@ End Function
 ' = 戻値                String              変換結果
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Dec2Hex( _
     ByVal cInDecVal As Currency _
@@ -1885,7 +1885,7 @@ End Function
 ' = 戻値                    Variant             変換結果
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Hex2Dec( _
     ByVal sInHexVal As String, _
@@ -1953,8 +1953,8 @@ End Function
 ' = 引数    sHexVal         String      [in]    16進数
 ' = 戻値                    String              変換結果
 ' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
-' = 依存    Funcs.bas/Hex2BinMap()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/Hex2BinMap()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Hex2Bin( _
     ByVal sHexVal As String _
@@ -2001,8 +2001,8 @@ End Function
 ' = 引数    bIsUcase        Boolean     [in]    大文字小文字
 ' = 戻値                    String              変換結果
 ' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
-' = 依存    Funcs.bas/Bin2HexMap()
-' = 所属    Funcs.bas
+' = 依存    Mng_String.bas/Bin2HexMap()
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Bin2Hex( _
     ByVal sBinVal As String, _
@@ -2054,7 +2054,7 @@ End Function
 ' = 戻値                    String              変換結果
 ' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Hex2BinMap( _
     ByVal sHexVal As String _
@@ -2087,7 +2087,7 @@ End Function
 ' = 戻値                    String              変換結果
 ' = 覚書    指定範囲以外の値を指定すると文字列 "error" を返却する。
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function Bin2HexMap( _
     ByVal sBinVal As String, _
@@ -2145,7 +2145,7 @@ End Function
 ' = 戻値                    String                      シフト結果
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function BitShiftLogStrBin( _
     ByVal sInBinVal As String, _
@@ -2231,7 +2231,7 @@ End Function
 ' = 戻値                        String                      シフト結果
 ' = 覚書    なし
 ' = 依存    なし
-' = 所属    Funcs.bas
+' = 所属    Mng_String.bas
 ' ==================================================================
 Private Function BitShiftAriStrBin( _
     ByVal sInBinVal As String, _
