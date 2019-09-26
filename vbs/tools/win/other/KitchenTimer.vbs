@@ -12,6 +12,7 @@ Option Explicit
 '
 'y‰ü’ù—š—ğz
 '	1.0.0	2019/08/03	V‹Kì¬
+'	1.1.0	2019/09/26	•¡”‹N“®‘Î‰
 '==============================================================================
 
 '==============================================================================
@@ -40,12 +41,9 @@ Else
 			vbYes, _
 			PROG_NAME
 	Else
-		WScript.Sleep lWaitMinites * 60 * 1000
-		
-		MsgBox _
-			lWaitMinites & "•ª‚ªŒo‰ß‚µ‚Ü‚µ‚½", _
-			vbYes, _
-			PROG_NAME
+		Dim objWsh
+		Set objWsh = WScript.CreateObject("WScript.Shell")
+		objWsh.Run "KitchenTimerPost.vbs "& lWaitMinites
 	End If
 End If
 
