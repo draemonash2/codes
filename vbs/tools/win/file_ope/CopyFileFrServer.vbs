@@ -6,6 +6,7 @@
 '####################################################################
 Const ADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
 Const EVACUATE_ORG_FILE = True
+Const CHOOSE_FILE_AT_DIALOG_BOX = False
 Const SHORTCUT_FILE_SUFFIX = "#s#"
 Const ORIGINAL_FILE_PREFIX = "#o#"
 Const EDIT_FILE_PREFIX     = "#e#"
@@ -87,7 +88,11 @@ End If
 '*** 出力先選択 ***
 If bIsContinue = True Then
     Dim sDstParDirPath
-    sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
+    If CHOOSE_FILE_AT_DIALOG_BOX = True Then
+        sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
+    Else
+        sDstParDirPath = InputBox( "フォルダを選択してください", PROG_NAME, sIniDstParDirPath )
+    End If
     
     If objFSO.FolderExists( sDstParDirPath ) = False Then 'キャンセルの場合
         MsgBox "実行がキャンセルされました。", vbOKOnly, PROG_NAME
