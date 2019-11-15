@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.92b
+' user define functions v1.93
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -75,16 +75,18 @@ End Enum
 ' ==================================================================
 ' = 概要    指定した範囲の文字列を結合する
 ' =         区切り文字を指定した場合、結合する間に文字を挿入する
-' = 引数    rConcRange    Range   [in]  結合する範囲
-' = 引数    sDlmtr        String  [in]  区切り文字（省略可）
-' = 戻値                  Variant       結合後の文字列
+' = 引数    rConcRange      Range   [in]  結合する範囲
+' = 引数    sDlmtr          String  [in]  区切り文字（省略可）
+' = 引数    bIsBlancIgnore  Boolean [in]  空白無視（省略可）
+' = 戻値                    Variant       結合後の文字列
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Funcs.bas
 ' ==================================================================
 Public Function ConcStr( _
     ByRef rConcRange As Range, _
-    Optional ByVal sDlmtr As String _
+    Optional ByVal sDlmtr As String = "", _
+    Optional ByVal bIsBlancIgnore As Boolean = True _
 ) As Variant
     Dim rConcRangeCnt As Range
     Dim sConcTxtBuf As String
@@ -94,9 +96,17 @@ Public Function ConcStr( _
     Else
         If rConcRange.Rows.Count = 1 Or _
            rConcRange.Columns.Count = 1 Then
-            For Each rConcRangeCnt In rConcRange
-                sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
-            Next rConcRangeCnt
+            If bIsBlancIgnore = True Then
+                For Each rConcRangeCnt In rConcRange
+                    If rConcRangeCnt.Value <> "" Then
+                        sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
+                    End If
+                Next rConcRangeCnt
+            Else
+                For Each rConcRangeCnt In rConcRange
+                    sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
+                Next rConcRangeCnt
+            End If
             
             ' 区切り文字判定
             If sDlmtr <> "" Then
