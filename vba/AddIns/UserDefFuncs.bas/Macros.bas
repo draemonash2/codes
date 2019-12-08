@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.5a
+' user define macros v2.7
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -32,6 +32,7 @@ Option Explicit
 ' =    アクティブセルコメントのみ表示               アクティブセルコメントのみ表示する
 ' =    アクティブセルコメントのみ表示および移動     アクティブセルコメントのみ表示し、移動する
 ' =    ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
+' =    MEMOシートへジャンプ                         アクティブブックのMEMOシートへ移動する
 ' =
 ' =    Excel方眼紙                                  Excel方眼紙
 ' =    EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
@@ -171,6 +172,7 @@ Private Function UpdateShortcutKeySettings( _
     End If
     
     Call UpdateShtcutSetting("^+j", "ハイパーリンクで飛ぶ", sOperate)
+    Call UpdateShtcutSetting("^%{HOME}", "MEMOシートへジャンプ", sOperate)
     
     Call UpdateShtcutSetting("", "Excel方眼紙", sOperate)
     
@@ -422,8 +424,8 @@ Public Sub 選択範囲をファイルエクスポート()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
-        Dim sTmpPath As String
-    sTmpPath = objWshShell.SpecialFolders("Templates") & "\" & TEMP_FILE_NAME
+    Dim sTmpPath As String
+    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & TEMP_FILE_NAME
     Dim sDirPathOld As String
     Dim sFileNameOld As String
     If objFSO.FileExists(sTmpPath) Then
@@ -1191,6 +1193,17 @@ Public Sub ハイパーリンクで飛ぶ()
                     "[Error No." & Err.Number & "] " & Err.Description
     End If
     On Error GoTo 0
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックのMEMOシートへ移動する
+' = 覚書    なし
+' = 依存　　Macros.bas/JumpToTrgtSheet()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub MEMOシートへジャンプ()
+    Const TRGT_SHEET_NAME As String = "MEMO"
+    Call JumpToTrgtSheet(TRGT_SHEET_NAME)
 End Sub
 
 ' =============================================================================
@@ -2216,4 +2229,24 @@ Public Function SetToClipboard( _
         SetToClipboard = False
     End If
 End Function
+
+' ==================================================================
+' = 概要    アクティブブックの指定シートへ移動する
+' = 引数    sSheetName      String  [in]  移動対象シート名
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Public Function JumpToTrgtSheet( _
+    ByVal sSheetName As String _
+)
+    Dim shSheet As Worksheet
+    For Each shSheet In ActiveWorkbook.Sheets
+        If shSheet.Name = sSheetName Then
+            shSheet.Activate
+        End If
+    Next
+End Function
+
 
