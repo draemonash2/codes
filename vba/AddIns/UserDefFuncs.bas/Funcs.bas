@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.93
+' user define functions v1.10a
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -38,6 +38,9 @@ Option Explicit
 ' =    ConvCamelToSnake     命名規則変換を行う（キャメルケース⇒スネークケース）
 ' =
 ' =    DiffRange            指定した２つの範囲を比較して、完全一致かどうかを判定する
+' =
+' =    CalcPaddingWidth     文字列長から区切り幅位置までの文字数を返却する
+' =    CalcPaddingTabWidth  文字列長からタブ幅区切り位置までの文字数を返却する
 ' =
 ' =    Exists               ファイル/フォルダの存在確認を行う
 ' ==================================================================
@@ -1785,6 +1788,171 @@ End Function
                 End If
             End If
         Next i
+    End Sub
+
+' ==================================================================
+' = 概要    文字列長からタブ幅区切り位置までのタブ文字数を返却する
+' = 引数    lLen        Long    [in]  文字列長
+' = 引数    lLenMax     Long    [in]  文字列最大長（省略可）
+' = 引数    lTabWidth   Long    [in]  タブ文字幅（省略可）
+' = 戻値                Variant       タブ文字数
+' = 覚書    実行例)lLen:3,lLenMax:9,lTabWidth:4
+'             「xxx^^   ^   」
+'             「xxxxxxxxx^  」
+'               →return:3
+' = 依存    Mng_String.bas/CalcPaddingWidth()
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function CalcPaddingTabWidth( _
+    ByVal lLen As Long, _
+    Optional ByVal lLenMax As Long = 0, _
+    Optional ByVal lTabWidth As Long = 4 _
+) As Variant
+    Dim vPaddingWidth As Variant
+    If lTabWidth = 0 Then
+        CalcPaddingTabWidth = xlErrDiv0
+    ElseIf lTabWidth < 0 Or lLen < 0 Or lLenMax < 0 Then
+        CalcPaddingTabWidth = xlErrValue
+    Else
+        'パディング幅(スペース)算出
+        vPaddingWidth = CalcPaddingWidth(lLen, lLenMax, lTabWidth)
+        'パディング幅(タブ)算出
+        CalcPaddingTabWidth = Application.WorksheetFunction.RoundUp(vPaddingWidth / lTabWidth, 0)
+    End If
+End Function
+    Private Sub Test_CalcPaddingTabWidth()
+        Debug.Print "*** test start! ***"
+        Debug.Print CalcPaddingTabWidth(2, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(2, 1, 4) = 1
+        Debug.Print CalcPaddingTabWidth(2, 4, 4) = 2
+        Debug.Print CalcPaddingTabWidth(2, 6, 4) = 2
+        Debug.Print CalcPaddingTabWidth(4, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 2, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 3, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 4, 4) = 2
+        Debug.Print CalcPaddingTabWidth(0, 5, 4) = 2
+        
+        Debug.Print CalcPaddingTabWidth(5, 19, 4) = 4
+        Debug.Print CalcPaddingTabWidth(5, 20, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 21, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 22, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 23, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 24, 4) = 6
+        
+        Debug.Print CalcPaddingTabWidth(5, 19) = 4
+        Debug.Print CalcPaddingTabWidth(5, 20) = 5
+        Debug.Print CalcPaddingTabWidth(5, 21) = 5
+        Debug.Print CalcPaddingTabWidth(5, 22) = 5
+        Debug.Print CalcPaddingTabWidth(5, 23) = 5
+        Debug.Print CalcPaddingTabWidth(5, 24) = 6
+        
+        Debug.Print CalcPaddingTabWidth(0) = 1
+        Debug.Print CalcPaddingTabWidth(3) = 1
+        Debug.Print CalcPaddingTabWidth(4) = 1
+        Debug.Print CalcPaddingTabWidth(5) = 1
+        Debug.Print CalcPaddingTabWidth(6) = 1
+        
+        Debug.Print CalcPaddingTabWidth(5, 15, 8) = 2
+        Debug.Print CalcPaddingTabWidth(5, 16, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 17, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 18, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 19, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 20, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 21, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 22, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 23, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 24, 8) = 4
+        
+        Debug.Print CalcPaddingTabWidth(1, 5, 0) = xlErrDiv0
+        Debug.Print CalcPaddingTabWidth(1, 5, -1) = xlErrValue
+        Debug.Print CalcPaddingTabWidth(1, -1, 4) = xlErrValue
+        Debug.Print CalcPaddingTabWidth(-1, 5, 4) = xlErrValue
+        
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+' ==================================================================
+' = 概要    文字列長から区切り幅位置までの文字数を返却する
+' = 引数    lLen        Long    [in]  文字列長
+' = 引数    lLenMax     Long    [in]  文字列最大長（省略可）
+' = 引数    lSepWidth   Long    [in]  区切り幅（省略可）
+' = 戻値                Variant       文字数
+' = 覚書    実行例)lLen:3,lLenMax:9,lSepWidth:4
+'             「xxx         」
+'             「xxxxxxxxx   」
+'               →return:9
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function CalcPaddingWidth( _
+    ByVal lLen As Long, _
+    Optional ByVal lLenMax As Long = 0, _
+    Optional ByVal lSepWidth As Long = 4 _
+) As Variant
+    Dim lPaddingWidth As Long
+    If lSepWidth = 0 Then
+        CalcPaddingWidth = xlErrDiv0
+    ElseIf lSepWidth < 0 Or lLen < 0 Or lLenMax < 0 Then
+        CalcPaddingWidth = xlErrValue
+    Else
+        If lLen > lLenMax Then
+            lLenMax = lLen
+        End If
+        lPaddingWidth = lSepWidth - (lLenMax Mod lSepWidth)
+        CalcPaddingWidth = (lPaddingWidth + lLenMax) - lLen
+    End If
+End Function
+    Private Sub Test_CalcPaddingWidth()
+        Debug.Print "*** test start! ***"
+        Debug.Print CalcPaddingWidth(0, 5, 4) = 8
+        Debug.Print CalcPaddingWidth(3, 5, 4) = 5
+        Debug.Print CalcPaddingWidth(4, 5, 4) = 4
+        Debug.Print CalcPaddingWidth(5, 5, 4) = 3
+        Debug.Print CalcPaddingWidth(6, 5, 4) = 2
+        Debug.Print CalcPaddingWidth(7, 5, 4) = 1
+        Debug.Print CalcPaddingWidth(8, 5, 4) = 4
+        
+        Debug.Print CalcPaddingWidth(0, 1, 8) = 8
+        Debug.Print CalcPaddingWidth(1, 1, 8) = 7
+        Debug.Print CalcPaddingWidth(2, 1, 8) = 6
+        Debug.Print CalcPaddingWidth(3, 1, 8) = 5
+        Debug.Print CalcPaddingWidth(4, 1, 8) = 4
+        Debug.Print CalcPaddingWidth(5, 1, 8) = 3
+        Debug.Print CalcPaddingWidth(6, 1, 8) = 2
+        Debug.Print CalcPaddingWidth(7, 1, 8) = 1
+        Debug.Print CalcPaddingWidth(8, 1, 8) = 8
+        
+        Debug.Print CalcPaddingWidth(0, 5, 7) = 7
+        Debug.Print CalcPaddingWidth(3, 5, 7) = 4
+        Debug.Print CalcPaddingWidth(4, 5, 7) = 3
+        Debug.Print CalcPaddingWidth(5, 5, 7) = 2
+        Debug.Print CalcPaddingWidth(6, 5, 7) = 1
+        Debug.Print CalcPaddingWidth(7, 5, 7) = 7
+        Debug.Print CalcPaddingWidth(8, 5, 7) = 6
+        
+        Debug.Print CalcPaddingWidth(1, 5, 0) = xlErrDiv0
+        Debug.Print CalcPaddingWidth(1, 5, -1) = xlErrValue
+        Debug.Print CalcPaddingWidth(1, -1, 4) = xlErrValue
+        Debug.Print CalcPaddingWidth(-1, 5, 4) = xlErrValue
+        
+        Debug.Print CalcPaddingWidth(0, 5) = 8
+        Debug.Print CalcPaddingWidth(3, 5) = 5
+        Debug.Print CalcPaddingWidth(4, 5) = 4
+        Debug.Print CalcPaddingWidth(5, 5) = 3
+        Debug.Print CalcPaddingWidth(6, 5) = 2
+        Debug.Print CalcPaddingWidth(7, 5) = 1
+        Debug.Print CalcPaddingWidth(8, 5) = 4
+        
+        Debug.Print CalcPaddingWidth(0) = 4
+        Debug.Print CalcPaddingWidth(3) = 1
+        Debug.Print CalcPaddingWidth(4) = 4
+        Debug.Print CalcPaddingWidth(5) = 3
+        Debug.Print CalcPaddingWidth(6) = 2
+        Debug.Print CalcPaddingWidth(7) = 1
+        Debug.Print CalcPaddingWidth(8) = 4
+
+        Debug.Print "*** test finished! ***"
     End Sub
 
 '********************************************************************************
