@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_String"
 Option Explicit
 
-' string manage library v1.6
+' string manage library v1.7
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
@@ -579,50 +579,59 @@ End Function
 ' = 依存    なし
 ' = 所属    Mng_String.bas
 ' ==================================================================
-Public Function SplitStr( _
+Public Function TextSplit( _
     ByVal sStr As String, _
     ByVal sDlmtr As String, _
     ByVal iExtIndex As Integer _
 ) As Variant
     If sDlmtr = "" Then
-        SplitStr = sStr
+        TextSplit = sStr
     Else
         If sStr = "" Then
-            SplitStr = ""
+            TextSplit = ""
         Else
             Dim vSplitStr As Variant
             vSplitStr = Split(sStr, sDlmtr) ' 文字列分割
             If iExtIndex > UBound(vSplitStr) Or _
                iExtIndex < LBound(vSplitStr) Then
-                SplitStr = ""
+                TextSplit = ""
             Else
-                SplitStr = vSplitStr(iExtIndex)
+                TextSplit = vSplitStr(iExtIndex)
             End If
         End If
     End If
 End Function
-    Private Sub Test_SplitStr()
+    Private Sub Test_TextSplit()
         Debug.Print "*** test start! ***"
-        Debug.Print SplitStr("c:\test\a.txt", "\", 0)  'c:
-        Debug.Print SplitStr("c:\test\a.txt", "\", 1)  'test
-        Debug.Print SplitStr("c:\test\a.txt", "\", 2)  'a.txt
-        Debug.Print SplitStr("c:\test\a.txt", "\", -1) '
-        Debug.Print SplitStr("c:\test\a.txt", "\", 3)  '
-        Debug.Print SplitStr("", "\", 1)               '
-        Debug.Print SplitStr("c:\a.txt", "", 1)        'c:\a.txt
-        Debug.Print SplitStr("", "", 1)                '
-        Debug.Print SplitStr("", "", 0)                '
+        Debug.Print TextSplit("c:\test\a.txt", "\", 0)  'c:
+        Debug.Print TextSplit("c:\test\a.txt", "\", 1)  'test
+        Debug.Print TextSplit("c:\test\a.txt", "\", 2)  'a.txt
+        Debug.Print TextSplit("c:\test\a.txt", "\", -1) '
+        Debug.Print TextSplit("c:\test\a.txt", "\", 3)  '
+        Debug.Print TextSplit("", "\", 1)               '
+        Debug.Print TextSplit("c:\a.txt", "", 1)        'c:\a.txt
+        Debug.Print TextSplit("", "", 1)                '
+        Debug.Print TextSplit("", "", 0)                '
         Debug.Print "*** test finished! ***"
     End Sub
+
+'Mng_String.bas v1.6 以前との互換性保持用
+Public Function SplitStr( _
+    ByVal sStr As String, _
+    ByVal sDlmtr As String, _
+    ByVal iExtIndex As Integer _
+) As Variant
+    SplitStr = TextSplit(sStr, sDlmtr, iExtIndex)
+End Function
 
 ' ==================================================================
 ' = 概要    指定文字列の個数を返却する。
 ' = 引数    sTrgtStr      String  [in]  検索対象文字列
 ' = 引数    sSrchStr      String  [in]  検索文字列
 ' = 戻値                  Long          文字列の個数
-' = 覚書    SplitStr との組み合わせでファイル名取り出しが可能。
+' = 覚書    TextSplit との組み合わせでファイル名取り出しが可能。
 ' =           ex) B1 = C:\codes\c\Try04.c
-' =               B2 = SplitStr( B1, "\", GetStrNum( B2, "\" ) )
+' =               B2 = TextSplit( B1, "\", GetStrNum( B2, "\" ) )
 ' =                 ⇒ Try04.c
 ' = 依存    なし
 ' = 所属    Mng_String.bas

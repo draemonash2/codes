@@ -1,12 +1,12 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.10a
+' user define functions v1.11
 
 ' ==================================================================
 ' =  <<関数一覧>>
-' =    ConcStr              指定した範囲の文字列を結合する。
-' =    SplitStr             文字列を分割し、指定した要素の文字列を返却する。
+' =    TextJoin2            指定した範囲の文字列を結合する。
+' =    TextSplit            文字列を分割し、指定した要素の文字列を返却する。
 ' =    GetStrNum            指定文字列の個数を返却する。
 ' =
 ' =    RemoveTailWord       末尾区切り文字以降の文字列を除去する｡
@@ -80,26 +80,38 @@ End Enum
 ' =         区切り文字を指定した場合、結合する間に文字を挿入する
 ' = 引数    rConcRange      Range   [in]  結合する範囲
 ' = 引数    sDlmtr          String  [in]  区切り文字（省略可）
-' = 引数    bIsBlancIgnore  Boolean [in]  空白無視（省略可）
+' = 引数    bIgnoreBlanc    Boolean [in]  空白無視（省略可）
 ' = 戻値                    Variant       結合後の文字列
-' = 覚書    なし
+' = 覚書    ・1行もしくは1列を指定すること
 ' = 依存    なし
 ' = 所属    Funcs.bas
 ' ==================================================================
-Public Function ConcStr( _
+Public Function TextJoin2( _
     ByRef rConcRange As Range, _
     Optional ByVal sDlmtr As String = "", _
-    Optional ByVal bIsBlancIgnore As Boolean = True _
+    Optional ByVal bIgnoreBlanc As Boolean = True _
 ) As Variant
     Dim rConcRangeCnt As Range
     Dim sConcTxtBuf As String
     
     If rConcRange Is Nothing Then
-        ConcStr = CVErr(xlErrRef)  'エラー値
+        TextJoin2 = CVErr(xlErrRef)  'エラー値
     Else
         If rConcRange.Rows.Count = 1 Or _
            rConcRange.Columns.Count = 1 Then
-            If bIsBlancIgnore = True Then
+           
+            ' 改行判定
+            If sDlmtr = "\n" Then
+                sDlmtr = vbLf
+            ElseIf sDlmtr = "\r" Then
+                sDlmtr = vbCr
+            ElseIf sDlmtr = "\r\n" Then
+                sDlmtr = vbCrLf
+            Else
+                'Do Nothing
+            End If
+            
+            If bIgnoreBlanc = True Then
                 For Each rConcRangeCnt In rConcRange
                     If rConcRangeCnt.Value <> "" Then
                         sConcTxtBuf = sConcTxtBuf & sDlmtr & rConcRangeCnt.Value
@@ -113,16 +125,16 @@ Public Function ConcStr( _
             
             ' 区切り文字判定
             If sDlmtr <> "" Then
-                ConcStr = Mid$(sConcTxtBuf, Len(sDlmtr) + 1)
+                TextJoin2 = Mid$(sConcTxtBuf, Len(sDlmtr) + 1)
             Else
-                ConcStr = sConcTxtBuf
+                TextJoin2 = sConcTxtBuf
             End If
         Else
-            ConcStr = CVErr(xlErrRef)  'エラー値
+            TextJoin2 = CVErr(xlErrRef)  'エラー値
         End If
     End If
 End Function
-    Private Sub Test_ConcStr()
+    Private Sub Test_TextJoin2()
         Dim oTrgtRangePos01 As Range
         Dim oTrgtRangePos02 As Range
         Dim oTrgtRangePos03 As Range
@@ -145,28 +157,40 @@ End Function
         
         Debug.Print "*** test start! ***"
         oTrgtRangePos01.Item(1) = "aaa"
-        Debug.Print ConcStr(oTrgtRangePos01, "\") 'aaa
-        Debug.Print ConcStr(oTrgtRangePos01, "")  'aaa
+        Debug.Print TextJoin2(oTrgtRangePos01, "\") 'aaa
+        Debug.Print TextJoin2(oTrgtRangePos01, "")  'aaa
         oTrgtRangePos02.Item(1) = "bbb"
         oTrgtRangePos02.Item(2) = "ccc"
         oTrgtRangePos02.Item(3) = "ddd"
-        Debug.Print ConcStr(oTrgtRangePos02, "\")  'bbb\ccc\ddd
-        Debug.Print ConcStr(oTrgtRangePos02, "  ") 'bbb  ccc  ddd
-        Debug.Print ConcStr(oTrgtRangePos02, "")   'bbbcccddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "\")  'bbb\ccc\ddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "  ") 'bbb  ccc  ddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "")   'bbbcccddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "\n") 'bbb(改行)ccc(改行)ddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "\r") 'bbb(改行)ccc(改行)ddd
+        Debug.Print TextJoin2(oTrgtRangePos02, "\r\n") 'bbb(改行)ccc(改行)ddd
         oTrgtRangePos03.Item(1) = "eee"
         oTrgtRangePos03.Item(2) = "fff"
         oTrgtRangePos03.Item(3) = "ggg"
-        Debug.Print ConcStr(oTrgtRangePos03, "\")  'eee\fff\ggg
-        Debug.Print ConcStr(oTrgtRangePos03, "  ") 'eee  fff  ggg
-        Debug.Print ConcStr(oTrgtRangePos03, "")   'eeefffggg
-        Debug.Print ConcStr(oTrgtRangeNeg01, "\")  'エラー 2023
-        Debug.Print ConcStr(oTrgtRangeNeg02, "\")  'エラー 2023
+        Debug.Print TextJoin2(oTrgtRangePos03, "\")  'eee\fff\ggg
+        Debug.Print TextJoin2(oTrgtRangePos03, "  ") 'eee  fff  ggg
+        Debug.Print TextJoin2(oTrgtRangePos03, "")   'eeefffggg
+        Debug.Print TextJoin2(oTrgtRangeNeg01, "\")  'エラー 2023
+        Debug.Print TextJoin2(oTrgtRangeNeg02, "\")  'エラー 2023
         Debug.Print "*** test finished! ***"
         
         For lIdx = 0 To oTrgtRangeNeg01.Count
             oTrgtRangeNeg01.Item(lIdx + 1) = asStrBefore(lIdx)
         Next lIdx
     End Sub
+
+'Macros v1.10a 以前との互換性保持用
+Public Function ConcStr( _
+    ByRef rConcRange As Range, _
+    Optional ByVal sDlmtr As String = "", _
+    Optional ByVal bIsBlancIgnore As Boolean = True _
+) As Variant
+    ConcStr = TextJoin2(rConcRange, sDlmtr, bIsBlancIgnore)
+End Function
 
 ' ==================================================================
 ' = 概要    文字列を分割し、指定した要素の文字列を返却する
@@ -178,41 +202,50 @@ End Function
 ' = 依存    なし
 ' = 所属    Mng_String.bas
 ' ==================================================================
-Public Function SplitStr( _
+Public Function TextSplit( _
     ByVal sStr As String, _
     ByVal sDlmtr As String, _
     ByVal iExtIndex As Integer _
 ) As Variant
     If sDlmtr = "" Then
-        SplitStr = sStr
+        TextSplit = sStr
     Else
         If sStr = "" Then
-            SplitStr = ""
+            TextSplit = ""
         Else
             Dim vSplitStr As Variant
             vSplitStr = Split(sStr, sDlmtr) ' 文字列分割
             If iExtIndex > UBound(vSplitStr) Or _
                iExtIndex < LBound(vSplitStr) Then
-                SplitStr = ""
+                TextSplit = ""
             Else
-                SplitStr = vSplitStr(iExtIndex)
+                TextSplit = vSplitStr(iExtIndex)
             End If
         End If
     End If
 End Function
-    Private Sub Test_SplitStr()
+    Private Sub Test_TextSplit()
         Debug.Print "*** test start! ***"
-        Debug.Print SplitStr("c:\test\a.txt", "\", 0)  'c:
-        Debug.Print SplitStr("c:\test\a.txt", "\", 1)  'test
-        Debug.Print SplitStr("c:\test\a.txt", "\", 2)  'a.txt
-        Debug.Print SplitStr("c:\test\a.txt", "\", -1) '
-        Debug.Print SplitStr("c:\test\a.txt", "\", 3)  '
-        Debug.Print SplitStr("", "\", 1)               '
-        Debug.Print SplitStr("c:\a.txt", "", 1)        'c:\a.txt
-        Debug.Print SplitStr("", "", 1)                '
-        Debug.Print SplitStr("", "", 0)                '
+        Debug.Print TextSplit("c:\test\a.txt", "\", 0)  'c:
+        Debug.Print TextSplit("c:\test\a.txt", "\", 1)  'test
+        Debug.Print TextSplit("c:\test\a.txt", "\", 2)  'a.txt
+        Debug.Print TextSplit("c:\test\a.txt", "\", -1) '
+        Debug.Print TextSplit("c:\test\a.txt", "\", 3)  '
+        Debug.Print TextSplit("", "\", 1)               '
+        Debug.Print TextSplit("c:\a.txt", "", 1)        'c:\a.txt
+        Debug.Print TextSplit("", "", 1)                '
+        Debug.Print TextSplit("", "", 0)                '
         Debug.Print "*** test finished! ***"
     End Sub
+
+'Macros v1.10a 以前との互換性保持用
+Public Function SplitStr( _
+    ByVal sStr As String, _
+    ByVal sDlmtr As String, _
+    ByVal iExtIndex As Integer _
+) As Variant
+    SplitStr = TextSplit(sStr, sDlmtr, iExtIndex)
+End Function
 
 ' ==================================================================
 ' = 概要    指定文字列の個数を返却する。

@@ -331,3 +331,170 @@ End Function
         MsgBox Result
     End Sub
 
+' ==================================================================
+' = 概要    文字列長からタブ幅区切り位置までのタブ文字数を返却する
+' = 引数    lLen            Long    [in]  文字列長
+' = 引数    lLenMax         Long    [in]  文字列最大長
+' = 引数    lTabWidth       Long    [in]  タブ文字幅
+' = 引数    lPaddingTabNum  Long    [out] タブ文字数
+' = 戻値                    Boolean       結果(OK,NG)
+' = 覚書    実行例)lLen:3,lLenMax:9,lTabWidth:4
+'             「xxx^^   ^   」
+'             「xxxxxxxxx^  」
+'               →return:3
+' = 依存    String.vbs/CalcPaddingWidth()
+' = 所属    String.vbs
+' ==================================================================
+Public Function CalcPaddingTabWidth( _
+    ByVal lLen, _
+    ByVal lLenMax, _
+    ByVal lTabWidth, _
+    ByRef lPaddingTabNum _
+)
+    Dim lPaddingLen
+    If lTabWidth = 0 Then
+        lPaddingTabNum = 0
+        CalcPaddingTabWidth = False
+    ElseIf lTabWidth < 0 Or lLen < 0 Or lLenMax < 0 Then
+        lPaddingTabNum = 0
+        CalcPaddingTabWidth = False
+    Else
+        'パディング幅(スペース)算出
+        If CalcPaddingWidth(lLen, lLenMax, lTabWidth, lPaddingLen) Then
+            'パディング幅(タブ)算出
+            lPaddingTabNum = Application.WorksheetFunction.RoundUp(lPaddingLen / lTabWidth, 0)
+            CalcPaddingTabWidth = True
+        Else
+            lPaddingTabNum = 0
+            CalcPaddingTabWidth = False
+        End If
+    End If
+End Function
+    Call Test_CalcPaddingTabWidth()
+    Private Sub Test_CalcPaddingTabWidth()
+        '★要テスト
+        Debug.Print "*** test start! ***"
+        Debug.Print CalcPaddingTabWidth(2, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(2, 1, 4) = 1
+        Debug.Print CalcPaddingTabWidth(2, 4, 4) = 2
+        Debug.Print CalcPaddingTabWidth(2, 6, 4) = 2
+        Debug.Print CalcPaddingTabWidth(4, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 0, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 2, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 3, 4) = 1
+        Debug.Print CalcPaddingTabWidth(0, 4, 4) = 2
+        Debug.Print CalcPaddingTabWidth(0, 5, 4) = 2
+        
+        Debug.Print CalcPaddingTabWidth(5, 19, 4) = 4
+        Debug.Print CalcPaddingTabWidth(5, 20, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 21, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 22, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 23, 4) = 5
+        Debug.Print CalcPaddingTabWidth(5, 24, 4) = 6
+        
+        Debug.Print CalcPaddingTabWidth(5, 19) = 4
+        Debug.Print CalcPaddingTabWidth(5, 20) = 5
+        Debug.Print CalcPaddingTabWidth(5, 21) = 5
+        Debug.Print CalcPaddingTabWidth(5, 22) = 5
+        Debug.Print CalcPaddingTabWidth(5, 23) = 5
+        Debug.Print CalcPaddingTabWidth(5, 24) = 6
+        
+        Debug.Print CalcPaddingTabWidth(0) = 1
+        Debug.Print CalcPaddingTabWidth(3) = 1
+        Debug.Print CalcPaddingTabWidth(4) = 1
+        Debug.Print CalcPaddingTabWidth(5) = 1
+        Debug.Print CalcPaddingTabWidth(6) = 1
+        
+        Debug.Print CalcPaddingTabWidth(5, 15, 8) = 2
+        Debug.Print CalcPaddingTabWidth(5, 16, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 17, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 18, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 19, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 20, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 21, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 22, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 23, 8) = 3
+        Debug.Print CalcPaddingTabWidth(5, 24, 8) = 4
+        
+        Debug.Print CalcPaddingTabWidth(1, 5, 0) = xlErrDiv0
+        Debug.Print CalcPaddingTabWidth(1, 5, -1) = xlErrValue
+        Debug.Print CalcPaddingTabWidth(1, -1, 4) = xlErrValue
+        Debug.Print CalcPaddingTabWidth(-1, 5, 4) = xlErrValue
+        
+        Debug.Print "*** test finished! ***"
+    End Sub
+
+' ==================================================================
+' = 概要    文字列長から区切り幅位置までの文字数を返却する
+' = 引数    lLen        Long    [in]  文字列長
+' = 引数    lLenMax     Long    [in]  文字列最大長
+' = 引数    lSepWidth   Long    [in]  区切り幅
+' = 引数    lPaddingLen Long    [out] 文字数
+' = 戻値                Boolean       結果(OK,NG)
+' = 覚書    実行例)lLen:3,lLenMax:9,lSepWidth:4
+'             「xxx         」
+'             「xxxxxxxxx   」
+'               →return:9
+' = 依存    なし
+' = 所属    String.vbs
+' ==================================================================
+Public Function CalcPaddingWidth( _
+    ByVal lLen, _
+    ByVal lLenMax, _
+    ByVal lSepWidth, _
+    ByRef lPaddingLen _
+)
+    Dim lPaddingWidth
+    If lSepWidth = 0 Then
+        lPaddingLen = 0
+        CalcPaddingWidth = False
+    ElseIf lSepWidth < 0 Or lLen < 0 Or lLenMax < 0 Then
+        lPaddingLen = 0
+        CalcPaddingWidth = False
+    Else
+        If lLen > lLenMax Then
+            lLenMax = lLen
+        End If
+        lPaddingWidth = lSepWidth - (lLenMax Mod lSepWidth)
+        lPaddingLen = (lPaddingWidth + lLenMax) - lLen
+        CalcPaddingWidth = True
+    End If
+End Function
+    'Call Test_CalcPaddingWidth()
+    Private Sub Test_CalcPaddingWidth()
+        Dim Result
+        Dim lPaddingLen
+        Result = "[Result]"
+        Result = Result & vbNewLine & CalcPaddingWidth(0, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 8
+        Result = Result & vbNewLine & CalcPaddingWidth(3, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 5
+        Result = Result & vbNewLine & CalcPaddingWidth(4, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 4
+        Result = Result & vbNewLine & CalcPaddingWidth(5, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 3
+        Result = Result & vbNewLine & CalcPaddingWidth(6, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 2
+        Result = Result & vbNewLine & CalcPaddingWidth(7, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 1
+        Result = Result & vbNewLine & CalcPaddingWidth(8, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 4
+                                                                                                  '
+        Result = Result & vbNewLine & CalcPaddingWidth(0, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 8
+        Result = Result & vbNewLine & CalcPaddingWidth(1, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 7
+        Result = Result & vbNewLine & CalcPaddingWidth(2, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 6
+        Result = Result & vbNewLine & CalcPaddingWidth(3, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 5
+        Result = Result & vbNewLine & CalcPaddingWidth(4, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 4
+        Result = Result & vbNewLine & CalcPaddingWidth(5, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 3
+        Result = Result & vbNewLine & CalcPaddingWidth(6, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 2
+        Result = Result & vbNewLine & CalcPaddingWidth(7, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 1
+        Result = Result & vbNewLine & CalcPaddingWidth(8, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 8
+                                                                                                  '
+        Result = Result & vbNewLine & CalcPaddingWidth(0, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 7
+        Result = Result & vbNewLine & CalcPaddingWidth(3, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 4
+        Result = Result & vbNewLine & CalcPaddingWidth(4, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 3
+        Result = Result & vbNewLine & CalcPaddingWidth(5, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 2
+        Result = Result & vbNewLine & CalcPaddingWidth(6, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 1
+        Result = Result & vbNewLine & CalcPaddingWidth(7, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 7
+        Result = Result & vbNewLine & CalcPaddingWidth(8, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 6
+                                                                                                  '
+        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, 0, lPaddingLen)  & ":" & lPaddingLen ' 0
+        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, -1, lPaddingLen) & ":" & lPaddingLen ' 0
+        Result = Result & vbNewLine & CalcPaddingWidth(1, -1, 4, lPaddingLen) & ":" & lPaddingLen ' 0
+        Result = Result & vbNewLine & CalcPaddingWidth(-1, 5, 4, lPaddingLen) & ":" & lPaddingLen ' 0
+        
+        MsgBox Result
+    End Sub
