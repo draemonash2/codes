@@ -352,6 +352,8 @@ Public Function CalcPaddingTabWidth( _
     ByRef lPaddingTabNum _
 )
     Dim lPaddingLen
+    Dim dCalcResult
+    Dim lDigit
     If lTabWidth = 0 Then
         lPaddingTabNum = 0
         CalcPaddingTabWidth = False
@@ -362,7 +364,9 @@ Public Function CalcPaddingTabWidth( _
         'パディング幅(スペース)算出
         If CalcPaddingWidth(lLen, lLenMax, lTabWidth, lPaddingLen) Then
             'パディング幅(タブ)算出
-            lPaddingTabNum = Application.WorksheetFunction.RoundUp(lPaddingLen / lTabWidth, 0)
+            lDigit = 0
+            dCalcResult = lPaddingLen / lTabWidth
+            lPaddingTabNum = Fix((dCalcResult + (9 * (10 ^ (-1 * (lDigit + 1))))) * (10 ^ lDigit)) / (10 ^ lDigit)
             CalcPaddingTabWidth = True
         Else
             lPaddingTabNum = 0
@@ -370,58 +374,45 @@ Public Function CalcPaddingTabWidth( _
         End If
     End If
 End Function
-    Call Test_CalcPaddingTabWidth()
+    'Call Test_CalcPaddingTabWidth()
     Private Sub Test_CalcPaddingTabWidth()
-        '★要テスト
-        Debug.Print "*** test start! ***"
-        Debug.Print CalcPaddingTabWidth(2, 0, 4) = 1
-        Debug.Print CalcPaddingTabWidth(2, 1, 4) = 1
-        Debug.Print CalcPaddingTabWidth(2, 4, 4) = 2
-        Debug.Print CalcPaddingTabWidth(2, 6, 4) = 2
-        Debug.Print CalcPaddingTabWidth(4, 0, 4) = 1
-        Debug.Print CalcPaddingTabWidth(0, 0, 4) = 1
-        Debug.Print CalcPaddingTabWidth(0, 2, 4) = 1
-        Debug.Print CalcPaddingTabWidth(0, 3, 4) = 1
-        Debug.Print CalcPaddingTabWidth(0, 4, 4) = 2
-        Debug.Print CalcPaddingTabWidth(0, 5, 4) = 2
-        
-        Debug.Print CalcPaddingTabWidth(5, 19, 4) = 4
-        Debug.Print CalcPaddingTabWidth(5, 20, 4) = 5
-        Debug.Print CalcPaddingTabWidth(5, 21, 4) = 5
-        Debug.Print CalcPaddingTabWidth(5, 22, 4) = 5
-        Debug.Print CalcPaddingTabWidth(5, 23, 4) = 5
-        Debug.Print CalcPaddingTabWidth(5, 24, 4) = 6
-        
-        Debug.Print CalcPaddingTabWidth(5, 19) = 4
-        Debug.Print CalcPaddingTabWidth(5, 20) = 5
-        Debug.Print CalcPaddingTabWidth(5, 21) = 5
-        Debug.Print CalcPaddingTabWidth(5, 22) = 5
-        Debug.Print CalcPaddingTabWidth(5, 23) = 5
-        Debug.Print CalcPaddingTabWidth(5, 24) = 6
-        
-        Debug.Print CalcPaddingTabWidth(0) = 1
-        Debug.Print CalcPaddingTabWidth(3) = 1
-        Debug.Print CalcPaddingTabWidth(4) = 1
-        Debug.Print CalcPaddingTabWidth(5) = 1
-        Debug.Print CalcPaddingTabWidth(6) = 1
-        
-        Debug.Print CalcPaddingTabWidth(5, 15, 8) = 2
-        Debug.Print CalcPaddingTabWidth(5, 16, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 17, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 18, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 19, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 20, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 21, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 22, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 23, 8) = 3
-        Debug.Print CalcPaddingTabWidth(5, 24, 8) = 4
-        
-        Debug.Print CalcPaddingTabWidth(1, 5, 0) = xlErrDiv0
-        Debug.Print CalcPaddingTabWidth(1, 5, -1) = xlErrValue
-        Debug.Print CalcPaddingTabWidth(1, -1, 4) = xlErrValue
-        Debug.Print CalcPaddingTabWidth(-1, 5, 4) = xlErrValue
-        
-        Debug.Print "*** test finished! ***"
+        Dim Result
+        Dim lPaddingLen
+        Result = "[Result]"
+        Result = Result & vbNewLine & CalcPaddingTabWidth(2, 0, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(2, 1, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(2, 4, 4,  lPaddingLen)  & ":" & lPaddingLen '2
+        Result = Result & vbNewLine & CalcPaddingTabWidth(2, 6, 4,  lPaddingLen)  & ":" & lPaddingLen '2
+        Result = Result & vbNewLine & CalcPaddingTabWidth(4, 0, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(0, 0, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(0, 2, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(0, 3, 4,  lPaddingLen)  & ":" & lPaddingLen '1
+        Result = Result & vbNewLine & CalcPaddingTabWidth(0, 4, 4,  lPaddingLen)  & ":" & lPaddingLen '2
+        Result = Result & vbNewLine & CalcPaddingTabWidth(0, 5, 4,  lPaddingLen)  & ":" & lPaddingLen '2
+        Result = Result & vbNewLine & ""
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 19, 4, lPaddingLen)  & ":" & lPaddingLen '4
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 20, 4, lPaddingLen)  & ":" & lPaddingLen '5
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 21, 4, lPaddingLen)  & ":" & lPaddingLen '5
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 22, 4, lPaddingLen)  & ":" & lPaddingLen '5
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 23, 4, lPaddingLen)  & ":" & lPaddingLen '5
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 24, 4, lPaddingLen)  & ":" & lPaddingLen '6
+        Result = Result & vbNewLine & ""
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 15, 8, lPaddingLen)  & ":" & lPaddingLen '2
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 16, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 17, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 18, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 19, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 20, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 21, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 22, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 23, 8, lPaddingLen)  & ":" & lPaddingLen '3
+        Result = Result & vbNewLine & CalcPaddingTabWidth(5, 24, 8, lPaddingLen)  & ":" & lPaddingLen '4
+        Result = Result & vbNewLine & ""
+        Result = Result & vbNewLine & CalcPaddingTabWidth(1, 5, 0,  lPaddingLen)  & ":" & lPaddingLen 'False
+        Result = Result & vbNewLine & CalcPaddingTabWidth(1, 5, -1, lPaddingLen)  & ":" & lPaddingLen 'False
+        Result = Result & vbNewLine & CalcPaddingTabWidth(1, -1, 4, lPaddingLen)  & ":" & lPaddingLen 'False
+        Result = Result & vbNewLine & CalcPaddingTabWidth(-1, 5, 4, lPaddingLen)  & ":" & lPaddingLen 'False
+        MsgBox Result
     End Sub
 
 ' ==================================================================
@@ -472,7 +463,7 @@ End Function
         Result = Result & vbNewLine & CalcPaddingWidth(6, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 2
         Result = Result & vbNewLine & CalcPaddingWidth(7, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 1
         Result = Result & vbNewLine & CalcPaddingWidth(8, 5, 4, lPaddingLen)  & ":" & lPaddingLen ' 4
-                                                                                                  '
+        Result = Result & vbNewLine & ""
         Result = Result & vbNewLine & CalcPaddingWidth(0, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 8
         Result = Result & vbNewLine & CalcPaddingWidth(1, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 7
         Result = Result & vbNewLine & CalcPaddingWidth(2, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 6
@@ -482,7 +473,7 @@ End Function
         Result = Result & vbNewLine & CalcPaddingWidth(6, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 2
         Result = Result & vbNewLine & CalcPaddingWidth(7, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 1
         Result = Result & vbNewLine & CalcPaddingWidth(8, 1, 8, lPaddingLen)  & ":" & lPaddingLen ' 8
-                                                                                                  '
+        Result = Result & vbNewLine & ""
         Result = Result & vbNewLine & CalcPaddingWidth(0, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 7
         Result = Result & vbNewLine & CalcPaddingWidth(3, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 4
         Result = Result & vbNewLine & CalcPaddingWidth(4, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 3
@@ -490,11 +481,10 @@ End Function
         Result = Result & vbNewLine & CalcPaddingWidth(6, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 1
         Result = Result & vbNewLine & CalcPaddingWidth(7, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 7
         Result = Result & vbNewLine & CalcPaddingWidth(8, 5, 7, lPaddingLen)  & ":" & lPaddingLen ' 6
-                                                                                                  '
-        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, 0, lPaddingLen)  & ":" & lPaddingLen ' 0
-        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, -1, lPaddingLen) & ":" & lPaddingLen ' 0
-        Result = Result & vbNewLine & CalcPaddingWidth(1, -1, 4, lPaddingLen) & ":" & lPaddingLen ' 0
-        Result = Result & vbNewLine & CalcPaddingWidth(-1, 5, 4, lPaddingLen) & ":" & lPaddingLen ' 0
-        
+        Result = Result & vbNewLine & ""
+        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, 0, lPaddingLen)  & ":" & lPaddingLen ' False
+        Result = Result & vbNewLine & CalcPaddingWidth(1, 5, -1, lPaddingLen) & ":" & lPaddingLen ' False
+        Result = Result & vbNewLine & CalcPaddingWidth(1, -1, 4, lPaddingLen) & ":" & lPaddingLen ' False
+        Result = Result & vbNewLine & CalcPaddingWidth(-1, 5, 4, lPaddingLen) & ":" & lPaddingLen ' False
         MsgBox Result
     End Sub
