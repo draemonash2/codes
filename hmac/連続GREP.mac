@@ -11,7 +11,10 @@
 //  filelistはファイル名一覧だけ作成します。
 //  fullpathはファイル名をフルパスで出力します。（V4.00以降）
 //  hilightを付けると「検索文字列の強調」になります。nohilightを付けると「検索文字列の強調」が無効になります。（V5.00以降）
-
+//  outputsingleを指定すると出力先を「単一」にできます。（V6.50以降）
+//  outputsametabを指定すると出力先を「タブグループごと」にできます。（V7.00以降）
+//    マクロでは「アウトプット枠」を指定することはできません。
+//  unmatchを指定すると「ヒットしない行」にできます。（V8.00以降）
 begingroupundo;
 grep "#include", "*.cpp;*.c", ".", regular;
 endgroupundo;
