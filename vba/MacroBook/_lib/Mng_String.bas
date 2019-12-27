@@ -2287,3 +2287,270 @@ End Function
         Debug.Print "*** test finished! ***"
     End Sub
 
+' ==================================================================
+' = 概要    検索キーから値を抽出する。
+' = 引数    sTrgtStr    String      [in]  対象文字列
+' = 引数    asKeyList   String()    [in]  キーリスト
+' = 引数    asValueList String()    [out] 値リスト
+' = 引数    bTrimValue  Boolean     [in]  先頭末尾空白除去(省略可)
+' = 戻値                Boolean           一致有無
+' = 覚書    ・asKeyListは必ず1オリジンで指定すること
+' = 覚書    ・実行例は以下。
+' =           ex1）
+' =             <<入力>>
+' =               sTrgtStr = "DESC:aBC FORM:d AL LSB:12 ALLOC:aaa END: "
+' =               asKeyList(1) = "FORM:"
+' =               asKeyList(2) = "LSB:"
+' =               asKeyList(3) = "DESC:"
+' =               asKeyList(4) = "END:"
+' =               bTrimValue = True
+' =             <<出力>>
+' =               asValueList(0) = ""
+' =               asValueList(1) = "d AL"
+' =               asValueList(2) = "12"
+' =               asValueList(3) = "aBC"
+' =               asValueList(4) = " "
+' =           ex2）
+' =             <<入力>>
+' =               sTrgtStr = "DESC:aBC FORM:d AL LSB:12 ALLOC:aaa END: "
+' =               asKeyList(1) = "FORM:"
+' =               asKeyList(2) = "ALLOC:"
+' =               bTrimValue = False
+' =             <<出力>>
+' =               asValueList(0) = "aBC "
+' =               asValueList(1) = "d AL LSB:12 "
+' =               asValueList(2) = "aaa END: "
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function ExtractValuesFrKeys( _
+    ByVal sTrgtStr As String, _
+    ByRef asKeyList() As String, _
+    ByRef asValueList() As String, _
+    Optional ByVal bTrimValue As Boolean = False _
+) As Boolean
+    Debug.Assert LBound(asKeyList) = 1 '1オリジンじゃなかったらエラー
+    
+    Dim lKeyNum As Long
+    lKeyNum = UBound(asKeyList)
+    
+    ReDim asValueList(0 To lKeyNum) '0オリジン(0はヒットしなかった文字列)
+    
+    Dim alKeyMatchCharIdx() As Long
+    ReDim alKeyMatchCharIdx(1 To lKeyNum)
+    Dim lKeyIdx As Long
+    For lKeyIdx = 1 To lKeyNum
+        alKeyMatchCharIdx(lKeyIdx) = 1
+    Next lKeyIdx
+    
+    Dim lCnfrmKeyIdxOld As Long '0=未確定
+    lCnfrmKeyIdxOld = 0
+    
+    Dim lCnfrmKeyStrPosOld As Long
+    lCnfrmKeyStrPosOld = 1
+    
+    ExtractValuesFrKeys = False
+    
+    Dim lCurStrPos As Long
+    For lCurStrPos = 1 To Len(sTrgtStr)
+        Dim sCurChar As String
+        sCurChar = Mid$(sTrgtStr, lCurStrPos, 1)
+        
+        Dim lCnfrmKeyIdxNow As Long '0=未確定
+        lCnfrmKeyIdxNow = 0
+        
+        '*** 確定判定 ***
+        For lKeyIdx = 1 To lKeyNum
+            If asKeyList(lKeyIdx) = "" Then
+                'Do Nothing
+            Else
+                Dim sCurKeyChar As String
+                sCurKeyChar = Mid$( _
+                                    asKeyList(lKeyIdx), _
+                                    alKeyMatchCharIdx(lKeyIdx), _
+                                    1 _
+                                )
+                If sCurKeyChar = sCurChar Then
+                    If Len(asKeyList(lKeyIdx)) <= alKeyMatchCharIdx(lKeyIdx) Then
+                        lCnfrmKeyIdxNow = lKeyIdx
+                        ExtractValuesFrKeys = True
+                    Else
+                        alKeyMatchCharIdx(lKeyIdx) = alKeyMatchCharIdx(lKeyIdx) + 1
+                    End If
+                Else
+                    alKeyMatchCharIdx(lKeyIdx) = 1
+                End If
+                If lCnfrmKeyIdxNow > 0 Then
+                    Exit For
+                End If
+            End If
+        Next lKeyIdx
+        
+        '*** 確定判定後事後処理 ***
+        Dim lExtractLen As Long
+        If lCnfrmKeyIdxNow > 0 Then
+            If lCnfrmKeyIdxOld > 0 Then 'ヒット二回目以降
+                lExtractLen = lCurStrPos - Len(asKeyList(lCnfrmKeyIdxNow)) - lCnfrmKeyStrPosOld + 1
+                asValueList(lCnfrmKeyIdxOld) = _
+                    Mid$( _
+                        sTrgtStr, _
+                        lCnfrmKeyStrPosOld, _
+                        lExtractLen _
+                    )
+                If bTrimValue = True Then
+                    asValueList(lCnfrmKeyIdxOld) = Trim(asValueList(lCnfrmKeyIdxOld))
+                End If
+            Else 'ヒット一回目
+                If lCurStrPos > Len(asKeyList(lCnfrmKeyIdxNow)) Then
+                    lExtractLen = lCurStrPos - Len(asKeyList(lCnfrmKeyIdxNow))
+                    asValueList(0) = _
+                        Mid$( _
+                            sTrgtStr, _
+                            1, _
+                            lExtractLen _
+                        )
+                    If bTrimValue = True Then
+                        asValueList(0) = Trim(asValueList(0))
+                    End If
+                End If
+            End If
+            
+            'クリア
+            For lKeyIdx = 1 To lKeyNum
+                alKeyMatchCharIdx(lKeyIdx) = 1
+            Next lKeyIdx
+            
+            '前回値更新
+            lCnfrmKeyIdxOld = lCnfrmKeyIdxNow
+            lCnfrmKeyStrPosOld = lCurStrPos + 1
+        End If
+    Next lCurStrPos
+    
+    '最終要素取り出し
+    If lCnfrmKeyIdxOld > 0 Then '1回以上ヒット
+        lExtractLen = Len(sTrgtStr) - lCnfrmKeyStrPosOld + 1
+        asValueList(lCnfrmKeyIdxOld) = _
+            Mid$( _
+                sTrgtStr, _
+                lCnfrmKeyStrPosOld, _
+                lExtractLen _
+            )
+        If bTrimValue = True Then
+            asValueList(lCnfrmKeyIdxOld) = Trim(asValueList(lCnfrmKeyIdxOld))
+        End If
+    Else '1回もヒットせず
+        asValueList(0) = sTrgtStr
+        If bTrimValue = True Then
+            asValueList(0) = Trim(asValueList(0))
+        End If
+    End If
+End Function
+    Private Sub Test_ExtractValuesFrKeys()
+        Dim asKeyList() As String
+        
+        '正常系
+        ReDim asKeyList(1 To 6)
+        asKeyList(1) = "DESC:"
+        asKeyList(2) = "LSB:"
+        asKeyList(3) = "FORM:"
+        asKeyList(4) = "MONI:"
+        asKeyList(5) = "ALLOC:"
+        asKeyList(6) = "END:"
+        Call TestSub_ExtractValuesFrKeys("DESC:aBC FORM:d AL LSB:12 ALLOC:aaa END:", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("DESC: aBC FORM:d AL LsB:12 ALLOC:aaa END:", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("DESC:aBC FORM:d AL LSB;12 ALLOC:aaa END:", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END: ", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("d AL DESC:aBC ", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("d AL DeSC:aBC ", asKeyList)
+        Call TestSub_ExtractValuesFrKeys("DESC:aBC FORM:d AL LSB:12 DESC:DEf ALLOC:aaa END:", asKeyList)
+    
+        Call TestSub_ExtractValuesFrKeysTrim("DESC: aBC FORM:d AL LsB:12 ALLOC:aaa END:", asKeyList, True)
+        Call TestSub_ExtractValuesFrKeysTrim("DESC: aBC FORM:d AL LsB:12 ALLOC:aaa END:", asKeyList, False)
+    
+        '異常系(asKeyList未初期化) →debug.assertで引っかかる
+        'Dim asKeyList2() As String
+        'Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList2)
+        
+        '異常系(asKeyListに空白要素あり)
+        ReDim asKeyList(1 To 6)
+        asKeyList(1) = "DESC:"
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+        ReDim asKeyList(1 To 6)
+        asKeyList(1) = "DESC:"
+        asKeyList(3) = "LSB:"
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+        ReDim asKeyList(1 To 6)
+        asKeyList(3) = "LSB:"
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+        ReDim asKeyList(1 To 6)
+        asKeyList(3) = "END:"
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+    
+        '異常系(asKeyListが空白要素のみ)
+        ReDim asKeyList(1 To 6)
+        Call TestSub_ExtractValuesFrKeys("FORM:d AL LSB:12 ALLOC:bbb DESC:aBC END:ab", asKeyList)
+        
+        '異常系(sTrgtStr空文字列)
+        ReDim asKeyList(1 To 6)
+        asKeyList(1) = "DESC:"
+        asKeyList(2) = "LSB:"
+        asKeyList(3) = "FORM:"
+        asKeyList(4) = "MONI:"
+        asKeyList(5) = "ALLOC:"
+        asKeyList(6) = "END:"
+        Call TestSub_ExtractValuesFrKeys("", asKeyList)
+        
+        '異常系(文字列長不足)
+        ReDim asKeyList(1 To 6)
+        asKeyList(1) = "DESC:"
+        asKeyList(2) = "LSB:"
+        asKeyList(3) = "FORM:"
+        asKeyList(4) = "MONI:"
+        asKeyList(5) = "ALLOC:"
+        asKeyList(6) = "END:"
+        Call TestSub_ExtractValuesFrKeys("a", asKeyList)
+    End Sub
+    Private Function TestSub_ExtractValuesFrKeys( _
+        ByVal sTrgtStr As String, _
+        ByRef asKeyList() As String _
+    )
+        Dim asValueList() As String
+        Dim bRet As Boolean
+        bRet = ExtractValuesFrKeys(sTrgtStr, asKeyList, asValueList)
+        Debug.Print sTrgtStr
+        Debug.Print bRet
+        
+        Dim lIdx As Long
+        For lIdx = LBound(asValueList) To UBound(asValueList)
+            If lIdx < LBound(asKeyList) Then
+                Debug.Print "other:""" & asValueList(lIdx) & """"
+            Else
+                Debug.Print asKeyList(lIdx) & """" & asValueList(lIdx) & """"
+            End If
+        Next lIdx
+        Debug.Print ""
+    End Function
+    Private Function TestSub_ExtractValuesFrKeysTrim( _
+        ByVal sTrgtStr As String, _
+        ByRef asKeyList() As String, _
+        ByVal bTrimValue As Boolean _
+    )
+        Dim asValueList() As String
+        Dim bRet As Boolean
+        bRet = ExtractValuesFrKeys(sTrgtStr, asKeyList, asValueList, bTrimValue)
+        Debug.Print sTrgtStr
+        Debug.Print bRet
+        
+        Dim lIdx As Long
+        For lIdx = LBound(asValueList) To UBound(asValueList)
+            If lIdx < LBound(asKeyList) Then
+                Debug.Print "other:""" & asValueList(lIdx) & """"
+            Else
+                Debug.Print asKeyList(lIdx) & """" & asValueList(lIdx) & """"
+            End If
+        Next lIdx
+        Debug.Print ""
+    End Function
+
