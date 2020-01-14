@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.4
+' file system library v1.5
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -263,15 +263,22 @@ End Function
 ' =                                                         1:ファイル
 ' =                                                         2:フォルダ
 ' =                                                         それ以外：格納しない
+' = 引数    sFileExtStr     String              [in]    取得するファイルの拡張子(省略可能)
+' =                                                       ex1) ""
+' =                                                       ex2) "*"
+' =                                                       ex3) "*.c"
+' =                                                       ex4) "*.txt *.log *.csv"
 ' = 戻値    なし
 ' = 覚書    ・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
+' = 覚書    ・sFileExtStrはファイル指定時のみ有効
 ' = 依存    なし
 ' = 所属    Mng_FileSys.bas
 ' ==================================================================
-Public Function GetFileListClct2( _
+Public Function GetObjctListCmdClct( _
     ByVal sTrgtDir As String, _
     ByRef cFileList As Object, _
-    ByVal lFileListType As Long _
+    ByVal lFileListType As Long, _
+    Optional ByVal sFileExtStr As String = "" _
 )
     Dim objFSO As Object 'FileSystemObjectの格納先
     Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -280,10 +287,25 @@ Public Function GetFileListClct2( _
     Dim sTmpFilePath As String
     Dim sExecCmd As String
     sTmpFilePath = CreateObject("WScript.Shell").CurrentDirectory & "\Dir.tmp"
+    Dim sTrgtDirStr As String
+    If sFileExtStr = "" Then
+        sTrgtDirStr = """" & sTrgtDir & """"
+    Else
+        Dim vFileExtentions As Variant
+        vFileExtentions = Split(sFileExtStr, " ")
+        Dim lSplitIdx As Long
+        For lSplitIdx = 0 To UBound(vFileExtentions)
+            If sTrgtDirStr = "" Then
+                sTrgtDirStr = """" & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            Else
+                sTrgtDirStr = sTrgtDirStr & " """ & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            End If
+        Next lSplitIdx
+    End If
     Select Case lFileListType
-        Case 0:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a > """ & sTmpFilePath & """"
-        Case 1:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:a-d > """ & sTmpFilePath & """"
-        Case 2:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:d > """ & sTmpFilePath & """"
+        Case 0:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a > """ & sTmpFilePath & """"
+        Case 1:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:a-d > """ & sTmpFilePath & """"
+        Case 2:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:d > """ & sTmpFilePath & """"
         Case Else: sExecCmd = ""
     End Select
     With CreateObject("Wscript.Shell")
@@ -309,16 +331,21 @@ Public Function GetFileListClct2( _
     Set objFSO = Nothing    'オブジェクトの破棄
     On Error GoTo 0
 End Function
-    Private Sub Test_GetFileListClct2()
+    Private Sub Test_GetObjctListCmdClct()
         Dim sRootDir As String
         sRootDir = "C:\codes"
         
         Dim cFileList As Object
         Set cFileList = CreateObject("System.Collections.ArrayList")
         
-'        Call GetFileListClct2(sRootDir, cFileList, 0)
-        Call GetFileListClct2(sRootDir, cFileList, 1)
-'        Call GetFileListClct2(sRootDir, cFileList, 2)
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 0)
+        Call GetObjctListCmdClct(sRootDir, cFileList, 1)
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*.c *.h")
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*.vbs")
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*")
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "")
+'        Call GetObjctListCmdClct(sRootDir, cFileList, 2)
+        Stop
     End Sub
 
 ' ==================================================================
