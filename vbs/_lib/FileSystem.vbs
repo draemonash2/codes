@@ -105,7 +105,7 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    ファイル/フォルダパス一覧を取得する
+' = 概要    ファイル/フォルダパス一覧を取得する(Variant,Dirコマンド版)
 ' = 引数    sTrgtDir        String      [in]    対象フォルダ
 ' = 引数    asFileList      Variant     [out]   ファイル/フォルダパス一覧
 ' = 引数    lFileListType   Long        [in]    取得する一覧の形式
@@ -189,7 +189,7 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    ファイル/フォルダパス一覧を取得する
+' = 概要    ファイル/フォルダパス一覧を取得する(Collection,Dirコマンド版)
 ' = 引数    sTrgtDir        String      [in]    対象フォルダ
 ' = 引数    cFileList       Collections [out]   ファイル/フォルダパス一覧
 ' = 引数    lFileListType   Long        [in]    取得する一覧の形式
@@ -197,16 +197,22 @@ End Function
 ' =                                                 1:ファイル
 ' =                                                 2:フォルダ
 ' =                                                 それ以外：格納しない
+' = 引数    sFileExtStr     String      [in]    取得するファイルの拡張子
+' =                                                 ex1) ""
+' =                                                 ex2) "*"
+' =                                                 ex3) "*.c"
+' =                                                 ex4) "*.txt *.log *.csv"
 ' = 戻値    なし
 ' = 覚書    ・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
-' =         ・Arrayコレクションに格納する
+' = 覚書    ・sFileExtStrはファイル指定時のみ有効
 ' = 依存    なし
 ' = 所属    FileSystem.vbs
 ' ==================================================================
-Public Function GetFileList3( _
+Public Function GetFileListCmdClct( _
     ByVal sTrgtDir, _
     ByRef cFileList, _
-    ByVal lFileListType _
+    ByVal lFileListType, _
+    ByVal sFileExtStr _
 )
     Dim objFSO  'FileSystemObjectの格納先
     Set objFSO = WScript.CreateObject("Scripting.FileSystemObject")
@@ -215,10 +221,25 @@ Public Function GetFileList3( _
     Dim sTmpFilePath
     Dim sExecCmd
     sTmpFilePath = WScript.CreateObject( "WScript.Shell" ).CurrentDirectory & "\Dir.tmp"
+    Dim sTrgtDirStr
+    If sFileExtStr = "" Then
+        sTrgtDirStr = """" & sTrgtDir & """"
+    Else
+        Dim vFileExtentions
+        vFileExtentions = Split(sFileExtStr, " ")
+        Dim lSplitIdx
+        For lSplitIdx = 0 To UBound(vFileExtentions)
+            If sTrgtDirStr = "" Then
+                sTrgtDirStr = """" & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            Else
+                sTrgtDirStr = sTrgtDirStr & " """ & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            End If
+        Next
+    End If
     Select Case lFileListType
-        Case 0:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a > """ & sTmpFilePath & """"
-        Case 1:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:a-d > """ & sTmpFilePath & """"
-        Case 2:    sExecCmd = "Dir """ & sTrgtDir & """ /b /s /a:d > """ & sTmpFilePath & """"
+        Case 0:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a > """ & sTmpFilePath & """"
+        Case 1:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:a-d > """ & sTmpFilePath & """"
+        Case 2:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:d > """ & sTmpFilePath & """"
         Case Else: sExecCmd = ""
     End Select
     With CreateObject("Wscript.Shell")
@@ -251,18 +272,19 @@ Public Function GetFileList3( _
     Set objFSO = Nothing    'オブジェクトの破棄
     On Error Goto 0
 End Function
-'   Call Test_GetFileList3()
-    Private Sub Test_GetFileList3()
+'   Call Test_GetFileListCmdClct()
+    Private Sub Test_GetFileListCmdClct()
         Dim objFSO
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         Dim sCurDir
-        sCurDir = objFSO.GetParentFolderName( WScript.ScriptFullName )
-        
-        msgbox sCurDir
+        sCurDir = "C:\codes"
         
         Dim cFileList
         Set cFileList = CreateObject("System.Collections.ArrayList")
-        Call GetFileList3( sCurDir, cFileList, 1 )
+        Call GetFileListCmdClct( sCurDir, cFileList, 1, "*.c *.h" )
+        'Call GetFileListCmdClct( sCurDir, cFileList, 1, "*.h" )
+        'Call GetFileListCmdClct( sCurDir, cFileList, 1, "" )
+        'Call GetFileListCmdClct( sCurDir, cFileList, 2, "" )
         
         dim sFilePath
         dim sOutput

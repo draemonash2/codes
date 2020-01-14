@@ -274,7 +274,7 @@ End Function
 ' = 依存    なし
 ' = 所属    Mng_FileSys.bas
 ' ==================================================================
-Public Function GetObjctListCmdClct( _
+Public Function GetFileListCmdClct( _
     ByVal sTrgtDir As String, _
     ByRef cFileList As Object, _
     ByVal lFileListType As Long, _
@@ -331,20 +331,20 @@ Public Function GetObjctListCmdClct( _
     Set objFSO = Nothing    'オブジェクトの破棄
     On Error GoTo 0
 End Function
-    Private Sub Test_GetObjctListCmdClct()
+    Private Sub Test_GetFileListCmdClct()
         Dim sRootDir As String
         sRootDir = "C:\codes"
         
         Dim cFileList As Object
         Set cFileList = CreateObject("System.Collections.ArrayList")
         
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 0)
-        Call GetObjctListCmdClct(sRootDir, cFileList, 1)
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*.c *.h")
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*.vbs")
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "*")
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 1, "")
-'        Call GetObjctListCmdClct(sRootDir, cFileList, 2)
+'        Call GetFileListCmdClct(sRootDir, cFileList, 0)
+        Call GetFileListCmdClct(sRootDir, cFileList, 1)
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*.c *.h")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*.vbs")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 2)
         Stop
     End Sub
 
