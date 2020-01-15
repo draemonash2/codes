@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.7
+' user define macros v2.8
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1310,7 +1310,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         Dim oMatchResult As Object
         Call ExecRegExp( _
             vFileLine, _
-            "^(.+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
+            "^([^ ]+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
             oMatchResult _
         )
         
@@ -1324,7 +1324,9 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         If sLineNo = 0 Then
             sLineNo = ""
         End If
-        lFuncLevel = LenB(oMatchResult(0).SubMatches(3)) / 2
+        Dim sFuncLevelStr As String
+        sFuncLevelStr = Replace(oMatchResult(0).SubMatches(3), "  ", " ")
+        lFuncLevel = LenB(sFuncLevelStr) / 2
         sFuncName = oMatchResult(0).SubMatches(4)
         sOmission = String(LenB(oMatchResult(0).SubMatches(5)) / 2, "▲")
         
