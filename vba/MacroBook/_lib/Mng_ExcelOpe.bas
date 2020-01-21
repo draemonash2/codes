@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_ExcelOpe"
 Option Explicit
 
-' excel operation library v2.31
+' excel operation library v2.4
 
 '************************************************************
 '* 関数定義
@@ -84,4 +84,65 @@ Private Function ExistsWorksheet( _
         Next
     End With
 End Function
+
+' ==================================================================
+' = 概要    指定したキーワードの近くのセル値を取得する
+' = 引数    shTrgtSht       Worksheet   [in]    対象シート
+' = 引数    sSearchKeyword  String      [in]    検索キーワード
+' = 引数    lOffsetRow      Long        [in]    行オフセット
+' = 引数    lOffsetClm      Long        [in]    列オフセット
+' = 引数    sOutputValue    String      [out]   セル値
+' = 戻値                    Boolean             取得結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_ExcelOpe.bas
+' ==================================================================
+Public Function GetNearCellValue( _
+    ByRef shTrgtSht As Worksheet, _
+    ByVal sSearchKeyword As String, _
+    ByVal lOffsetRow As Long, _
+    ByVal lOffsetClm As Long, _
+    ByRef sOutputValue As String _
+) As Boolean
+    With shTrgtSht
+        Dim rFindResult As Range
+        Set rFindResult = .Cells.Find(sSearchKeyword, LookAt:=xlWhole)
+        If rFindResult Is Nothing Then
+            sOutputValue = ""
+            GetNearCellValue = False
+        Else
+            If (rFindResult.Row + lOffsetRow) >= 1 And _
+               (rFindResult.Column + lOffsetClm) >= 1 Then
+                sOutputValue = .Cells( _
+                                        rFindResult.Row + lOffsetRow, _
+                                        rFindResult.Column + lOffsetClm _
+                                    ).Value
+                GetNearCellValue = True
+            Else
+                sOutputValue = ""
+                GetNearCellValue = False
+            End If
+        End If
+    End With
+End Function
+    Private Function Test_GetNearCellValue()
+        Dim sSearchKeyword As String
+        Dim lOffsetRow As Long
+        Dim lOffsetClm As Long
+        Dim sOutputValue As String
+        Dim bRet As Boolean
+        
+        sSearchKeyword = "aaa"
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, 1, 1, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, 0, 1, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        sSearchKeyword = "bbb"
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, -1, -1, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, -1, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, -2, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, -3, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, -100, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, 0, -100, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+        sSearchKeyword = "ccc"
+        bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, 0, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
+    End Function
 

@@ -11,12 +11,12 @@ Type T_EXCEL_FILE_INFO
     sFilePath As String
     bIsAlreadyOpen As Boolean
 End Type
- 
+
 '************************************************************
 '* モジュール内 変数定義
 '************************************************************
 Dim gatExcelFileInfo() As T_EXCEL_FILE_INFO
- 
+
 '************************************************************
 '* 関数定義
 '************************************************************
@@ -31,7 +31,7 @@ Public Function ExcelFileInfoInit()
     Dim atExcelFileInfoInit() As T_EXCEL_FILE_INFO
     gatExcelFileInfo = atExcelFileInfoInit '初期化
 End Function
- 
+
 ' ==================================================================
 ' = 概要    エクセルファイルオープン
 ' = 引数    なし
@@ -86,7 +86,7 @@ Public Function ExcelFileOpen( _
  
     Set ExcelFileOpen = wTrgtBook
 End Function
- 
+
 ' ==================================================================
 ' = 概要    エクセルファイルクローズ
 ' = 引数    なし
@@ -136,5 +136,4 @@ Public Function ExcelFileClose( _
         ReDim Preserve gatExcelFileInfo(UBound(gatExcelFileInfo) - 1)
     End If
 End Function
-
 

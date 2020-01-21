@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.8
+' user define macros v2.9
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1324,9 +1324,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         If sLineNo = 0 Then
             sLineNo = ""
         End If
-        Dim sFuncLevelStr As String
-        sFuncLevelStr = Replace(oMatchResult(0).SubMatches(3), "  ", " ")
-        lFuncLevel = LenB(sFuncLevelStr) / 2
+        lFuncLevel = LenB(StrConv(oMatchResult(0).SubMatches(3), vbFromUnicode)) / 2
         sFuncName = oMatchResult(0).SubMatches(4)
         sOmission = String(LenB(oMatchResult(0).SubMatches(5)) / 2, "▲")
         
