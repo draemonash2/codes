@@ -11,6 +11,7 @@ if (#search_option == 0) {
 	writeininum $ini_file, getenv("UserName"), "search_option", searchoption;
 }
 
+//★TODO★すでに設定されているフォルダパスと拡張子を使いまわしたい
 $file = "*.mac";
 $dir = "C:\\codes\\hmac";
 
