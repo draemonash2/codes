@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_String"
 Option Explicit
 
-' string manage library v1.7
+' string manage library v1.8
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
@@ -2283,7 +2283,7 @@ End Function
         Debug.Print CalcPaddingWidth(6) = 2
         Debug.Print CalcPaddingWidth(7) = 1
         Debug.Print CalcPaddingWidth(8) = 4
-
+        
         Debug.Print "*** test finished! ***"
     End Sub
 
@@ -2552,5 +2552,91 @@ End Function
             End If
         Next lIdx
         Debug.Print ""
+    End Function
+
+' ==================================================================
+' = 概要    絶対パスから検索キー配下階層の相対パスへ置換
+' = 引数    sInFilePath     String  [in]    絶対パス
+' = 引数    sMatchDirName   String  [in]    検索対象フォルダ名
+' = 引数    lRemeveDirLevel Long    [in]    階層レベル
+' = 引数    sRelativePath   String  [out]   相対パス
+' = 戻値                    Boolean         検索結果
+' = 覚書    実行例1)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : codes
+'             lRemeveDirLevel : 1
+'             ↓
+'             sRelativePath   : bbb\ccc\test.txt
+'             戻値            : true
+'
+'           実行例2)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : code
+'             lRemeveDirLevel : 2
+'             ↓
+'             sRelativePath   : c\codes\aaa\bbb\ccc\test.txt
+'             戻値            : false
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function ExtractRelativePath( _
+    ByVal sInFilePath As String, _
+    ByVal sMatchDirName As String, _
+    ByVal lRemeveDirLevel As Long, _
+    ByRef sRelativePath As String _
+) As Boolean
+    Dim sRemoveDirLevelPath
+    sRemoveDirLevelPath = ""
+    Dim lIdx
+    For lIdx = 0 To lRemeveDirLevel - 1
+        sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
+    Next
+    
+    Dim sSearchPattern
+    Dim sTargetStr
+    sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
+    sTargetStr = sInFilePath
+    
+    Dim oRegExp
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.Pattern = sSearchPattern                '検索パターンを設定
+    oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
+    oRegExp.Global = True                           '文字列全体を検索
+    
+    Dim oMatchResult
+    Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
+    
+    If oMatchResult.Count > 0 Then
+        sRelativePath = Replace(sInFilePath, oMatchResult.Item(0), "")
+        ExtractRelativePath = True
+    Else
+        sRelativePath = sInFilePath
+        ExtractRelativePath = False
+    End If
+End Function
+    Private Function Test_ExtractRelativePath()
+        Dim sRltvPath As String
+        Dim bRet As Boolean
+        Dim sInFilePath As String
+        
+        Debug.Print "*** test start! ***"
+        sInFilePath = "c\codes\aaa\bbb\ccc\test.txt"
+        Debug.Print sInFilePath
+        bRet = ExtractRelativePath(sInFilePath, "codes", -1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 3, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 4, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "code", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 10, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        Debug.Print "*** test finished! ***"
     End Function
 

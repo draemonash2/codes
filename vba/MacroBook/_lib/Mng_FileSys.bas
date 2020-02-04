@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.5
+' file system library v1.6
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -754,6 +754,171 @@ End Function
         MsgBox sOutStr
     End Sub
 
+' ==================================================================
+' = 概要    一時的なファイルに検索キーと書き込み値を上書きして保存
+' = 引数    sFileName       String  [in]  ファイル名
+' = 引数    sKeyword        String  [in]  検索キー
+' = 引数    sValue          String  [out] 書き込み値
+' = 引数    bCreateNewFile  Boolean [in]  新規ファイル作成
+' = 戻値                    Boolean       検索結果(ファイル有無)
+' = 覚書    [実行例]
+' =           WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False)
+' =         [出力結果]
+' =           以下の内容のファイルを出力する
+' =              [default_trgt_path]cccc
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Public Function WriteTempMemoriedValue( _
+    ByVal sFileName As String, _
+    ByVal sKeyword As String, _
+    ByVal sValue As String, _
+    ByVal bCreateNewFile As Boolean _
+) As Boolean
+    Dim sTempDirPath As String
+    Dim sTempFilePath As String
+    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
+    sTempFilePath = sTempDirPath & "\" & sFileName
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim sKeywordLineStr As String
+    sKeywordLineStr = "[" & sKeyword & "]" & sValue
+    
+    Dim vFileLineAll() As String
+    
+    If objFSO.FileExists(sTempFilePath) Then
+        If bCreateNewFile = True Then
+            ReDim vFileLineAll(0)
+            vFileLineAll(0) = sKeywordLineStr
+        Else
+            Open sTempFilePath For Input As #1
+            Do Until EOF(1)
+                Dim lLineIdx As Long
+                If Sgn(vFileLineAll) = 0 Then
+                    lLineIdx = 0
+                Else
+                    lLineIdx = lLineIdx + 1
+                End If
+                ReDim Preserve vFileLineAll(lLineIdx)
+                Line Input #1, vFileLineAll(lLineIdx)
+            Loop
+            Close #1
+            
+            Dim bExistKeyword As String
+            bExistKeyword = False
+            For lLineIdx = 0 To UBound(vFileLineAll)
+                Dim sKeywordStr As String
+                sKeywordStr = "[" & sKeyword & "]"
+                If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
+                    bExistKeyword = True
+                    Exit For
+                End If
+            Next lLineIdx
+            If bExistKeyword = True Then
+                vFileLineAll(lLineIdx) = sKeywordLineStr
+            Else
+                ReDim Preserve vFileLineAll(UBound(vFileLineAll) + 1)
+                vFileLineAll(UBound(vFileLineAll)) = sKeywordLineStr
+            End If
+        End If
+        WriteTempMemoriedValue = True
+    Else
+        ReDim vFileLineAll(0)
+        vFileLineAll(0) = sKeywordLineStr
+        WriteTempMemoriedValue = False
+    End If
+    
+    'ファイル出力
+    Open sTempFilePath For Output As #1
+    For lLineIdx = 0 To UBound(vFileLineAll)
+        Print #1, vFileLineAll(lLineIdx)
+    Next lLineIdx
+    Close #1
+End Function
+    Private Sub Test_WriteTempMemoriedValue()
+        Dim bRet As Boolean
+        Dim sValue As String
+        Debug.Print "▼▼▼Test_WriteTempMemoriedValue()▼▼▼"
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "xxx", "d", True): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "aaa", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "eeeeeeeeee", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", True): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "", "test", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
+        Debug.Print "▲▲▲Test_WriteTempMemoriedValue()▲▲▲"
+    End Sub
+
+' ==================================================================
+' = 概要    一時的なファイルから検索キーに一致する行の値を読みだす
+' = 引数    sFileName       String  [in]  ファイル名
+' = 引数    sKeyword        String  [in]  検索キー
+' = 引数    sValue          String  [in]  検索値
+' = 戻値                    Boolean       検索結果(ファイル有無)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Public Function ReadTempMemoriedValue( _
+    ByVal sFileName As String, _
+    ByVal sKeyword As String, _
+    ByRef sValue As String _
+) As Boolean
+    Dim sTempDirPath As String
+    Dim sTempFilePath As String
+    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
+    sTempFilePath = sTempDirPath & "\" & sFileName
+    
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    If objFSO.FileExists(sTempFilePath) Then
+        Dim vFileLineAll() As String
+        Open sTempFilePath For Input As #1
+        Do Until EOF(1)
+            Dim lLineIdx As Long
+            If Sgn(vFileLineAll) = 0 Then
+                lLineIdx = 0
+            Else
+                lLineIdx = lLineIdx + 1
+            End If
+            ReDim Preserve vFileLineAll(lLineIdx)
+            Line Input #1, vFileLineAll(lLineIdx)
+        Loop
+        Close #1
+        
+        sValue = ""
+        ReadTempMemoriedValue = False
+        
+        For lLineIdx = 0 To UBound(vFileLineAll)
+            Dim sKeywordStr As String
+            sKeywordStr = "[" & sKeyword & "]"
+            If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
+                sValue = Mid$(vFileLineAll(lLineIdx), Len(sKeywordStr) + 1, Len(vFileLineAll(lLineIdx)))
+                ReadTempMemoriedValue = True
+                Exit For
+            End If
+        Next lLineIdx
+    Else
+        sValue = ""
+        ReadTempMemoriedValue = False
+    End If
+End Function
+    Private Sub Test_ReadTempMemoriedValue()
+        Dim bRet As Boolean
+        Dim sValue As String
+        
+        Debug.Print "▼▼▼Test_ReadTempMemoriedValue()▼▼▼"
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree2.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        Debug.Print "▲▲▲Test_ReadTempMemoriedValue()▲▲▲"
+    End Sub
+
 '*********************************************************************
 '* ローカル関数定義
 '*********************************************************************
@@ -798,3 +963,4 @@ End Function
         sOutStr = sOutStr & vbNewLine & "*** test finished! ***"
         MsgBox sOutStr
     End Sub
+
