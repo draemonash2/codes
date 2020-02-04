@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.9
+' user define macros v2.11
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -118,9 +118,11 @@ Private Function UpdateShortcutKeySettings( _
     
     Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてコピー", sOperate)
     Call UpdateShtcutSetting("^%c", "ダブルクォートを除いて追加コピー", sOperate)
+    
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をまとめてコマンド実行", sOperate)
+    Call UpdateShtcutSetting("", "選択範囲内の検索文字色を変更", sOperate)
     
     Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
     Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
@@ -135,16 +137,10 @@ Private Function UpdateShortcutKeySettings( _
     Call UpdateShtcutSetting("", "フォント色をトグル", sOperate)
     Call UpdateShtcutSetting("", "背景色をトグル", sOperate)
     
-    Call UpdateShtcutSetting("", "Excel方眼紙", sOperate)
-    Call UpdateShtcutSetting("", "EpTreeの関数ツリーをExcelで取り込む", sOperate)
-    
     Call UpdateShtcutSetting("%^+{DOWN}", "'オートフィル実行(""Down"")'", sOperate)
     Call UpdateShtcutSetting("%^+{UP}", "'オートフィル実行(""Up"")'", sOperate)
     Call UpdateShtcutSetting("%^+{RIGHT}", "'オートフィル実行(""Right"")'", sOperate)
     Call UpdateShtcutSetting("%^+{LEFT}", "'オートフィル実行(""Left"")'", sOperate)
-    
-    Call UpdateShtcutSetting("%{F9}", "アクティブセルコメントのみ表示および移動_モード切替", sOperate)
-    
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
     Dim sValue As String
@@ -170,11 +166,12 @@ Private Function UpdateShortcutKeySettings( _
         Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Right"")'", sOperate)
         Call UpdateShtcutSetting("", "'アクティブセルコメントのみ表示および移動(""Left"")'", sOperate)
     End If
-    
+    Call UpdateShtcutSetting("^+{F11}", "アクティブセルコメントのみ表示および移動_モード切替", sOperate)
     Call UpdateShtcutSetting("^+j", "ハイパーリンクで飛ぶ", sOperate)
     Call UpdateShtcutSetting("^%{HOME}", "MEMOシートへジャンプ", sOperate)
     
     Call UpdateShtcutSetting("", "Excel方眼紙", sOperate)
+    Call UpdateShtcutSetting("", "EpTreeの関数ツリーをExcelで取り込む", sOperate)
     
     Call UpdateShtcutSetting("", "自動列幅調整", sOperate)
     Call UpdateShtcutSetting("", "自動行幅調整", sOperate)
@@ -1253,15 +1250,23 @@ End Sub
 ' = 概要    EpTreeの関数ツリーをExcelで取り込む
 ' = 覚書    なし
 ' = 依存    Mng_FileSys.bas/ShowFilesSelectDialog()
+' =         Mng_FileSys.bas/WriteTempMemoriedValue()
+' =         Mng_FileSys.bas/ReadTempMemoriedValue()
 ' =         Mng_Collection.bas/ReadTxtFileToCollection()
 ' =         Mng_String.bas/ExecRegExp()
+' =         Mng_String.bas/ExtractTailWord()
+' =         Mng_String.bas/ExtractRelativePath()
 ' =         Mng_ExcelOpe.bas/CreateNewWorksheet()
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
-    Const STRT_ROW As Long = 2
-    Const STRT_CLM As Long = 2
-    Const SHEET_NAME As String = "関数ツリー"
+    Const STRT_ROW As Long = 1
+    Const STRT_CLM As Long = 1
+    Const SHEET_NAME As String = "CallTree"
+    Const TEMP_FILE_NAME As String = "vba_eptree_to_excel.tmp"
+    Const KEYWORD_EPTREE_LOG_PATH As String = "EPTREE_LOG_PATH"
+    Const KEYWORD_DEV_ROOT_DIR_PATH As String = "DEV_ROOT_DIR_PATH"
+    Const KEYWORD_DEV_ROOT_DIR_LEVEL As String = "DEV_ROOT_DIR_LEVEL"
     Const MAX_FUNC_LEVEL_INI As Long = 10
     Const CLM_WIDTH As Long = 2
     Dim lRowIdx As Long
@@ -1270,14 +1275,37 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim lStrtClm As Long
     Dim lLastClm As Long
     
+    '=============================================
+    '= 事前処理
+    '=============================================
+    Dim asSelectedFiles() As String
+    Dim sTrgtFilePath As String
+    Dim sDevRootDirPath As String
+    Dim sDevRootDirName As String
+    Dim sDevRootLevel As String
+    
+    '*** Eptreeログファイルパス取得 ***
+    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath)
+    Call ShowFilesSelectDialog(asSelectedFiles, sTrgtFilePath)
+    sTrgtFilePath = asSelectedFiles(0)
+    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath, False)
+    
+    '*** 開発用ルートフォルダ取得 ***
+    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath)
+    sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath)
+    sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
+    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath, False)
+    
+    '*** ルートフォルダレベル取得 ***
+    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel)
+    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", "EpTree", sDevRootLevel)
+    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
+    
+    '=============================================
+    '= 本処理
+    '=============================================
     Application.Calculation = xlCalculationManual
     Application.ScreenUpdating = False
-    
-    'ファイルパス入力
-    Dim sTrgtFilePath As String
-    Dim asSelectedFiles() As String
-    Call ShowFilesSelectDialog(asSelectedFiles)
-    sTrgtFilePath = asSelectedFiles(0)
     
     'シート追加
     Dim sSheetName As String
@@ -1299,7 +1327,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Cells(lRowIdx, lStrtClm + 0).Value = "ファイルパス"
         .Cells(lRowIdx, lStrtClm + 1).Value = "行数"
         .Cells(lRowIdx, lStrtClm + 2).Value = "関数名"
-        .Cells(lRowIdx, lStrtClm + 3).Value = "関数ツリー"
+        .Cells(lRowIdx, lStrtClm + 3).Value = "コールツリー"
     End With
     lRowIdx = lRowIdx + 1
     
@@ -1320,6 +1348,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         Dim sFuncName As String
         Dim sOmission As String
         sFilePath = oMatchResult(0).SubMatches(0)
+        Call ExtractRelativePath(sFilePath, sDevRootDirName, Int(sDevRootLevel), sFilePath)
         sLineNo = oMatchResult(0).SubMatches(1)
         If sLineNo = 0 Then
             sLineNo = ""
@@ -1354,7 +1383,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = CLM_WIDTH
-    
+        
         'オートフィルタ
         .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
         
@@ -1366,12 +1395,15 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Rows(lStrtRow + 1).Select
         ActiveWindow.FreezePanes = True
         .Cells(1, 1).Select
+        
+        'シート見出し色
+        .Tab.Color = RGB(242, 220, 219)
     End With
     
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
     
-    MsgBox "関数ツリー作成完了！"
+    MsgBox "関数コールツリー作成完了！"
 End Sub
 
 ' *****************************************************************************
@@ -2247,6 +2279,281 @@ Public Function JumpToTrgtSheet( _
             shSheet.Activate
         End If
     Next
+End Function
+
+' ==================================================================
+' = 概要    一時的なファイルに検索キーと書き込み値を上書きして保存
+' = 引数    sFileName       String  [in]  ファイル名
+' = 引数    sKeyword        String  [in]  検索キー
+' = 引数    sValue          String  [out] 書き込み値
+' = 引数    bCreateNewFile  Boolean [in]  新規ファイル作成
+' = 戻値                    Boolean       検索結果(ファイル有無)
+' = 覚書    [実行例]
+' =           WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False)
+' =         [出力結果]
+' =           以下の内容のファイルを出力する
+' =              [default_trgt_path]cccc
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Public Function WriteTempMemoriedValue( _
+    ByVal sFileName As String, _
+    ByVal sKeyword As String, _
+    ByVal sValue As String, _
+    ByVal bCreateNewFile As Boolean _
+) As Boolean
+    Dim sTempDirPath As String
+    Dim sTempFilePath As String
+    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
+    sTempFilePath = sTempDirPath & "\" & sFileName
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim sKeywordLineStr As String
+    sKeywordLineStr = "[" & sKeyword & "]" & sValue
+    
+    Dim vFileLineAll() As String
+    
+    If objFSO.FileExists(sTempFilePath) Then
+        If bCreateNewFile = True Then
+            ReDim vFileLineAll(0)
+            vFileLineAll(0) = sKeywordLineStr
+        Else
+            Open sTempFilePath For Input As #1
+            Do Until EOF(1)
+                Dim lLineIdx As Long
+                If Sgn(vFileLineAll) = 0 Then
+                    lLineIdx = 0
+                Else
+                    lLineIdx = lLineIdx + 1
+                End If
+                ReDim Preserve vFileLineAll(lLineIdx)
+                Line Input #1, vFileLineAll(lLineIdx)
+            Loop
+            Close #1
+            
+            Dim bExistKeyword As String
+            bExistKeyword = False
+            For lLineIdx = 0 To UBound(vFileLineAll)
+                Dim sKeywordStr As String
+                sKeywordStr = "[" & sKeyword & "]"
+                If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
+                    bExistKeyword = True
+                    Exit For
+                End If
+            Next lLineIdx
+            If bExistKeyword = True Then
+                vFileLineAll(lLineIdx) = sKeywordLineStr
+            Else
+                ReDim Preserve vFileLineAll(UBound(vFileLineAll) + 1)
+                vFileLineAll(UBound(vFileLineAll)) = sKeywordLineStr
+            End If
+        End If
+        WriteTempMemoriedValue = True
+    Else
+        ReDim vFileLineAll(0)
+        vFileLineAll(0) = sKeywordLineStr
+        WriteTempMemoriedValue = False
+    End If
+    
+    'ファイル出力
+    Open sTempFilePath For Output As #1
+    For lLineIdx = 0 To UBound(vFileLineAll)
+        Print #1, vFileLineAll(lLineIdx)
+    Next lLineIdx
+    Close #1
+End Function
+    Private Sub Test_WriteTempMemoriedValue()
+        Dim bRet As Boolean
+        Dim sValue As String
+        Debug.Print "▼▼▼Test_WriteTempMemoriedValue()▼▼▼"
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "xxx", "d", True): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "aaa", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "eeeeeeeeee", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", True): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "", "test", False): Debug.Print bRet
+        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
+        Debug.Print "▲▲▲Test_WriteTempMemoriedValue()▲▲▲"
+    End Sub
+
+' ==================================================================
+' = 概要    一時的なファイルから検索キーに一致する行の値を読みだす
+' = 引数    sFileName       String  [in]  ファイル名
+' = 引数    sKeyword        String  [in]  検索キー
+' = 引数    sValue          String  [in]  検索値
+' = 戻値                    Boolean       検索結果(ファイル有無)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Public Function ReadTempMemoriedValue( _
+    ByVal sFileName As String, _
+    ByVal sKeyword As String, _
+    ByRef sValue As String _
+) As Boolean
+    Dim sTempDirPath As String
+    Dim sTempFilePath As String
+    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
+    sTempFilePath = sTempDirPath & "\" & sFileName
+    
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    If objFSO.FileExists(sTempFilePath) Then
+        Dim vFileLineAll() As String
+        Open sTempFilePath For Input As #1
+        Do Until EOF(1)
+            Dim lLineIdx As Long
+            If Sgn(vFileLineAll) = 0 Then
+                lLineIdx = 0
+            Else
+                lLineIdx = lLineIdx + 1
+            End If
+            ReDim Preserve vFileLineAll(lLineIdx)
+            Line Input #1, vFileLineAll(lLineIdx)
+        Loop
+        Close #1
+        
+        sValue = ""
+        ReadTempMemoriedValue = False
+        
+        For lLineIdx = 0 To UBound(vFileLineAll)
+            Dim sKeywordStr As String
+            sKeywordStr = "[" & sKeyword & "]"
+            If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
+                sValue = Mid$(vFileLineAll(lLineIdx), Len(sKeywordStr) + 1, Len(vFileLineAll(lLineIdx)))
+                ReadTempMemoriedValue = True
+                Exit For
+            End If
+        Next lLineIdx
+    Else
+        sValue = ""
+        ReadTempMemoriedValue = False
+    End If
+End Function
+    Private Sub Test_ReadTempMemoriedValue()
+        Dim bRet As Boolean
+        Dim sValue As String
+        
+        Debug.Print "▼▼▼Test_ReadTempMemoriedValue()▼▼▼"
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("vbaeptree2.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        bRet = ReadTempMemoriedValue("", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
+        Debug.Print "▲▲▲Test_ReadTempMemoriedValue()▲▲▲"
+    End Sub
+
+' ==================================================================
+' = 概要    絶対パスから検索キー配下階層の相対パスへ置換
+' = 引数    sInFilePath     String  [in]    絶対パス
+' = 引数    sMatchDirName   String  [in]    検索対象フォルダ名
+' = 引数    lRemeveDirLevel Long    [in]    階層レベル
+' = 引数    sRelativePath   String  [out]   相対パス
+' = 戻値                    Boolean         検索結果
+' = 覚書    実行例1)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : codes
+'             lRemeveDirLevel : 1
+'             ↓
+'             sRelativePath   : bbb\ccc\test.txt
+'             戻値            : true
+'
+'           実行例2)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : code
+'             lRemeveDirLevel : 2
+'             ↓
+'             sRelativePath   : c\codes\aaa\bbb\ccc\test.txt
+'             戻値            : false
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function ExtractRelativePath( _
+    ByVal sInFilePath As String, _
+    ByVal sMatchDirName As String, _
+    ByVal lRemeveDirLevel As Long, _
+    ByRef sRelativePath As String _
+) As Boolean
+    Dim sRemoveDirLevelPath
+    sRemoveDirLevelPath = ""
+    Dim lIdx
+    For lIdx = 0 To lRemeveDirLevel - 1
+        sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
+    Next
+    
+    Dim sSearchPattern
+    Dim sTargetStr
+    sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
+    sTargetStr = sInFilePath
+    
+    Dim oRegExp
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.Pattern = sSearchPattern                '検索パターンを設定
+    oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
+    oRegExp.Global = True                           '文字列全体を検索
+    
+    Dim oMatchResult
+    Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
+    
+    If oMatchResult.Count > 0 Then
+        sRelativePath = Replace(sInFilePath, oMatchResult.Item(0), "")
+        ExtractRelativePath = True
+    Else
+        sRelativePath = sInFilePath
+        ExtractRelativePath = False
+    End If
+End Function
+    Private Function Test_ExtractRelativePath()
+        Dim sRltvPath As String
+        Dim bRet As Boolean
+        Dim sInFilePath As String
+        
+        Debug.Print "*** test start! ***"
+        sInFilePath = "c\codes\aaa\bbb\ccc\test.txt"
+        Debug.Print sInFilePath
+        bRet = ExtractRelativePath(sInFilePath, "codes", -1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 3, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "codes", 4, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "code", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "aaa", 10, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        
+        bRet = ExtractRelativePath(sInFilePath, "", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        bRet = ExtractRelativePath(sInFilePath, "", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
+        Debug.Print "*** test finished! ***"
+    End Function
+
+' ==================================================================
+' = 概要    末尾区切り文字以降の文字列を返却する。
+' = 引数    sStr        String  [in]  分割する文字列
+' = 引数    sDlmtr      String  [in]  区切り文字
+' = 戻値                String        抽出文字列
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_String.bas
+' ==================================================================
+Public Function ExtractTailWord( _
+    ByVal sStr As String, _
+    ByVal sDlmtr As String _
+) As String
+    Dim asSplitWord() As String
+    
+    If Len(sStr) = 0 Then
+        ExtractTailWord = ""
+    Else
+        ExtractTailWord = ""
+        asSplitWord = Split(sStr, sDlmtr)
+        ExtractTailWord = asSplitWord(UBound(asSplitWord))
+    End If
 End Function
 
 
