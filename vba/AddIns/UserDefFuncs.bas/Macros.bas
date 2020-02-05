@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.11
+' user define macros v2.12
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1249,7 +1249,8 @@ End Sub
 ' =============================================================================
 ' = 概要    EpTreeの関数ツリーをExcelで取り込む
 ' = 覚書    なし
-' = 依存    Mng_FileSys.bas/ShowFilesSelectDialog()
+' = 依存    Mng_FileSys.bas/ShowFileSelectDialog()
+' =         Mng_FileSys.bas/ShowFolderSelectDialog()
 ' =         Mng_FileSys.bas/WriteTempMemoriedValue()
 ' =         Mng_FileSys.bas/ReadTempMemoriedValue()
 ' =         Mng_Collection.bas/ReadTxtFileToCollection()
@@ -1260,15 +1261,17 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
+    Const MACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
+    Const SHEET_NAME As String = "CallTree"
     Const STRT_ROW As Long = 1
     Const STRT_CLM As Long = 1
-    Const SHEET_NAME As String = "CallTree"
+    Const MAX_FUNC_LEVEL_INI As Long = 10
+    Const CLM_WIDTH As Long = 2
     Const TEMP_FILE_NAME As String = "vba_eptree_to_excel.tmp"
     Const KEYWORD_EPTREE_LOG_PATH As String = "EPTREE_LOG_PATH"
     Const KEYWORD_DEV_ROOT_DIR_PATH As String = "DEV_ROOT_DIR_PATH"
     Const KEYWORD_DEV_ROOT_DIR_LEVEL As String = "DEV_ROOT_DIR_LEVEL"
-    Const MAX_FUNC_LEVEL_INI As Long = 10
-    Const CLM_WIDTH As Long = 2
+    
     Dim lRowIdx As Long
     Dim lStrtRow As Long
     Dim lLastRow As Long
@@ -1278,7 +1281,6 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     '=============================================
     '= 事前処理
     '=============================================
-    Dim asSelectedFiles() As String
     Dim sTrgtFilePath As String
     Dim sDevRootDirPath As String
     Dim sDevRootDirName As String
@@ -1286,19 +1288,30 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     
     '*** Eptreeログファイルパス取得 ***
     Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath)
-    Call ShowFilesSelectDialog(asSelectedFiles, sTrgtFilePath)
-    sTrgtFilePath = asSelectedFiles(0)
+    sTrgtFilePath = ShowFileSelectDialog(sTrgtFilePath, "EpTreeLog.txtのファイルパスを選択してください")
+    If sTrgtFilePath = "" Then
+        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        Exit Sub
+    End If
     Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath, False)
     
     '*** 開発用ルートフォルダ取得 ***
     Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath)
-    sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath)
+    sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
+    If sDevRootDirPath = "" Then
+        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        Exit Sub
+    End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
     Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath, False)
     
     '*** ルートフォルダレベル取得 ***
     Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel)
-    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", "EpTree", sDevRootLevel)
+    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", MACRO_NAME, sDevRootLevel)
+    If sDevRootLevel = "" Then
+        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        Exit Sub
+    End If
     Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
     
     '=============================================
@@ -1403,7 +1416,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
     
-    MsgBox "関数コールツリー作成完了！"
+    MsgBox "関数コールツリー作成完了！", vbOKOnly, MACRO_NAME
 End Sub
 
 ' *****************************************************************************
@@ -1684,55 +1697,6 @@ Private Function ConvRange2Array( _
 End Function
 
 ' ==================================================================
-' = 概要    フォルダ選択ダイアログを表示する
-' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
-' = 戻値                String        フォルダ選択結果
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Mng_FileSys.bas
-' ==================================================================
-Private Function ShowFolderSelectDialog( _
-    Optional ByVal sInitPath As String = "" _
-) As String
-    Dim fdDialog As Office.FileDialog
-    Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
-    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
-    If sInitPath = "" Then
-        'Do Nothing
-    Else
-        If Right(sInitPath, 1) = "\" Then
-            fdDialog.InitialFileName = sInitPath
-        Else
-            fdDialog.InitialFileName = sInitPath & "\"
-        End If
-    End If
-    
-    'ダイアログ表示
-    Dim lResult As Long
-    lResult = fdDialog.Show()
-    If lResult <> -1 Then 'キャンセル押下
-        ShowFolderSelectDialog = ""
-    Else
-        Dim sSelectedPath As String
-        sSelectedPath = fdDialog.SelectedItems.Item(1)
-        If CreateObject("Scripting.FileSystemObject").FolderExists(sSelectedPath) Then
-            ShowFolderSelectDialog = sSelectedPath
-        Else
-            ShowFolderSelectDialog = ""
-        End If
-    End If
-    
-    Set fdDialog = Nothing
-End Function
-    Private Sub Test_ShowFolderSelectDialog()
-        Dim objWshShell
-        Set objWshShell = CreateObject("WScript.Shell")
-        MsgBox ShowFolderSelectDialog( _
-                    objWshShell.SpecialFolders("Desktop") _
-                )
-    End Sub
-
-' ==================================================================
 ' = 概要    コマンドを実行
 ' = 引数    sCommand    String   [in]   コマンド
 ' = 戻値                String          標準出力
@@ -1912,11 +1876,66 @@ Private Function OutputTxtFile( _
 End Function
 
 ' ==================================================================
-' = 概要    ファイル（複数）選択ダイアログを表示する
-' = 引数    asSelectedFiles String()    [out] 選択されたファイルパス一覧
-' = 引数    sInitPath       String      [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters        String      [in]  選択時のフィルタ（省略可）(※)
-' = 戻値    なし
+' = 概要    フォルダ選択ダイアログを表示する
+' = 引数    sInitPath       String  [in]  デフォルトフォルダパス（省略可）
+' = 引数    sTitle          String  [in]  タイトル名（省略可）
+' = 戻値                    String        選択フォルダ
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Private Function ShowFolderSelectDialog( _
+    Optional ByVal sInitPath As String = "", _
+    Optional ByVal sTitle As String = "" _
+) As String
+    Dim fdDialog As Office.FileDialog
+    Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    If sTitle = "" Then
+        fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+    Else
+        fdDialog.Title = sTitle
+    End If
+    If sInitPath = "" Then
+        'Do Nothing
+    Else
+        If Right(sInitPath, 1) = "\" Then
+            fdDialog.InitialFileName = sInitPath
+        Else
+            fdDialog.InitialFileName = sInitPath & "\"
+        End If
+    End If
+    
+    'ダイアログ表示
+    Dim lResult As Long
+    lResult = fdDialog.Show()
+    If lResult <> -1 Then 'キャンセル押下
+        ShowFolderSelectDialog = ""
+    Else
+        Dim sSelectedPath As String
+        sSelectedPath = fdDialog.SelectedItems.Item(1)
+        If CreateObject("Scripting.FileSystemObject").FolderExists(sSelectedPath) Then
+            ShowFolderSelectDialog = sSelectedPath
+        Else
+            ShowFolderSelectDialog = ""
+        End If
+    End If
+    
+    Set fdDialog = Nothing
+End Function
+    Private Sub Test_ShowFolderSelectDialog()
+        Dim objWshShell
+        Set objWshShell = CreateObject("WScript.Shell")
+        Debug.Print ShowFolderSelectDialog( _
+                    objWshShell.SpecialFolders("Desktop") _
+                )
+    End Sub
+
+' ==================================================================
+' = 概要    ファイル（単一）選択ダイアログを表示する
+' = 引数    sInitPath       String  [in]  デフォルトファイルパス（省略可）
+' = 引数    sTitle          String  [in]  タイトル名（省略可）
+' = 引数    sFilters        String  [in]  選択時のフィルタ（省略可）(※)
+' = 戻値                    String        選択ファイル
 ' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
 ' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
 ' =                    ・拡張子が複数ある場合は、";"で区切る
@@ -1926,69 +1945,59 @@ End Function
 ' = 依存    Mng_FileSys.bas/SetDialogFilters()
 ' = 所属    Mng_FileSys.bas
 ' ==================================================================
-Private Function ShowFilesSelectDialog( _
-    ByRef asSelectedFiles() As String, _
+Private Function ShowFileSelectDialog( _
     Optional ByVal sInitPath As String = "", _
+    Optional ByVal sTitle As String = "", _
     Optional ByVal sFilters As String = "" _
-)
+) As String
     Dim fdDialog As Office.FileDialog
     Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
-    fdDialog.Title = "ファイルを選択してください（複数可）"
-    fdDialog.AllowMultiSelect = True
+    If sTitle = "" Then
+        fdDialog.Title = "ファイルを選択してください"
+    Else
+        fdDialog.Title = sTitle
+    End If
+    fdDialog.AllowMultiSelect = False
     If sInitPath = "" Then
         'Do Nothing
     Else
         fdDialog.InitialFileName = sInitPath
     End If
     Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
- 
+    
     'ダイアログ表示
     Dim lResult As Long
     lResult = fdDialog.Show()
     If lResult <> -1 Then 'キャンセル押下
-        ReDim Preserve asSelectedFiles(0)
-        asSelectedFiles(0) = ""
+        ShowFileSelectDialog = ""
     Else
-        Dim lSelNum As Long
-        lSelNum = fdDialog.SelectedItems.Count
-        ReDim Preserve asSelectedFiles(lSelNum - 1)
-        Dim lSelIdx As Long
-        For lSelIdx = 0 To lSelNum - 1
-            Dim sSelectedPath As String
-            sSelectedPath = fdDialog.SelectedItems(lSelIdx + 1)
-            If CreateObject("Scripting.FileSystemObject").FileExists(sSelectedPath) Then
-                asSelectedFiles(lSelIdx) = sSelectedPath
-            Else
-                asSelectedFiles(lSelIdx) = ""
-            End If
-        Next lSelIdx
+        Dim sSelectedPath As String
+        sSelectedPath = fdDialog.SelectedItems.Item(1)
+        If CreateObject("Scripting.FileSystemObject").FileExists(sSelectedPath) Then
+            ShowFileSelectDialog = sSelectedPath
+        Else
+            ShowFileSelectDialog = ""
+        End If
     End If
- 
+    
     Set fdDialog = Nothing
 End Function
-    Private Sub Test_ShowFilesSelectDialog()
+    Private Sub Test_ShowFileSelectDialog()
         Dim objWshShell
         Set objWshShell = CreateObject("WScript.Shell")
         Dim sFilters As String
         'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
         'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
         'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
-        sFilters = "全てのファイル/*.*,画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
- 
-        Dim asSelectedFiles() As String
-        Call ShowFilesSelectDialog( _
-                    asSelectedFiles, _
+        sFilters = ""
+        Debug.Print ShowFileSelectDialog( _
                     objWshShell.SpecialFolders("Desktop") & "\test.txt", _
+                    "", _
                     sFilters _
                 )
-        Dim sBuf As String
-        sBuf = ""
-        sBuf = sBuf & vbNewLine & UBound(asSelectedFiles) + 1
-        Dim lSelIdx As Long
-        For lSelIdx = 0 To UBound(asSelectedFiles)
-            sBuf = sBuf & vbNewLine & asSelectedFiles(lSelIdx)
-        Next lSelIdx
-        MsgBox sBuf
+    '    MsgBox ShowFileSelectDialog( _
+    '                objWshShell.SpecialFolders("Desktop") & "\test.txt" _
+    '            )
     End Sub
  
 ' ==================================================================

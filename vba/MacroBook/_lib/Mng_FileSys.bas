@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.6
+' file system library v1.7
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -377,18 +377,24 @@ End Function
 
 ' ==================================================================
 ' = 概要    フォルダ選択ダイアログを表示する
-' = 引数    sInitPath   String  [in]  デフォルトフォルダパス（省略可）
-' = 戻値                String        フォルダ選択結果
+' = 引数    sInitPath       String  [in]  デフォルトフォルダパス（省略可）
+' = 引数    sTitle          String  [in]  タイトル名（省略可）
+' = 戻値                    String        選択フォルダ
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Mng_FileSys.bas
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
-    Optional ByVal sInitPath As String = "" _
+    Optional ByVal sInitPath As String = "", _
+    Optional ByVal sTitle As String = "" _
 ) As String
     Dim fdDialog As Office.FileDialog
     Set fdDialog = Application.FileDialog(msoFileDialogFolderPicker)
-    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+    If sTitle = "" Then
+        fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+    Else
+        fdDialog.Title = sTitle
+    End If
     If sInitPath = "" Then
         'Do Nothing
     Else
@@ -419,16 +425,17 @@ End Function
     Private Sub Test_ShowFolderSelectDialog()
         Dim objWshShell
         Set objWshShell = CreateObject("WScript.Shell")
-        MsgBox ShowFolderSelectDialog( _
+        Debug.Print ShowFolderSelectDialog( _
                     objWshShell.SpecialFolders("Desktop") _
                 )
     End Sub
 
 ' ==================================================================
 ' = 概要    ファイル（単一）選択ダイアログを表示する
-' = 引数    sInitPath   String  [in]  デフォルトファイルパス（省略可）
-' = 引数    sFilters    String  [in]  選択時のフィルタ（省略可）(※)
-' = 戻値                String        ファイル選択結果
+' = 引数    sInitPath       String  [in]  デフォルトファイルパス（省略可）
+' = 引数    sTitle          String  [in]  タイトル名（省略可）
+' = 引数    sFilters        String  [in]  選択時のフィルタ（省略可）(※)
+' = 戻値                    String        選択ファイル
 ' = 覚書    (※)ダイアログのフィルタ指定方法は以下。
 ' =              ex) 画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv
 ' =                    ・拡張子が複数ある場合は、";"で区切る
@@ -440,11 +447,16 @@ End Function
 ' ==================================================================
 Private Function ShowFileSelectDialog( _
     Optional ByVal sInitPath As String = "", _
+    Optional ByVal sTitle As String = "", _
     Optional ByVal sFilters As String = "" _
 ) As String
     Dim fdDialog As Office.FileDialog
     Set fdDialog = Application.FileDialog(msoFileDialogFilePicker)
-    fdDialog.Title = "ファイルを選択してください"
+    If sTitle = "" Then
+        fdDialog.Title = "ファイルを選択してください"
+    Else
+        fdDialog.Title = sTitle
+    End If
     fdDialog.AllowMultiSelect = False
     If sInitPath = "" Then
         'Do Nothing
@@ -452,7 +464,7 @@ Private Function ShowFileSelectDialog( _
         fdDialog.InitialFileName = sInitPath
     End If
     Call SetDialogFilters(sFilters, fdDialog) 'フィルタ追加
- 
+    
     'ダイアログ表示
     Dim lResult As Long
     lResult = fdDialog.Show()
@@ -467,7 +479,7 @@ Private Function ShowFileSelectDialog( _
             ShowFileSelectDialog = ""
         End If
     End If
- 
+    
     Set fdDialog = Nothing
 End Function
     Private Sub Test_ShowFileSelectDialog()
@@ -478,9 +490,9 @@ End Function
         'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
         'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
         sFilters = ""
-        
-        MsgBox ShowFileSelectDialog( _
+        Debug.Print ShowFileSelectDialog( _
                     objWshShell.SpecialFolders("Desktop") & "\test.txt", _
+                    "", _
                     sFilters _
                 )
     '    MsgBox ShowFileSelectDialog( _
