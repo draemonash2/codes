@@ -739,3 +739,10 @@ End Function
         sOutMsg = sOutMsg & vbNewLine & ""
     End Function
 
+'ÅöTODOÅöé¿ëï
+'Public Function ExtractRelativePath( _
+'    ByVal sInFilePath As String, _
+'    ByVal sMatchDirName As String, _
+'    ByVal lRemeveDirLevel As Long, _
+'    ByRef sRelativePath As String _
+') As Boolean
