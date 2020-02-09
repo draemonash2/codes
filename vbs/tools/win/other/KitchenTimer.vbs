@@ -13,6 +13,7 @@ Option Explicit
 '【改訂履歴】
 '	1.0.0	2019/08/03	新規作成
 '	1.1.0	2019/09/26	複数起動対応
+'	1.1.0	2020/02/09	sleep化
 '==============================================================================
 
 '==============================================================================
@@ -24,26 +25,15 @@ Dim lWaitMinites
 lWaitMinites = InputBox( "待ち時間(分)を入力してください", PROG_NAME, 1 )
 
 If lWaitMinites = 0 Then
-	MsgBox _
-		"キャンセルしました", _
-		vbYes, _
-		PROG_NAME
+	MsgBox "キャンセルしました", vbYes, PROG_NAME
 Else
 	Dim vAnswer
-	vAnswer = MsgBox( _
-		lWaitMinites & "分間のタイマーを設定しました", _
-		vbOkCancel, _
-		PROG_NAME _
-	)
+	vAnswer = MsgBox( lWaitMinites & "分間のタイマーを設定しました", vbOkCancel, PROG_NAME )
 	If vAnswer <> vbOk Then
-		MsgBox _
-			"キャンセルしました", _
-			vbYes, _
-			PROG_NAME
+		MsgBox "キャンセルしました", vbYes, PROG_NAME
 	Else
-		Dim objWsh
-		Set objWsh = WScript.CreateObject("WScript.Shell")
-		objWsh.Run "KitchenTimerPost.vbs "& lWaitMinites
+		WScript.sleep(lWaitMinites * 60 * 1000)
+		MsgBox lWaitMinites & "分が経過しました", vbYes, lWaitMinites & "分経過"
 	End If
 End If
 

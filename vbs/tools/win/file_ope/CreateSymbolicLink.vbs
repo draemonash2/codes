@@ -1,6 +1,8 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
 
+'【注意事項】X-Finderから実行する場合は、管理者権限にて起動したX-Finderから起動すること
+
 '####################################################################
 '### 設定
 '####################################################################
@@ -23,11 +25,9 @@ If EXECUTION_MODE = 0 Then 'Explorerから実行
             cFilePaths.add sArg
         End If
     Next
+    Call ExecRunas() '管理者として実行
 ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-    'Set cFilePaths = WScript.Col( WScript.Env("Selected") )
-    MsgBox "X-Finderからは実行できません", vbYes, PROG_NAME
-    MsgBox "処理を中断します", vbYes, PROG_NAME
-    WScript.Quit
+    Set cFilePaths = WScript.Col( WScript.Env("Selected") )
 Else 'デバッグ実行
     MsgBox "デバッグモードです。"
     Set cFilePaths = CreateObject("System.Collections.ArrayList")
@@ -39,15 +39,13 @@ Else 'デバッグ実行
     objWshShell.Run "cmd /c mkdir """ & sDesktop & "\test2""", 0, True
     cFilePaths.Add sDesktop & "\test.txt"
     cFilePaths.Add sDesktop & "\test2"
+    Call ExecRunas() '管理者として実行
 End If
 '▼▼▼debug▼▼▼
 'For Each sArg In cFilePaths
 '    msgbox sArg
 'Next
 '▲▲▲debug▲▲▲
-
-'*** 管理者として実行 ***
-Call ExecRunas()
 
 '*** ファイルパスチェック ***
 If cFilePaths.Count = 0 Then
