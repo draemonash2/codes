@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.12
+' user define macros v2.13
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -18,6 +18,7 @@ Option Explicit
 ' =    全シート名をコピー                           ブック内のシート名を全てコピーする
 ' =    シート表示非表示を切り替え                   シート表示/非表示を切り替える
 ' =    シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
+' =    シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
 ' =
 ' =    セル内の丸数字をデクリメント                 ②～⑮を指定して、指定番号以降をインクリメントする
 ' =    セル内の丸数字をインクリメント               ①～⑭を指定して、指定番号以降をデクリメントする
@@ -127,6 +128,7 @@ Private Function UpdateShortcutKeySettings( _
     Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
     Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
     Call UpdateShtcutSetting("", "シート並べ替え作業用シートを作成", sOperate)
+    Call UpdateShtcutSetting("^%{PGUP}", "シート選択ウィンドウを表示", sOperate)
     
     Call UpdateShtcutSetting("", "セル内の丸数字をデクリメント", sOperate)
     Call UpdateShtcutSetting("", "セル内の丸数字をインクリメント", sOperate)
@@ -285,6 +287,36 @@ End Sub
 ' =============================================================================
 Public Sub シート表示非表示を切り替え()
     SheetVisibleSetting.Show
+End Sub
+
+' =============================================================================
+' = 概要    シート選択ウィンドウを表示する
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub シート選択ウィンドウを表示()
+    Dim Sh As Worksheet
+    Dim ShBackup As Worksheet
+    Application.ScreenUpdating = False
+    Set ShBackup = ActiveSheet
+    With CommandBars.Add(Temporary:=True)
+        .Controls.Add(ID:=957).Execute
+        .Delete
+    End With
+    ' Return
+    If Not ActiveSheet Is ShBackup Then
+        Set Sh = ActiveSheet
+    End If
+    ShBackup.Select
+    Application.ScreenUpdating = True
+
+    If Not Sh Is Nothing Then
+        Sh.Activate
+    Else
+        'キャンセル押下
+    End If
+    Set Sh = Nothing
 End Sub
 
 ' =============================================================================
