@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.13
+' user define macros v2.14
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -9,6 +9,7 @@ Option Explicit
 ' =
 ' =    ダブルクォートを除いてコピー                 ダブルクオーテーションなしでセルをコピーする
 ' =    ダブルクォートを除いて追加コピー             ダブルクオーテーションなしでセルを追加コピーする
+' =    一行にまとめてセルコピー                     一行にまとめてセルコピー
 ' =
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
 ' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
@@ -119,6 +120,7 @@ Private Function UpdateShortcutKeySettings( _
     
     Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてコピー", sOperate)
     Call UpdateShtcutSetting("^%c", "ダブルクォートを除いて追加コピー", sOperate)
+    Call UpdateShtcutSetting("^+d", "一行にまとめてセルコピー", sOperate)
     
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
@@ -424,6 +426,59 @@ Public Sub ダブルクォートを除いて追加コピー()
 
     '*** フィードバック ***
     Application.StatusBar = "■■■■■■■■ 追加コピー完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    一行にまとめてセルコピー
+' = 覚書    ・非表示セル/空白セルは無視する
+' = 依存    Mng_Clipboard.bas/SetToClipboard()
+' = 所属    Macro.bas
+' =============================================================================
+Public Sub 一行にまとめてセルコピー()
+    '▼▼▼設定 ここから▼▼▼
+    Const sPREFFIX As String = "("
+    Const sDelimiter As String = "|"
+    Const sSUFFIX As String = ")"
+    '▲▲▲設定 ここまで▲▲▲
+    
+    Const sMACRO_NAME As String = "一行にまとめてセルコピー"
+    
+    Application.ScreenUpdating = False
+    
+    Dim sClipedStr As String
+    
+    Dim lAreaIdx As Long
+    For lAreaIdx = 1 To Selection.Areas.Count
+        Dim lItemIdx As Long
+        For lItemIdx = 1 To Selection.Areas(lAreaIdx).Count
+            With Selection.Areas(lAreaIdx).Item(lItemIdx)
+                If .Value = "" Then
+                    'Do Nothing
+                Else
+                    If .EntireRow.Hidden Or .EntireColumn.Hidden Then
+                        'Do Nothing
+                    Else
+                        If sClipedStr = "" Then
+                            sClipedStr = sPREFFIX & .Value
+                        Else
+                            sClipedStr = sClipedStr & sDelimiter & .Value
+                        End If
+                    End If
+                End If
+            End With
+        Next lItemIdx
+    Next lAreaIdx
+    sClipedStr = sClipedStr & sSUFFIX
+    
+    '*** クリップボード設定 ***
+    Call SetToClipboard(sClipedStr)
+    
+    Application.ScreenUpdating = True
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
 End Sub
@@ -1809,7 +1864,7 @@ Private Function EnableShortcutKeys()
             Dim sSettingKey As String
             Dim sSettingValue As String
             Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
-            '*** ショートカット設定の場合 ***
+            '*** ショートカットキー設定の場合 ***
             If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
                 Dim sShrcutMacroName As String
                 Dim sShtcutKey As String
@@ -1820,8 +1875,7 @@ Private Function EnableShortcutKeys()
                 Else
                     Application.OnKey sShtcutKey, sShrcutMacroName
                 End If
-            
-            '*** ショートカット設定でない場合 ***
+            '*** ショートカットキー設定でない場合 ***
             Else
                 'Do Nothing
             End If
@@ -1853,6 +1907,7 @@ Private Function DisableShortcutKeys()
             Dim sSettingKey As String
             Dim sSettingValue As String
             Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
+            '*** ショートカットキー設定の場合 ***
             If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
                 Dim sShtcutKey As String
                 sShtcutKey = sSettingValue
@@ -1861,6 +1916,7 @@ Private Function DisableShortcutKeys()
                 Else
                     Application.OnKey sShtcutKey
                 End If
+            '*** ショートカットキー設定でない場合 ***
             Else
                 'Do Nothing
             End If

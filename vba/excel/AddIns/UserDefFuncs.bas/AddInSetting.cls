@@ -9,10 +9,27 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+'AddInSetting.cls v1.0.0a
+
+' ==================================================================
+' = 概要    アドイン用の設定シートを管理するクラス
+' ==================================================================
+
+' ==================================================================
+' = 設定
+' ==================================================================
 Private Const SHEET_NAME = "setting"
 Private Const CLM_KEY As Long = 1
 Private Const CLM_VALUE As Long = 2
 
+' ==================================================================
+' = 概要    設定数を返却する
+' = 引数    なし
+' = 戻値                    Long    キー数
+' = 覚書    なし
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Property Get Count() As Long
     With ThisWorkbook.Sheets(SHEET_NAME)
         Dim lLastRow As Long
@@ -25,6 +42,15 @@ Public Property Get Count() As Long
     End With
 End Property
 
+' ==================================================================
+' = 概要    設定を追加する
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    sValue          String      [in]    設定値
+' = 戻値                    Boolean             追加結果(True固定)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Function Add( _
     ByVal sKey As String, _
     ByVal sValue As String _
@@ -70,6 +96,15 @@ Public Function Add( _
     End With
 End Function
 
+' ==================================================================
+' = 概要    設定を更新する
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    sValue          String      [in]    設定値
+' = 戻値                    Boolean             更新結果(True:更新成功,False:キー未存在)
+' = 覚書    設定キーが存在しない場合は何もしない
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Function Update( _
     ByVal sKey As String, _
     ByVal sValue As String _
@@ -102,6 +137,14 @@ Public Function Update( _
     End With
 End Function
 
+' ==================================================================
+' = 概要    設定を削除する
+' = 引数    sKey            String      [in]    設定キー
+' = 戻値                    Boolean             削除結果(True:削除成功,False:キー未存在)
+' = 覚書    設定キーが存在しない場合は何もしない
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Function Delete( _
     ByVal sKey As String _
 ) As Boolean
@@ -122,6 +165,15 @@ Public Function Delete( _
     End With
 End Function
 
+' ==================================================================
+' = 概要    設定キーをもとに設定値を検索する
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    sValue          String      [out]   設定値
+' = 戻値                    Boolean             検索結果(True:検索成功,False:キー未存在)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Function SearchWithKey( _
     ByVal sKey As String, _
     ByRef sValue As String _
@@ -144,6 +196,16 @@ Public Function SearchWithKey( _
     End With
 End Function
 
+' ==================================================================
+' = 概要    設定インデックスをもとに設定値を検索する
+' = 引数    lIdx            Long        [in]    設定インデックス(設定シートの行番号)
+' = 引数    sKey            String      [out]   設定キー
+' = 引数    sValue          String      [out]   設定値
+' = 戻値                    Boolean             検索結果(True:検索成功,False:キー未存在)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    AddInSetting.cls
+' ==================================================================
 Public Function SearchWithIdx( _
     ByVal lIdx As Long, _
     ByRef sKey As String, _
@@ -164,5 +226,4 @@ Public Function SearchWithIdx( _
         End If
     End With
 End Function
-
 
