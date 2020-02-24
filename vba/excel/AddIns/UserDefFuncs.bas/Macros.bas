@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.14
+' user define macros v2.15
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -807,7 +807,7 @@ Public Sub 選択範囲内の検索文字色を変更()
         "  " & sCOLOR_TYPE & vbNewLine _
         , _
         sMACRO_TITLE, _
-        1 _
+        0 _
     )
     
     If lColorIndex < lCOLOR_NUM Then

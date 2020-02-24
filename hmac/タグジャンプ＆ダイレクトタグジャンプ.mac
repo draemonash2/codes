@@ -1,0 +1,101 @@
+/*
+ * タグジャンプを試み、失敗したらダイレクトタグジャンプする秀丸マクロ
+ *
+ * Ver.2.3 (2014-05-12)
+ *
+ * 機能
+ * - 両方失敗した場合はビープ音を鳴らします。
+ *   エラーダイアログは表示しません。
+ * - 範囲選択中は、先にダイレクトタグジャンプを試みます。
+ * - カーソルが単語の終端にあるときもダイレクトタグジャンプできます。
+ *
+ * Yasunori Miyamoto
+ * http://tipszone.jp/20130402_jump_mac/
+ * mailto: nori@tipszone.jp
+ */
+
+disableerrormsg;
+
+if (selecting) {
+	call DIRECTTAGJUMP_EX;
+	if (##return) endmacro;
+	call TAGJUMP_EX;
+	if (##return) endmacro;
+} else {
+	call TAGJUMP_EX;
+	if (##return) endmacro;
+
+	// カーソルが単語の終端にあると思われる場合は、左に動かす
+	call CURSOR_IS_ON_WORD_END;
+	##move_cursor = ##return;
+	if (##move_cursor) left;
+
+	call DIRECTTAGJUMP_EX;
+	if (##return) endmacro;
+
+	if (##move_cursor) right;
+}
+
+beep;
+
+endmacro;
+
+
+// カーソルが単語の終端にあるか調べる。
+// Return: boolean 単語の終端にあると思われる場合には true そうでなければ false
+CURSOR_IS_ON_WORD_END:
+	// Before
+	##code = unicode(gettext2(column - 1, lineno, column, lineno, 1));
+	call IS_ASCII_CONTROL_OR_MARK ##code;
+	if (##return) return false;
+
+	// After
+	##code = unicode(gettext2(column, lineno, column + 2, lineno, 1));
+	call IS_ASCII_CONTROL_OR_MARK ##code;
+	return ##return;
+
+// 文字コードがコントロールコードや記号か調べる。
+// Param: Integer 文字コード
+// Return: boolean コントロールコードや記号であれば true, そうでなければ false
+IS_ASCII_CONTROL_OR_MARK:
+	return (##1 <= 127 && (##1 <= 47 || (58 <= ##1 && ##1 <= 64) ||
+		(91 <= ##1 && ##1 <= 94) || ##1 == 96 || 123 <= ##1));
+
+// タグジャンプを試みる。
+// それにより新しくファイルが開かれた場合、ファイルを開いた直後の自動起動マクロを実行する。
+// Return: boolean タグジャンプに成功した場合は true そうでなければ false
+TAGJUMP_EX:
+	##count = hidemarucount;
+	tagjump;
+	if (!result) return false;
+	if (linecount2 < getresultex(7)) gofileend;
+	escape;
+	if (##count < hidemarucount) call EXEC_EVENT_MACRO "Opened";
+	return true;
+
+// ダイレクトタグジャンプを試みる。
+// それにより新しくファイルが開かれた場合、ファイルを開いた直後の自動起動マクロを実行する。
+// Return: boolean ダイレクトタグジャンプに成功した場合は true そうでなければ false
+DIRECTTAGJUMP_EX:
+	##count = hidemarucount;
+	directtagjump;
+	if (!result) return false;
+	escape;
+	if (##count < hidemarucount) call EXEC_EVENT_MACRO "Opened";
+	return true;
+
+// 引数で指定した種類の自動起動マクロを実行する。
+// 自動起動マクロが登録されていない場合には何もしない。
+// ※このサブルーチンを実行するとレジストリが閉じられます。
+// Param: string 自動起動マクロの設定を保持しているレジストリのキー名から
+//               "EventMacro" プレフィックスを取り除いた文字列
+EXEC_EVENT_MACRO:
+	openreg "CURRENTUSER", "Software\\Hidemaruo\\Hidemaru\\Env";
+	if (!result) return;
+
+	$$macro = getregstr("EventMacro" + $$1);
+	closereg;
+	if ($$macro == "") return;
+
+	execmacro $$macro;
+	return;
