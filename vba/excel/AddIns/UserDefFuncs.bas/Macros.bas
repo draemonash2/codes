@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.16
+' user define macros v2.17
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -9,9 +9,8 @@ Option Explicit
 ' =
 ' =    選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
 ' =
-' =    ダブルクォートを除いてコピー                 ダブルクオーテーションなしでセルをコピーする
-' =    ダブルクォートを除いて追加コピー             ダブルクオーテーションなしでセルを追加コピーする
-' =    一行にまとめてセルコピー                     一行にまとめてセルコピー
+' =    セルコピーAtタブ区切り                       タブ区切りでセルコピーする
+' =    セルコピーAt指定文字区切り                   指定文字区切りでセルコピーする
 ' =
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
 ' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
@@ -120,9 +119,8 @@ Private Function UpdateShortcutKeySettings( _
     '▼▼▼ 追加先 ▼▼▼
     Call UpdateShtcutSetting("", "選択範囲内で中央", sOperate)
     
-    Call UpdateShtcutSetting("^+c", "ダブルクォートを除いてコピー", sOperate)
-    Call UpdateShtcutSetting("^%c", "ダブルクォートを除いて追加コピー", sOperate)
-    Call UpdateShtcutSetting("^+d", "一行にまとめてセルコピー", sOperate)
+    Call UpdateShtcutSetting("^+c", "セルコピーAtタブ区切り", sOperate)
+    Call UpdateShtcutSetting("^+d", "セルコピーAt指定文字区切り", sOperate)
     
     Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
     Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
@@ -333,111 +331,56 @@ Public Sub シート選択ウィンドウを表示()
     Set Sh = Nothing
 End Sub
 
-' =============================================================================
-' = 概要    ダブルクオーテーションなしでセルコピーする
-' =         非表示セルは無視する。複数範囲は未対応。
-' = 覚書    なし
-' = 依存    Mng_Array.bas/ConvRange2Array()
-' =         Mng_Clipboard.bas/SetToClipboard()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ダブルクォートを除いてコピー()
-    '*** 非表示セル出力判定 ***
-    Dim bIsInvisibleCellIgnore As Boolean
-    'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
-    bIsInvisibleCellIgnore = True
-'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
-'    If vAnswer = vbYes Then
-'        bIsInvisibleCellIgnore = True
-'    ElseIf vAnswer = vbNo Then
-'        bIsInvisibleCellIgnore = False
-'    Else
-'        MsgBox "処理を中断します"
-'        End
-'    End If
-    
-    '*** 区切り文字判定 ***
-    Dim sDelimiter As String
-    'ユーザー操作を単純化するため、列間の区切り文字はデフォルトで「タブ文字」固定としておく
-    sDelimiter = Chr(9)
-    
-    '*** セル範囲をString()型へ変換 ***
-    Dim asLine() As String
-    Call ConvRange2Array( _
-        Selection, _
-        asLine, _
-        bIsInvisibleCellIgnore, _
-        sDelimiter _
-    )
-    
-    'String()型を順次クリップボードにコピー
-    Dim sBuf As String
-    sBuf = ""
-    Dim lLineIdx As Long
-    For lLineIdx = LBound(asLine) To UBound(asLine)
-        If lLineIdx = LBound(asLine) Then
-            sBuf = asLine(lLineIdx)
-        Else
-            sBuf = sBuf & vbNewLine & asLine(lLineIdx)
-        End If
-    Next lLineIdx
-    Call SetToClipboard(sBuf)
-    
-    'フィードバック
-    Application.StatusBar = "■■■■■■■■ コピー完了！ ■■■■■■■■"
-    Sleep 200 'ms 単位
-    Application.StatusBar = False
-End Sub
-
 ' ==================================================================
-' = 概要    選択範囲をクリップボードへ追加コピー
-' =         ダブルクオーテーションなしでセルコピーする
-' =         非表示セルは無視する。複数範囲は未対応。
+' = 概要    選択範囲をクリップボードへセルコピーする。
+' =         ダブルクオーテーションなし、タブ区切り、非表示セルは無視する。
 ' = 覚書    なし
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_Clipboard.bas/SetToClipboard()
 ' = 所属    Macros.bas
 ' ==================================================================
-Public Sub ダブルクォートを除いて追加コピー()
-    Dim bIsInvisibleCellIgnore As Boolean
+Public Sub セルコピーAtタブ区切り()
+    Const bIsInvisibleCellIgnore As Boolean = True
     Dim sDelimiter As String
-    bIsInvisibleCellIgnore = True
     sDelimiter = Chr(9)
     
-    '*** 既存テキスト取得 ***
-    Dim sOrgText As String
-    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
-        .GetFromClipboard
-        sOrgText = .GetText
-    End With
+    Dim sOutText As String
+    sOutText = ""
     
-    '*** 追加テキスト取得 ***
-    Dim asLine() As String
-    Call ConvRange2Array( _
-        Selection, _
-        asLine, _
-        bIsInvisibleCellIgnore, _
-        sDelimiter _
-    )
-    
-    Dim sNewText As String
-    sNewText = ""
-    Dim lLineIdx As Long
-    For lLineIdx = LBound(asLine) To UBound(asLine)
-        If lLineIdx = LBound(asLine) Then
-            sNewText = asLine(lLineIdx)
+    Dim lAreaIdx As Long
+    For lAreaIdx = 1 To Selection.Areas.Count
+        '*** 追加テキスト取得 ***
+        Dim asLine() As String
+        Call ConvRange2Array( _
+            Selection.Areas(lAreaIdx), _
+            asLine, _
+            bIsInvisibleCellIgnore, _
+            sDelimiter _
+        )
+        
+        Dim sNewText As String
+        sNewText = ""
+        Dim lLineIdx As Long
+        For lLineIdx = LBound(asLine) To UBound(asLine)
+            If lLineIdx = LBound(asLine) Then
+                sNewText = asLine(lLineIdx)
+            Else
+                sNewText = sNewText & vbNewLine & asLine(lLineIdx)
+            End If
+        Next lLineIdx
+        
+        If lAreaIdx = 1 Then
+            sOutText = sNewText
         Else
-            sNewText = sNewText & vbNewLine & asLine(lLineIdx)
+            sOutText = sOutText & vbNewLine & sNewText
         End If
-    Next lLineIdx
+    Next lAreaIdx
     
     '*** クリップボード設定 ***
-    Dim sOutText As String
-    sOutText = sOrgText & vbNewLine & sNewText
     Call SetToClipboard(sOutText)
-
+    
     '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ 追加コピー完了！ ■■■■■■■■"
+    Application.StatusBar = "■■■■■■■■ タブ区切りコピー完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
 End Sub
@@ -448,7 +391,7 @@ End Sub
 ' = 依存    Mng_Clipboard.bas/SetToClipboard()
 ' = 所属    Macro.bas
 ' =============================================================================
-Public Sub 一行にまとめてセルコピー()
+Public Sub セルコピーAt指定文字区切り()
     '▼▼▼設定 ここから▼▼▼
     Const sPREFFIX As String = "("
     Const sDelimiter As String = "|"
