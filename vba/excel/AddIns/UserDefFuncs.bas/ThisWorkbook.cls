@@ -10,9 +10,7 @@ Attribute VB_Exposed = True
 Option Explicit
 
 Private Sub Workbook_Open()
-    Call ユーザー定義ショートカットキー設定を追加
-    Call ユーザー定義ショートカットキーを有効化
-    
+    Call マクロショートカットキー全て有効化
     Call F1ヘルプ無効化
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.19
+' user define macros v2.20
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -50,27 +50,7 @@ Option Explicit
 ' =============================================================================
 
 '******************************************************************************
-'* 設定値
-'******************************************************************************
-'=== フォント色をトグル ===
-Const lTGL_FONT_CLR_R As Long = 255
-Const lTGL_FONT_CLR_G As Long = 0
-Const lTGL_FONT_CLR_B As Long = 0
-'=== 背景色をトグル ===
-Const lTGL_BG_CLR_R As Long = 255
-Const lTGL_BG_CLR_G As Long = 255
-Const lTGL_BG_CLR_B As Long = 0
-'=== アクティブセルコメントのみ表示および移動() ===
-Const SETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
-Const SHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
-'=== Excel方眼紙() ===
-Const lEXCEL_GRID_CLM_WIDTH As Long = 2
-Const lEXCEL_GRID_ROW_HEIGHT As Long = 10.8
-Const lEXCEL_GRID_FONT_SIZE As Long = 9
-Const lEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
-
-'******************************************************************************
-'* インクルード
+'* 事前処理
 '******************************************************************************
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
@@ -87,98 +67,137 @@ Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
 '▲▲▲Mng_Clipboard.bas/SetToClipboard()▲▲▲
 
+Dim dMacroShortcutKeys As Object
+
+'******************************************************************************
+'* 設定値
+'******************************************************************************
+'▼▼▼ 設定 ▼▼▼
+'=== フォント色をトグル ===
+    Const lTGL_FONT_CLR_R As Long = 255
+    Const lTGL_FONT_CLR_G As Long = 0
+    Const lTGL_FONT_CLR_B As Long = 0
+'=== 背景色をトグル ===
+    Const lTGL_BG_CLR_R As Long = 255
+    Const lTGL_BG_CLR_G As Long = 255
+    Const lTGL_BG_CLR_B As Long = 0
+'=== アクティブセルコメントのみ表示および移動() ===
+    Const sSETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
+    Const sSHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
+'=== Excel方眼紙() ===
+    Const lEXCEL_GRID_CLM_WIDTH As Long = 2
+    Const lEXCEL_GRID_ROW_HEIGHT As Long = 10.8
+    Const lEXCEL_GRID_FONT_SIZE As Long = 9
+    Const lEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
+'=== セルコピーAtタブ区切り() ===
+    Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
+    'Const sCELL_COPY_DELIMITER As String = Chr(9) '現状未実装
+'=== セルコピーAt指定文字区切り() ===
+    'Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True '現状未実装
+    Const sCELL_COPY_PREFFIX As String = "("
+    Const sCELL_COPY_DELIMITER As String = "|"
+    Const sCELL_COPY_SUFFIX As String = ")"
+'=== 選択範囲をファイルエクスポート() ===
+    Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
+    Const sFILEEXPORT_DELIMITER As String = ","
+'=== EpTreeの関数ツリーをExcelで取り込む() ===
+    Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
+    Const sEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
+    Const sEPTREE_CLM_WIDTH As Long = 2
+'▲▲▲ 設定 ▲▲▲
+
 ' ==================================================================
 ' = 概要    ショートカットキー設定を更新する
-' = 引数    sOperate    String  [in] 操作種別(Add/Update/Delete)
-' = 戻値    なし
+' = 引数    なし
 ' = 覚書    なし
-' = 依存    Macros.bas/UpdateShtcutSetting()
-' =         AddInSetting.cls/SearchWithKey()
+' = 依存    AddInSetting.cls/SearchWithKey()
 ' = 所属    Macros.bas
 ' ==================================================================
-Private Function UpdateShortcutKeySettings( _
-    ByVal sOperate As String _
-)
+Private Sub ConstructMacroShortcutKeys()
     ' <<ショートカットキー追加方法>>
-    '   (1) 以下の追加先に「UpdateShtcutSetting()」呼び出しを追加する。
+    '   (1) dMacroShortcutKeysに対してキー<マクロ名>、値<ショートカットキー>を追加する。
     '       第一引数にはショートカットキー、第二引数にマクロ名を指定する。
     '       ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
     '         Shift：+、Ctrl ：^、Alt  ：%
     '       詳細は以下 URL 参照。
     '         https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
-    '   (2) マクロ「ユーザー定義ショートカットキーを設定()」を実行する。
+    '   (2) マクロ「マクロショートカットキー全て有効化()」を実行する。
     '
     ' <<ショートカットキー解除方法>>
-    '   (1) マクロ「ユーザー定義ショートカットキーを解除()」を実行する。
+    '   (1) マクロ「マクロショートカットキー全て無効化()」を実行する。
     
-    '▼▼▼ 追加先 ▼▼▼
-    Call UpdateShtcutSetting("", "選択範囲内で中央", sOperate)
+    Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
     
-    Call UpdateShtcutSetting("^+c", "セルコピーAtタブ区切り", sOperate)
-    Call UpdateShtcutSetting("^+d", "セルコピーAt指定文字区切り", sOperate)
+    '▼▼▼ 設定 ▼▼▼
+'   dMacroShortcutKeys.Add "", "選択範囲内で中央"
     
-    Call UpdateShtcutSetting("", "選択範囲をファイルエクスポート", sOperate)
-    Call UpdateShtcutSetting("", "選択範囲をそれぞれコマンド実行", sOperate)
-    Call UpdateShtcutSetting("", "選択範囲をまとめてコマンド実行", sOperate)
-    Call UpdateShtcutSetting("", "選択範囲内の検索文字色を変更", sOperate)
+    dMacroShortcutKeys.Add "^+c", "セルコピーAtタブ区切り"
+    dMacroShortcutKeys.Add "^+d", "セルコピーAt指定文字区切り"
     
-    Call UpdateShtcutSetting("", "全シート名をコピー", sOperate)
-    Call UpdateShtcutSetting("", "シート表示非表示を切り替え", sOperate)
-    Call UpdateShtcutSetting("", "シート並べ替え作業用シートを作成", sOperate)
-    Call UpdateShtcutSetting("^%{PGUP}", "シート選択ウィンドウを表示", sOperate)
+'   dMacroShortcutKeys.Add "", "選択範囲をファイルエクスポート"
+'   dMacroShortcutKeys.Add "", "選択範囲をそれぞれコマンド実行"
+'   dMacroShortcutKeys.Add "", "選択範囲をまとめてコマンド実行"
+'   dMacroShortcutKeys.Add "", "選択範囲内の検索文字色を変更"
     
-    Call UpdateShtcutSetting("", "セル内の丸数字をデクリメント", sOperate)
-    Call UpdateShtcutSetting("", "セル内の丸数字をインクリメント", sOperate)
+'   dMacroShortcutKeys.Add "", "全シート名をコピー"
+'   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
+'   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
+    dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
     
-    Call UpdateShtcutSetting("", "ツリーをグループ化", sOperate)
-    Call UpdateShtcutSetting("", "ハイパーリンク一括オープン", sOperate)
+'   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
+'   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
     
-    Call UpdateShtcutSetting("", "フォント色をトグル", sOperate)
-    Call UpdateShtcutSetting("", "背景色をトグル", sOperate)
+'   dMacroShortcutKeys.Add "", "ツリーをグループ化"
+'   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     
-    Call UpdateShtcutSetting("%^+{DOWN}", "'オートフィル実行(""Down"")'", sOperate)
-    Call UpdateShtcutSetting("%^+{UP}", "'オートフィル実行(""Up"")'", sOperate)
-    Call UpdateShtcutSetting("%^+{RIGHT}", "'オートフィル実行(""Right"")'", sOperate)
-    Call UpdateShtcutSetting("%^+{LEFT}", "'オートフィル実行(""Left"")'", sOperate)
+'   dMacroShortcutKeys.Add "", "フォント色をトグル"
+'   dMacroShortcutKeys.Add "", "背景色をトグル"
+    
+    dMacroShortcutKeys.Add "%^+{DOWN}", "'オートフィル実行(""Down"")'"
+    dMacroShortcutKeys.Add "%^+{UP}", "'オートフィル実行(""Up"")'"
+    dMacroShortcutKeys.Add "%^+{RIGHT}", "'オートフィル実行(""Right"")'"
+    dMacroShortcutKeys.Add "%^+{LEFT}", "'オートフィル実行(""Left"")'"
+    
+    dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
+    dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
+    dMacroShortcutKeys.Add "^%{HOME}", "MEMOシートへジャンプ"
+    
+'   dMacroShortcutKeys.Add "", "Excel方眼紙"
+'   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
+    
+'   dMacroShortcutKeys.Add "", "自動列幅調整"
+'   dMacroShortcutKeys.Add "", "自動行幅調整"
+    
+    dMacroShortcutKeys.Add "^+f", "最前面へ移動"
+    dMacroShortcutKeys.Add "^+b", "最背面へ移動"
+    
     Dim clSetting As AddInSetting
     Set clSetting = New AddInSetting
     Dim sValue As String
     Dim bIsRet As Boolean
-    bIsRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
+    bIsRet = clSetting.SearchWithKey(sSETTING_KEY_CMNT_VSBL_ENB, sValue)
     If bIsRet = True Then
         If sValue = "True" Then
-            Call UpdateShtcutSetting("{DOWN}", "アクティブセルコメントのみ表示して下移動", sOperate)
-            Call UpdateShtcutSetting("{UP}", "アクティブセルコメントのみ表示して上移動", sOperate)
-            Call UpdateShtcutSetting("{RIGHT}", "アクティブセルコメントのみ表示して右移動", sOperate)
-            Call UpdateShtcutSetting("{LEFT}", "アクティブセルコメントのみ表示して左移動", sOperate)
+            dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
+            dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
+            dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
+            dMacroShortcutKeys.Add "{LEFT}", "アクティブセルコメントのみ表示して左移動"
         ElseIf sValue = "False" Then
-            Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して下移動", sOperate)
-            Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して上移動", sOperate)
-            Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して右移動", sOperate)
-            Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して左移動", sOperate)
+            dMacroShortcutKeys.Add "{DOWN}", ""
+            dMacroShortcutKeys.Add "{UP}", ""
+            dMacroShortcutKeys.Add "{RIGHT}", ""
+            dMacroShortcutKeys.Add "{LEFT}", ""
         Else
             Debug.Assert False
         End If
     Else
-        Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して下移動", sOperate)
-        Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して上移動", sOperate)
-        Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して右移動", sOperate)
-        Call UpdateShtcutSetting("", "アクティブセルコメントのみ表示して左移動", sOperate)
+        dMacroShortcutKeys.Add "{DOWN}", ""
+        dMacroShortcutKeys.Add "{UP}", ""
+        dMacroShortcutKeys.Add "{RIGHT}", ""
+        dMacroShortcutKeys.Add "{LEFT}", ""
     End If
-    Call UpdateShtcutSetting("^+{F11}", "アクティブセルコメント設定切り替え", sOperate)
-    Call UpdateShtcutSetting("^+j", "ハイパーリンクで飛ぶ", sOperate)
-    Call UpdateShtcutSetting("^%{HOME}", "MEMOシートへジャンプ", sOperate)
-    
-    Call UpdateShtcutSetting("", "Excel方眼紙", sOperate)
-    Call UpdateShtcutSetting("", "EpTreeの関数ツリーをExcelで取り込む", sOperate)
-    
-    Call UpdateShtcutSetting("", "自動列幅調整", sOperate)
-    Call UpdateShtcutSetting("", "自動行幅調整", sOperate)
-    
-    Call UpdateShtcutSetting("^+f", "最前面へ移動", sOperate)
-    Call UpdateShtcutSetting("^+b", "最背面へ移動", sOperate)
-    '▲▲▲ 追加先 ▲▲▲
-End Function
+    '▲▲▲ 設定 ▲▲▲
+End Sub
 
 ' *****************************************************************************
 ' * 外部公開用マクロ
@@ -339,7 +358,6 @@ End Sub
 ' = 所属    Macros.bas
 ' ==================================================================
 Public Sub セルコピーAtタブ区切り()
-    Const bIsInvisibleCellIgnore As Boolean = True
     Dim sDelimiter As String
     sDelimiter = Chr(9)
     
@@ -353,7 +371,7 @@ Public Sub セルコピーAtタブ区切り()
         Call ConvRange2Array( _
             Selection.Areas(lAreaIdx), _
             asLine, _
-            bIsInvisibleCellIgnore, _
+            bCELL_COPY_INVISIBLE_IGNORE, _
             sDelimiter _
         )
         
@@ -391,12 +409,6 @@ End Sub
 ' = 所属    Macro.bas
 ' =============================================================================
 Public Sub セルコピーAt指定文字区切り()
-    '▼▼▼設定 ここから▼▼▼
-    Const sPREFFIX As String = "("
-    Const sDelimiter As String = "|"
-    Const sSUFFIX As String = ")"
-    '▲▲▲設定 ここまで▲▲▲
-    
     Const sMACRO_NAME As String = "指定文字区切りコピー"
     
     Application.ScreenUpdating = False
@@ -415,16 +427,16 @@ Public Sub セルコピーAt指定文字区切り()
                         'Do Nothing
                     Else
                         If sClipedStr = "" Then
-                            sClipedStr = sPREFFIX & .Value
+                            sClipedStr = sCELL_COPY_PREFFIX & .Value
                         Else
-                            sClipedStr = sClipedStr & sDelimiter & .Value
+                            sClipedStr = sClipedStr & sCELL_COPY_DELIMITER & .Value
                         End If
                     End If
                 End If
             End With
         Next lItemIdx
     Next lAreaIdx
-    sClipedStr = sClipedStr & sSUFFIX
+    sClipedStr = sClipedStr & sCELL_COPY_SUFFIX
     
     '*** クリップボード設定 ***
     Call SetToClipboard(sClipedStr)
@@ -446,9 +458,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
-    Const TEMP_FILE_NAME As String = "ExportCellRange.tmp"
-    Const FILE_EXTENTION As String = "csv"
-    Const DELIMITER As String = ","
+    Const sTEMP_FILE_NAME As String = "ExportCellRange.tmp"
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -463,7 +473,7 @@ Public Sub 選択範囲をファイルエクスポート()
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sTmpPath As String
-    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & TEMP_FILE_NAME
+    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
     Dim sDirPathOld As String
     Dim sFileNameOld As String
     If objFSO.FileExists(sTmpPath) Then
@@ -493,7 +503,7 @@ Public Sub 選択範囲をファイルエクスポート()
     
     '*** ファイル名作成 ***
     Dim sOutputFilePath As String
-    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & FILE_EXTENTION
+    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & sFILEEXPORT_FILE_EXTENTION
     
     '*** ファイル上書き判定 ***
     If objFSO.FileExists(sOutputFilePath) Then
@@ -529,7 +539,7 @@ Public Sub 選択範囲をファイルエクスポート()
                 Selection, _
                 asRange, _
                 bIsInvisibleCellIgnore, _
-                DELIMITER _
+                sFILEEXPORT_DELIMITER _
             )
     
     On Error Resume Next
@@ -575,7 +585,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をまとめてコマンド実行()
-    Const BAT_FILE_NAME As String = "command.bat"
+    Const sBAT_FILE_NAME As String = "command.bat"
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -618,7 +628,7 @@ Public Sub 選択範囲をまとめてコマンド実行()
     Dim sBatFileDirPath As String
     Dim sBatFilePath As String
     sBatFileDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
-    sBatFilePath = sBatFileDirPath & "\" & BAT_FILE_NAME
+    sBatFilePath = sBatFileDirPath & "\" & sBAT_FILE_NAME
     
     Call OutputTxtFile(sBatFilePath, asRange)
     
@@ -738,6 +748,7 @@ Public Sub 選択範囲内の検索文字色を変更()
     '▼▼▼色設定▼▼▼
     Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
     Const lCOLOR_NUM As Long = 8
+    Const lINIT_COLOR As Long = 0
     Dim vCOLOR_INFO() As Variant
     vCOLOR_INFO = _
         Array( _
@@ -761,7 +772,7 @@ Public Sub 選択範囲内の検索文字色を変更()
         "  " & sCOLOR_TYPE & vbNewLine _
         , _
         sMACRO_TITLE, _
-        0 _
+        lINIT_COLOR _
     )
     
     If lColorIndex < lCOLOR_NUM Then
@@ -1147,9 +1158,7 @@ End Sub
 ' = 依存    AddInSetting.cls/SearchWithKey()
 ' =         AddInSetting.cls/Update()
 ' =         AddInSetting.cls/Add()
-' =         Macros.bas/DisableShortcutKeys()
-' =         Macros.bas/UpdateShortcutKeySettings()
-' =         Macros.bas/EnableShortcutKeys()
+' =         Macros.bas/マクロショートカットキー全て有効化()
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
@@ -1157,29 +1166,23 @@ Public Sub アクティブセルコメント設定切り替え()
     Set clSetting = New AddInSetting
     Dim bRet As Boolean
     Dim sValue As String
-    bRet = clSetting.SearchWithKey(SETTING_KEY_CMNT_VSBL_ENB, sValue)
+    
+    bRet = clSetting.SearchWithKey(sSETTING_KEY_CMNT_VSBL_ENB, sValue)
     If bRet = True Then
         If sValue = "True" Then
             MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-            Call DisableShortcutKeys
-            Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "False")
-            Call UpdateShortcutKeySettings("Update")
-            Call EnableShortcutKeys
+            Call clSetting.Update(sSETTING_KEY_CMNT_VSBL_ENB, "False")
         Else
             MsgBox "アクティブセルコメントのみ表示および移動を【有効化】します"
-            Call DisableShortcutKeys
-            Call clSetting.Update(SETTING_KEY_CMNT_VSBL_ENB, "True")
-            Call UpdateShortcutKeySettings("Update")
-            Call EnableShortcutKeys
+            Call clSetting.Update(sSETTING_KEY_CMNT_VSBL_ENB, "True")
         End If
         Debug.Assert bRet
     Else
         MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-        Call DisableShortcutKeys
-        Call clSetting.Add(SETTING_KEY_CMNT_VSBL_ENB, "False")
-        Call UpdateShortcutKeySettings("Update")
-        Call EnableShortcutKeys
+        Call clSetting.Add(sSETTING_KEY_CMNT_VSBL_ENB, "False")
     End If
+    
+    Call マクロショートカットキー全て有効化
 End Sub
 
 ' =============================================================================
@@ -1271,12 +1274,9 @@ End Sub
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Const MACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
-    Const SHEET_NAME As String = "CallTree"
+    Const sTEMP_FILE_NAME As String = "vba_eptree_to_excel.tmp"
     Const STRT_ROW As Long = 1
     Const STRT_CLM As Long = 1
-    Const MAX_FUNC_LEVEL_INI As Long = 10
-    Const CLM_WIDTH As Long = 2
-    Const TEMP_FILE_NAME As String = "vba_eptree_to_excel.tmp"
     Const KEYWORD_EPTREE_LOG_PATH As String = "EPTREE_LOG_PATH"
     Const KEYWORD_DEV_ROOT_DIR_PATH As String = "DEV_ROOT_DIR_PATH"
     Const KEYWORD_DEV_ROOT_DIR_LEVEL As String = "DEV_ROOT_DIR_LEVEL"
@@ -1296,32 +1296,32 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim sDevRootLevel As String
     
     '*** Eptreeログファイルパス取得 ***
-    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath)
+    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath)
     sTrgtFilePath = ShowFileSelectDialog(sTrgtFilePath, "EpTreeLog.txtのファイルパスを選択してください")
     If sTrgtFilePath = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
-    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath, False)
+    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath, False)
     
     '*** 開発用ルートフォルダ取得 ***
-    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath)
+    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath)
     sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
     If sDevRootDirPath = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
-    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath, False)
+    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath, False)
     
     '*** ルートフォルダレベル取得 ***
-    Call ReadTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel)
+    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel)
     sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", MACRO_NAME, sDevRootLevel)
     If sDevRootLevel = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
-    Call WriteTempMemoriedValue(TEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
+    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
     
     '=============================================
     '= 本処理
@@ -1332,7 +1332,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     'シート追加
     Dim sSheetName As String
     Dim shTrgtSht As Worksheet
-    sSheetName = CreateNewWorksheet(SHEET_NAME)
+    sSheetName = CreateNewWorksheet(sEPTREE_OUT_SHEET_NAME)
     Set shTrgtSht = ActiveWorkbook.Sheets(sSheetName)
     
     'テキストファイル読み出し
@@ -1354,7 +1354,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     lRowIdx = lRowIdx + 1
     
     Dim lMaxFuncLevel As Long
-    lMaxFuncLevel = MAX_FUNC_LEVEL_INI
+    lMaxFuncLevel = sEPTREE_MAX_FUNC_LEVEL_INI
     Dim vFileLine As Variant
     For Each vFileLine In cFileContents
         Dim oMatchResult As Object
@@ -1404,7 +1404,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = CLM_WIDTH
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = sEPTREE_CLM_WIDTH
         
         'オートフィルタ
         .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
@@ -1426,6 +1426,30 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Application.Calculation = xlCalculationAutomatic
     
     MsgBox "関数コールツリー作成完了！", vbOKOnly, MACRO_NAME
+End Sub
+
+' =============================================================================
+' = 概要    マクロショートカットキー全て有効化
+' = 覚書    なし
+' = 依存    Macros.bas/ConstructMacroShortcutKeys()
+' =         Macros.bas/EnableMacroShortcutKeys()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub マクロショートカットキー全て有効化()
+    Call ConstructMacroShortcutKeys
+    Call EnableMacroShortcutKeys
+End Sub
+
+' =============================================================================
+' = 概要    マクロショートカットキー全て無効化
+' = 覚書    なし
+' = 依存    Macros.bas/ConstructMacroShortcutKeys()
+' =         Macros.bas/DisableMacroShortcutKeys()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub マクロショートカットキー全て無効化()
+    Call ConstructMacroShortcutKeys
+    Call DisableMacroShortcutKeys
 End Sub
 
 ' *****************************************************************************
@@ -1458,54 +1482,42 @@ Private Sub OutputSettingList()
     End If
 End Sub
 
-' =============================================================================
-' = 概要    ユーザー定義ショートカットキー設定を追加
+' ==================================================================
+' = 概要    マクロショートカットキーを有効化
+' = 引数    なし
 ' = 覚書    なし
-' = 依存    Macros.bas/UpdateShortcutKeySettings()
+' = 依存    なし
 ' = 所属    Macros.bas
-' =============================================================================
-Public Sub ユーザー定義ショートカットキー設定を追加()
-    Call UpdateShortcutKeySettings("Add")
+' ==================================================================
+Private Sub EnableMacroShortcutKeys()
+    Dim vKey As Variant
+    For Each vKey In dMacroShortcutKeys
+        Dim sShortcutKey As String
+        Dim sMacroName As String
+        sShortcutKey = vKey
+        sMacroName = dMacroShortcutKeys.Item(vKey)
+        If sMacroName = "" Then
+            Application.OnKey sShortcutKey              'ショートカットキークリア
+        Else
+            Application.OnKey sShortcutKey, sMacroName  'ショートカットキー設定
+        End If
+    Next
 End Sub
 
-' =============================================================================
-' = 概要    ユーザー定義ショートカットキー設定を削除
+' ==================================================================
+' = 概要    マクロショートカットキーを無効化
+' = 引数    なし
 ' = 覚書    なし
-' = 依存    Macros.bas/UpdateShortcutKeySettings()
+' = 依存    なし
 ' = 所属    Macros.bas
-' =============================================================================
-Public Sub ユーザー定義ショートカットキー設定を削除()
-    Call UpdateShortcutKeySettings("Delete")
-End Sub
-
-' =============================================================================
-' = 概要    ユーザー定義ショートカットキー設定を更新
-' = 覚書    なし
-' = 依存    Macros.bas/UpdateShortcutKeySettings()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ユーザー定義ショートカットキー設定を更新()
-    Call UpdateShortcutKeySettings("Update")
-End Sub
-
-' =============================================================================
-' = 概要    ユーザー定義ショートカットキーを有効化
-' = 覚書    なし
-' = 依存    Macros.bas/EnableShortcutKeys()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ユーザー定義ショートカットキーを有効化()
-    Call EnableShortcutKeys
-End Sub
-
-' =============================================================================
-' = 概要    ユーザー定義ショートカットキーを無効化
-' = 覚書    なし
-' = 依存    Macros.bas/DisableShortcutKeys()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ユーザー定義ショートカットキーを無効化()
-    Call DisableShortcutKeys
+' ==================================================================
+Private Sub DisableMacroShortcutKeys()
+    Dim vKey As Variant
+    For Each vKey In dMacroShortcutKeys
+        Dim sShortcutKey As String
+        sShortcutKey = vKey
+        Application.OnKey sShortcutKey  'ショートカットキークリア
+    Next
 End Sub
 
 ' =============================================================================
@@ -1773,7 +1785,7 @@ Private Function UpdateShtcutSetting( _
     Set clSetting = New AddInSetting
     Dim sSettingKey As String
     Dim sSettingValue As String
-    sSettingKey = SHTCUTKEY_KEYWORD_PREFIX & "_" & sMacroName
+    sSettingKey = sSHTCUTKEY_KEYWORD_PREFIX & "_" & sMacroName
     sSettingValue = sKey
     Select Case sMode
         Case "Add": Call clSetting.Add(sSettingKey, sSettingValue)
@@ -1781,90 +1793,6 @@ Private Function UpdateShtcutSetting( _
         Case "Delete": Call clSetting.Delete(sSettingKey)
         Case Else: Debug.Assert False
     End Select
-End Function
-
-' ==================================================================
-' = 概要    ショートカットキーを有効化
-' = 引数    なし
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    AddInSetting.cls/Count()
-' =         AddInSetting.cls/SearchWithIdx()
-' = 所属    Macros.bas
-' ==================================================================
-Private Function EnableShortcutKeys()
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim lNum As Long
-    lNum = clSetting.Count
-    If lNum = 0 Then
-        'Do Nothing
-    Else
-        Dim lLastRow As Long
-        lLastRow = lNum
-        Dim lRowIdx As Long
-        For lRowIdx = 1 To lLastRow
-            Dim sSettingKey As String
-            Dim sSettingValue As String
-            Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
-            '*** ショートカットキー設定の場合 ***
-            If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
-                Dim sShrcutMacroName As String
-                Dim sShtcutKey As String
-                sShrcutMacroName = Replace(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX & "_", "")
-                sShtcutKey = sSettingValue
-                If sShtcutKey = "" Then
-                    'Do Nothing
-                Else
-                    Application.OnKey sShtcutKey, sShrcutMacroName
-                End If
-            '*** ショートカットキー設定でない場合 ***
-            Else
-                'Do Nothing
-            End If
-        Next lRowIdx
-    End If
-End Function
-
-' ==================================================================
-' = 概要    ショートカットキーを無効化
-' = 引数    なし
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    AddInSetting.cls/Count()
-' =         AddInSetting.cls/SearchWithIdx()
-' = 所属    Macros.bas
-' ==================================================================
-Private Function DisableShortcutKeys()
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim lNum As Long
-    lNum = clSetting.Count
-    If lNum = 0 Then
-        'Do Nothing
-    Else
-        Dim lLastRow As Long
-        lLastRow = lNum
-        Dim lRowIdx As Long
-        For lRowIdx = 1 To lLastRow
-            Dim sSettingKey As String
-            Dim sSettingValue As String
-            Call clSetting.SearchWithIdx(lRowIdx, sSettingKey, sSettingValue)
-            '*** ショートカットキー設定の場合 ***
-            If InStr(sSettingKey, SHTCUTKEY_KEYWORD_PREFIX) Then
-                Dim sShtcutKey As String
-                sShtcutKey = sSettingValue
-                If sShtcutKey = "" Then
-                    'Do Nothing
-                Else
-                    Application.OnKey sShtcutKey
-                End If
-            '*** ショートカットキー設定でない場合 ***
-            Else
-                'Do Nothing
-            End If
-        Next lRowIdx
-    End If
 End Function
 
 ' ============================================
