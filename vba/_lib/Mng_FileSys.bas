@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_FileSys"
 Option Explicit
 
-' file system library v1.7
+' file system library v1.7a
 
 Public Enum E_PATH_TYPE
     PATH_TYPE_FILE
@@ -770,7 +770,7 @@ End Function
 ' = 概要    一時的なファイルに検索キーと書き込み値を上書きして保存
 ' = 引数    sFileName       String  [in]  ファイル名
 ' = 引数    sKeyword        String  [in]  検索キー
-' = 引数    sValue          String  [out] 書き込み値
+' = 引数    sValue          String  [in]  書き込み値
 ' = 引数    bCreateNewFile  Boolean [in]  新規ファイル作成
 ' = 戻値                    Boolean       検索結果(ファイル有無)
 ' = 覚書    [実行例]
@@ -867,7 +867,7 @@ End Function
 ' = 概要    一時的なファイルから検索キーに一致する行の値を読みだす
 ' = 引数    sFileName       String  [in]  ファイル名
 ' = 引数    sKeyword        String  [in]  検索キー
-' = 引数    sValue          String  [in]  検索値
+' = 引数    sValue          String  [out] 検索値
 ' = 戻値                    Boolean       検索結果(ファイル有無)
 ' = 覚書    なし
 ' = 依存    なし

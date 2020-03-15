@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.17
+' user define macros v2.18
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -40,12 +40,29 @@ Option Explicit
 ' =    Excel方眼紙                                  Excel方眼紙
 ' =    EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
 ' =
-' =    自動列幅調整                                 列幅を自動調整する
-' =    自動行幅調整                                 行幅を自動調整する
-' =
 ' =    最前面へ移動                                 最前面へ移動する
 ' =    最背面へ移動                                 最背面へ移動する
 ' =============================================================================
+
+'******************************************************************************
+'* 設定値
+'******************************************************************************
+'=== フォント色をトグル ===
+Const lTGL_FONT_CLR_R As Long = 255
+Const lTGL_FONT_CLR_G As Long = 0
+Const lTGL_FONT_CLR_B As Long = 0
+'=== 背景色をトグル ===
+Const lTGL_BG_CLR_R As Long = 255
+Const lTGL_BG_CLR_G As Long = 255
+Const lTGL_BG_CLR_B As Long = 0
+'=== アクティブセルコメントのみ表示および移動() ===
+Const SETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
+Const SHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
+'=== Excel方眼紙() ===
+Const lEXCEL_GRID_CLM_WIDTH As Long = 2
+Const lEXCEL_GRID_ROW_HEIGHT As Long = 10.8
+Const lEXCEL_GRID_FONT_SIZE As Long = 9
+Const lEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
 
 '******************************************************************************
 '* インクルード
@@ -64,33 +81,6 @@ Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 '本来はＣ言語用の文字列コピーだが、２つ目の引数をStringとしているので変換が行われた上でコピーされる。
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
 '▲▲▲Mng_Clipboard.bas/SetToClipboard()▲▲▲
-
-'******************************************************************************
-'* 設定値
-'******************************************************************************
-'=== セル内の丸数字をデクリメント()/セル内の丸数字をインクリメント() ===
-Const NUM_MAX = 15
-Const NUM_MIN = 1
-
-'=== アクティブセルコメントのみ表示および移動() ===
-Const SETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
-Const SHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
-
-'=== シート並べ替え作業用シートを作成() ===
-Private Const WORK_SHEET_NAME = "シート並べ替え作業用"
-
-Enum E_ROW
-    ROW_BTN = 2
-    ROW_TEXT_1 = 4
-    ROW_TEXT_2
-    ROW_SHT_NAME_TITLE = 7
-    ROW_SHT_NAME_STRT
-End Enum
-
-Enum E_CLM
-    CLM_BTN = 2
-    CLM_SHT_NAME = 2
-End Enum
 
 ' ==================================================================
 ' = 概要    ショートカットキー設定を更新する
@@ -216,6 +206,8 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をデクリメント()
+    Const NUM_MAX As Long = 15
+    Const NUM_MIN As Long = 1
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
     Dim lLoopCnt As Long
@@ -244,6 +236,8 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をインクリメント()
+    Const NUM_MAX As Long = 15
+    Const NUM_MIN As Long = 1
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
     Dim lLoopCnt As Long
@@ -398,7 +392,7 @@ Public Sub セルコピーAt指定文字区切り()
     Const sSUFFIX As String = ")"
     '▲▲▲設定 ここまで▲▲▲
     
-    Const sMACRO_NAME As String = "一行にまとめてセルコピー"
+    Const sMACRO_NAME As String = "指定文字区切りコピー"
     
     Application.ScreenUpdating = False
     
@@ -833,6 +827,15 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート並べ替え作業用シートを作成()
+    Const WORK_SHEET_NAME As String = "シート並べ替え作業用"
+    Const ROW_BTN = 2
+    Const ROW_TEXT_1 = 4
+    Const ROW_TEXT_2 = 5
+    Const ROW_SHT_NAME_TITLE = 7
+    Const ROW_SHT_NAME_STRT = 8
+    Const CLM_BTN = 2
+    Const CLM_SHT_NAME = 2
+
     Dim lShtIdx As Long
     Dim asShtName() As String
     Dim shWorkSht As Worksheet
@@ -995,13 +998,10 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub フォント色をトグル()
-    Const COLOR_R As Long = 255
-    Const COLOR_G As Long = 0
-    Const COLOR_B As Long = 0
-    If Selection(1).Font.Color = RGB(COLOR_R, COLOR_G, COLOR_B) Then
+    If Selection(1).Font.Color = RGB(lTGL_FONT_CLR_R, lTGL_FONT_CLR_G, lTGL_FONT_CLR_B) Then
         Selection.Font.ColorIndex = xlAutomatic
     Else
-        Selection.Font.Color = RGB(COLOR_R, COLOR_G, COLOR_B)
+        Selection.Font.Color = RGB(lTGL_FONT_CLR_R, lTGL_FONT_CLR_G, lTGL_FONT_CLR_B)
     End If
 End Sub
 
@@ -1012,13 +1012,10 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 背景色をトグル()
-    Const COLOR_R As Long = 255
-    Const COLOR_G As Long = 255
-    Const COLOR_B As Long = 0
-    If Selection(1).Interior.Color = RGB(COLOR_R, COLOR_G, COLOR_B) Then
+    If Selection(1).Interior.Color = RGB(lTGL_BG_CLR_R, lTGL_BG_CLR_G, lTGL_BG_CLR_B) Then
         Selection.Interior.ColorIndex = 0
     Else
-        Selection.Interior.Color = RGB(COLOR_R, COLOR_G, COLOR_B)
+        Selection.Interior.Color = RGB(lTGL_BG_CLR_R, lTGL_BG_CLR_G, lTGL_BG_CLR_B)
     End If
 End Sub
 
@@ -1254,25 +1251,12 @@ End Sub
 Public Sub Excel方眼紙()
     ActiveSheet.Cells.Select
     With Selection
-        .ColumnWidth = 1.22
-        .RowHeight = 10.8
-        .Font.Size = 9
-        .Font.Name = "ＭＳ ゴシック"
+        .ColumnWidth = lEXCEL_GRID_CLM_WIDTH
+        .RowHeight = lEXCEL_GRID_ROW_HEIGHT
+        .Font.Size = lEXCEL_GRID_FONT_SIZE
+        .Font.Name = lEXCEL_GRID_FONT_NAME
     End With
     ActiveSheet.Cells(1, 1).Select
-End Sub
-
-' =============================================================================
-' = 概要    列幅、行幅を自動調整する
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 自動列幅調整()
-    Selection.EntireColumn.AutoFit
-End Sub
-Public Sub 自動行幅調整()
-    Selection.EntireRow.AutoFit
 End Sub
 
 ' =============================================================================
