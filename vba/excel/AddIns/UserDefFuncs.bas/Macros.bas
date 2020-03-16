@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.20
+' user define macros v2.21
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -81,9 +81,8 @@ Dim dMacroShortcutKeys As Object
     Const lTGL_BG_CLR_R As Long = 255
     Const lTGL_BG_CLR_G As Long = 255
     Const lTGL_BG_CLR_B As Long = 0
-'=== アクティブセルコメントのみ表示および移動() ===
+'=== アクティブセルコメント設定切り替え() ===
     Const sSETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
-    Const sSHTCUTKEY_KEYWORD_PREFIX As String = "SHTCUTKEY"
 '=== Excel方眼紙() ===
     Const lEXCEL_GRID_CLM_WIDTH As Long = 2
     Const lEXCEL_GRID_ROW_HEIGHT As Long = 10.8
@@ -1763,37 +1762,6 @@ End Function
         sBuf = sBuf & vbNewLine & ExecDosCmd("copy C:\Users\draem_000\Desktop\test.txt C:\Users\draem_000\Desktop\test2.txt")
         MsgBox sBuf
     End Sub
-
-' ==================================================================
-' = 概要    ショートカットキー設定を追加/削除
-' = 引数    sKey        String   [in]   キー
-' = 引数    sMacroName  String   [in]   マクロ名
-' = 引数    sMode       String   [in]   モード(Add/Update/Delete)
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    AddInSetting.cls/Add()
-' =         AddInSetting.cls/Update()
-' =         AddInSetting.cls/Delete()
-' = 所属    Macros.bas
-' ==================================================================
-Private Function UpdateShtcutSetting( _
-    ByVal sKey As String, _
-    ByVal sMacroName As String, _
-    ByVal sMode As String _
-)
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim sSettingKey As String
-    Dim sSettingValue As String
-    sSettingKey = sSHTCUTKEY_KEYWORD_PREFIX & "_" & sMacroName
-    sSettingValue = sKey
-    Select Case sMode
-        Case "Add": Call clSetting.Add(sSettingKey, sSettingValue)
-        Case "Update": Call clSetting.Update(sSettingKey, sSettingValue)
-        Case "Delete": Call clSetting.Delete(sSettingKey)
-        Case Else: Debug.Assert False
-    End Select
-End Function
 
 ' ============================================
 ' = 概要    配列の内容をファイルに書き込む。
