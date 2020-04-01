@@ -157,9 +157,9 @@ If bIsContinue = True Then
             sSrcFileName = objFSO.GetFileName( sSelectedPath )
             sSrcFileBaseName = objFSO.GetBaseName( sSelectedPath )
             sSrcFileExt = objFSO.GetExtensionName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & "_" & EDIT_FILE_PREFIX     & sAddDate & "." & sSrcFileExt
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & "_" & ORIGINAL_FILE_PREFIX & sAddDate & "." & sSrcFileExt
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & "_" & SHORTCUT_FILE_SUFFIX & sAddDate & ".lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & EDIT_FILE_PREFIX     & sAddDate & "#." & sSrcFileExt
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & ORIGINAL_FILE_PREFIX & sAddDate & "#." & sSrcFileExt
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & SHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
             
             'ファイルコピー
             objFSO.CopyFile sSelectedPath, sDstCpyFilePath, True
@@ -189,9 +189,9 @@ If bIsContinue = True Then
             
             Dim sSrcDirName
             sSrcDirName = objFSO.GetFileName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & "_" & EDIT_FILE_PREFIX     & sAddDate
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & "_" & ORIGINAL_FILE_PREFIX & sAddDate
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & "_" & SHORTCUT_FILE_SUFFIX & sAddDate & ".lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & EDIT_FILE_PREFIX     & sAddDate & "#"
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & ORIGINAL_FILE_PREFIX & sAddDate & "#"
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & SHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
             
             'フォルダコピー
             objFSO.CopyFolder sSelectedPath, sDstCpyFilePath, True
@@ -222,7 +222,7 @@ End If
 ' ==================================================================
 ' = 概要    日時文字列をファイル/フォルダ名に適用できる形式に変換する
 ' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
-' = 戻値                String          日時（例：20170805-125958）
+' = 戻値                String          日時（例：170805#1259）
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    String.vbs
@@ -247,6 +247,7 @@ Public Function ConvDate2String( _
         sDateStr = Right( .SubMatches(0), 2 ) & _
                    String( 2 - Len( .SubMatches(1) ), "0" ) & .SubMatches(1) & _
                    String( 2 - Len( .SubMatches(2) ), "0" ) & .SubMatches(2) & _
+                   "#" & _
                    String( 2 - Len( .SubMatches(3) ), "0" ) & .SubMatches(3) & _
                    String( 2 - Len( .SubMatches(4) ), "0" ) & .SubMatches(4)
     End With

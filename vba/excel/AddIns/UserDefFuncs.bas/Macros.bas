@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.21
+' user define macros v2.22
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -21,6 +21,7 @@ Option Explicit
 ' =    シート表示非表示を切り替え                   シート表示/非表示を切り替える
 ' =    シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
 ' =    シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
+' =    選択シート切り出し                           選択シートを切り出す
 ' =
 ' =    セル内の丸数字をデクリメント                 ②～⑮を指定して、指定番号以降をインクリメントする
 ' =    セル内の丸数字をインクリメント               ①～⑭を指定して、指定番号以降をデクリメントする
@@ -142,6 +143,7 @@ Private Sub ConstructMacroShortcutKeys()
 '   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
 '   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
     dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
+'   dMacroShortcutKeys.Add "", "選択シート切り出し"
     
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
@@ -884,7 +886,7 @@ Public Sub シート並べ替え作業用シートを作成()
             MsgBox "処理を中断します。"
             End
         Else
-            Set shWorkSht = .Sheets.Add(after:=.Sheets(.Sheets.Count))
+            Set shWorkSht = .Sheets.Add(After:=.Sheets(.Sheets.Count))
             shWorkSht.Name = WORK_SHEET_NAME
         End If
         
@@ -986,6 +988,38 @@ Public Sub SortSheetPost()
     End With
     
     MsgBox "並べ替え完了！"
+End Sub
+
+' ==================================================================
+' = 概要    選択シートを切り出す。
+' =         コピー元ブックと同フォルダに出力する。
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Public Sub 選択シート切り出し()
+    Const sMACRO_NAME As String = "選択シート切り出し"
+    
+    Dim shSht As Worksheet
+    Dim wSrcWindow As Window
+    Dim bkSrcBook As Workbook
+    Dim bkTrgtBook As Workbook
+    Dim sTrgtBookName As String
+    
+    Set bkSrcBook = ActiveWorkbook
+    Set wSrcWindow = ActiveWindow
+    Set bkTrgtBook = Workbooks.Add
+    
+    wSrcWindow.SelectedSheets.Copy _
+        After:=bkTrgtBook.Sheets(bkTrgtBook.Sheets.Count)
+    Application.DisplayAlerts = False
+    bkTrgtBook.Sheets(1).Delete
+    Application.DisplayAlerts = True
+    
+    bkTrgtBook.SaveAs bkSrcBook.Path & "\" & wSrcWindow.SelectedSheets(1).Name & ".xlsx"
+    bkTrgtBook.Close
+    
+    MsgBox "選択シート切り出し完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -2029,7 +2063,7 @@ Private Function CreateNewWorksheet( _
     Loop While bExistWorkSht
     
     With ActiveWorkbook
-        .Worksheets.Add(after:=.Worksheets(.Worksheets.Count)).Name = sSheetName
+        .Worksheets.Add(After:=.Worksheets(.Worksheets.Count)).Name = sSheetName
     End With
     CreateNewWorksheet = sSheetName
 End Function
