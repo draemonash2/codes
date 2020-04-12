@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.22
+' user define macros v2.22a
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -85,10 +85,9 @@ Dim dMacroShortcutKeys As Object
 '=== アクティブセルコメント設定切り替え() ===
     Const sSETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
 '=== Excel方眼紙() ===
-    Const lEXCEL_GRID_CLM_WIDTH As Long = 2
-    Const lEXCEL_GRID_ROW_HEIGHT As Long = 10.8
-    Const lEXCEL_GRID_FONT_SIZE As Long = 9
     Const lEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
+    Const lEXCEL_GRID_FONT_SIZE As Long = 9
+    Const lEXCEL_GRID_CLM_WIDTH As Long = 3 '3文字分
 '=== セルコピーAtタブ区切り() ===
     Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
     'Const sCELL_COPY_DELIMITER As String = Chr(9) '現状未実装
@@ -1270,10 +1269,10 @@ End Sub
 Public Sub Excel方眼紙()
     ActiveSheet.Cells.Select
     With Selection
-        .ColumnWidth = lEXCEL_GRID_CLM_WIDTH
-        .RowHeight = lEXCEL_GRID_ROW_HEIGHT
-        .Font.Size = lEXCEL_GRID_FONT_SIZE
         .Font.Name = lEXCEL_GRID_FONT_NAME
+        .Font.Size = lEXCEL_GRID_FONT_SIZE
+        .ColumnWidth = lEXCEL_GRID_CLM_WIDTH
+        .Rows.AutoFit
     End With
     ActiveSheet.Cells(1, 1).Select
 End Sub
