@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.22a
+' user define macros v2.23
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -74,14 +74,10 @@ Dim dMacroShortcutKeys As Object
 '* 設定値
 '******************************************************************************
 '▼▼▼ 設定 ▼▼▼
-'=== フォント色をトグル ===
-    Const lTGL_FONT_CLR_R As Long = 255
-    Const lTGL_FONT_CLR_G As Long = 0
-    Const lTGL_FONT_CLR_B As Long = 0
-'=== 背景色をトグル ===
-    Const lTGL_BG_CLR_R As Long = 255
-    Const lTGL_BG_CLR_G As Long = 255
-    Const lTGL_BG_CLR_B As Long = 0
+'=== フォント色をトグル/背景色をトグル ===
+    '[色名参考] https://excel-toshokan.com/vba-color-list/
+    Const lTGL_FONT_CLR As Long = vbRed
+    Const lTGL_BG_CLR As Long = vbYellow
 '=== アクティブセルコメント設定切り替え() ===
     Const sSETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
 '=== Excel方眼紙() ===
@@ -90,7 +86,7 @@ Dim dMacroShortcutKeys As Object
     Const lEXCEL_GRID_CLM_WIDTH As Long = 3 '3文字分
 '=== セルコピーAtタブ区切り() ===
     Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
-    'Const sCELL_COPY_DELIMITER As String = Chr(9) '現状未実装
+    'Const sCELL_COPY_DELIMITER As String = vbTab '現状未実装
 '=== セルコピーAt指定文字区切り() ===
     'Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True '現状未実装
     Const sCELL_COPY_PREFFIX As String = "("
@@ -109,7 +105,7 @@ Dim dMacroShortcutKeys As Object
 ' = 概要    ショートカットキー設定を更新する
 ' = 引数    なし
 ' = 覚書    なし
-' = 依存    AddInSetting.cls/SearchWithKey()
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' ==================================================================
 Private Sub ConstructMacroShortcutKeys()
@@ -126,6 +122,25 @@ Private Sub ConstructMacroShortcutKeys()
     '   (1) マクロ「マクロショートカットキー全て無効化()」を実行する。
     
     Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
+    
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim bExistSettingFile As Boolean
+    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
+    
+    'アクティブセルコメント設定判定
+    If bExistSettingFile = True Then
+        Dim bExistSettingItem As Boolean
+        Dim sSettingValue As String
+        bExistSettingItem = clSetting.Item(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
+        If bExistSettingItem = True Then
+            'Do Nothing
+        Else 'コメント表示設定が未存在
+            sSettingValue = "False"
+        End If
+    Else 'アドイン設定ファイルが未存在
+        sSettingValue = "False"
+    End If
     
     '▼▼▼ 設定 ▼▼▼
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
@@ -171,25 +186,11 @@ Private Sub ConstructMacroShortcutKeys()
     dMacroShortcutKeys.Add "^+f", "最前面へ移動"
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim sValue As String
-    Dim bIsRet As Boolean
-    bIsRet = clSetting.SearchWithKey(sSETTING_KEY_CMNT_VSBL_ENB, sValue)
-    If bIsRet = True Then
-        If sValue = "True" Then
-            dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
-            dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
-            dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
-            dMacroShortcutKeys.Add "{LEFT}", "アクティブセルコメントのみ表示して左移動"
-        ElseIf sValue = "False" Then
-            dMacroShortcutKeys.Add "{DOWN}", ""
-            dMacroShortcutKeys.Add "{UP}", ""
-            dMacroShortcutKeys.Add "{RIGHT}", ""
-            dMacroShortcutKeys.Add "{LEFT}", ""
-        Else
-            Debug.Assert False
-        End If
+    If sSettingValue = "True" Then
+        dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
+        dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
+        dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
+        dMacroShortcutKeys.Add "{LEFT}", "アクティブセルコメントのみ表示して左移動"
     Else
         dMacroShortcutKeys.Add "{DOWN}", ""
         dMacroShortcutKeys.Add "{UP}", ""
@@ -1040,30 +1041,30 @@ Public Sub ハイパーリンク一括オープン()
 End Sub
 
 ' =============================================================================
-' = 概要    フォント色を「赤」⇔「自動」でトグルする
+' = 概要    フォント色を「lTGL_FONT_CLR」⇔「自動」でトグルする
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub フォント色をトグル()
-    If Selection(1).Font.Color = RGB(lTGL_FONT_CLR_R, lTGL_FONT_CLR_G, lTGL_FONT_CLR_B) Then
+    If Selection(1).Font.Color = lTGL_FONT_CLR Then
         Selection.Font.ColorIndex = xlAutomatic
     Else
-        Selection.Font.Color = RGB(lTGL_FONT_CLR_R, lTGL_FONT_CLR_G, lTGL_FONT_CLR_B)
+        Selection.Font.Color = lTGL_FONT_CLR
     End If
 End Sub
 
 ' =============================================================================
-' = 概要    背景色を「黄」⇔「背景色なし」でトグルする
+' = 概要    背景色を「lTGL_BG_CLR」⇔「背景色なし」でトグルする
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 背景色をトグル()
-    If Selection(1).Interior.Color = RGB(lTGL_BG_CLR_R, lTGL_BG_CLR_G, lTGL_BG_CLR_B) Then
+    If Selection(1).Interior.Color = lTGL_BG_CLR Then
         Selection.Interior.ColorIndex = 0
     Else
-        Selection.Interior.Color = RGB(lTGL_BG_CLR_R, lTGL_BG_CLR_G, lTGL_BG_CLR_B)
+        Selection.Interior.Color = lTGL_BG_CLR
     End If
 End Sub
 
@@ -1187,32 +1188,38 @@ End Sub
 ' =============================================================================
 ' = 概要    アクティブセルのコメント表示の有効/無効を切り替える
 ' = 覚書    なし
-' = 依存    AddInSetting.cls/SearchWithKey()
-' =         AddInSetting.cls/Update()
-' =         AddInSetting.cls/Add()
+' = 依存    SettingFile.cls
 ' =         Macros.bas/マクロショートカットキー全て有効化()
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim bRet As Boolean
-    Dim sValue As String
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim bExistSettingFile As Boolean
+    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
     
-    bRet = clSetting.SearchWithKey(sSETTING_KEY_CMNT_VSBL_ENB, sValue)
-    If bRet = True Then
-        If sValue = "True" Then
-            MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-            Call clSetting.Update(sSETTING_KEY_CMNT_VSBL_ENB, "False")
+    'アクティブセルコメント設定更新
+    If bExistSettingFile = True Then
+        Dim sSettingValue As String
+        Dim bExistSettingItem As Boolean
+        bExistSettingItem = clSetting.Item(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
+        If bExistSettingItem = True Then
+            If sSettingValue = "True" Then
+                MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
+                sSettingValue = "False"
+            Else
+                MsgBox "アクティブセルコメントのみ表示および移動を【有効化】します"
+                sSettingValue = "True"
+            End If
         Else
-            MsgBox "アクティブセルコメントのみ表示および移動を【有効化】します"
-            Call clSetting.Update(sSETTING_KEY_CMNT_VSBL_ENB, "True")
+            MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
+            sSettingValue = "False"
         End If
-        Debug.Assert bRet
     Else
         MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-        Call clSetting.Add(sSETTING_KEY_CMNT_VSBL_ENB, "False")
+        sSettingValue = "False"
     End If
+    Call clSetting.Add(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
     
     Call マクロショートカットキー全て有効化
 End Sub
@@ -1489,28 +1496,33 @@ End Sub
 ' *****************************************************************************
 ' =============================================================================
 ' = 概要    設定項目一覧を出力
+' = 引数    なし
 ' = 覚書    なし
-' = 依存    AddInSetting.cls/SearchWithIdx()
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Private Sub OutputSettingList()
-    Dim clSetting As AddInSetting
-    Set clSetting = New AddInSetting
-    Dim lSettingNum As Long
-    lSettingNum = clSetting.Count
-    
     Debug.Print ""
     Debug.Print "*** 設定項目一覧出力 ***"
-    If lSettingNum = 0 Then
-        'Do Nothing
+    
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim bExistSettingFile As Boolean
+    Dim sValue As String
+    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
+    
+    'アドイン設定出力
+    If bExistSettingFile = True Then
+        Dim dSettings As Object
+        Dim vSettingKey As Variant
+        Dim sSettingValue As String
+        Set dSettings = clSetting.AllItems
+        For Each vSettingKey In dSettings
+            Call clSetting.Item(vSettingKey, sSettingValue)
+            Debug.Print vSettingKey & " = " & sSettingValue
+        Next
     Else
-        Dim lSettingIdx As Long
-        For lSettingIdx = 1 To lSettingNum
-            Dim sSettingKey As String
-            Dim sSettingValue As String
-            Call clSetting.SearchWithIdx(lSettingIdx, sSettingKey, sSettingValue)
-            Debug.Print sSettingKey & " = " & sSettingValue
-        Next lSettingIdx
+        Stop
     End If
 End Sub
 
@@ -1576,6 +1588,25 @@ End Sub
 ' *****************************************************************************
 ' * 内部関数定義
 ' *****************************************************************************
+' ==================================================================
+' = 概要    アドイン設定用のファイルパスを取得する
+' = 引数    なし
+' = 戻値                    String      アドイン設定用のファイルパス
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Private Function GetAddinSettingFilePath() As String
+'    Const lTEMPORARY_FOLDER As Long = 2
+'    Dim objFSO As Object
+'    Set objFSO = CreateObject("Scripting.FileSystemObject")
+'    GetAddinSettingFilePath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER) & "\" & sSETTING_FILE_NAME
+'    Set objFSO = Nothing
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    GetAddinSettingFilePath = ThisWorkbook.Path & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"
+End Function
+
 ' ==================================================================
 ' = 概要    数字 型変換(String→Long)
 ' = 引数    sNum            String  [in]  数字(String型)
