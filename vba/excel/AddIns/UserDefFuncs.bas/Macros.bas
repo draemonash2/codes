@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.23
+' user define macros v2.24
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -74,16 +74,6 @@ Dim dMacroShortcutKeys As Object
 '* 設定値
 '******************************************************************************
 '▼▼▼ 設定 ▼▼▼
-'=== フォント色をトグル/背景色をトグル ===
-    '[色名参考] https://excel-toshokan.com/vba-color-list/
-    Const lTGL_FONT_CLR As Long = vbRed
-    Const lTGL_BG_CLR As Long = vbYellow
-'=== アクティブセルコメント設定切り替え() ===
-    Const sSETTING_KEY_CMNT_VSBL_ENB As String = "CMNT_VSBL_ENB"
-'=== Excel方眼紙() ===
-    Const lEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
-    Const lEXCEL_GRID_FONT_SIZE As Long = 9
-    Const lEXCEL_GRID_CLM_WIDTH As Long = 3 '3文字分
 '=== セルコピーAtタブ区切り() ===
     Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
     'Const sCELL_COPY_DELIMITER As String = vbTab '現状未実装
@@ -132,7 +122,7 @@ Private Sub ConstructMacroShortcutKeys()
     If bExistSettingFile = True Then
         Dim bExistSettingItem As Boolean
         Dim sSettingValue As String
-        bExistSettingItem = clSetting.Item(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
+        bExistSettingItem = clSetting.Item("sCMNT_VSBL_ENB", sSettingValue)
         If bExistSettingItem = True Then
             'Do Nothing
         Else 'コメント表示設定が未存在
@@ -1047,10 +1037,38 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub フォント色をトグル()
-    If Selection(1).Font.Color = lTGL_FONT_CLR Then
+    '▼▼▼設定▼▼▼
+    '[色名参考] https://excel-toshokan.com/vba-color-list/
+    Const lTGL_FONT_CLR As Long = vbRed
+    '▲▲▲設定▲▲▲
+    
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim bExistSettingFile As Boolean
+    sSettingFilePath = GetAddinSettingFilePath()
+    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
+    
+    'アドイン設定取得
+    Dim sTglFontClr As String
+    Dim bExistSettingItem As Boolean
+    If bExistSettingFile = True Then
+        bExistSettingItem = clSetting.Item("lTGL_FONT_CLR", sTglFontClr)
+        If bExistSettingItem = True Then
+            'Do Nothing
+        Else
+            sTglFontClr = lTGL_FONT_CLR
+        End If
+    Else
+        sTglFontClr = lTGL_FONT_CLR
+    End If
+    Call clSetting.Add("lTGL_FONT_CLR", sTglFontClr)
+    
+    '更新
+    If Selection(1).Font.Color = CLng(sTglFontClr) Then
         Selection.Font.ColorIndex = xlAutomatic
     Else
-        Selection.Font.Color = lTGL_FONT_CLR
+        Selection.Font.Color = CLng(sTglFontClr)
     End If
 End Sub
 
@@ -1061,10 +1079,38 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 背景色をトグル()
-    If Selection(1).Interior.Color = lTGL_BG_CLR Then
+    '▼▼▼設定▼▼▼
+    '[色名参考] https://excel-toshokan.com/vba-color-list/
+    Const lTGL_BG_CLR As Long = vbYellow
+    '▲▲▲設定▲▲▲
+    
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim bExistSettingFile As Boolean
+    sSettingFilePath = GetAddinSettingFilePath()
+    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
+    
+    'アドイン設定取得
+    Dim sTglBgClr As String
+    Dim bExistSettingItem As Boolean
+    If bExistSettingFile = True Then
+        bExistSettingItem = clSetting.Item("lTGL_BG_CLR", sTglBgClr)
+        If bExistSettingItem = True Then
+            'Do Nothing
+        Else
+            sTglBgClr = lTGL_BG_CLR
+        End If
+    Else
+        sTglBgClr = lTGL_BG_CLR
+    End If
+    Call clSetting.Add("lTGL_BG_CLR", sTglBgClr)
+    
+    '更新
+    If Selection(1).Interior.Color = CLng(sTglBgClr) Then
         Selection.Interior.ColorIndex = 0
     Else
-        Selection.Interior.Color = lTGL_BG_CLR
+        Selection.Interior.Color = CLng(sTglBgClr)
     End If
 End Sub
 
@@ -1193,6 +1239,10 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
+    '▼▼▼設定▼▼▼
+    Const sCMNT_VSBL_ENB As String = "False"
+    '▲▲▲設定▲▲▲
+    
     'アドイン設定ファイル読み出し
     Dim clSetting As New SettingFile
     Dim bExistSettingFile As Boolean
@@ -1202,7 +1252,7 @@ Public Sub アクティブセルコメント設定切り替え()
     If bExistSettingFile = True Then
         Dim sSettingValue As String
         Dim bExistSettingItem As Boolean
-        bExistSettingItem = clSetting.Item(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
+        bExistSettingItem = clSetting.Item("sCMNT_VSBL_ENB", sSettingValue)
         If bExistSettingItem = True Then
             If sSettingValue = "True" Then
                 MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
@@ -1212,14 +1262,12 @@ Public Sub アクティブセルコメント設定切り替え()
                 sSettingValue = "True"
             End If
         Else
-            MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-            sSettingValue = "False"
+            sSettingValue = sCMNT_VSBL_ENB
         End If
     Else
-        MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
-        sSettingValue = "False"
+        sSettingValue = sCMNT_VSBL_ENB
     End If
-    Call clSetting.Add(sSETTING_KEY_CMNT_VSBL_ENB, sSettingValue)
+    Call clSetting.Add("sCMNT_VSBL_ENB", sSettingValue)
     
     Call マクロショートカットキー全て有効化
 End Sub
@@ -1274,11 +1322,54 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub Excel方眼紙()
+    '▼▼▼設定▼▼▼
+    Const sEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
+    Const lEXCEL_GRID_FONT_SIZE As Long = 9
+    Const lEXCEL_GRID_CLM_WIDTH As Long = 3 '3文字分
+    '▲▲▲設定▲▲▲
+    
+    'アドイン設定ファイル読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim bExistSettingFile As Boolean
+    sSettingFilePath = GetAddinSettingFilePath()
+    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
+    
+    'アドイン設定取得
+    Dim sFontName As String
+    Dim sFontSize As String
+    Dim sClmWidth As String
+    Dim bExistSettingItem As String
+    If bExistSettingFile = True Then
+        bExistSettingItem = clSetting.Item("sEXCEL_GRID_FONT_NAME", sFontName)
+        If bExistSettingItem = False Then
+            sFontName = sEXCEL_GRID_FONT_NAME
+        End If
+        bExistSettingItem = clSetting.Item("lEXCEL_GRID_FONT_SIZE", sFontSize)
+        If bExistSettingItem = False Then
+            sFontSize = CStr(lEXCEL_GRID_FONT_SIZE)
+        End If
+        bExistSettingItem = clSetting.Item("lEXCEL_GRID_CLM_WIDTH", sClmWidth)
+        If bExistSettingItem = False Then
+            sClmWidth = CStr(lEXCEL_GRID_CLM_WIDTH)
+        End If
+    Else
+        sFontName = sEXCEL_GRID_FONT_NAME
+        sFontSize = CStr(lEXCEL_GRID_FONT_SIZE)
+        sClmWidth = CStr(lEXCEL_GRID_CLM_WIDTH)
+    End If
+    
+    'アドイン設定書き出し
+    Call clSetting.Add("sEXCEL_GRID_FONT_NAME", sFontName)
+    Call clSetting.Add("lEXCEL_GRID_FONT_SIZE", sFontSize)
+    Call clSetting.Add("lEXCEL_GRID_CLM_WIDTH", sClmWidth)
+    
+    'Excel方眼紙設定
     ActiveSheet.Cells.Select
     With Selection
-        .Font.Name = lEXCEL_GRID_FONT_NAME
-        .Font.Size = lEXCEL_GRID_FONT_SIZE
-        .ColumnWidth = lEXCEL_GRID_CLM_WIDTH
+        .Font.Name = sFontName
+        .Font.Size = CLng(sFontSize)
+        .ColumnWidth = CLng(sClmWidth)
         .Rows.AutoFit
     End With
     ActiveSheet.Cells(1, 1).Select
