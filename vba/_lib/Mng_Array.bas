@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Array"
 Option Explicit
 
-' array manage library v1.32
+' array manage library v1.33
 
 Public Enum E_INSERT_TYPE
     E_INSERT_TOP
@@ -382,7 +382,7 @@ End Function
 ' =         主にセル範囲をテキストファイルに出力する時に使用する。
 ' = 引数    rCellsRange             Range   [in]  対象のセル範囲
 ' = 引数    asLine()                String  [out] 文字列返還後のセル範囲
-' = 引数    bIsInvisibleCellIgnore  String  [in]  非表示セル無視実行可否
+' = 引数    bIgnoreInvisibleCell    String  [in]  非表示セル無視実行可否
 ' = 引数    sDelimiter              String  [in]  区切り文字
 ' = 戻値    なし
 ' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
@@ -392,7 +392,7 @@ End Function
 Public Function ConvRange2Array( _
     ByRef rCellsRange As Range, _
     ByRef asLine() As String, _
-    ByVal bIsInvisibleCellIgnore As Boolean, _
+    ByVal bIgnoreInvisibleCell As Boolean, _
     ByVal sDelimiter As String _
 )
     Dim lLineIdx As Long
@@ -409,7 +409,7 @@ Public Function ConvRange2Array( _
             sCurCellValue = rCellsRange(lRowIdx, lClmIdx).Value
             '非表示セルは無視する
             Dim bIsIgnoreCurExec As Boolean
-            If bIsInvisibleCellIgnore = True Then
+            If bIgnoreInvisibleCell = True Then
                 If rCellsRange(lRowIdx, lClmIdx).EntireRow.Hidden = True Or _
                    rCellsRange(lRowIdx, lClmIdx).EntireColumn.Hidden = True Then
                     bIsIgnoreCurExec = True

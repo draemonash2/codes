@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.26
+' user define macros v2.27
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -13,9 +13,9 @@ Option Explicit
 ' =    一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
 ' =
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
-' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
-' =    選択範囲をそれぞれコマンド実行               選択範囲内のコマンドをそれぞれ実行する。
-' =    選択範囲内の検索文字色を変更                 選択範囲内の検索文字色を変更する
+' =    選択範囲内のコマンドをまとめて実行           選択範囲内のコマンドをまとめて実行する。
+' =    選択範囲内のコマンドをそれぞれ実行           選択範囲内のコマンドをそれぞれ実行する。
+' =    検索文字の文字色を変更                       選択範囲内の検索文字の文字色を変更する
 ' =
 ' =    全シート名をコピー                           ブック内のシート名を全てコピーする
 ' =    シート表示非表示を切り替え                   シート表示/非表示を切り替える
@@ -87,12 +87,15 @@ Dim dMacroShortcutKeys As Object
 '=== 選択範囲をファイルエクスポート() ===
     Const sFILEEXPORT_TEMP_FILE_NAME As String = "exceladdin_setting_fileexport.tmp"
     Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
+    Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
     Const sFILEEXPORT_DELIMITER As String = ","
-'=== 選択範囲をまとめてコマンド実行() ===
+'=== 選択範囲内のコマンドをまとめて実行() ===
     Const sBATEXE_BAT_FILE_NAME As String = "exceladdin_batexe_command.bat"
     Const sBATEXE_REDIRECT_FILE_NAME As String = "exceladdin_batexe_redirect.Log"
-'=== 選択範囲をそれぞれコマンド実行() ===
+    Const sBATEXE_IGNORE_INVISIBLE_CELL As String = "True"
+'=== 選択範囲内のコマンドをそれぞれ実行() ===
     Const sUNIEXE_REDIRECT_FILE_NAME As String = "exceladdin_uniexe_redirect.Log"
+    Const sUNIEXE_IGNORE_INVISIBLE_CELL As String = "True"
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
     Const sEPTREE_TEMP_FILE_NAME As String = "exceladdin_setting_eptree.tmp"
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
@@ -148,9 +151,9 @@ Private Sub ConstructMacroShortcutKeys()
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
     
 '   dMacroShortcutKeys.Add "", "選択範囲をファイルエクスポート"
-'   dMacroShortcutKeys.Add "", "選択範囲をそれぞれコマンド実行"
-'   dMacroShortcutKeys.Add "", "選択範囲をまとめてコマンド実行"
-'   dMacroShortcutKeys.Add "", "選択範囲内の検索文字色を変更"
+'   dMacroShortcutKeys.Add "", "選択範囲内のコマンドをそれぞれ実行"
+'   dMacroShortcutKeys.Add "", "選択範囲内のコマンドをまとめて実行"
+'   dMacroShortcutKeys.Add "", "検索文字の文字色を変更"
     
 '   dMacroShortcutKeys.Add "", "全シート名をコピー"
 '   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
@@ -521,22 +524,29 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
+    Const sMACRO_NAME As String = "選択範囲をファイルエクスポート"
+    
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
     Dim sFileExt As String
     Dim sDelimiter As String
     Dim sTmpFileName As String
-    sSettingFilePath = GetAddinSettingFilePath()
+    Dim sIgnoreInvisibleCell As String
+    Dim bIgnoreInvisibleCell As Boolean
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_FILE_EXTENTION", sFileExt, sFILEEXPORT_FILE_EXTENTION, True)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_DELIMITER", sDelimiter, sFILEEXPORT_DELIMITER, True)
     sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
-        MsgBox "セルが選択されていません"
-        MsgBox "処理を中断します"
+        MsgBox "セルが選択されていません", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         End
     End If
     
@@ -545,13 +555,15 @@ Public Sub 選択範囲をファイルエクスポート()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
-    Dim sTmpPath As String
-    Const lTEMPORARY_FOLDER As Long = 2
-    sTmpPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER) & "\" & sTmpFileName
+    Dim sTmpDirPath As String
+    Dim sTmpFilePath As String
+    sTmpDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sTmpFilePath = sTmpDirPath & "\" & sTmpFileName
+    
     Dim sDirPathOld As String
     Dim sFileNameOld As String
-    If objFSO.FileExists(sTmpPath) Then
-        Open sTmpPath For Input As #1
+    If objFSO.FileExists(sTmpFilePath) Then
+        Open sTmpFilePath For Input As #1
         Line Input #1, sDirPathOld
         Line Input #1, sFileNameOld
         Close #1
@@ -560,51 +572,36 @@ Public Sub 選択範囲をファイルエクスポート()
         sFileNameOld = "export"
     End If
     
-    '*** フォルダパス入力 ***
+    '*** 出力先フォルダパス入力 ***
     Dim sOutputDirPath As String
     sOutputDirPath = ShowFolderSelectDialog(sDirPathOld)
     If sOutputDirPath = "" Then
-        MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。"
-        MsgBox "処理を中断します。"
+        MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
         End
     Else
         'Do Nothing
     End If
     
-    '*** ファイル名入力 ***
+    '*** 出力ファイル名入力 ***
     Dim sOutputFileName As String
-    sOutputFileName = InputBox("ファイル名を入力してください。（拡張子なし）", "ファイル名入力", sFileNameOld)
-    
-    '*** ファイル名作成 ***
     Dim sOutputFilePath As String
+    sOutputFileName = InputBox("ファイル名を入力してください。（拡張子なし）", "ファイル名入力", sFileNameOld)
     sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & sFileExt
     
     '*** ファイル上書き判定 ***
     If objFSO.FileExists(sOutputFilePath) Then
         Dim vAnswer As Variant
-        vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel)
+        vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel, sMACRO_NAME)
         If vAnswer = vbOK Then
             'Do Nothing
         Else
-            MsgBox "処理を中断します。"
+            MsgBox "処理を中断します。", vbExclamation, sMACRO_NAME
             End
         End If
     Else
         'Do Nothing
     End If
-    
-    '*** 非表示セル出力判定 ***
-    Dim bIgnoreInvisibleCell As Boolean
-    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
-'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
-'    If vAnswer = vbYes Then
-'        bIgnoreInvisibleCell = True
-'    ElseIf vAnswer = vbNo Then
-'        bIgnoreInvisibleCell = False
-'    Else
-'        MsgBox "処理を中断します"
-'        End
-'    End If
     
     '*** ファイル出力処理 ***
     'Range型からString()型へ変換
@@ -621,8 +618,8 @@ Public Sub 選択範囲をファイルエクスポート()
     If Err.Number = 0 Then
         'Do Nothing
     Else
-        MsgBox "無効なファイルパスが指定されました" & Err.Description
-        MsgBox "処理を中断します。"
+        MsgBox "無効なファイルパスが指定されました" & Err.Description, vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
         End
     End If
     On Error GoTo 0
@@ -633,7 +630,7 @@ Public Sub 選択範囲をファイルエクスポート()
     Close #1
     
     '*** Tempファイル書き出し ***
-    Open sTmpPath For Output As #1
+    Open sTmpFilePath For Output As #1
     Print #1, sOutputDirPath
     Print #1, sOutputFileName
     Close #1
@@ -659,20 +656,27 @@ End Sub
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲をまとめてコマンド実行()
+Public Sub 選択範囲内のコマンドをまとめて実行()
+    Const sMACRO_NAME As String = "選択範囲内のコマンドをまとめて実行"
+    
     '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
     Dim sBatFileName As String
     Dim sRedirectFileName As String
-    sSettingFilePath = GetAddinSettingFilePath()
+    Dim sIgnoreInvisibleCell As String
+    Dim bIgnoreInvisibleCell As Boolean
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_BAT_FILE_NAME", sBatFileName, sBATEXE_BAT_FILE_NAME, True)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_REDIRECT_FILE_NAME", sRedirectFileName, sBATEXE_REDIRECT_FILE_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sBATEXE_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
-        MsgBox "セルが選択されていません"
-        MsgBox "処理を中断します"
+        MsgBox "セルが選択されていません", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         End
     End If
     
@@ -680,23 +684,10 @@ Public Sub 選択範囲をまとめてコマンド実行()
     If Selection.Columns.Count = 1 Then
         'Do Nothing
     Else
-        MsgBox "単一列のみ選択してください"
-        MsgBox "処理を中断します"
+        MsgBox "単一列のみ選択してください", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         End
     End If
-    
-    '*** 非表示セル出力判定 ***
-    Dim bIgnoreInvisibleCell As Boolean
-    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
-'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
-'    If vAnswer = vbYes Then
-'        bIgnoreInvisibleCell = True
-'    ElseIf vAnswer = vbNo Then
-'        bIgnoreInvisibleCell = False
-'    Else
-'        MsgBox "処理を中断します"
-'        End
-'    End If
     
     'Range型からString()型へ変換
     Dim asRange() As String
@@ -711,8 +702,7 @@ Public Sub 選択範囲をまとめてコマンド実行()
     Dim sBatFilePath As String
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Const lTEMPORARY_FOLDER As Long = 2
-    sBatFileDirPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER)
+    sBatFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sBatFilePath = sBatFileDirPath & "\" & sBatFileName
     
     Call OutputTxtFile(sBatFilePath, asRange)
@@ -734,7 +724,7 @@ Public Sub 選択範囲をまとめてコマンド実行()
     '*** バッチファイル削除 ***
     Kill sBatFilePath
     
-    MsgBox "実行完了！"
+    MsgBox "実行完了！", vbOKOnly, sMACRO_NAME
     
     '*** 出力ファイルを開く ***
     If Left(sOutputFilePath, 1) = "" Then
@@ -754,18 +744,25 @@ End Sub
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲をそれぞれコマンド実行()
+Public Sub 選択範囲内のコマンドをそれぞれ実行()
+    Const sMACRO_NAME As String = "選択範囲内のコマンドをそれぞれ実行"
+    
     '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sRedirectFileName As String
     sSettingFilePath = GetAddinSettingFilePath()
+    
+    Dim sRedirectFileName As String
+    Dim sIgnoreInvisibleCell As String
+    Dim bIgnoreInvisibleCell As Boolean
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sUNIEXE_REDIRECT_FILE_NAME", sRedirectFileName, sUNIEXE_REDIRECT_FILE_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sUNIEXE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sUNIEXE_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
-        MsgBox "セルが選択されていません"
-        MsgBox "処理を中断します"
+        MsgBox "セルが選択されていません", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         End
     End If
     
@@ -773,23 +770,10 @@ Public Sub 選択範囲をそれぞれコマンド実行()
     If Selection.Columns.Count = 1 Then
         'Do Nothing
     Else
-        MsgBox "単一列のみ選択してください"
-        MsgBox "処理を中断します"
+        MsgBox "単一列のみ選択してください", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         End
     End If
-    
-    '*** 非表示セル出力判定 ***
-    Dim bIgnoreInvisibleCell As Boolean
-    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
-'    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
-'    If vAnswer = vbYes Then
-'        bIgnoreInvisibleCell = True
-'    ElseIf vAnswer = vbNo Then
-'        bIgnoreInvisibleCell = False
-'    Else
-'        MsgBox "処理を中断します"
-'        End
-'    End If
     
     'Range型からString()型へ変換
     Dim asRange() As String
@@ -818,7 +802,7 @@ Public Sub 選択範囲をそれぞれコマンド実行()
     Print #1, ""
     Close #1
     
-    MsgBox "実行完了！"
+    MsgBox "実行完了！", vbOKOnly, sMACRO_NAME
     
     '*** 出力ファイルを開く ***
     If Left(sOutputFilePath, 1) = "" Then
@@ -830,13 +814,13 @@ Public Sub 選択範囲をそれぞれコマンド実行()
 End Sub
 
 ' =============================================================================
-' = 概要    選択範囲内の検索文字色を変更する
+' = 概要    選択範囲内の検索文字の文字色を変更する
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲内の検索文字色を変更()
-    Const sMACRO_TITLE As String = "選択範囲内の検索文字色を変更"
+Public Sub 検索文字の文字色を変更()
+    Const sMACRO_TITLE As String = "検索文字の文字色を変更"
     
     '▼▼▼色設定▼▼▼
     Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
@@ -845,14 +829,14 @@ Public Sub 選択範囲内の検索文字色を変更()
     Dim vCOLOR_INFO() As Variant
     vCOLOR_INFO = _
         Array( _
-            Array(255, 0, 0), _
-            Array(75, 172, 198), _
-            Array(118, 147, 60), _
-            Array(112, 48, 160), _
-            Array(247, 150, 70), _
-            Array(255, 192, 0), _
-            Array(255, 255, 255), _
-            Array(0, 0, 0) _
+            &HFF, _
+            &HC6AC4B, _
+            &H3C9376, _
+            &HA03070, _
+            &H4696F7, _
+            &HC0FF, _
+            &HFFFFFF, _
+            &H0 _
         )
     '▲▲▲色設定▲▲▲
     
@@ -868,7 +852,7 @@ Public Sub 選択範囲内の検索文字色を変更()
         lINIT_COLOR _
     )
     
-    If lColorIndex < lCOLOR_NUM Then
+    If lColorIndex <= UBound(vCOLOR_INFO) Then
         Dim oCell As Range
         For Each oCell In Selection
             Dim sTrgtStr As String
@@ -882,12 +866,7 @@ Public Sub 選択範囲内の検索文字色を変更()
                     Exit Do
                 Else
                     lStartIdx = lIdx + Len(sSrchStr)
-                    oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = _
-                        RGB( _
-                            vCOLOR_INFO(lColorIndex)(0), _
-                            vCOLOR_INFO(lColorIndex)(1), _
-                            vCOLOR_INFO(lColorIndex)(2) _
-                        )
+                    oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = vCOLOR_INFO(lColorIndex)
                 End If
             Loop While 1
         Next
@@ -1301,6 +1280,8 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
+    Const sMACRO_NAME As String = "アクティブセルコメント設定切り替え"
+
     'アドイン設定ファイル読み出し
     Dim clSetting As New SettingFile
     Dim bExistSettingFile As Boolean
@@ -1313,17 +1294,19 @@ Public Sub アクティブセルコメント設定切り替え()
         bExistSettingItem = clSetting.Item("sCMNT_VSBL_ENB", sSettingValue)
         If bExistSettingItem = True Then
             If sSettingValue = "True" Then
-                MsgBox "アクティブセルコメントのみ表示および移動を【無効化】します"
+                MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
                 sSettingValue = "False"
             Else
-                MsgBox "アクティブセルコメントのみ表示および移動を【有効化】します"
+                MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
                 sSettingValue = "True"
             End If
         Else
-            sSettingValue = sCMNT_VSBL_ENB
+            MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
+            sSettingValue = "True"
         End If
     Else
-        sSettingValue = sCMNT_VSBL_ENB
+        MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
+        sSettingValue = "True"
     End If
     Call clSetting.Add("sCMNT_VSBL_ENB", sSettingValue)
     
@@ -1466,8 +1449,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim sTempDirPath As String
     Dim sTempFilePath As String
-    Const lTEMPORARY_FOLDER As Long = 2
-    sTempDirPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER)
+    sTempDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sTempFilePath = sTempDirPath & "\" & sTempFileName
     
     'Eptreeログファイルパス取得
