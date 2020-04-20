@@ -9,10 +9,14 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.1.0
+'setting file class v1.2.0
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
+' *
+' * 覚書    設定は文字列型として保存する。そのため以下に注意すること
+' *           - Boolean値は文字列を指定すること(ex.Trueではなく"True")
+' *           - 制御文字は制御文字を示す文字列を指定すること(ex.vbTabではなく"vbTab")
 ' ******************************************************************
 
 ' ******************************************************************
@@ -91,9 +95,18 @@ Public Function FileLoad( _
             Dim vKeyValue As Variant
             Dim sLine As String
             Line Input #1, sLine
-            vKeyValue = Split(sLine, gsDelimiter)
-            Debug.Assert UBound(vKeyValue) = 1 '区切り文字が不一致
-            gdSettingItems.Add vKeyValue(0), vKeyValue(1)
+            If InStr(sLine, gsDelimiter) Then
+                vKeyValue = Split(sLine, gsDelimiter)
+                If UBound(vKeyValue) = 0 Then
+                    gdSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
+                ElseIf UBound(vKeyValue) = 1 Then
+                    gdSettingItems.Add vKeyValue(0), vKeyValue(1) '単一区切り文字(値あり)
+                Else
+                    Stop                                          '複数区切り文字
+                End If
+            Else
+                Stop                                              '区切り文字なし
+            End If
             FileLoad = True
         Loop
         Close #1
@@ -369,17 +382,85 @@ Public Function WriteItemToFile( _
     Dim bExistFile As Boolean
     Dim bExistItem As Boolean
     bExistFile = Me.FileLoad(sFilePath)
-    If bExistFile = True Then
-        bExistItem = Me.Add(sKey, sItem)
-        If bExistItem = True Then
-            WriteItemToFile = True
-        Else
-            WriteItemToFile = False
-        End If
+    bExistItem = Me.Add(sKey, sValue)
+    If bExistFile = True And bExistItem = True Then
+        WriteItemToFile = True
     Else
         WriteItemToFile = False
     End If
     
-    Call Me.DeInit
+    Call DeInit
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 文字列to真偽値変換
+' = 引数    sValue          String      [in]    値(文字列)
+' = 戻値                    Boolean             値(真偽値)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
+Public Function ConvTypeStr2Bool( _
+    ByVal sValue As String _
+) As Boolean
+    If sValue = "True" Then
+        ConvTypeStr2Bool = True
+    Else
+        ConvTypeStr2Bool = False
+    End If
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 真偽値to文字列変換
+' = 引数    bValue          Boolean     [in]    値(真偽値)
+' = 戻値                    String              値(文字列)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
+Public Function ConvTypeBool2Str( _
+    ByVal bValue As Boolean _
+) As String
+    If bValue = True Then
+        ConvTypeBool2Str = "True"
+    Else
+        ConvTypeBool2Str = "False"
+    End If
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 生値to制御文字 変換
+' = 引数    sValue          String      [in]    値(文字列)
+' = 戻値                    String              値(制御文字)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
+Public Function ConvStrRaw2CntrlChr( _
+    ByVal sValue As String _
+) As String
+    Select Case sValue
+        Case "vbTab":     ConvStrRaw2CntrlChr = vbTab
+        Case "vbCr":      ConvStrRaw2CntrlChr = vbCr
+        Case "vbLf":      ConvStrRaw2CntrlChr = vbLf
+        Case "vbNewLine": ConvStrRaw2CntrlChr = vbNewLine
+        Case Else:        ConvStrRaw2CntrlChr = sValue
+    End Select
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 制御文字to生値 変換
+' = 引数    sValue          String      [in]    値(制御文字)
+' = 戻値                    String              値(文字列)
+' = 覚書    なし
+' = 依存    なし
+' ==================================================================
+Public Function ConvStrCntrlChr2Raw( _
+    ByVal sValue As String _
+) As String
+    Select Case sValue
+        Case vbTab:     ConvStrCntrlChr2Raw = "vbTab"
+        Case vbCr:      ConvStrCntrlChr2Raw = "vbCr"
+        Case vbLf:      ConvStrCntrlChr2Raw = "vbLf"
+        Case vbNewLine: ConvStrCntrlChr2Raw = "vbNewLine"
+        Case Else:      ConvStrCntrlChr2Raw = sValue
+    End Select
 End Function
 

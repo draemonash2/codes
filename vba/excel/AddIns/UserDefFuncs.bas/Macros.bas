@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.25
+' user define macros v2.26
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -9,8 +9,8 @@ Option Explicit
 ' =
 ' =    選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
 ' =
-' =    セルコピーAtタブ区切り                       タブ区切りでセルコピーする
-' =    セルコピーAt指定文字区切り                   指定文字区切りでセルコピーする
+' =    範囲を維持したままセルコピー                 選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
+' =    一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
 ' =
 ' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
 ' =    選択範囲をまとめてコマンド実行               選択範囲内のコマンドをまとめて実行する。
@@ -73,7 +73,7 @@ Dim dMacroShortcutKeys As Object
 '******************************************************************************
 '* 設定値
 '******************************************************************************
-'▼▼▼ 設定 ▼▼▼
+'▼▼▼ 設定(初期値) ▼▼▼
 '=== 背景色をトグル()/フォント色をトグル() ===
     '[色名参考] https://excel-toshokan.com/vba-color-list/
     Const lTGL_BG_CLR As Long = vbYellow
@@ -85,21 +85,31 @@ Dim dMacroShortcutKeys As Object
     Const sEXCEL_GRID_FONT_SIZE As String = "9"
     Const sEXCEL_GRID_CLM_WIDTH As String = "3" '3文字分
 '=== 選択範囲をファイルエクスポート() ===
+    Const sFILEEXPORT_TEMP_FILE_NAME As String = "exceladdin_setting_fileexport.tmp"
     Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
     Const sFILEEXPORT_DELIMITER As String = ","
-    Const sFILEEXPORT_TEMP_FILE_NAME As String = "export_cell_range.tmp"
+'=== 選択範囲をまとめてコマンド実行() ===
+    Const sBATEXE_BAT_FILE_NAME As String = "exceladdin_batexe_command.bat"
+    Const sBATEXE_REDIRECT_FILE_NAME As String = "exceladdin_batexe_redirect.Log"
+'=== 選択範囲をそれぞれコマンド実行() ===
+    Const sUNIEXE_REDIRECT_FILE_NAME As String = "exceladdin_uniexe_redirect.Log"
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
+    Const sEPTREE_TEMP_FILE_NAME As String = "exceladdin_setting_eptree.tmp"
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
-    Const sEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
-    Const sEPTREE_CLM_WIDTH As Long = 2
-'=== セルコピーAtタブ区切り() ===
-    Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
-    'Const sCELL_COPY_DELIMITER As String = vbTab '現状未実装
-'=== セルコピーAt指定文字区切り() ===
-    'Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True '現状未実装
-    Const sCELL_COPY_PREFFIX As String = "("
-    Const sCELL_COPY_DELIMITER As String = "|"
-    Const sCELL_COPY_SUFFIX As String = ")"
+    Const sEPTREE_MAX_FUNC_LEVEL_INI As String = "10"
+    Const sEPTREE_CLM_WIDTH As String = "2"
+    Const sEPTREE_OUT_LOG_PATH As String = "c:\"
+    Const sEPTREE_DEV_ROOT_DIR_PATH As String = "c:\"
+    Const sEPTREE_DEV_ROOT_DIR_LEVEL As String = "0"
+'=== 範囲を維持したままセルコピー() ===
+    Const sCELLCOPYRNG_IGNORE_INVISIBLE_CELL As String = "True"
+    Const sCELLCOPYRNG_DELIMITER As String = "vbTab"
+'=== 一行にまとめてセルコピー() ===
+    Const sCELLCOPYLINE_IGNORE_INVISIBLE_CELL As String = "True"
+    Const sCELLCOPYLINE_IGNORE_BLANK_CELL As String = "True"
+    Const sCELLCOPYLINE_PREFFIX As String = "("
+    Const sCELLCOPYLINE_DELIMITER As String = "|"
+    Const sCELLCOPYLINE_SUFFIX As String = ")"
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
@@ -134,8 +144,8 @@ Private Sub ConstructMacroShortcutKeys()
     '▼▼▼ 設定 ▼▼▼
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
     
-    dMacroShortcutKeys.Add "^+c", "セルコピーAtタブ区切り"
-    dMacroShortcutKeys.Add "^+d", "セルコピーAt指定文字区切り"
+    dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
+    dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
     
 '   dMacroShortcutKeys.Add "", "選択範囲をファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "選択範囲をそれぞれコマンド実行"
@@ -340,20 +350,35 @@ Public Sub シート選択ウィンドウを表示()
 End Sub
 
 ' ==================================================================
-' = 概要    選択範囲をクリップボードへセルコピーする。
-' =         ダブルクオーテーションなし、タブ区切り、非表示セルは無視する。
-' = 覚書    なし
+' = 概要    選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
+' = 覚書    ・セル内に改行が含まれる場合は範囲が崩れることに注意
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_Clipboard.bas/SetToClipboard()
+' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' ==================================================================
-Public Sub セルコピーAtタブ区切り()
+Public Sub 範囲を維持したままセルコピー()
+    Const sMACRO_NAME As String = "範囲を維持したままセルコピー"
+    
+    Application.ScreenUpdating = False
+    
+    '*** アドイン設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
+    Dim sIgnoreInvisible As String
+    Dim bIgnoreInvisible As Boolean
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYRNG_IGNORE_INVISIBLE_CELL", sIgnoreInvisible, sCELLCOPYRNG_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisible = clSetting.ConvTypeStr2Bool(sIgnoreInvisible)
+    
     Dim sDelimiter As String
-    sDelimiter = Chr(9)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYRNG_DELIMITER", sDelimiter, sCELLCOPYRNG_DELIMITER, True)
+    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
     
-    Dim sOutText As String
-    sOutText = ""
-    
+    '*** 選択範囲取得 ***
+    Dim sClipedText As String
+    sClipedText = ""
     Dim lAreaIdx As Long
     For lAreaIdx = 1 To Selection.Areas.Count
         '*** 追加テキスト取得 ***
@@ -361,7 +386,7 @@ Public Sub セルコピーAtタブ区切り()
         Call ConvRange2Array( _
             Selection.Areas(lAreaIdx), _
             asLine, _
-            bCELL_COPY_INVISIBLE_IGNORE, _
+            bIgnoreInvisible, _
             sDelimiter _
         )
         
@@ -377,59 +402,106 @@ Public Sub セルコピーAtタブ区切り()
         Next lLineIdx
         
         If lAreaIdx = 1 Then
-            sOutText = sNewText
+            sClipedText = sNewText
         Else
-            sOutText = sOutText & vbNewLine & sNewText
+            sClipedText = sClipedText & vbNewLine & sNewText
         End If
     Next lAreaIdx
     
     '*** クリップボード設定 ***
-    Call SetToClipboard(sOutText)
+    Call SetToClipboard(sClipedText)
+    
+    Application.ScreenUpdating = True
     
     '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ タブ区切りコピー完了！ ■■■■■■■■"
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
 End Sub
 
 ' =============================================================================
-' = 概要    一行にまとめてセルコピー
-' = 覚書    ・非表示セル/空白セルは無視する
+' = 概要    選択範囲を一行にまとめてセルコピーする。
+' = 覚書    ・セル内に改行が含まれる場合は一行にまとめられないことに注意
 ' = 依存    Mng_Clipboard.bas/SetToClipboard()
+' =         SettingFile.cls
 ' = 所属    Macro.bas
 ' =============================================================================
-Public Sub セルコピーAt指定文字区切り()
-    Const sMACRO_NAME As String = "指定文字区切りコピー"
+Public Sub 一行にまとめてセルコピー()
+    Const sMACRO_NAME As String = "一行にまとめてセルコピー"
     
     Application.ScreenUpdating = False
     
-    Dim sClipedStr As String
+    '*** アドイン設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
     
+    Dim sIgnoreInvisibleCell As String
+    Dim bIgnoreInvisibleCell As Boolean
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCELLCOPYLINE_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    
+    Dim sIgnoreBlankCell As String
+    Dim bIgnoreBlankCell As Boolean
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_IGNORE_BLANK_CELL", sIgnoreBlankCell, sCELLCOPYLINE_IGNORE_BLANK_CELL, True)
+    bIgnoreBlankCell = clSetting.ConvTypeStr2Bool(sIgnoreBlankCell)
+    
+    Dim sPreffix As String
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, True)
+    sPreffix = clSetting.ConvStrRaw2CntrlChr(sPreffix)
+    
+    Dim sDelimiter As String
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, True)
+    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
+    
+    Dim sSuffix As String
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, True)
+    sSuffix = clSetting.ConvStrRaw2CntrlChr(sSuffix)
+    
+    '*** 選択範囲取得 ***
+    Dim sClipedText As String
+    sClipedText = ""
     Dim lAreaIdx As Long
     For lAreaIdx = 1 To Selection.Areas.Count
         Dim lItemIdx As Long
         For lItemIdx = 1 To Selection.Areas(lAreaIdx).Count
             With Selection.Areas(lAreaIdx).Item(lItemIdx)
-                If .Value = "" Then
-                    'Do Nothing
-                Else
-                    If .EntireRow.Hidden Or .EntireColumn.Hidden Then
+                If .Value = "" Then                                     '空白セル
+                    If bIgnoreBlankCell = True Then
                         'Do Nothing
                     Else
-                        If sClipedStr = "" Then
-                            sClipedStr = sCELL_COPY_PREFFIX & .Value
+                        If sClipedText = "" Then
+                            sClipedText = sPreffix & .Value
                         Else
-                            sClipedStr = sClipedStr & sCELL_COPY_DELIMITER & .Value
+                            sClipedText = sClipedText & sDelimiter & .Value
+                        End If
+                    End If
+                Else
+                    If .EntireRow.Hidden Or .EntireColumn.Hidden Then   '非表示セル
+                        If bIgnoreInvisibleCell = True Then
+                            'Do Nothing
+                        Else
+                            If sClipedText = "" Then
+                                sClipedText = sPreffix & .Value
+                            Else
+                                sClipedText = sClipedText & sDelimiter & .Value
+                            End If
+                        End If
+                    Else                                                '上記以外
+                        If sClipedText = "" Then
+                            sClipedText = sPreffix & .Value
+                        Else
+                            sClipedText = sClipedText & sDelimiter & .Value
                         End If
                     End If
                 End If
             End With
         Next lItemIdx
     Next lAreaIdx
-    sClipedStr = sClipedStr & sCELL_COPY_SUFFIX
+    sClipedText = sClipedText & sSuffix
     
     '*** クリップボード設定 ***
-    Call SetToClipboard(sClipedStr)
+    Call SetToClipboard(sClipedText)
     
     Application.ScreenUpdating = True
     
@@ -458,6 +530,7 @@ Public Sub 選択範囲をファイルエクスポート()
     sSettingFilePath = GetAddinSettingFilePath()
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_FILE_EXTENTION", sFileExt, sFILEEXPORT_FILE_EXTENTION, True)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_DELIMITER", sDelimiter, sFILEEXPORT_DELIMITER, True)
+    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
     
     '*** セル選択判定 ***
@@ -473,7 +546,8 @@ Public Sub 選択範囲をファイルエクスポート()
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sTmpPath As String
-    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTmpFileName
+    Const lTEMPORARY_FOLDER As Long = 2
+    sTmpPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER) & "\" & sTmpFileName
     Dim sDirPathOld As String
     Dim sFileNameOld As String
     If objFSO.FileExists(sTmpPath) Then
@@ -520,13 +594,13 @@ Public Sub 選択範囲をファイルエクスポート()
     End If
     
     '*** 非表示セル出力判定 ***
-    Dim bIsInvisibleCellIgnore As Boolean
-    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+    Dim bIgnoreInvisibleCell As Boolean
+    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
 '    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
 '    If vAnswer = vbYes Then
-'        bIsInvisibleCellIgnore = True
+'        bIgnoreInvisibleCell = True
 '    ElseIf vAnswer = vbNo Then
-'        bIsInvisibleCellIgnore = False
+'        bIgnoreInvisibleCell = False
 '    Else
 '        MsgBox "処理を中断します"
 '        End
@@ -538,7 +612,7 @@ Public Sub 選択範囲をファイルエクスポート()
     Call ConvRange2Array( _
                 Selection, _
                 asRange, _
-                bIsInvisibleCellIgnore, _
+                bIgnoreInvisibleCell, _
                 sDelimiter _
             )
     
@@ -582,10 +656,18 @@ End Sub
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_FileSys.bas/OutputTxtFile()
 ' =         Mng_SysCmd.bas/ExecDosCmd()
+' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をまとめてコマンド実行()
-    Const sBAT_FILE_NAME As String = "command.bat"
+    '*** アドイン設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sBatFileName As String
+    Dim sRedirectFileName As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_BAT_FILE_NAME", sBatFileName, sBATEXE_BAT_FILE_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_REDIRECT_FILE_NAME", sRedirectFileName, sBATEXE_REDIRECT_FILE_NAME, True)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -604,13 +686,13 @@ Public Sub 選択範囲をまとめてコマンド実行()
     End If
     
     '*** 非表示セル出力判定 ***
-    Dim bIsInvisibleCellIgnore As Boolean
-    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+    Dim bIgnoreInvisibleCell As Boolean
+    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
 '    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
 '    If vAnswer = vbYes Then
-'        bIsInvisibleCellIgnore = True
+'        bIgnoreInvisibleCell = True
 '    ElseIf vAnswer = vbNo Then
-'        bIsInvisibleCellIgnore = False
+'        bIgnoreInvisibleCell = False
 '    Else
 '        MsgBox "処理を中断します"
 '        End
@@ -621,21 +703,24 @@ Public Sub 選択範囲をまとめてコマンド実行()
     Call ConvRange2Array( _
                 Selection, _
                 asRange, _
-                bIsInvisibleCellIgnore, _
+                bIgnoreInvisibleCell, _
                 "" _
             )
     
     Dim sBatFileDirPath As String
     Dim sBatFilePath As String
-    sBatFileDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
-    sBatFilePath = sBatFileDirPath & "\" & sBAT_FILE_NAME
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Const lTEMPORARY_FOLDER As Long = 2
+    sBatFileDirPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER)
+    sBatFilePath = sBatFileDirPath & "\" & sBatFileName
     
     Call OutputTxtFile(sBatFilePath, asRange)
     
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sOutputFilePath As String
-    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\redirect.log"
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sRedirectFileName
     
     '*** コマンド実行 ***
     Open sOutputFilePath For Append As #1
@@ -666,9 +751,17 @@ End Sub
 ' = 覚書    なし
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_SysCmd.bas/ExecDosCmd()
+' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をそれぞれコマンド実行()
+    '*** アドイン設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sRedirectFileName As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sUNIEXE_REDIRECT_FILE_NAME", sRedirectFileName, sUNIEXE_REDIRECT_FILE_NAME, True)
+    
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
         MsgBox "セルが選択されていません"
@@ -686,13 +779,13 @@ Public Sub 選択範囲をそれぞれコマンド実行()
     End If
     
     '*** 非表示セル出力判定 ***
-    Dim bIsInvisibleCellIgnore As Boolean
-    bIsInvisibleCellIgnore = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
+    Dim bIgnoreInvisibleCell As Boolean
+    bIgnoreInvisibleCell = True 'ユーザー操作を単純化するため、デフォルトで「非表示セル無視」としておく
 '    vAnswer = MsgBox("非表示セルを無視しますか？", vbYesNoCancel)
 '    If vAnswer = vbYes Then
-'        bIsInvisibleCellIgnore = True
+'        bIgnoreInvisibleCell = True
 '    ElseIf vAnswer = vbNo Then
-'        bIsInvisibleCellIgnore = False
+'        bIgnoreInvisibleCell = False
 '    Else
 '        MsgBox "処理を中断します"
 '        End
@@ -703,14 +796,14 @@ Public Sub 選択範囲をそれぞれコマンド実行()
     Call ConvRange2Array( _
                 Selection, _
                 asRange, _
-                bIsInvisibleCellIgnore, _
+                bIgnoreInvisibleCell, _
                 "" _
             )
     
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sOutputFilePath As String
-    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\redirect.log"
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sRedirectFileName
     
     '*** コマンド実行 ***
     Open sOutputFilePath For Append As #1
@@ -1327,8 +1420,6 @@ End Sub
 ' = 覚書    なし
 ' = 依存    Mng_FileSys.bas/ShowFileSelectDialog()
 ' =         Mng_FileSys.bas/ShowFolderSelectDialog()
-' =         Mng_FileSys.bas/WriteTempMemoriedValue()
-' =         Mng_FileSys.bas/ReadTempMemoriedValue()
 ' =         Mng_Collection.bas/ReadTxtFileToCollection()
 ' =         Mng_String.bas/ExecRegExp()
 ' =         Mng_String.bas/ExtractTailWord()
@@ -1339,12 +1430,8 @@ End Sub
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Const MACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
-    Const sTEMP_FILE_NAME As String = "vba_eptree_to_excel.tmp"
     Const STRT_ROW As Long = 1
     Const STRT_CLM As Long = 1
-    Const KEYWORD_EPTREE_LOG_PATH As String = "EPTREE_LOG_PATH"
-    Const KEYWORD_DEV_ROOT_DIR_PATH As String = "DEV_ROOT_DIR_PATH"
-    Const KEYWORD_DEV_ROOT_DIR_LEVEL As String = "DEV_ROOT_DIR_LEVEL"
     
     Dim lRowIdx As Long
     Dim lStrtRow As Long
@@ -1355,49 +1442,61 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     '=============================================
     '= 事前処理
     '=============================================
-    Dim sTrgtFilePath As String
+    Dim sOutSheetName As String
+    Dim sMaxFuncLevelIni As String
+    Dim sClmWidth As String
+    Dim sEptreeLogPath As String
     Dim sDevRootDirPath As String
     Dim sDevRootDirName As String
     Dim sDevRootLevel As String
+    Dim sTempFileName As String
     
-    '*** Eptreeログファイルパス取得 ***
-    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath)
-    sTrgtFilePath = ShowFileSelectDialog(sTrgtFilePath, "EpTreeLog.txtのファイルパスを選択してください")
-    If sTrgtFilePath = "" Then
+    '*** アドイン設定ファイルから設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sAddinSettingFilePath As String
+    sAddinSettingFilePath = GetAddinSettingFilePath()
+    
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_MAX_FUNC_LEVEL_INI", sMaxFuncLevelIni, sEPTREE_MAX_FUNC_LEVEL_INI, True)
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_TEMP_FILE_NAME", sTempFileName, sEPTREE_TEMP_FILE_NAME, True)
+    
+    '*** テンポラリファイルから設定読み出し ***
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim sTempDirPath As String
+    Dim sTempFilePath As String
+    Const lTEMPORARY_FOLDER As Long = 2
+    sTempDirPath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER)
+    sTempFilePath = sTempDirPath & "\" & sTempFileName
+    
+    'Eptreeログファイルパス取得
+    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
+    sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
+    If sEptreeLogPath = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
-    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_EPTREE_LOG_PATH, sTrgtFilePath, False)
+    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
     
-    '*** 開発用ルートフォルダ取得 ***
-    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath)
+    '開発用ルートフォルダ取得
+    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath, sEPTREE_DEV_ROOT_DIR_PATH, False)
     sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
     If sDevRootDirPath = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
-    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_PATH, sDevRootDirPath, False)
+    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
     
-    '*** ルートフォルダレベル取得 ***
-    Call ReadTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel)
+    'ルートフォルダレベル取得
+    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel, sEPTREE_DEV_ROOT_DIR_LEVEL, False)
     sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", MACRO_NAME, sDevRootLevel)
     If sDevRootLevel = "" Then
         MsgBox "処理を中断します", vbCritical, MACRO_NAME
         Exit Sub
     End If
-    Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
-    
-    'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    Dim sOutSheetName As String
-    Dim sMaxFuncLevelIni As String
-    Dim sClmWidth As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_MAX_FUNC_LEVEL_INI", sMaxFuncLevelIni, sEPTREE_MAX_FUNC_LEVEL_INI, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
+    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
     
     '=============================================
     '= 本処理
@@ -1414,7 +1513,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     'テキストファイル読み出し
     Dim cFileContents As Collection
     Set cFileContents = New Collection
-    Call ReadTxtFileToCollection(sTrgtFilePath, cFileContents)
+    Call ReadTxtFileToCollection(sEptreeLogPath, cFileContents)
     
     'ファイルツリー出力
     lStrtRow = STRT_ROW
@@ -1430,7 +1529,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     lRowIdx = lRowIdx + 1
     
     Dim lMaxFuncLevel As Long
-    lMaxFuncLevel = sMaxFuncLevelIni
+    lMaxFuncLevel = CLng(sMaxFuncLevelIni)
     Dim vFileLine As Variant
     For Each vFileLine In cFileContents
         Dim oMatchResult As Object
@@ -1480,7 +1579,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = sClmWidth
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = CLng(sClmWidth)
         
         'オートフィルタ
         .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
@@ -1772,7 +1871,7 @@ End Function
 ' =         主にセル範囲をテキストファイルに出力する時に使用する。
 ' = 引数    rCellsRange             Range   [in]  対象のセル範囲
 ' = 引数    asLine()                String  [out] 文字列返還後のセル範囲
-' = 引数    bIsInvisibleCellIgnore  String  [in]  非表示セル無視実行可否
+' = 引数    bIgnoreInvisibleCell    String  [in]  非表示セル無視実行可否
 ' = 引数    sDelimiter              String  [in]  区切り文字
 ' = 戻値    なし
 ' = 覚書    列が隣り合ったセル同士は指定された区切り文字で区切られる
@@ -1782,7 +1881,7 @@ End Function
 Private Function ConvRange2Array( _
     ByRef rCellsRange As Range, _
     ByRef asLine() As String, _
-    ByVal bIsInvisibleCellIgnore As Boolean, _
+    ByVal bIgnoreInvisibleCell As Boolean, _
     ByVal sDelimiter As String _
 )
     Dim lLineIdx As Long
@@ -1799,7 +1898,7 @@ Private Function ConvRange2Array( _
             sCurCellValue = rCellsRange(lRowIdx, lClmIdx).Value
             '非表示セルは無視する
             Dim bIsIgnoreCurExec As Boolean
-            If bIsInvisibleCellIgnore = True Then
+            If bIgnoreInvisibleCell = True Then
                 If rCellsRange(lRowIdx, lClmIdx).EntireRow.Hidden = True Or _
                    rCellsRange(lRowIdx, lClmIdx).EntireColumn.Hidden = True Then
                     bIsIgnoreCurExec = True
@@ -2312,171 +2411,6 @@ Public Function JumpToTrgtSheet( _
         End If
     Next
 End Function
-
-' ==================================================================
-' = 概要    一時的なファイルに検索キーと書き込み値を上書きして保存
-' = 引数    sFileName       String  [in]  ファイル名
-' = 引数    sKeyword        String  [in]  検索キー
-' = 引数    sValue          String  [out] 書き込み値
-' = 引数    bCreateNewFile  Boolean [in]  新規ファイル作成
-' = 戻値                    Boolean       検索結果(ファイル有無)
-' = 覚書    [実行例]
-' =           WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False)
-' =         [出力結果]
-' =           以下の内容のファイルを出力する
-' =              [default_trgt_path]cccc
-' = 依存    なし
-' = 所属    Mng_FileSys.bas
-' ==================================================================
-Public Function WriteTempMemoriedValue( _
-    ByVal sFileName As String, _
-    ByVal sKeyword As String, _
-    ByVal sValue As String, _
-    ByVal bCreateNewFile As Boolean _
-) As Boolean
-    Dim sTempDirPath As String
-    Dim sTempFilePath As String
-    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
-    sTempFilePath = sTempDirPath & "\" & sFileName
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    
-    Dim sKeywordLineStr As String
-    sKeywordLineStr = "[" & sKeyword & "]" & sValue
-    
-    Dim vFileLineAll() As String
-    
-    If objFSO.FileExists(sTempFilePath) Then
-        If bCreateNewFile = True Then
-            ReDim vFileLineAll(0)
-            vFileLineAll(0) = sKeywordLineStr
-        Else
-            Open sTempFilePath For Input As #1
-            Do Until EOF(1)
-                Dim lLineIdx As Long
-                If Sgn(vFileLineAll) = 0 Then
-                    lLineIdx = 0
-                Else
-                    lLineIdx = lLineIdx + 1
-                End If
-                ReDim Preserve vFileLineAll(lLineIdx)
-                Line Input #1, vFileLineAll(lLineIdx)
-            Loop
-            Close #1
-            
-            Dim bExistKeyword As String
-            bExistKeyword = False
-            For lLineIdx = 0 To UBound(vFileLineAll)
-                Dim sKeywordStr As String
-                sKeywordStr = "[" & sKeyword & "]"
-                If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
-                    bExistKeyword = True
-                    Exit For
-                End If
-            Next lLineIdx
-            If bExistKeyword = True Then
-                vFileLineAll(lLineIdx) = sKeywordLineStr
-            Else
-                ReDim Preserve vFileLineAll(UBound(vFileLineAll) + 1)
-                vFileLineAll(UBound(vFileLineAll)) = sKeywordLineStr
-            End If
-        End If
-        WriteTempMemoriedValue = True
-    Else
-        ReDim vFileLineAll(0)
-        vFileLineAll(0) = sKeywordLineStr
-        WriteTempMemoriedValue = False
-    End If
-    
-    'ファイル出力
-    Open sTempFilePath For Output As #1
-    For lLineIdx = 0 To UBound(vFileLineAll)
-        Print #1, vFileLineAll(lLineIdx)
-    Next lLineIdx
-    Close #1
-End Function
-    Private Sub Test_WriteTempMemoriedValue()
-        Dim bRet As Boolean
-        Dim sValue As String
-        Debug.Print "▼▼▼Test_WriteTempMemoriedValue()▼▼▼"
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "xxx", "d", True): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "aaa", False): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "eeeeeeeeee", False): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", False): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", "dd", True): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "", "test", False): Debug.Print bRet
-        bRet = WriteTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", "cccc", False): Debug.Print bRet
-        Debug.Print "▲▲▲Test_WriteTempMemoriedValue()▲▲▲"
-    End Sub
-
-' ==================================================================
-' = 概要    一時的なファイルから検索キーに一致する行の値を読みだす
-' = 引数    sFileName       String  [in]  ファイル名
-' = 引数    sKeyword        String  [in]  検索キー
-' = 引数    sValue          String  [in]  検索値
-' = 戻値                    Boolean       検索結果(ファイル有無)
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Mng_FileSys.bas
-' ==================================================================
-Public Function ReadTempMemoriedValue( _
-    ByVal sFileName As String, _
-    ByVal sKeyword As String, _
-    ByRef sValue As String _
-) As Boolean
-    Dim sTempDirPath As String
-    Dim sTempFilePath As String
-    sTempDirPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp"
-    sTempFilePath = sTempDirPath & "\" & sFileName
-    
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    
-    If objFSO.FileExists(sTempFilePath) Then
-        Dim vFileLineAll() As String
-        Open sTempFilePath For Input As #1
-        Do Until EOF(1)
-            Dim lLineIdx As Long
-            If Sgn(vFileLineAll) = 0 Then
-                lLineIdx = 0
-            Else
-                lLineIdx = lLineIdx + 1
-            End If
-            ReDim Preserve vFileLineAll(lLineIdx)
-            Line Input #1, vFileLineAll(lLineIdx)
-        Loop
-        Close #1
-        
-        sValue = ""
-        ReadTempMemoriedValue = False
-        
-        For lLineIdx = 0 To UBound(vFileLineAll)
-            Dim sKeywordStr As String
-            sKeywordStr = "[" & sKeyword & "]"
-            If Left$(vFileLineAll(lLineIdx), Len(sKeywordStr)) = sKeywordStr Then
-                sValue = Mid$(vFileLineAll(lLineIdx), Len(sKeywordStr) + 1, Len(vFileLineAll(lLineIdx)))
-                ReadTempMemoriedValue = True
-                Exit For
-            End If
-        Next lLineIdx
-    Else
-        sValue = ""
-        ReadTempMemoriedValue = False
-    End If
-End Function
-    Private Sub Test_ReadTempMemoriedValue()
-        Dim bRet As Boolean
-        Dim sValue As String
-        
-        Debug.Print "▼▼▼Test_ReadTempMemoriedValue()▼▼▼"
-        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
-        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "deft_trgt_path", sValue): Debug.Print bRet & ":" & sValue
-        bRet = ReadTempMemoriedValue("vbaeptree.tmp", "", sValue): Debug.Print bRet & ":" & sValue
-        bRet = ReadTempMemoriedValue("vbaeptree2.tmp", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
-        bRet = ReadTempMemoriedValue("", "default_trgt_path", sValue): Debug.Print bRet & ":" & sValue
-        Debug.Print "▲▲▲Test_ReadTempMemoriedValue()▲▲▲"
-    End Sub
 
 ' ==================================================================
 ' = 概要    絶対パスから検索キー配下階層の相対パスへ置換
