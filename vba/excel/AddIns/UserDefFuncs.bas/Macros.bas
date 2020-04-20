@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.24
+' user define macros v2.25
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -74,6 +74,24 @@ Dim dMacroShortcutKeys As Object
 '* 設定値
 '******************************************************************************
 '▼▼▼ 設定 ▼▼▼
+'=== 背景色をトグル()/フォント色をトグル() ===
+    '[色名参考] https://excel-toshokan.com/vba-color-list/
+    Const lTGL_BG_CLR As Long = vbYellow
+    Const lTGL_FONT_CLR As Long = vbRed
+'=== アクティブセルコメント設定() ===
+    Const sCMNT_VSBL_ENB As String = "False"
+'=== Excel方眼紙() ===
+    Const sEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
+    Const sEXCEL_GRID_FONT_SIZE As String = "9"
+    Const sEXCEL_GRID_CLM_WIDTH As String = "3" '3文字分
+'=== 選択範囲をファイルエクスポート() ===
+    Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
+    Const sFILEEXPORT_DELIMITER As String = ","
+    Const sFILEEXPORT_TEMP_FILE_NAME As String = "export_cell_range.tmp"
+'=== EpTreeの関数ツリーをExcelで取り込む() ===
+    Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
+    Const sEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
+    Const sEPTREE_CLM_WIDTH As Long = 2
 '=== セルコピーAtタブ区切り() ===
     Const bCELL_COPY_INVISIBLE_IGNORE As Boolean = True
     'Const sCELL_COPY_DELIMITER As String = vbTab '現状未実装
@@ -82,13 +100,6 @@ Dim dMacroShortcutKeys As Object
     Const sCELL_COPY_PREFFIX As String = "("
     Const sCELL_COPY_DELIMITER As String = "|"
     Const sCELL_COPY_SUFFIX As String = ")"
-'=== 選択範囲をファイルエクスポート() ===
-    Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
-    Const sFILEEXPORT_DELIMITER As String = ","
-'=== EpTreeの関数ツリーをExcelで取り込む() ===
-    Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
-    Const sEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
-    Const sEPTREE_CLM_WIDTH As Long = 2
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
@@ -113,24 +124,12 @@ Private Sub ConstructMacroShortcutKeys()
     
     Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
     
-    'アドイン設定ファイル読み出し
+    'アドイン設定読み出し
     Dim clSetting As New SettingFile
-    Dim bExistSettingFile As Boolean
-    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
-    
-    'アクティブセルコメント設定判定
-    If bExistSettingFile = True Then
-        Dim bExistSettingItem As Boolean
-        Dim sSettingValue As String
-        bExistSettingItem = clSetting.Item("sCMNT_VSBL_ENB", sSettingValue)
-        If bExistSettingItem = True Then
-            'Do Nothing
-        Else 'コメント表示設定が未存在
-            sSettingValue = "False"
-        End If
-    Else 'アドイン設定ファイルが未存在
-        sSettingValue = "False"
-    End If
+    Dim sSettingFilePath As String
+    Dim sValue As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMNT_VSBL_ENB", sValue, sCMNT_VSBL_ENB, False)
     
     '▼▼▼ 設定 ▼▼▼
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
@@ -176,7 +175,7 @@ Private Sub ConstructMacroShortcutKeys()
     dMacroShortcutKeys.Add "^+f", "最前面へ移動"
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     
-    If sSettingValue = "True" Then
+    If sValue = "True" Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
         dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
         dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
@@ -446,10 +445,20 @@ End Sub
 ' = 覚書    なし
 ' = 依存    Mng_FileSys.bas/ShowFolderSelectDialog()
 ' =         Mng_Array.bas/ConvRange2Array()
+' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 選択範囲をファイルエクスポート()
-    Const sTEMP_FILE_NAME As String = "ExportCellRange.tmp"
+    'アドイン設定読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sFileExt As String
+    Dim sDelimiter As String
+    Dim sTmpFileName As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_FILE_EXTENTION", sFileExt, sFILEEXPORT_FILE_EXTENTION, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_DELIMITER", sDelimiter, sFILEEXPORT_DELIMITER, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -464,7 +473,7 @@ Public Sub 選択範囲をファイルエクスポート()
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sTmpPath As String
-    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
+    sTmpPath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTmpFileName
     Dim sDirPathOld As String
     Dim sFileNameOld As String
     If objFSO.FileExists(sTmpPath) Then
@@ -494,7 +503,7 @@ Public Sub 選択範囲をファイルエクスポート()
     
     '*** ファイル名作成 ***
     Dim sOutputFilePath As String
-    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & sFILEEXPORT_FILE_EXTENTION
+    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & sFileExt
     
     '*** ファイル上書き判定 ***
     If objFSO.FileExists(sOutputFilePath) Then
@@ -530,7 +539,7 @@ Public Sub 選択範囲をファイルエクスポート()
                 Selection, _
                 asRange, _
                 bIsInvisibleCellIgnore, _
-                sFILEEXPORT_DELIMITER _
+                sDelimiter _
             )
     
     On Error Resume Next
@@ -1033,84 +1042,44 @@ End Sub
 ' =============================================================================
 ' = 概要    フォント色を「lTGL_FONT_CLR」⇔「自動」でトグルする
 ' = 覚書    なし
-' = 依存    なし
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub フォント色をトグル()
-    '▼▼▼設定▼▼▼
-    '[色名参考] https://excel-toshokan.com/vba-color-list/
-    Const lTGL_FONT_CLR As Long = vbRed
-    '▲▲▲設定▲▲▲
-    
-    'アドイン設定ファイル読み出し
+    'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim bExistSettingFile As Boolean
+    Dim sValue As String
     sSettingFilePath = GetAddinSettingFilePath()
-    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lTGL_FONT_CLR", sValue, lTGL_FONT_CLR, True)
     
-    'アドイン設定取得
-    Dim sTglFontClr As String
-    Dim bExistSettingItem As Boolean
-    If bExistSettingFile = True Then
-        bExistSettingItem = clSetting.Item("lTGL_FONT_CLR", sTglFontClr)
-        If bExistSettingItem = True Then
-            'Do Nothing
-        Else
-            sTglFontClr = lTGL_FONT_CLR
-        End If
-    Else
-        sTglFontClr = lTGL_FONT_CLR
-    End If
-    Call clSetting.Add("lTGL_FONT_CLR", sTglFontClr)
-    
-    '更新
-    If Selection(1).Font.Color = CLng(sTglFontClr) Then
+    'フォント色変更
+    If Selection(1).Font.Color = CLng(sValue) Then
         Selection.Font.ColorIndex = xlAutomatic
     Else
-        Selection.Font.Color = CLng(sTglFontClr)
+        Selection.Font.Color = CLng(sValue)
     End If
 End Sub
 
 ' =============================================================================
 ' = 概要    背景色を「lTGL_BG_CLR」⇔「背景色なし」でトグルする
 ' = 覚書    なし
-' = 依存    なし
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 背景色をトグル()
-    '▼▼▼設定▼▼▼
-    '[色名参考] https://excel-toshokan.com/vba-color-list/
-    Const lTGL_BG_CLR As Long = vbYellow
-    '▲▲▲設定▲▲▲
-    
-    'アドイン設定ファイル読み出し
+    'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim bExistSettingFile As Boolean
+    Dim sValue As String
     sSettingFilePath = GetAddinSettingFilePath()
-    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lTGL_BG_CLR", sValue, lTGL_BG_CLR, True)
     
-    'アドイン設定取得
-    Dim sTglBgClr As String
-    Dim bExistSettingItem As Boolean
-    If bExistSettingFile = True Then
-        bExistSettingItem = clSetting.Item("lTGL_BG_CLR", sTglBgClr)
-        If bExistSettingItem = True Then
-            'Do Nothing
-        Else
-            sTglBgClr = lTGL_BG_CLR
-        End If
-    Else
-        sTglBgClr = lTGL_BG_CLR
-    End If
-    Call clSetting.Add("lTGL_BG_CLR", sTglBgClr)
-    
-    '更新
-    If Selection(1).Interior.Color = CLng(sTglBgClr) Then
+    'フォント色変更
+    If Selection(1).Interior.Color = CLng(sValue) Then
         Selection.Interior.ColorIndex = 0
     Else
-        Selection.Interior.Color = CLng(sTglBgClr)
+        Selection.Interior.Color = CLng(sValue)
     End If
 End Sub
 
@@ -1239,10 +1208,6 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
-    '▼▼▼設定▼▼▼
-    Const sCMNT_VSBL_ENB As String = "False"
-    '▲▲▲設定▲▲▲
-    
     'アドイン設定ファイル読み出し
     Dim clSetting As New SettingFile
     Dim bExistSettingFile As Boolean
@@ -1318,51 +1283,20 @@ End Sub
 ' =============================================================================
 ' = 概要    Excel方眼紙
 ' = 覚書    なし
-' = 依存    なし
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub Excel方眼紙()
-    '▼▼▼設定▼▼▼
-    Const sEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
-    Const lEXCEL_GRID_FONT_SIZE As Long = 9
-    Const lEXCEL_GRID_CLM_WIDTH As Long = 3 '3文字分
-    '▲▲▲設定▲▲▲
-    
-    'アドイン設定ファイル読み出し
+    'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim bExistSettingFile As Boolean
-    sSettingFilePath = GetAddinSettingFilePath()
-    bExistSettingFile = clSetting.FileLoad(sSettingFilePath)
-    
-    'アドイン設定取得
     Dim sFontName As String
     Dim sFontSize As String
     Dim sClmWidth As String
-    Dim bExistSettingItem As String
-    If bExistSettingFile = True Then
-        bExistSettingItem = clSetting.Item("sEXCEL_GRID_FONT_NAME", sFontName)
-        If bExistSettingItem = False Then
-            sFontName = sEXCEL_GRID_FONT_NAME
-        End If
-        bExistSettingItem = clSetting.Item("lEXCEL_GRID_FONT_SIZE", sFontSize)
-        If bExistSettingItem = False Then
-            sFontSize = CStr(lEXCEL_GRID_FONT_SIZE)
-        End If
-        bExistSettingItem = clSetting.Item("lEXCEL_GRID_CLM_WIDTH", sClmWidth)
-        If bExistSettingItem = False Then
-            sClmWidth = CStr(lEXCEL_GRID_CLM_WIDTH)
-        End If
-    Else
-        sFontName = sEXCEL_GRID_FONT_NAME
-        sFontSize = CStr(lEXCEL_GRID_FONT_SIZE)
-        sClmWidth = CStr(lEXCEL_GRID_CLM_WIDTH)
-    End If
-    
-    'アドイン設定書き出し
-    Call clSetting.Add("sEXCEL_GRID_FONT_NAME", sFontName)
-    Call clSetting.Add("lEXCEL_GRID_FONT_SIZE", sFontSize)
-    Call clSetting.Add("lEXCEL_GRID_CLM_WIDTH", sClmWidth)
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_FONT_NAME", sFontName, sEXCEL_GRID_FONT_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_FONT_SIZE", sFontSize, sEXCEL_GRID_FONT_SIZE, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_CLM_WIDTH", sClmWidth, sEXCEL_GRID_CLM_WIDTH, True)
     
     'Excel方眼紙設定
     ActiveSheet.Cells.Select
@@ -1400,6 +1334,7 @@ End Sub
 ' =         Mng_String.bas/ExtractTailWord()
 ' =         Mng_String.bas/ExtractRelativePath()
 ' =         Mng_ExcelOpe.bas/CreateNewWorksheet()
+' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
@@ -1453,6 +1388,17 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     End If
     Call WriteTempMemoriedValue(sTEMP_FILE_NAME, KEYWORD_DEV_ROOT_DIR_LEVEL, sDevRootLevel, False)
     
+    'アドイン設定読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sOutSheetName As String
+    Dim sMaxFuncLevelIni As String
+    Dim sClmWidth As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_MAX_FUNC_LEVEL_INI", sMaxFuncLevelIni, sEPTREE_MAX_FUNC_LEVEL_INI, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
+    
     '=============================================
     '= 本処理
     '=============================================
@@ -1462,7 +1408,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     'シート追加
     Dim sSheetName As String
     Dim shTrgtSht As Worksheet
-    sSheetName = CreateNewWorksheet(sEPTREE_OUT_SHEET_NAME)
+    sSheetName = CreateNewWorksheet(sOutSheetName)
     Set shTrgtSht = ActiveWorkbook.Sheets(sSheetName)
     
     'テキストファイル読み出し
@@ -1484,7 +1430,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     lRowIdx = lRowIdx + 1
     
     Dim lMaxFuncLevel As Long
-    lMaxFuncLevel = sEPTREE_MAX_FUNC_LEVEL_INI
+    lMaxFuncLevel = sMaxFuncLevelIni
     Dim vFileLine As Variant
     For Each vFileLine In cFileContents
         Dim oMatchResult As Object
@@ -1534,7 +1480,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = sEPTREE_CLM_WIDTH
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = sClmWidth
         
         'オートフィルタ
         .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
@@ -1613,7 +1559,7 @@ Private Sub OutputSettingList()
             Debug.Print vSettingKey & " = " & sSettingValue
         Next
     Else
-        Stop
+        Debug.Print "設定ファイルなし"
     End If
 End Sub
 
@@ -1688,11 +1634,6 @@ End Sub
 ' = 所属    Macros.bas
 ' ==================================================================
 Private Function GetAddinSettingFilePath() As String
-'    Const lTEMPORARY_FOLDER As Long = 2
-'    Dim objFSO As Object
-'    Set objFSO = CreateObject("Scripting.FileSystemObject")
-'    GetAddinSettingFilePath = objFSO.GetSpecialFolder(lTEMPORARY_FOLDER) & "\" & sSETTING_FILE_NAME
-'    Set objFSO = Nothing
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     GetAddinSettingFilePath = ThisWorkbook.Path & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"

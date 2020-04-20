@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.0.0
+'setting file class v1.1.0
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -77,7 +77,7 @@ Public Function FileLoad( _
     gsDelimiter = sDelimiter
     
     gsSettingFilePath = sFilePath
-    Debug.Print gsSettingFilePath
+    'Debug.Print gsSettingFilePath
     
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -114,7 +114,7 @@ Public Function FileSave() As Boolean
     If gsSettingFilePath = "" Then
         FileSave = False
     Else
-        Debug.Print gsSettingFilePath
+        'Debug.Print gsSettingFilePath
         
         Open gsSettingFilePath For Output As #1
         Dim vKey As Variant
@@ -295,6 +295,91 @@ Public Property Get AllItems() As Object
     Set AllItems = gdSettingItems
 End Property
 
+' ==================================================================
+' = 概要    ファイルオープンから設定取得（＆なければ設定追加）を一括で行う
+' = 引数    sFilePath       String      [in]    ファイルパス
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    sValue          String      [out]   設定値
+' = 引数    sInitValue      String      [in]    設定初期値
+' = 引数    bDoSave         String      [in]    ファイル保存実施有無(省略可)
+' = 戻値                    Boolean             取得結果
+' = 覚書    ・ファイルオープン後、設定値を取得する。
+' =           設定値が存在しない場合、初期値として設定値を更新する。
+' =         ・以下の場合、Falseを返却する
+' =           - sFilePathが存在しない
+' =           - sKeyが存在しない
+' = 依存    なし
+' ==================================================================
+Public Function ReadItemFromFile( _
+    ByVal sFilePath As String, _
+    ByVal sKey As String, _
+    ByRef sValue As String, _
+    ByVal sInitValue As String, _
+    Optional ByVal bDoSave As Boolean = True _
+) As Boolean
+    Call Init
+    
+    '設定ファイル読み出し
+    Dim bExistFile As Boolean
+    Dim bExistItem As Boolean
+    bExistFile = Me.FileLoad(sFilePath)
+    
+    '設定項目取得＆更新
+    Dim sItem As String
+    If bExistFile = True Then
+        bExistItem = Me.Item(sKey, sItem)
+        If bExistItem = True Then
+            sValue = sItem
+            'Call Me.Add(sKey, sValue, bDoSave)
+            ReadItemFromFile = True
+        Else
+            sValue = sInitValue
+            Call Me.Add(sKey, sValue, bDoSave)
+            ReadItemFromFile = False
+        End If
+    Else
+        sValue = sInitValue
+        Call Me.Add(sKey, sValue, bDoSave)
+        ReadItemFromFile = False
+    End If
+    
+    Call DeInit
+End Function
 
-
+' ==================================================================
+' = 概要    ファイルオープンから設定更新/追加を一括で行う
+' = 引数    sFilePath       String      [in]    ファイルパス
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    sValue          String      [in]    設定値
+' = 戻値                    Boolean             取得結果
+' = 覚書    ・ファイルオープン後、設定値を更新/追加する。
+' =         ・以下の場合、Falseを返却する
+' =           - sFilePathが存在しない
+' =           - sKeyが存在しない
+' = 依存    なし
+' ==================================================================
+Public Function WriteItemToFile( _
+    ByVal sFilePath As String, _
+    ByVal sKey As String, _
+    ByVal sValue As String _
+) As Boolean
+    Call Init
+    
+    '設定ファイル読み出し
+    Dim bExistFile As Boolean
+    Dim bExistItem As Boolean
+    bExistFile = Me.FileLoad(sFilePath)
+    If bExistFile = True Then
+        bExistItem = Me.Add(sKey, sItem)
+        If bExistItem = True Then
+            WriteItemToFile = True
+        Else
+            WriteItemToFile = False
+        End If
+    Else
+        WriteItemToFile = False
+    End If
+    
+    Call Me.DeInit
+End Function
 
