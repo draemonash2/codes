@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.27
+' user define macros v2.28
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -34,7 +34,7 @@ Option Explicit
 ' =
 ' =    オートフィル実行                             オートフィルを実行する
 ' =    ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
-' =    MEMOシートへジャンプ                         アクティブブックのMEMOシートへ移動する
+' =    先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
 ' =
 ' =    アクティブセルコメント設定切り替え           アクティブセルコメント設定を切り替える
 ' =    アクティブセルコメントのみ表示               他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
@@ -84,11 +84,13 @@ Dim dMacroShortcutKeys As Object
     Const sEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
     Const sEXCEL_GRID_FONT_SIZE As String = "9"
     Const sEXCEL_GRID_CLM_WIDTH As String = "3" '3文字分
+'=== 検索文字の文字色を変更() ===
+    Const sWORDCOLOR_TEMP_FILE_NAME As String = "exceladdin_wordcolor.tmp"
+    Const sWORDCOLOR_SRCH_WORD As String = ""
 '=== 選択範囲をファイルエクスポート() ===
     Const sFILEEXPORT_TEMP_FILE_NAME As String = "exceladdin_setting_fileexport.tmp"
-    Const sFILEEXPORT_FILE_EXTENTION As String = "csv"
     Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
-    Const sFILEEXPORT_DELIMITER As String = ","
+    Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
 '=== 選択範囲内のコマンドをまとめて実行() ===
     Const sBATEXE_BAT_FILE_NAME As String = "exceladdin_batexe_command.bat"
     Const sBATEXE_REDIRECT_FILE_NAME As String = "exceladdin_batexe_redirect.Log"
@@ -177,7 +179,7 @@ Private Sub ConstructMacroShortcutKeys()
     
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
-    dMacroShortcutKeys.Add "^%{HOME}", "MEMOシートへジャンプ"
+    dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
     
 '   dMacroShortcutKeys.Add "", "Excel方眼紙"
 '   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
@@ -233,8 +235,10 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をデクリメント()
+    Const sMACRO_NAME As String = "セル内の丸数字をデクリメント"
     Const NUM_MAX As Long = 15
     Const NUM_MIN As Long = 1
+    
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
     Dim lLoopCnt As Long
@@ -252,7 +256,7 @@ Public Sub セル内の丸数字をデクリメント()
             what:=NumConvLng2Str(lLoopCnt), _
             replacement:=NumConvLng2Str(lLoopCnt - 1)
     Next lLoopCnt
-    MsgBox "置換完了！"
+    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -263,8 +267,10 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub セル内の丸数字をインクリメント()
+    Const sMACRO_NAME As String = "セル内の丸数字をインクリメント"
     Const NUM_MAX As Long = 15
     Const NUM_MIN As Long = 1
+    
     Dim lTrgtNum As Long
     Dim sTrgtNum As String
     Dim lLoopCnt As Long
@@ -282,7 +288,7 @@ Public Sub セル内の丸数字をインクリメント()
             what:=NumConvLng2Str(lLoopCnt), _
             replacement:=NumConvLng2Str(lLoopCnt + 1)
     Next lLoopCnt
-    MsgBox "置換完了！"
+    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -294,6 +300,8 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 全シート名をコピー()
+    Const sMACRO_NAME As String = "全シート名をコピー"
+    
     Dim oSheet As Object
     Dim sSheetNames As String
     Dim doDataObj As New DataObject
@@ -309,7 +317,7 @@ Public Sub 全シート名をコピー()
     doDataObj.SetText sSheetNames
     doDataObj.PutInClipboard
     
-    MsgBox "ブック内のシート名を全てコピーしました"
+    MsgBox "ブック内のシート名を全てコピーしました", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -526,22 +534,13 @@ End Sub
 Public Sub 選択範囲をファイルエクスポート()
     Const sMACRO_NAME As String = "選択範囲をファイルエクスポート"
     
-    'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
+    Dim dicDelimiter As Object
+    Set dicDelimiter = CreateObject("Scripting.Dictionary")
     
-    Dim sFileExt As String
-    Dim sDelimiter As String
-    Dim sTmpFileName As String
-    Dim sIgnoreInvisibleCell As String
-    Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_FILE_EXTENTION", sFileExt, sFILEEXPORT_FILE_EXTENTION, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_DELIMITER", sDelimiter, sFILEEXPORT_DELIMITER, True)
-    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    '▼▼▼設定▼▼▼
+    dicDelimiter.Add "csv", ","
+    dicDelimiter.Add "tsv", vbTab
+    '▲▲▲設定▲▲▲
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -550,31 +549,36 @@ Public Sub 選択範囲をファイルエクスポート()
         End
     End If
     
-    '*** Tempファイル読出し ***
+    '*** アドイン設定ファイルパス取得 ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
+    '*** アドイン設定読み出し ***
+    Dim sTmpFileName As String
+    Dim sIgnoreInvisibleCell As String
+    Dim bIgnoreInvisibleCell As Boolean
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    
+    '*** テンポラリファイルパス取得 ***
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim objWshShell As Object
-    Set objWshShell = CreateObject("WScript.Shell")
     Dim sTmpDirPath As String
     Dim sTmpFilePath As String
     sTmpDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sTmpFilePath = sTmpDirPath & "\" & sTmpFileName
     
-    Dim sDirPathOld As String
-    Dim sFileNameOld As String
-    If objFSO.FileExists(sTmpFilePath) Then
-        Open sTmpFilePath For Input As #1
-        Line Input #1, sDirPathOld
-        Line Input #1, sFileNameOld
-        Close #1
-    Else
-        sDirPathOld = objWshShell.SpecialFolders("Desktop")
-        sFileNameOld = "export"
-    End If
-    
-    '*** 出力先フォルダパス入力 ***
+    '*** 出力先入力 ***
+    'フォルダパス
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sOutputDirPathInit As String
     Dim sOutputDirPath As String
-    sOutputDirPath = ShowFolderSelectDialog(sDirPathOld)
+    sOutputDirPathInit = objWshShell.SpecialFolders("Desktop")
+    Call clSetting.ReadItemFromFile(sTmpFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath, sOutputDirPathInit, False)
+    sOutputDirPath = ShowFolderSelectDialog(sOutputDirPath)
     If sOutputDirPath = "" Then
         MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。", vbCritical, sMACRO_NAME
         MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
@@ -582,12 +586,34 @@ Public Sub 選択範囲をファイルエクスポート()
     Else
         'Do Nothing
     End If
+    Call clSetting.WriteItemToFile(sTmpFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath)
     
-    '*** 出力ファイル名入力 ***
+    'ファイル名
     Dim sOutputFileName As String
     Dim sOutputFilePath As String
-    sOutputFileName = InputBox("ファイル名を入力してください。（拡張子なし）", "ファイル名入力", sFileNameOld)
-    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName & "." & sFileExt
+    Dim sFileExt As String
+    Dim sDelimiter As String
+    Call clSetting.ReadItemFromFile(sTmpFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName, sFILEEXPORT_OUT_FILE_NAME, False)
+    sOutputFileName = InputBox("ファイル名を入力してください。(拡張子付き)", sMACRO_NAME, sOutputFileName)
+    If InStr(sOutputFileName, ".") Then
+        'Do Nothing
+    Else
+        MsgBox "ファイル名が指定されませんでした。", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
+        End
+    End If
+    Call clSetting.WriteItemToFile(sTmpFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName)
+    
+    'ファイルパス
+    sOutputFilePath = sOutputDirPath & "\" & sOutputFileName
+    
+    '*** 拡張子,デリミタ取得 ***
+    sFileExt = Split(sOutputFileName, ".")(UBound(Split(sOutputFileName, ".")))
+    If dicDelimiter.Exists(sFileExt) Then
+        sDelimiter = dicDelimiter.Item(sFileExt)
+    Else
+        sDelimiter = vbTab
+    End If
     
     '*** ファイル上書き判定 ***
     If objFSO.FileExists(sOutputFilePath) Then
@@ -627,12 +653,6 @@ Public Sub 選択範囲をファイルエクスポート()
     For lLineIdx = LBound(asRange) To UBound(asRange)
         Print #1, asRange(lLineIdx)
     Next lLineIdx
-    Close #1
-    
-    '*** Tempファイル書き出し ***
-    Open sTmpFilePath For Output As #1
-    Print #1, sOutputDirPath
-    Print #1, sOutputFileName
     Close #1
     
     MsgBox "出力完了！"
@@ -820,7 +840,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 検索文字の文字色を変更()
-    Const sMACRO_TITLE As String = "検索文字の文字色を変更"
+    Const sMACRO_NAME As String = "検索文字の文字色を変更"
     
     '▼▼▼色設定▼▼▼
     Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
@@ -840,15 +860,27 @@ Public Sub 検索文字の文字色を変更()
         )
     '▲▲▲色設定▲▲▲
     
-    Dim sSrchStr As String
-    sSrchStr = InputBox("検索文字列を入力してください", sMACRO_TITLE)
+    '*** アドイン設定ファイルから設定読み出し ***
+    Dim sTempFileDirPath As String
+    Dim sTempFileFilePath As String
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    sTempFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_TEMP_FILE_NAME
     
+    Dim clSetting As New SettingFile
+    
+    Dim sSrchStr As String
+    Call clSetting.ReadItemFromFile(sTempFileDirPath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
+    sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
+    Call clSetting.WriteItemToFile(sTempFileDirPath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
+
     Dim lColorIndex As Long
     lColorIndex = InputBox( _
         "文字色を選択してください" & vbNewLine & _
         "  " & sCOLOR_TYPE & vbNewLine _
         , _
-        sMACRO_TITLE, _
+        sMACRO_NAME, _
         lINIT_COLOR _
     )
     
@@ -870,9 +902,9 @@ Public Sub 検索文字の文字色を変更()
                 End If
             Loop While 1
         Next
-        MsgBox "完了！", vbOKOnly, sMACRO_TITLE
+        MsgBox "完了！", vbOKOnly, sMACRO_NAME
     Else
-        MsgBox "文字色は指定の範囲内で選択してください。" & vbNewLine & sCOLOR_TYPE, vbOKOnly, sMACRO_TITLE
+        MsgBox "文字色は指定の範囲内で選択してください。" & vbNewLine & sCOLOR_TYPE, vbOKOnly, sMACRO_NAME
     End If
 End Sub
 
@@ -915,6 +947,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート並べ替え作業用シートを作成()
+    Const sMACRO_NAME As String = "シート並べ替え作業用シートを作成"
     Const WORK_SHEET_NAME As String = "シート並べ替え作業用"
     Const ROW_BTN = 2
     Const ROW_TEXT_1 = 4
@@ -952,9 +985,9 @@ Public Sub シート並べ替え作業用シートを作成()
             End If
         Next lShtIdx
         If bExistWorkSht = True Then
-            MsgBox "既に「" & WORK_SHEET_NAME & "」シートが作成されています。"
-            MsgBox "処理を続けたい場合は、シートを削除してください。"
-            MsgBox "処理を中断します。"
+            MsgBox "既に「" & WORK_SHEET_NAME & "」シートが作成されています。", vbCritical, sMACRO_NAME
+            MsgBox "処理を続けたい場合は、シートを削除してください。", vbCritical, sMACRO_NAME
+            MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
             End
         Else
             Set shWorkSht = .Sheets.Add(After:=.Sheets(.Sheets.Count))
@@ -1004,63 +1037,6 @@ Public Sub シート並べ替え作業用シートを作成()
     End With
 End Sub
 
-' =============================================================================
-' = 概要    シートを並び替える。
-' =         シート並べ替え作業用シートに記載の通り、シートを並び替える。
-' =         必ずシート並べ替え作業用シートから呼び出すこと！
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub SortSheetPost()
-    Dim asShtName() As String
-    Dim lStrtRow As Long
-    Dim lLastRow As Long
-    Dim lArrIdx As Long
-    Dim lRowIdx As Long
-    
-    With ActiveWorkbook
-        'シート名取得
-        lStrtRow = ROW_SHT_NAME_STRT
-        lLastRow = .Sheets(WORK_SHEET_NAME).Cells(.Sheets(WORK_SHEET_NAME).Rows.Count, CLM_SHT_NAME).End(xlUp).Row
-        ReDim Preserve asShtName(lLastRow - lStrtRow)
-        lArrIdx = 0
-        For lRowIdx = lStrtRow To lLastRow
-            asShtName(lArrIdx) = .Sheets(WORK_SHEET_NAME).Cells(lRowIdx, CLM_SHT_NAME).Value
-            lArrIdx = lArrIdx + 1
-        Next lRowIdx
-        
-        'シート数比較
-        If UBound(asShtName) + 1 = .Sheets.Count - 1 Then
-            'Do Nothing
-        Else
-            MsgBox "シート数が一致しません！"
-            MsgBox "処理を中断します。"
-            End
-        End If
-        
-        Application.ScreenUpdating = False
-        
-        'シート並べ替え
-        For lArrIdx = 0 To UBound(asShtName)
-            .Sheets(asShtName(lArrIdx)).Move Before:=Sheets(lArrIdx + 1)
-        Next lArrIdx
-        
-        '作業用シートアクティベート
-        .Sheets(WORK_SHEET_NAME).Activate
-        
-        '作業用シート削除は暫定無効
-'        '作業用シート削除
-'        Application.DisplayAlerts = False
-'        .Sheets(WORK_SHEET_NAME).Delete
-'        Application.DisplayAlerts = True
-        
-        Application.ScreenUpdating = True
-    End With
-    
-    MsgBox "並べ替え完了！"
-End Sub
-
 ' ==================================================================
 ' = 概要    選択シートを切り出す。
 ' =         コピー元ブックと同フォルダに出力する。
@@ -1100,6 +1076,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ハイパーリンク一括オープン()
+    Const sMACRO_NAME As String = "ハイパーリンク一括オープン"
     Dim Rng As Range
     
     If TypeName(Selection) = "Range" Then
@@ -1107,7 +1084,7 @@ Public Sub ハイパーリンク一括オープン()
             If Rng.Hyperlinks.Count > 0 Then Rng.Hyperlinks(1).Follow
         Next
     Else
-        MsgBox "セル範囲が選択されていません。", vbExclamation
+        MsgBox "セル範囲が選択されていません。", vbExclamation, sMACRO_NAME
     End If
 End Sub
 
@@ -1262,14 +1239,19 @@ Public Sub ハイパーリンクで飛ぶ()
 End Sub
 
 ' =============================================================================
-' = 概要    アクティブブックのMEMOシートへ移動する
+' = 概要    アクティブブックの先頭シートへ移動する
 ' = 覚書    なし
-' = 依存　　Macros.bas/JumpToTrgtSheet()
+' = 依存　　なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub MEMOシートへジャンプ()
-    Const TRGT_SHEET_NAME As String = "MEMO"
-    Call JumpToTrgtSheet(TRGT_SHEET_NAME)
+Public Sub 先頭シートへジャンプ()
+    Dim shSheet As Worksheet
+    For Each shSheet In ActiveWorkbook.Sheets
+        If shSheet.Visible = True Then
+            shSheet.Activate
+            Exit For
+        End If
+    Next
 End Sub
 
 ' =============================================================================
@@ -1412,9 +1394,9 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub EpTreeの関数ツリーをExcelで取り込む()
-    Const MACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
-    Const STRT_ROW As Long = 1
-    Const STRT_CLM As Long = 1
+    Const sMACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
+    Const lSTRT_ROW As Long = 1
+    Const lSTRT_CLM As Long = 1
     
     Dim lRowIdx As Long
     Dim lStrtRow As Long
@@ -1456,7 +1438,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
     sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
     If sEptreeLogPath = "" Then
-        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
@@ -1465,7 +1447,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath, sEPTREE_DEV_ROOT_DIR_PATH, False)
     sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
     If sDevRootDirPath = "" Then
-        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
@@ -1473,9 +1455,9 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     
     'ルートフォルダレベル取得
     Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel, sEPTREE_DEV_ROOT_DIR_LEVEL, False)
-    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", MACRO_NAME, sDevRootLevel)
+    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, sDevRootLevel)
     If sDevRootLevel = "" Then
-        MsgBox "処理を中断します", vbCritical, MACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
@@ -1498,8 +1480,8 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call ReadTxtFileToCollection(sEptreeLogPath, cFileContents)
     
     'ファイルツリー出力
-    lStrtRow = STRT_ROW
-    lStrtClm = STRT_CLM
+    lStrtRow = lSTRT_ROW
+    lStrtClm = lSTRT_CLM
     lRowIdx = lStrtRow
     
     With shTrgtSht
@@ -1550,7 +1532,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Next
     
     With shTrgtSht
-        lLastClm = STRT_CLM + 3 + lMaxFuncLevel
+        lLastClm = lSTRT_CLM + 3 + lMaxFuncLevel
         lLastRow = lRowIdx
         
         'タイトル行 中央揃え
@@ -1582,7 +1564,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
     
-    MsgBox "関数コールツリー作成完了！", vbOKOnly, MACRO_NAME
+    MsgBox "関数コールツリー作成完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -1612,6 +1594,67 @@ End Sub
 ' *****************************************************************************
 ' * 内部用マクロ
 ' *****************************************************************************
+Private Sub ▼▼▼▼▼内部マクロ▼▼▼▼▼()
+    'プロシージャリスト表示用のダミープロシージャ
+End Sub
+
+' =============================================================================
+' = 概要    シートを並び替える。
+' =         シート並べ替え作業用シートに記載の通り、シートを並び替える。
+' =         必ずシート並べ替え作業用シートから呼び出すこと！
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Private Sub SortSheetPost()
+    Dim asShtName() As String
+    Dim lStrtRow As Long
+    Dim lLastRow As Long
+    Dim lArrIdx As Long
+    Dim lRowIdx As Long
+    
+    With ActiveWorkbook
+        'シート名取得
+        lStrtRow = ROW_SHT_NAME_STRT
+        lLastRow = .Sheets(WORK_SHEET_NAME).Cells(.Sheets(WORK_SHEET_NAME).Rows.Count, CLM_SHT_NAME).End(xlUp).Row
+        ReDim Preserve asShtName(lLastRow - lStrtRow)
+        lArrIdx = 0
+        For lRowIdx = lStrtRow To lLastRow
+            asShtName(lArrIdx) = .Sheets(WORK_SHEET_NAME).Cells(lRowIdx, CLM_SHT_NAME).Value
+            lArrIdx = lArrIdx + 1
+        Next lRowIdx
+        
+        'シート数比較
+        If UBound(asShtName) + 1 = .Sheets.Count - 1 Then
+            'Do Nothing
+        Else
+            MsgBox "シート数が一致しません！"
+            MsgBox "処理を中断します。"
+            End
+        End If
+        
+        Application.ScreenUpdating = False
+        
+        'シート並べ替え
+        For lArrIdx = 0 To UBound(asShtName)
+            .Sheets(asShtName(lArrIdx)).Move Before:=Sheets(lArrIdx + 1)
+        Next lArrIdx
+        
+        '作業用シートアクティベート
+        .Sheets(WORK_SHEET_NAME).Activate
+        
+        '作業用シート削除は暫定無効
+'        '作業用シート削除
+'        Application.DisplayAlerts = False
+'        .Sheets(WORK_SHEET_NAME).Delete
+'        Application.DisplayAlerts = True
+        
+        Application.ScreenUpdating = True
+    End With
+    
+    MsgBox "並べ替え完了！"
+End Sub
+
 ' =============================================================================
 ' = 概要    設定項目一覧を出力
 ' = 引数    なし
@@ -1706,6 +1749,10 @@ End Sub
 ' *****************************************************************************
 ' * 内部関数定義
 ' *****************************************************************************
+Private Sub ▼▼▼▼▼内部関数▼▼▼▼▼()
+    'プロシージャリスト表示用のダミープロシージャ
+End Sub
+
 ' ==================================================================
 ' = 概要    アドイン設定用のファイルパスを取得する
 ' = 引数    なし
@@ -1934,11 +1981,6 @@ Private Function ExecDosCmd( _
     ExecDosCmd = sStrOut
     Set oExeResult = Nothing
 End Function
-    Private Sub Test_ExecDosCmd()
-        Dim sBuf As String
-        sBuf = sBuf & vbNewLine & ExecDosCmd("copy C:\Users\draem_000\Desktop\test.txt C:\Users\draem_000\Desktop\test2.txt")
-        MsgBox sBuf
-    End Sub
 
 ' ============================================
 ' = 概要    配列の内容をファイルに書き込む。
@@ -2026,13 +2068,6 @@ Private Function ShowFolderSelectDialog( _
     
     Set fdDialog = Nothing
 End Function
-    Private Sub Test_ShowFolderSelectDialog()
-        Dim objWshShell
-        Set objWshShell = CreateObject("WScript.Shell")
-        Debug.Print ShowFolderSelectDialog( _
-                    objWshShell.SpecialFolders("Desktop") _
-                )
-    End Sub
 
 ' ==================================================================
 ' = 概要    ファイル（単一）選択ダイアログを表示する
@@ -2086,23 +2121,6 @@ Private Function ShowFileSelectDialog( _
     
     Set fdDialog = Nothing
 End Function
-    Private Sub Test_ShowFileSelectDialog()
-        Dim objWshShell
-        Set objWshShell = CreateObject("WScript.Shell")
-        Dim sFilters As String
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png"
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg,テキストファイル/*.txt; *.csv"
-        'sFilters = "画像ファイル/*.gif; *.jpg; *.jpeg; *.png,テキストファイル/*.txt; *.csv"
-        sFilters = ""
-        Debug.Print ShowFileSelectDialog( _
-                    objWshShell.SpecialFolders("Desktop") & "\test.txt", _
-                    "", _
-                    sFilters _
-                )
-    '    MsgBox ShowFileSelectDialog( _
-    '                objWshShell.SpecialFolders("Desktop") & "\test.txt" _
-    '            )
-    End Sub
  
 ' ==================================================================
 ' = 概要    ShowFileSelectDialog() と ShowFilesSelectDialog() 用の関数
@@ -2274,14 +2292,6 @@ Private Function ReadTxtFileToCollection( _
     End If
     On Error GoTo 0
 End Function
-    Private Sub Test_OpenTxtFile2Array()
-        Dim cFileContents As Collection
-        Set cFileContents = New Collection
-        Dim sInFilePath As String
-        sInFilePath = "C:\codes\vbs\_lib\Test.csv"
-        Dim bRet As Boolean
-        bRet = ReadTxtFileToCollection(sInFilePath, cFileContents)
-    End Sub
 
 ' ==================================================================
 ' = 概要    正規表現検索を行う（Vbaマクロ関数用）
@@ -2312,14 +2322,6 @@ Public Function ExecRegExp( _
         ExecRegExp = True
     End If
 End Function
-    Private Sub Test_ExecRegExp()
-        Dim sTargetStr As String
-        Dim oMatchResult As Object
-        sTargetStr = "void TestFunc(int arg1, char arg2);"
-        Debug.Print "*** test start! ***"
-        Debug.Print ExecRegExp(sTargetStr, " \w+\(", oMatchResult)
-        Debug.Print "*** test finished! ***"
-    End Sub
 
 ' ==================================================================
 ' = 概要    クリップボードにテキストをコピー（Win32Apiを使用）
@@ -2373,25 +2375,6 @@ Public Function SetToClipboard( _
     Else
         SetToClipboard = False
     End If
-End Function
-
-' ==================================================================
-' = 概要    アクティブブックの指定シートへ移動する
-' = 引数    sSheetName      String  [in]  移動対象シート名
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' ==================================================================
-Public Function JumpToTrgtSheet( _
-    ByVal sSheetName As String _
-)
-    Dim shSheet As Worksheet
-    For Each shSheet In ActiveWorkbook.Sheets
-        If shSheet.Name = sSheetName Then
-            shSheet.Activate
-        End If
-    Next
 End Function
 
 ' ==================================================================
@@ -2454,31 +2437,6 @@ Public Function ExtractRelativePath( _
         ExtractRelativePath = False
     End If
 End Function
-    Private Function Test_ExtractRelativePath()
-        Dim sRltvPath As String
-        Dim bRet As Boolean
-        Dim sInFilePath As String
-        
-        Debug.Print "*** test start! ***"
-        sInFilePath = "c\codes\aaa\bbb\ccc\test.txt"
-        Debug.Print sInFilePath
-        bRet = ExtractRelativePath(sInFilePath, "codes", -1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "codes", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "codes", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "codes", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "codes", 3, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "codes", 4, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        
-        bRet = ExtractRelativePath(sInFilePath, "code", 2, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        
-        bRet = ExtractRelativePath(sInFilePath, "aaa", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "aaa", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "aaa", 10, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        
-        bRet = ExtractRelativePath(sInFilePath, "", 0, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        bRet = ExtractRelativePath(sInFilePath, "", 1, sRltvPath): Debug.Print bRet & ":" & sRltvPath
-        Debug.Print "*** test finished! ***"
-    End Function
 
 ' ==================================================================
 ' = 概要    末尾区切り文字以降の文字列を返却する。
