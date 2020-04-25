@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.28
+' user define macros v2.29
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -29,8 +29,8 @@ Option Explicit
 ' =    ツリーをグループ化                           ツリーグループ化する
 ' =    ハイパーリンク一括オープン                   選択した範囲のハイパーリンクを一括で開く
 ' =
-' =    フォント色をトグル                           フォント色を「赤」⇔「自動」でトグルする
-' =    背景色をトグル                               背景色を「黄」⇔「背景色なし」でトグルする
+' =    フォント色をトグル                           フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
+' =    背景色をトグル                               背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
 ' =
 ' =    オートフィル実行                             オートフィルを実行する
 ' =    ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
@@ -53,10 +53,14 @@ Option Explicit
 '******************************************************************************
 '* 事前処理
 '******************************************************************************
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-
-'▼▼▼Mng_Clipboard.bas/SetToClipboard()▼▼▼
 'Win32API宣言
+'▽▽▽Macro.bas/範囲を維持したままセルコピー()▽▽▽
+'▽▽▽Macro.bas/一行にまとめてセルコピー()▽▽▽
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+'△△△Macro.bas/一行にまとめてセルコピー()△△△
+'△△△Macro.bas/範囲を維持したままセルコピー()△△△
+
+'▽▽▽Mng_Clipboard.bas/SetToClipboard()▽▽▽
 Public Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Public Declare Function EmptyClipboard Lib "user32" () As Long
 Public Declare Function CloseClipboard Lib "user32" () As Long
@@ -66,7 +70,7 @@ Public Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 '本来はＣ言語用の文字列コピーだが、２つ目の引数をStringとしているので変換が行われた上でコピーされる。
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
-'▲▲▲Mng_Clipboard.bas/SetToClipboard()▲▲▲
+'△△△Mng_Clipboard.bas/SetToClipboard()△△△
 
 Dim dMacroShortcutKeys As Object
 
@@ -76,30 +80,30 @@ Dim dMacroShortcutKeys As Object
 '▼▼▼ 設定(初期値) ▼▼▼
 '=== 背景色をトグル()/フォント色をトグル() ===
     '[色名参考] https://excel-toshokan.com/vba-color-list/
-    Const lTGL_BG_CLR As Long = vbYellow
-    Const lTGL_FONT_CLR As Long = vbRed
+    Const lCLRTGLBG_CLR As Long = vbYellow
+    Const lCLRTGLFONT_CLR As Long = vbRed
 '=== アクティブセルコメント設定() ===
     Const sCMNT_VSBL_ENB As String = "False"
 '=== Excel方眼紙() ===
-    Const sEXCEL_GRID_FONT_NAME As String = "ＭＳ ゴシック"
-    Const sEXCEL_GRID_FONT_SIZE As String = "9"
-    Const sEXCEL_GRID_CLM_WIDTH As String = "3" '3文字分
+    Const sEXCELGRID_FONT_NAME As String = "ＭＳ ゴシック"
+    Const sEXCELGRID_FONT_SIZE As String = "9"
+    Const sEXCELGRID_CLM_WIDTH As String = "3" '3文字分
 '=== 検索文字の文字色を変更() ===
-    Const sWORDCOLOR_TEMP_FILE_NAME As String = "exceladdin_wordcolor.tmp"
+    Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
 '=== 選択範囲をファイルエクスポート() ===
-    Const sFILEEXPORT_TEMP_FILE_NAME As String = "exceladdin_setting_fileexport.tmp"
-    Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
+    Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
     Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
+    Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
 '=== 選択範囲内のコマンドをまとめて実行() ===
-    Const sBATEXE_BAT_FILE_NAME As String = "exceladdin_batexe_command.bat"
-    Const sBATEXE_REDIRECT_FILE_NAME As String = "exceladdin_batexe_redirect.Log"
-    Const sBATEXE_IGNORE_INVISIBLE_CELL As String = "True"
+    Const sCMDEXEBAT_BAT_FILE_NAME As String = "userdeffuncs_cmdexebat_command.bat"
+    Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexebat_redirect.log"
+    Const sCMDEXEBAT_IGNORE_INVISIBLE_CELL As String = "True"
 '=== 選択範囲内のコマンドをそれぞれ実行() ===
-    Const sUNIEXE_REDIRECT_FILE_NAME As String = "exceladdin_uniexe_redirect.Log"
-    Const sUNIEXE_IGNORE_INVISIBLE_CELL As String = "True"
+    Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexeuni_redirect.log"
+    Const sCMDEXEUNI_IGNORE_INVISIBLE_CELL As String = "True"
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
-    Const sEPTREE_TEMP_FILE_NAME As String = "exceladdin_setting_eptree.tmp"
+    Const sEPTREE_CFG_FILE_NAME As String = "userdeffuncs_eptree.cfg"
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
     Const sEPTREE_MAX_FUNC_LEVEL_INI As String = "10"
     Const sEPTREE_CLM_WIDTH As String = "2"
@@ -555,10 +559,8 @@ Public Sub 選択範囲をファイルエクスポート()
     sSettingFilePath = GetAddinSettingFilePath()
     
     '*** アドイン設定読み出し ***
-    Dim sTmpFileName As String
     Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_TEMP_FILE_NAME", sTmpFileName, sFILEEXPORT_TEMP_FILE_NAME, True)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
     bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
@@ -568,7 +570,7 @@ Public Sub 選択範囲をファイルエクスポート()
     Dim sTmpDirPath As String
     Dim sTmpFilePath As String
     sTmpDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
-    sTmpFilePath = sTmpDirPath & "\" & sTmpFileName
+    sTmpFilePath = sTmpDirPath & "\" & sFILEEXPORT_CFG_FILE_NAME
     
     '*** 出力先入力 ***
     'フォルダパス
@@ -684,13 +686,9 @@ Public Sub 選択範囲内のコマンドをまとめて実行()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sBatFileName As String
-    Dim sRedirectFileName As String
     Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_BAT_FILE_NAME", sBatFileName, sBATEXE_BAT_FILE_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_REDIRECT_FILE_NAME", sRedirectFileName, sBATEXE_REDIRECT_FILE_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sBATEXE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sBATEXE_IGNORE_INVISIBLE_CELL, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMDEXEBAT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCMDEXEBAT_IGNORE_INVISIBLE_CELL, True)
     bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** セル選択判定 ***
@@ -723,14 +721,14 @@ Public Sub 選択範囲内のコマンドをまとめて実行()
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     sBatFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
-    sBatFilePath = sBatFileDirPath & "\" & sBatFileName
+    sBatFilePath = sBatFileDirPath & "\" & sCMDEXEBAT_BAT_FILE_NAME
     
     Call OutputTxtFile(sBatFilePath, asRange)
     
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sOutputFilePath As String
-    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sRedirectFileName
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sCMDEXEBAT_REDIRECT_FILE_NAME
     
     '*** コマンド実行 ***
     Open sOutputFilePath For Append As #1
@@ -772,11 +770,9 @@ Public Sub 選択範囲内のコマンドをそれぞれ実行()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sRedirectFileName As String
     Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sUNIEXE_REDIRECT_FILE_NAME", sRedirectFileName, sUNIEXE_REDIRECT_FILE_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sUNIEXE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sUNIEXE_IGNORE_INVISIBLE_CELL, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMDEXEUNI_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCMDEXEUNI_IGNORE_INVISIBLE_CELL, True)
     bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** セル選択判定 ***
@@ -807,7 +803,7 @@ Public Sub 選択範囲内のコマンドをそれぞれ実行()
     Dim objWshShell As Object
     Set objWshShell = CreateObject("WScript.Shell")
     Dim sOutputFilePath As String
-    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sRedirectFileName
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sCMDEXEUNI_REDIRECT_FILE_NAME
     
     '*** コマンド実行 ***
     Open sOutputFilePath For Append As #1
@@ -866,14 +862,13 @@ Public Sub 検索文字の文字色を変更()
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     sTempFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
-    sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_TEMP_FILE_NAME
+    sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_CFG_FILE_NAME
     
     Dim clSetting As New SettingFile
-    
     Dim sSrchStr As String
-    Call clSetting.ReadItemFromFile(sTempFileDirPath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
+    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
-    Call clSetting.WriteItemToFile(sTempFileDirPath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
 
     Dim lColorIndex As Long
     lColorIndex = InputBox( _
@@ -1089,7 +1084,7 @@ Public Sub ハイパーリンク一括オープン()
 End Sub
 
 ' =============================================================================
-' = 概要    フォント色を「lTGL_FONT_CLR」⇔「自動」でトグルする
+' = 概要    フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
@@ -1100,7 +1095,7 @@ Public Sub フォント色をトグル()
     Dim sSettingFilePath As String
     Dim sValue As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lTGL_FONT_CLR", sValue, lTGL_FONT_CLR, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sValue, lCLRTGLFONT_CLR, True)
     
     'フォント色変更
     If Selection(1).Font.Color = CLng(sValue) Then
@@ -1111,7 +1106,7 @@ Public Sub フォント色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要    背景色を「lTGL_BG_CLR」⇔「背景色なし」でトグルする
+' = 概要    背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
@@ -1122,7 +1117,7 @@ Public Sub 背景色をトグル()
     Dim sSettingFilePath As String
     Dim sValue As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lTGL_BG_CLR", sValue, lTGL_BG_CLR, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sValue, lCLRTGLBG_CLR, True)
     
     'フォント色変更
     If Selection(1).Interior.Color = CLng(sValue) Then
@@ -1352,9 +1347,9 @@ Public Sub Excel方眼紙()
     Dim sFontSize As String
     Dim sClmWidth As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_FONT_NAME", sFontName, sEXCEL_GRID_FONT_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_FONT_SIZE", sFontSize, sEXCEL_GRID_FONT_SIZE, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCEL_GRID_CLM_WIDTH", sClmWidth, sEXCEL_GRID_CLM_WIDTH, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_FONT_NAME", sFontName, sEXCELGRID_FONT_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_FONT_SIZE", sFontSize, sEXCELGRID_FONT_SIZE, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_CLM_WIDTH", sClmWidth, sEXCELGRID_CLM_WIDTH, True)
     
     'Excel方眼紙設定
     ActiveSheet.Cells.Select
@@ -1414,7 +1409,6 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim sDevRootDirPath As String
     Dim sDevRootDirName As String
     Dim sDevRootLevel As String
-    Dim sTempFileName As String
     
     '*** アドイン設定ファイルから設定読み出し ***
     Dim clSetting As New SettingFile
@@ -1424,7 +1418,6 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
     Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_MAX_FUNC_LEVEL_INI", sMaxFuncLevelIni, sEPTREE_MAX_FUNC_LEVEL_INI, True)
     Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_TEMP_FILE_NAME", sTempFileName, sEPTREE_TEMP_FILE_NAME, True)
     
     '*** テンポラリファイルから設定読み出し ***
     Dim objFSO As Object
@@ -1432,7 +1425,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim sTempDirPath As String
     Dim sTempFilePath As String
     sTempDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
-    sTempFilePath = sTempDirPath & "\" & sTempFileName
+    sTempFilePath = sTempDirPath & "\" & sEPTREE_CFG_FILE_NAME
     
     'Eptreeログファイルパス取得
     Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
