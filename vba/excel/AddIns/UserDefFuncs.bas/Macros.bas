@@ -1,53 +1,53 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.29
+' user define macros v2.30
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
-' =    F1ヘルプ無効化                               F1ヘルプを無効化する
+' =    ・共通
+' =         F1ヘルプ無効化                               F1ヘルプを無効化する
 ' =
-' =    選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
+' =    ・マクロ設定
+' =         マクロショートカットキー全て有効化           マクロショートカットキー全て有効化
+' =         マクロショートカットキー全て無効化           マクロショートカットキー全て無効化
 ' =
-' =    範囲を維持したままセルコピー                 選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
-' =    一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
+' =    ・シート操作
+' =         EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
+' =         Excel方眼紙                                  Excel方眼紙
+' =         選択シート切り出し                           選択シートを別ファイルに切り出す
+' =         全シート名をコピー                           ブック内のシート名を全てコピーする
+' =         シート表示非表示を切り替え                   シート表示/非表示を切り替える
+' =         シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
+' =         シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
 ' =
-' =    選択範囲をファイルエクスポート               選択範囲をファイルとしてエクスポートする。
-' =    選択範囲内のコマンドをまとめて実行           選択範囲内のコマンドをまとめて実行する。
-' =    選択範囲内のコマンドをそれぞれ実行           選択範囲内のコマンドをそれぞれ実行する。
-' =    検索文字の文字色を変更                       選択範囲内の検索文字の文字色を変更する
+' =    ・セル操作
+' =         ファイルエクスポート                         選択範囲をファイルとしてエクスポートする。
+' =         DOSコマンドを一括実行                        選択範囲内のDOSコマンドをまとめて実行する。
+' =         DOSコマンドを各々実行                        選択範囲内のDOSコマンドをそれぞれ実行する。
+' =         検索文字の文字色を変更                       選択範囲内の検索文字の文字色を変更する
+' =         セル内の丸数字をデクリメント                 ②～⑮を指定して、指定番号以降をインクリメントする
+' =         セル内の丸数字をインクリメント               ①～⑭を指定して、指定番号以降をデクリメントする
+' =         ツリーをグループ化                           ツリーグループ化する
+' =         ハイパーリンク一括オープン                   選択した範囲のハイパーリンクを一括で開く
+' =         ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
+' =         先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
+' =         選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
+' =         範囲を維持したままセルコピー                 選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
+' =         一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
+' =         フォント色をトグル                           フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
+' =         背景色をトグル                               背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
+' =         オートフィル実行                             オートフィルを実行する
+' =         アクティブセルコメント設定切り替え           アクティブセルコメント設定を切り替える
+' =         アクティブセルコメントのみ表示               他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して下移動     下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して上移動     上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して右移動     右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して左移動     左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =
-' =    全シート名をコピー                           ブック内のシート名を全てコピーする
-' =    シート表示非表示を切り替え                   シート表示/非表示を切り替える
-' =    シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
-' =    シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
-' =    選択シート切り出し                           選択シートを切り出す
-' =
-' =    セル内の丸数字をデクリメント                 ②～⑮を指定して、指定番号以降をインクリメントする
-' =    セル内の丸数字をインクリメント               ①～⑭を指定して、指定番号以降をデクリメントする
-' =
-' =    ツリーをグループ化                           ツリーグループ化する
-' =    ハイパーリンク一括オープン                   選択した範囲のハイパーリンクを一括で開く
-' =
-' =    フォント色をトグル                           フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
-' =    背景色をトグル                               背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
-' =
-' =    オートフィル実行                             オートフィルを実行する
-' =    ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
-' =    先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
-' =
-' =    アクティブセルコメント設定切り替え           アクティブセルコメント設定を切り替える
-' =    アクティブセルコメントのみ表示               他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =    アクティブセルコメントのみ表示して下移動     下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =    アクティブセルコメントのみ表示して上移動     上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =    アクティブセルコメントのみ表示して右移動     右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =    アクティブセルコメントのみ表示して左移動     左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =
-' =    Excel方眼紙                                  Excel方眼紙
-' =    EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
-' =
-' =    最前面へ移動                                 最前面へ移動する
-' =    最背面へ移動                                 最背面へ移動する
+' =    ・オブジェクト操作
+' =         最前面へ移動                                 最前面へ移動する
+' =         最背面へ移動                                 最背面へ移動する
 ' =============================================================================
 
 '******************************************************************************
@@ -72,8 +72,6 @@ Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
 '△△△Mng_Clipboard.bas/SetToClipboard()△△△
 
-Dim dMacroShortcutKeys As Object
-
 '******************************************************************************
 '* 設定値
 '******************************************************************************
@@ -91,15 +89,15 @@ Dim dMacroShortcutKeys As Object
 '=== 検索文字の文字色を変更() ===
     Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
-'=== 選択範囲をファイルエクスポート() ===
+'=== ファイルエクスポート() ===
     Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
     Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
     Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
-'=== 選択範囲内のコマンドをまとめて実行() ===
+'=== DOSコマンドを一括実行() ===
     Const sCMDEXEBAT_BAT_FILE_NAME As String = "userdeffuncs_cmdexebat_command.bat"
     Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexebat_redirect.log"
     Const sCMDEXEBAT_IGNORE_INVISIBLE_CELL As String = "True"
-'=== 選択範囲内のコマンドをそれぞれ実行() ===
+'=== DOSコマンドを各々実行() ===
     Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexeuni_redirect.log"
     Const sCMDEXEUNI_IGNORE_INVISIBLE_CELL As String = "True"
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
@@ -122,43 +120,43 @@ Dim dMacroShortcutKeys As Object
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
-' = 概要    ショートカットキー設定を更新する
-' = 引数    なし
+' = 概要    ショートカットキーの有効/無効を切り替える
+' = 引数    bActivateShortcutKeys   Boolean     [in]    有効化/無効化
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' ==================================================================
-Private Sub ConstructMacroShortcutKeys()
+Private Sub SwitchMacroShortcutKeysActivation( _
+    ByVal bActivateShortcutKeys As Boolean _
+)
     ' <<ショートカットキー追加方法>>
-    '   (1) dMacroShortcutKeysに対してキー<マクロ名>、値<ショートカットキー>を追加する。
-    '       第一引数にはショートカットキー、第二引数にマクロ名を指定する。
-    '       ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
-    '         Shift：+、Ctrl ：^、Alt  ：%
-    '       詳細は以下 URL 参照。
-    '         https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
-    '   (2) マクロ「マクロショートカットキー全て有効化()」を実行する。
-    '
-    ' <<ショートカットキー解除方法>>
-    '   (1) マクロ「マクロショートカットキー全て無効化()」を実行する。
+    '   dMacroShortcutKeysに対してキー<マクロ名>、値<ショートカットキー>を追加する。
+    '   第一引数にはショートカットキー、第二引数にマクロ名を指定する。
+    '   ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
+    '     Ctrl：^、Shift：+、Alt：%
+    '   詳細は以下 URL 参照。
+    '     https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
     
+    Dim dMacroShortcutKeys As Object
     Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
     
-    'アドイン設定読み出し
+    '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sValue As String
+    Dim sCmntVsblEnb As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMNT_VSBL_ENB", sValue, sCMNT_VSBL_ENB, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMNT_VSBL_ENB", sCmntVsblEnb, sCMNT_VSBL_ENB, False)
     
+    '*** ショートカットキー設定更新 ***
     '▼▼▼ 設定 ▼▼▼
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
     
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
     
-'   dMacroShortcutKeys.Add "", "選択範囲をファイルエクスポート"
-'   dMacroShortcutKeys.Add "", "選択範囲内のコマンドをそれぞれ実行"
-'   dMacroShortcutKeys.Add "", "選択範囲内のコマンドをまとめて実行"
+'   dMacroShortcutKeys.Add "", "ファイルエクスポート"
+'   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
+'   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
 '   dMacroShortcutKeys.Add "", "検索文字の文字色を変更"
     
 '   dMacroShortcutKeys.Add "", "全シート名をコピー"
@@ -176,10 +174,10 @@ Private Sub ConstructMacroShortcutKeys()
 '   dMacroShortcutKeys.Add "", "フォント色をトグル"
 '   dMacroShortcutKeys.Add "", "背景色をトグル"
     
-    dMacroShortcutKeys.Add "%^+{DOWN}", "'オートフィル実行(""Down"")'"
-    dMacroShortcutKeys.Add "%^+{UP}", "'オートフィル実行(""Up"")'"
-    dMacroShortcutKeys.Add "%^+{RIGHT}", "'オートフィル実行(""Right"")'"
-    dMacroShortcutKeys.Add "%^+{LEFT}", "'オートフィル実行(""Left"")'"
+    dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
+    dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
+    dMacroShortcutKeys.Add "^%{RIGHT}", "'オートフィル実行(""Right"")'"
+    dMacroShortcutKeys.Add "^%{LEFT}", "'オートフィル実行(""Left"")'"
     
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
@@ -194,7 +192,7 @@ Private Sub ConstructMacroShortcutKeys()
     dMacroShortcutKeys.Add "^+f", "最前面へ移動"
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     
-    If sValue = "True" Then
+    If sCmntVsblEnb = "True" Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
         dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
         dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
@@ -206,11 +204,49 @@ Private Sub ConstructMacroShortcutKeys()
         dMacroShortcutKeys.Add "{LEFT}", ""
     End If
     '▲▲▲ 設定 ▲▲▲
+    
+    '*** ショートカットキー設定反映 ***
+    Dim vShortcutKey As Variant
+    Dim sMacroName As String
+    If bActivateShortcutKeys = True Then
+        For Each vShortcutKey In dMacroShortcutKeys
+            sMacroName = dMacroShortcutKeys.Item(vShortcutKey)
+            If sMacroName = "" Then
+                Application.OnKey CStr(vShortcutKey)              'ショートカットキークリア
+            Else
+                Application.OnKey CStr(vShortcutKey), sMacroName  'ショートカットキー設定
+            End If
+        Next
+    Else
+        For Each vShortcutKey In dMacroShortcutKeys
+            Application.OnKey CStr(vShortcutKey)                  'ショートカットキークリア
+        Next
+    End If
 End Sub
 
 ' *****************************************************************************
 ' * 外部公開用マクロ
 ' *****************************************************************************
+' =============================================================================
+' = 概要    マクロショートカットキー全て有効化
+' = 覚書    なし
+' = 依存    Macros.bas/SwitchMacroShortcutKeysActivation()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub マクロショートカットキー全て有効化()
+    Call SwitchMacroShortcutKeysActivation(True)
+End Sub
+
+' =============================================================================
+' = 概要    マクロショートカットキー全て無効化
+' = 覚書    なし
+' = 依存    Macros.bas/SwitchMacroShortcutKeysActivation()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub マクロショートカットキー全て無効化()
+    Call SwitchMacroShortcutKeysActivation(False)
+End Sub
+
 ' =============================================================================
 ' = 概要    F1ヘルプを無効化する
 ' = 覚書    なし
@@ -535,8 +571,8 @@ End Sub
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲をファイルエクスポート()
-    Const sMACRO_NAME As String = "選択範囲をファイルエクスポート"
+Public Sub ファイルエクスポート()
+    Const sMACRO_NAME As String = "ファイルエクスポート"
     
     Dim dicDelimiter As Object
     Set dicDelimiter = CreateObject("Scripting.Dictionary")
@@ -669,7 +705,7 @@ Public Sub 選択範囲をファイルエクスポート()
 End Sub
 
 ' =============================================================================
-' = 概要    選択範囲内のコマンドをバッチファイルに書き出してまとめて実行する。
+' = 概要    選択範囲内のDOSコマンドをバッチファイルに書き出してまとめて実行する。
 ' =         単一列選択時のみ有効。
 ' = 覚書    なし
 ' = 依存    Mng_Array.bas/ConvRange2Array()
@@ -678,8 +714,8 @@ End Sub
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲内のコマンドをまとめて実行()
-    Const sMACRO_NAME As String = "選択範囲内のコマンドをまとめて実行"
+Public Sub DOSコマンドを一括実行()
+    Const sMACRO_NAME As String = "DOSコマンドを一括実行"
     
     '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
@@ -754,7 +790,7 @@ Public Sub 選択範囲内のコマンドをまとめて実行()
 End Sub
 
 ' =============================================================================
-' = 概要    選択範囲内のコマンドをそれぞれ実行する。
+' = 概要    選択範囲内のDOSコマンドをそれぞれ実行する。
 ' =         単一列選択時のみ有効。
 ' = 覚書    なし
 ' = 依存    Mng_Array.bas/ConvRange2Array()
@@ -762,8 +798,8 @@ End Sub
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲内のコマンドをそれぞれ実行()
-    Const sMACRO_NAME As String = "選択範囲内のコマンドをそれぞれ実行"
+Public Sub DOSコマンドを各々実行()
+    Const sMACRO_NAME As String = "DOSコマンドを各々実行"
     
     '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
@@ -1033,7 +1069,7 @@ Public Sub シート並べ替え作業用シートを作成()
 End Sub
 
 ' ==================================================================
-' = 概要    選択シートを切り出す。
+' = 概要    選択シートを別ファイルに切り出す。
 ' =         コピー元ブックと同フォルダに出力する。
 ' = 覚書    なし
 ' = 依存    なし
@@ -1253,7 +1289,7 @@ End Sub
 ' = 概要    アクティブセルのコメント表示の有効/無効を切り替える
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
-' =         Macros.bas/マクロショートカットキー全て有効化()
+' =         Macros.bas/SwitchMacroShortcutKeysActivation()
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アクティブセルコメント設定切り替え()
@@ -1287,11 +1323,12 @@ Public Sub アクティブセルコメント設定切り替え()
     End If
     Call clSetting.Add("sCMNT_VSBL_ENB", sSettingValue)
     
-    Call マクロショートカットキー全て有効化
+    'ショートカットキー設定 更新(有効化)
+    Call SwitchMacroShortcutKeysActivation(True)
 End Sub
 
 ' =============================================================================
-' = 概要    他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする。
+' = 概要    他セルコメントを“非表示”にしてアクティブセルコメントを“表示”(+移動)
 ' = 覚書    なし
 ' = 依存    Macros.bas/VisibleCommentOnlyActiveCell()
 ' = 所属    Macros.bas
@@ -1301,13 +1338,6 @@ Public Sub アクティブセルコメントのみ表示()
     Call VisibleCommentOnlyActiveCell
 '   Application.ScreenUpdating = True
 End Sub
-
-' =============================================================================
-' = 概要    他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にして移動。
-' = 覚書    なし
-' = 依存    Macros.bas/VisibleCommentOnlyActiveCell()
-' = 所属    Macros.bas
-' =============================================================================
 Public Sub アクティブセルコメントのみ表示して下移動()
 '   Application.ScreenUpdating = False
     ActiveCell.Offset(1, 0).Activate
@@ -1560,34 +1590,10 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     MsgBox "関数コールツリー作成完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
-' =============================================================================
-' = 概要    マクロショートカットキー全て有効化
-' = 覚書    なし
-' = 依存    Macros.bas/ConstructMacroShortcutKeys()
-' =         Macros.bas/EnableMacroShortcutKeys()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub マクロショートカットキー全て有効化()
-    Call ConstructMacroShortcutKeys
-    Call EnableMacroShortcutKeys
-End Sub
-
-' =============================================================================
-' = 概要    マクロショートカットキー全て無効化
-' = 覚書    なし
-' = 依存    Macros.bas/ConstructMacroShortcutKeys()
-' =         Macros.bas/DisableMacroShortcutKeys()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub マクロショートカットキー全て無効化()
-    Call ConstructMacroShortcutKeys
-    Call DisableMacroShortcutKeys
-End Sub
-
 ' *****************************************************************************
-' * 内部用マクロ
+' * 内部プロシージャ定義
 ' *****************************************************************************
-Private Sub ▼▼▼▼▼内部マクロ▼▼▼▼▼()
+Private Sub ▼▼▼▼▼内部プロシージャ▼▼▼▼▼()
     'プロシージャリスト表示用のダミープロシージャ
 End Sub
 
@@ -1649,76 +1655,6 @@ Private Sub SortSheetPost()
 End Sub
 
 ' =============================================================================
-' = 概要    設定項目一覧を出力
-' = 引数    なし
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' = 所属    Macros.bas
-' =============================================================================
-Private Sub OutputSettingList()
-    Debug.Print ""
-    Debug.Print "*** 設定項目一覧出力 ***"
-    
-    'アドイン設定ファイル読み出し
-    Dim clSetting As New SettingFile
-    Dim bExistSettingFile As Boolean
-    Dim sValue As String
-    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
-    
-    'アドイン設定出力
-    If bExistSettingFile = True Then
-        Dim dSettings As Object
-        Dim vSettingKey As Variant
-        Dim sSettingValue As String
-        Set dSettings = clSetting.AllItems
-        For Each vSettingKey In dSettings
-            Call clSetting.Item(vSettingKey, sSettingValue)
-            Debug.Print vSettingKey & " = " & sSettingValue
-        Next
-    Else
-        Debug.Print "設定ファイルなし"
-    End If
-End Sub
-
-' ==================================================================
-' = 概要    マクロショートカットキーを有効化
-' = 引数    なし
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' ==================================================================
-Private Sub EnableMacroShortcutKeys()
-    Dim vKey As Variant
-    For Each vKey In dMacroShortcutKeys
-        Dim sShortcutKey As String
-        Dim sMacroName As String
-        sShortcutKey = vKey
-        sMacroName = dMacroShortcutKeys.Item(vKey)
-        If sMacroName = "" Then
-            Application.OnKey sShortcutKey              'ショートカットキークリア
-        Else
-            Application.OnKey sShortcutKey, sMacroName  'ショートカットキー設定
-        End If
-    Next
-End Sub
-
-' ==================================================================
-' = 概要    マクロショートカットキーを無効化
-' = 引数    なし
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' ==================================================================
-Private Sub DisableMacroShortcutKeys()
-    Dim vKey As Variant
-    For Each vKey In dMacroShortcutKeys
-        Dim sShortcutKey As String
-        sShortcutKey = vKey
-        Application.OnKey sShortcutKey  'ショートカットキークリア
-    Next
-End Sub
-
-' =============================================================================
 ' = 概要    他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする。
 ' = 覚書    なし
 ' = 依存    なし
@@ -1737,13 +1673,6 @@ Private Sub VisibleCommentOnlyActiveCell()
     ActiveCell.Comment.Visible = True
     
     On Error GoTo 0
-End Sub
-
-' *****************************************************************************
-' * 内部関数定義
-' *****************************************************************************
-Private Sub ▼▼▼▼▼内部関数▼▼▼▼▼()
-    'プロシージャリスト表示用のダミープロシージャ
 End Sub
 
 ' ==================================================================
