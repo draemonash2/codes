@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.2.0
+'setting file class v1.2.1
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -124,7 +124,7 @@ End Function
 ' = 依存    なし
 ' ==================================================================
 Public Function FileSave() As Boolean
-    If gsSettingFilePath = "" Then
+    If gdSettingItems Is Nothing Then
         FileSave = False
     Else
         'Debug.Print gsSettingFilePath
@@ -155,7 +155,7 @@ Public Function Add( _
     ByVal sValue As String, _
     Optional ByVal bDoSave As Boolean = True _
 ) As Boolean
-    If gsSettingFilePath = "" Then
+    If gdSettingItems Is Nothing Then
         Add = False
     Else
         '追加
@@ -189,7 +189,7 @@ Public Function Delete( _
     ByVal sKey As String, _
     Optional ByVal bDoSave As Boolean = True _
 ) As Boolean
-    If gsSettingFilePath = "" Then
+    If gdSettingItems Is Nothing Then
         Delete = False
     Else
         If gdSettingItems.Exists(sKey) Then
@@ -220,7 +220,7 @@ End Function
 Public Function DeleteAll( _
     Optional ByVal bDoSave As Boolean = True _
 ) As Boolean
-    If gsSettingFilePath = "" Then
+    If gdSettingItems Is Nothing Then
         DeleteAll = False
     Else
         '全削除

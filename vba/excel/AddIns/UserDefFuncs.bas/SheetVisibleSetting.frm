@@ -1,9 +1,9 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} SheetVisibleSetting 
    Caption         =   "シート表示・非表示切り替え"
-   ClientHeight    =   4476
-   ClientLeft      =   48
-   ClientTop       =   372
+   ClientHeight    =   4470
+   ClientLeft      =   45
+   ClientTop       =   375
    ClientWidth     =   6000
    OleObjectBlob   =   "SheetVisibleSetting.frx":0000
    StartUpPosition =   1  'オーナー フォームの中央

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.30
+' user define macros v2.31
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -607,6 +607,7 @@ Public Sub ファイルエクスポート()
     Dim sTmpFilePath As String
     sTmpDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sTmpFilePath = sTmpDirPath & "\" & sFILEEXPORT_CFG_FILE_NAME
+    Debug.Print sTmpFilePath
     
     '*** 出力先入力 ***
     'フォルダパス
@@ -758,6 +759,7 @@ Public Sub DOSコマンドを一括実行()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     sBatFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sBatFilePath = sBatFileDirPath & "\" & sCMDEXEBAT_BAT_FILE_NAME
+    Debug.Print sBatFilePath
     
     Call OutputTxtFile(sBatFilePath, asRange)
     
@@ -899,6 +901,7 @@ Public Sub 検索文字の文字色を変更()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     sTempFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_CFG_FILE_NAME
+    Debug.Print sTempFileFilePath
     
     Dim clSetting As New SettingFile
     Dim sSrchStr As String
@@ -1456,6 +1459,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim sTempFilePath As String
     sTempDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
     sTempFilePath = sTempDirPath & "\" & sEPTREE_CFG_FILE_NAME
+    Debug.Print sTempFilePath
     
     'Eptreeログファイルパス取得
     Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
