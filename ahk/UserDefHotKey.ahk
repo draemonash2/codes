@@ -222,6 +222,29 @@ return
 			]::Send, {Space}
 			return
 	#IfWinActive
+	
+	;Kindle 自動ページ送り
+		bIsAutoPageFeed=0
+		^+!9::
+			If (bIsAutoPageFeed=0)
+			{
+				MsgBox 自動ページ送りを起動します
+				bIsAutoPageFeed=1
+				SetTimer, AutoPageFeed, 3000
+			}
+			Else
+			{
+				MsgBox 自動ページ送りを無効化します
+				bIsAutoPageFeed=0
+				SetTimer, AutoPageFeed, Off
+			}
+			Return
+		AutoPageFeed:
+			IfWinActive ahk_exe Kindle.exe
+			{
+				Send, {Right}
+			}
+			Return
 
 ;* ***************************************************************
 ;* Functions
