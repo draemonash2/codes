@@ -16,15 +16,10 @@
 "=== モード共通 ===
 																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			n			nzz
-																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			N			Nzz
-																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			*			*Nzz
-																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			#			#nzz
-																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			K			g*zz
-																							" ↓ 検索結果を画面中央に
 	noremap		<silent>			g#			g#zz
 																							" ↓ 1文字削除（切り取りなし）
 	noremap		<silent>			x			"_x
@@ -59,18 +54,15 @@
 	noremap		<silent>			<c-tab>		<c-w>w
 																							" ↓ ウィンドウ切替（前へ）
 	noremap		<silent>			<c-s-tab>	<c-w>W
-																							" ↓ ウィンドウ切替（次へ）
-	noremap		<silent>			<c-s-right>	<c-w>w
-																							" ↓ ウィンドウ切替（前へ）
-	noremap		<silent>			<c-s-left>	<c-w>W
 																							" ↓ タブ切替（次へ）
 "	noremap		<silent>			<c-tab>		gt
 																							" ↓ タブ切替（前へ）
 "	noremap		<silent>			<c-s-tab>	gT
-																							" ↓ タブ切替（次へ）
-	noremap		<silent>			<c-s-down>	gt
-																							" ↓ タブ切替（前へ）
-	noremap		<silent>			<c-s-up>	gT
+																							" ↓ ウィンドウ幅を変える ↑:高さup、↓:高さdown、→:幅up、←:幅down
+	noremap		<silent>			<c-s-up>	<c-w>+3
+	noremap		<silent>			<c-s-down>	<c-w>-3
+	noremap		<silent>			<c-s-right>	<c-w>>
+	noremap		<silent>			<c-s-left>	<c-w><
 																							" ↓ タブを閉じる
 "	noremap		<silent>			<c-w>		:tabclose<cr>
 																							" ↓ 新規タブを開く
@@ -129,11 +121,6 @@
 	nnoremap	<silent>			<c-j>		5jzz
 																							" ↓ カーソル移動＋画面移動（上）
 	nnoremap	<silent>			<c-k>		5kzz
-																							" ↓ ウィンドウ幅を変える k:高さup、j:高さdown、l:幅up、h:幅down
-	nnoremap	<silent>			<c-s-k>		<c-w>+3
-	nnoremap	<silent>			<c-s-j>		<c-w>-3
-	nnoremap	<silent>			<c-s-l>		<c-w>>
-	nnoremap	<silent>			<c-s-h>		<c-w><
 	
 "=== 挿入モード ===
 																							" ↓ Ctrl+J でノーマルモードに移行
