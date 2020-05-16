@@ -114,7 +114,7 @@
 																							" ↓ ファイル種別と行番号コピー
 	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>
 																							" ↓ 俯瞰モード
-	noremap		<silent>			<c-F8>		:call BirdEyesView()<cr>
+	noremap		<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>
 																							" ↓ タグファイル更新
 	
 	noremap		<silent>			<c-s-F5>	:call UpdateTagFile()<cr>
@@ -129,6 +129,11 @@
 	nnoremap	<silent>			<c-j>		5jzz
 																							" ↓ カーソル移動＋画面移動（上）
 	nnoremap	<silent>			<c-k>		5kzz
+																							" ↓ ウィンドウ幅を変える k:高さup、j:高さdown、l:幅up、h:幅down
+	nnoremap	<silent>			<c-s-k>		<c-w>+3
+	nnoremap	<silent>			<c-s-j>		<c-w>-3
+	nnoremap	<silent>			<c-s-l>		<c-w>>
+	nnoremap	<silent>			<c-s-h>		<c-w><
 	
 "=== 挿入モード ===
 																							" ↓ Ctrl+J でノーマルモードに移行
@@ -136,7 +141,7 @@
 																							" ↓ 【neosnippet】スニペットを展開
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)
 																							" ↓ 貼り付け（Windowsクリップボード用）
-	inoremap	<silent>			<c-v>		<s-insert>
+	imap		<silent>			<c-v>		<S-Insert>
 	
 "=== ヴィジュアルモード ===
 																							" ↓ インデント左シフト
@@ -729,7 +734,7 @@ endif
 	
 	" フォントサイズを変更する。
 	" 以下のようにトグルする。
-	"	10 ⇒ 13 ⇒ 16 ⇒ 10 ⇒ 13 ...
+	"	8 ⇒ 10 ⇒ 13 ⇒ 16 ⇒ 8 ⇒ 10 ⇒ 13 ...
 	function! SwitchFontSize()
 		let g:FontSizeLevel = g:FontSizeLevel + 1
 		if g:FontSizeLevel > 4
@@ -740,7 +745,7 @@ endif
 	endfunction
 	
 	" 俯瞰モード
-	function! BirdEyesView()
+	function! SwitchBirdEyesViewMode()
 		if g:bIsBirdEyesMode == 0
 			let g:FontSizeLevelOld = g:FontSizeLevel
 			let g:FontSizeLevel = 0
