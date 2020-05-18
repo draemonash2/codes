@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.31
+' user define macros v2.32
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -20,6 +20,8 @@ Option Explicit
 ' =         シート表示非表示を切り替え                   シート表示/非表示を切り替える
 ' =         シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
 ' =         シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
+' =         先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
+' =         末尾シートへジャンプ                         アクティブブックの末尾シートへ移動する
 ' =
 ' =    ・セル操作
 ' =         ファイルエクスポート                         選択範囲をファイルとしてエクスポートする。
@@ -31,7 +33,6 @@ Option Explicit
 ' =         ツリーをグループ化                           ツリーグループ化する
 ' =         ハイパーリンク一括オープン                   選択した範囲のハイパーリンクを一括で開く
 ' =         ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
-' =         先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
 ' =         選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
 ' =         範囲を維持したままセルコピー                 選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
 ' =         一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
@@ -182,6 +183,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
     dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
+    dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
     
 '   dMacroShortcutKeys.Add "", "Excel方眼紙"
 '   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
@@ -1286,6 +1288,24 @@ Public Sub 先頭シートへジャンプ()
             Exit For
         End If
     Next
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックの末尾シートへ移動する
+' = 覚書    なし
+' = 依存　　なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 末尾シートへジャンプ()
+    With ActiveWorkbook
+        Dim lShtCnt As Long
+        For lShtCnt = .Sheets.Count To 1 Step -1
+            If .Sheets(lShtCnt).Visible = True Then
+                .Sheets(lShtCnt).Activate
+                Exit For
+            End If
+        Next
+    End With
 End Sub
 
 ' =============================================================================

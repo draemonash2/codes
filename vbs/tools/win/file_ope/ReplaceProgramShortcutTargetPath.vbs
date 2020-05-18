@@ -20,7 +20,7 @@ Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
 '==========================================================
 '= ê›íËíl
 '==========================================================
-Const EXE_PATH_ORG = "C:\Users\draem_000\Documents\Amazon Drive\100_Programs\program\prg_exe"
+Const EXE_PATH_ORG = "C:\Users\draem\Programs\program\prg_exe"
 Const EXE_PATH_NEW = "C:\prg_exe"
 
 '==========================================================

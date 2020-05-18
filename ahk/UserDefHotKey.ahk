@@ -31,8 +31,8 @@ msgbox,
 (
 Ctrl+Shift+Alt + \：#todo.itmz
 
-Ctrl+Shift+Alt + s：#temp.txt
-Ctrl+Shift+Alt + d：#temp.xlsm
+Ctrl+Shift+Alt + z：#temp.txt
+Ctrl+Shift+Alt + e：#temp.xlsm
 Ctrl+Shift+Alt + v：#temp.vsdm
 
 Ctrl+Shift+Alt + _：予算管理.xlsm
@@ -62,13 +62,13 @@ return
 			return
 
 	;temp.txt
-		^+!s::
+		^+!z::
 			sExePath = "C:\prg_exe\Vim\gvim.exe"
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
 	;temp.xlsm
-		^+!d::
+		^+!e::
 			sFilePath = "%DOC_DIR_PATH%\#temp.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
