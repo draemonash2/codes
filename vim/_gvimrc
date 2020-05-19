@@ -623,7 +623,7 @@ endif
 " ==============================================================================
 " フォントサイズ設定
 " ==============================================================================
-	let g:FontSizeLevel = 2
+	let g:FontSizeLevel = 3
 	let g:bIsBirdEyesMode = 0
 	
 	"フォントサイズ更新
@@ -1048,7 +1048,9 @@ endif
 	let Tlist_Show_One_File = 1		" アクティブバッファのみタグ表示
 	let Tlist_Use_Right_Window = 1	" 右ウィンドウ表示
 	let Tlist_Exit_OnlyWindow = 1	" taglistのウインドウだけならVimを閉じる
-	let Tlist_Display_Prototype = 0
+	let Tlist_Display_Prototype = 0	" プロトタイプを非表示
+	let Tlist_Display_Tag_Scope = 0	" タグスコープを非表示
+	let Tlist_Auto_Open = 0			" 自動起動無効
 
 " ==============================================================================
 " bufferlist 設定
