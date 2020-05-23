@@ -25,70 +25,54 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;		!）		Alt
 ;		#）		Windowsロゴキー
 
-;ヘルプ表示
-!^+F1::
-msgbox,
-(
-Ctrl+Shift+Alt + \：#todo.itmz
-
-Ctrl+Shift+Alt + z：#temp.txt
-Ctrl+Shift+Alt + e：#temp.xlsm
-Ctrl+Shift+Alt + v：#temp.vsdm
-
-Ctrl+Shift+Alt + _：予算管理.xlsm
-Ctrl+Shift+Alt + [：言語チートシート
-
-Ctrl+Shift+Alt + x：Rapture
-Ctrl+Shift+Alt + k：KitchenTimer
-Ctrl+Shift+Alt + a：X-Finder
-Ctrl+Shift+Alt + c：cCalc
-
-Ctrl+Shift+Alt + F10：Bluetoothテザリング起動
-Ctrl+Shift+Alt + F12：UserDefHotKey.ahk
-
-Pause：Window最前面On
-Alt+Pause：Window最前面Off
-（Pause＝Fn+RShift ＠HP Spectre x360）
-)
-return
-
 ;***** Global *****
-	;todo.itmz
-		^+!\::
+	;ホットキーヘルプ表示
+		!^+F1::
+			sFilePath = "C:\other\template\$hotkey_help.vsdx"
+			StartProgramAndActivate( "", sFilePath )
+			return
+	
+	;#todo.itmz
+		^+!Up::
 			sExePath = "C:\Program Files (x86)\toketaWare\iThoughts\iThoughts.exe"
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
-			;StartProgramAndActivate( sExePath, sFilePath )
-			Run, %sExePath% %sFilePath%
+			StartProgramAndActivate( sExePath, sFilePath )
+			Send, {F2}{esc}
 			return
-
-	;temp.txt
-		^+!z::
+	;#temp.txt
+		^+!Down::
 			sExePath = "C:\prg_exe\Vim\gvim.exe"
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
-	;temp.xlsm
-		^+!e::
+	;#temp.xlsm
+		^+!Right::
 			sFilePath = "%DOC_DIR_PATH%\#temp.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;#temp.vsdm
-		^+!v::
+		^+!Left::
 			sFilePath = "%DOC_DIR_PATH%\#temp.vsdm"
 			StartProgramAndActivate( "", sFilePath )
 			return
-
+	
 	;予算管理.xlsm
-		^+!_::
+		^+!End::
 			sFilePath = "%DOC_DIR_PATH%\210_【衣食住】家計\100_予算管理.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
+	
 	;言語チートシート
-		^+![::
+		^+!_::
 			sFilePath = "C:\codes\lang_cheet_sheet.xlsx"
 			StartProgramAndActivate( "", sFilePath )
 			return
-
+	;$object.xlsm
+		^+!?::
+			sFilePath = "C:\other\template\$object.xlsm"
+			StartProgramAndActivate( "", sFilePath )
+			return
+	
 	;rapture.exe
 		^+!x::
 			Run "C:\prg_exe\Rapture\rapture.exe"
@@ -98,14 +82,14 @@ return
 			Run "C:\codes\vbs\tools\win\other\KitchenTimer.vbs"
 			return
 	;xf.exe
-		^+!a::
+		^+!z::
 			Run "C:\prg_exe\X-Finder\XF.exe"
 			return
 	;cCalc.exe
-		^+!c::
+		^+!;::
 			RunSuppressMultiStart( "C:\prg_exe\cCalc\cCalc.exe", "" )
 			return
-
+	
 	;Bluetoothテザリング起動
 		^+!F10::
 			Run, control printers
@@ -126,7 +110,7 @@ return
 			sFilePath = "%A_ScriptFullPath%"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
-
+	
 	;Window最前面化
 		Pause::
 			WinSet, AlwaysOnTop, On, A
@@ -249,32 +233,35 @@ return
 ;* ***************************************************************
 ;* Functions
 ;* ***************************************************************
-	RunSuppressMultiStart( path, argument )
+	; 単一起動
+	RunSuppressMultiStart( sExePath, sArguments )
 	{
-		IfInString, path, \
+		IfInString, sExePath, \
 		{
-			Loop, Parse, path , \
+			Loop, Parse, sExePath , \
 			{
-				sFileName = %A_LoopField%
+				sExeName = %A_LoopField%
 			}
-			Process, Exist, % sFileName
+			;MsgBox % sExeName
+			Process, Exist, % sExeName
 			If ErrorLevel<>0
 			{
 				WinActivate,ahk_pid %ErrorLevel%
 			}
 			else
 			{
-				Run % path . " " . argument
+				Run % sExePath . " " . sArguments
 			}
 		}
 		else
 		{
-			msgbox path
-			MsgBox argument error!
+			MsgBox sExePath
+			MsgBox sArguments error!
 		}
 		return
 	}
 	
+	; ★
 	WinSizeChange( size, maxwinx, maxwiny )
 	{
 		if size = up
@@ -320,6 +307,8 @@ return
 		return
 	}
 	
+	; 起動＆アクティベート処理
+	; 
 	; 既定のショートカットキーとの干渉によりプログラム起動後に
 	; ウィンドウがアクティベートされないことがある。(※)
 	; 上記問題を対処するため、本関数ではプログラム起動後に
@@ -335,13 +324,25 @@ return
 		IfInString, sFilePath, \
 		{
 			;*** extract file name ***
-			Loop, Parse, sFilePath , \
+			;Loop, Parse, sFilePath , \
+			;{
+			;	sFileName = %A_LoopField%
+			;}
+			;StringReplace, sFileName, sFileName, ", , All
+			Loop, Parse, sExePath , \
 			{
-				sFileName = %A_LoopField%
+				sExeName = %A_LoopField%
 			}
-			StringReplace, sFileName, sFileName, ", , All
+			StringReplace, sExeName, sExeName, ", , All
+			
+			;*** for debug ***
+			;MsgBox %sExePath%
+			;MsgBox %sExeName%
+			;MsgBox %sFilePath%
+			;MsgBox %sFileName%
 			
 			;*** start program ***
+			SetTitleMatchMode, 2 ;中間一致
 			If ( sExePath == "" )
 			{
 				;MsgBox A ;for debug
@@ -352,19 +353,25 @@ return
 				;MsgBox B ;for debug
 				Run, %sExePath% %sFilePath%
 			}
+			WinWait, ahk_exe %sExeName%, , 5
+			If ErrorLevel <> 0
+			{
+				;MsgBox, could not be found %sExeName%.
+				Return
+			}
 			
 			;*** activate started program ***
-			SetTitleMatchMode, 2
-			WinWait, %sFileName%
-			WinActivate, %sFileName%
-			
-			;MsgBox %sExePath% ;for debug
-			;MsgBox %sFilePath% ;for debug
-			;MsgBox %sFileName% ;for debug
+			WinActivate, ahk_exe %sExeName%
+			WinWaitActive, ahk_exe %sExeName%, , 5
+			If ErrorLevel <> 0
+			{
+				;MsgBox, could not be activated %sExeName%.
+				Return
+			}
 		}
 		else
 		{
-			msgbox sFilePath
+			MsgBox sFilePath
 			MsgBox argument error!
 		}
 		return
