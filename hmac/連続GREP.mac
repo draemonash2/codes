@@ -15,6 +15,9 @@
 //  outputsametabを指定すると出力先を「タブグループごと」にできます。（V7.00以降）
 //    マクロでは「アウトプット枠」を指定することはできません。
 //  unmatchを指定すると「ヒットしない行」にできます。（V8.00以降）
+
 begingroupundo;
+//▼▼▼ここから▼▼▼
 grep "#include", "*.cpp;*.c", ".", regular;
+//▲▲▲ここまで▲▲▲
 endgroupundo;

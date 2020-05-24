@@ -14,5 +14,7 @@
 //  incolormarkerは、追加の条件の「指定の範囲/カラーマーカー内」を有効にします。（V8.56以降）
 
 begingroupundo;
+//▼▼▼ここから▼▼▼
 replaceallfast "検索文字", "置換文字";
+//▲▲▲ここまで▲▲▲
 endgroupundo;

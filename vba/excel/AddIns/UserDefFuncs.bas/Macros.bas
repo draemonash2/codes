@@ -1,54 +1,55 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.32
+' user define macros v2.33
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
-' =    ・共通
-' =         F1ヘルプ無効化                               F1ヘルプを無効化する
+' =     ・共通
+' =         F1ヘルプ無効化                              F1ヘルプを無効化する
 ' =
-' =    ・マクロ設定
-' =         マクロショートカットキー全て有効化           マクロショートカットキー全て有効化
-' =         マクロショートカットキー全て無効化           マクロショートカットキー全て無効化
+' =     ・マクロ設定
+' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
+' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
+' =         一行にまとめてセルコピー_設定変更           一行にまとめてセルコピー_設定変更
 ' =
-' =    ・シート操作
-' =         EpTreeの関数ツリーをExcelで取り込む          EpTreeの関数ツリーをExcelで取り込む
-' =         Excel方眼紙                                  Excel方眼紙
-' =         選択シート切り出し                           選択シートを別ファイルに切り出す
-' =         全シート名をコピー                           ブック内のシート名を全てコピーする
-' =         シート表示非表示を切り替え                   シート表示/非表示を切り替える
-' =         シート並べ替え作業用シートを作成             シート並べ替え作業用シート作成
-' =         シート選択ウィンドウを表示                   シート選択ウィンドウを表示する
-' =         先頭シートへジャンプ                         アクティブブックの先頭シートへ移動する
-' =         末尾シートへジャンプ                         アクティブブックの末尾シートへ移動する
+' =     ・シート操作
+' =         EpTreeの関数ツリーをExcelで取り込む         EpTreeの関数ツリーをExcelで取り込む
+' =         Excel方眼紙                                 Excel方眼紙
+' =         選択シート切り出し                          選択シートを別ファイルに切り出す
+' =         全シート名をコピー                          ブック内のシート名を全てコピーする
+' =         シート表示非表示を切り替え                  シート表示/非表示を切り替える
+' =         シート並べ替え作業用シートを作成            シート並べ替え作業用シート作成
+' =         シート選択ウィンドウを表示                  シート選択ウィンドウを表示する
+' =         先頭シートへジャンプ                        アクティブブックの先頭シートへ移動する
+' =         末尾シートへジャンプ                        アクティブブックの末尾シートへ移動する
 ' =
-' =    ・セル操作
-' =         ファイルエクスポート                         選択範囲をファイルとしてエクスポートする。
-' =         DOSコマンドを一括実行                        選択範囲内のDOSコマンドをまとめて実行する。
-' =         DOSコマンドを各々実行                        選択範囲内のDOSコマンドをそれぞれ実行する。
-' =         検索文字の文字色を変更                       選択範囲内の検索文字の文字色を変更する
-' =         セル内の丸数字をデクリメント                 ②～⑮を指定して、指定番号以降をインクリメントする
-' =         セル内の丸数字をインクリメント               ①～⑭を指定して、指定番号以降をデクリメントする
-' =         ツリーをグループ化                           ツリーグループ化する
-' =         ハイパーリンク一括オープン                   選択した範囲のハイパーリンクを一括で開く
-' =         ハイパーリンクで飛ぶ                         アクティブセルからハイパーリンク先に飛ぶ
-' =         選択範囲内で中央                             選択セルに対して「選択範囲内で中央」を実行する
-' =         範囲を維持したままセルコピー                 選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
-' =         一行にまとめてセルコピー                     選択範囲を一行にまとめてセルコピーする。
-' =         フォント色をトグル                           フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
-' =         背景色をトグル                               背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
-' =         オートフィル実行                             オートフィルを実行する
-' =         アクティブセルコメント設定切り替え           アクティブセルコメント設定を切り替える
-' =         アクティブセルコメントのみ表示               他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =         アクティブセルコメントのみ表示して下移動     下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =         アクティブセルコメントのみ表示して上移動     上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =         アクティブセルコメントのみ表示して右移動     右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
-' =         アクティブセルコメントのみ表示して左移動     左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =     ・セル操作
+' =         ファイルエクスポート                        選択範囲をファイルとしてエクスポートする。
+' =         DOSコマンドを一括実行                       選択範囲内のDOSコマンドをまとめて実行する。
+' =         DOSコマンドを各々実行                       選択範囲内のDOSコマンドをそれぞれ実行する。
+' =         検索文字の文字色を変更                      選択範囲内の検索文字の文字色を変更する
+' =         セル内の丸数字をデクリメント                ②～⑮を指定して、指定番号以降をインクリメントする
+' =         セル内の丸数字をインクリメント              ①～⑭を指定して、指定番号以降をデクリメントする
+' =         ツリーをグループ化                          ツリーグループ化する
+' =         ハイパーリンク一括オープン                  選択した範囲のハイパーリンクを一括で開く
+' =         ハイパーリンクで飛ぶ                        アクティブセルからハイパーリンク先に飛ぶ
+' =         選択範囲内で中央                            選択セルに対して「選択範囲内で中央」を実行する
+' =         範囲を維持したままセルコピー                選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
+' =         一行にまとめてセルコピー                    選択範囲を一行にまとめてセルコピーする。
+' =         フォント色をトグル                          フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
+' =         背景色をトグル                              背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
+' =         オートフィル実行                            オートフィルを実行する
+' =         アクティブセルコメント設定切り替え          アクティブセルコメント設定を切り替える
+' =         アクティブセルコメントのみ表示              他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して下移動    下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して上移動    上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して右移動    右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         アクティブセルコメントのみ表示して左移動    左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =
-' =    ・オブジェクト操作
-' =         最前面へ移動                                 最前面へ移動する
-' =         最背面へ移動                                 最背面へ移動する
+' =     ・オブジェクト操作
+' =         最前面へ移動                                最前面へ移動する
+' =         最背面へ移動                                最背面へ移動する
 ' =============================================================================
 
 '******************************************************************************
@@ -130,14 +131,6 @@ Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1
 Private Sub SwitchMacroShortcutKeysActivation( _
     ByVal bActivateShortcutKeys As Boolean _
 )
-    ' <<ショートカットキー追加方法>>
-    '   dMacroShortcutKeysに対してキー<マクロ名>、値<ショートカットキー>を追加する。
-    '   第一引数にはショートカットキー、第二引数にマクロ名を指定する。
-    '   ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
-    '     Ctrl：^、Shift：+、Alt：%
-    '   詳細は以下 URL 参照。
-    '     https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
-    
     Dim dMacroShortcutKeys As Object
     Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
     
@@ -149,22 +142,33 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMNT_VSBL_ENB", sCmntVsblEnb, sCMNT_VSBL_ENB, False)
     
     '*** ショートカットキー設定更新 ***
+    ' <<ショートカットキー追加方法>>
+    '   dMacroShortcutKeysに対してキー<マクロ名>、値<ショートカットキー>を追加する。
+    '   第一引数にはショートカットキー、第二引数にマクロ名を指定する。
+    '   ショートカットキーは Ctrl や Shift などと組み合わせて指定できる。
+    '     Ctrl：^、Shift：+、Alt：%
+    '   詳細は以下 URL 参照。
+    '     https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
     '▼▼▼ 設定 ▼▼▼
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
     
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
+    dMacroShortcutKeys.Add "^+\", "一行にまとめてセルコピー_設定変更"
     
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
 '   dMacroShortcutKeys.Add "", "検索文字の文字色を変更"
     
-'   dMacroShortcutKeys.Add "", "全シート名をコピー"
+    dMacroShortcutKeys.Add "^%c", "全シート名をコピー"
+'   dMacroShortcutKeys.Add "", "選択シート切り出し"
 '   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
 '   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
     dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
-'   dMacroShortcutKeys.Add "", "選択シート切り出し"
+    dMacroShortcutKeys.Add "^%{PGDN}", "シート選択ウィンドウを表示"
+    dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
+    dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
     
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
@@ -182,8 +186,6 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
-    dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
-    dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
     
 '   dMacroShortcutKeys.Add "", "Excel方眼紙"
 '   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
@@ -562,6 +564,96 @@ Public Sub 一行にまとめてセルコピー()
     Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macro.bas
+' =============================================================================
+Public Sub 一行にまとめてセルコピー_設定変更()
+    Const sMACRO_NAME As String = "一行にまとめてセルコピー_設定変更"
+    
+    Application.ScreenUpdating = False
+    
+    '*** アドイン設定読み出し ***
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
+    Dim sPreffix As String
+    Dim sDelimiter As String
+    Dim sSuffix As String
+    
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, False)
+    
+    sPreffix = clSetting.ConvStrRaw2CntrlChr(sPreffix)
+    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
+    sSuffix = clSetting.ConvStrRaw2CntrlChr(sSuffix)
+    
+    Dim vRet As Variant
+    vRet = MsgBox( _
+        "「" & sMACRO_NAME & "」の設定を変更します。" & vbNewLine & _
+        "　先頭文字：" & sPreffix & vbNewLine & _
+        "　区切り文字：" & sDelimiter & vbNewLine & _
+        "　末尾文字：" & sSuffix & vbNewLine & _
+        "" & vbNewLine & _
+        "新たに設定を変更しますか？(→はい)" & vbNewLine & _
+        "デフォルトの設定に戻しますか？(→いいえ)", _
+        vbYesNoCancel, _
+        sMACRO_NAME _
+    )
+    If vRet = vbYes Then
+        sPreffix = InputBox( _
+            "「先頭文字」を指定してください", _
+            sMACRO_NAME, _
+            sPreffix _
+        )
+        sDelimiter = InputBox( _
+            "「区切り文字」を指定してください", _
+            sMACRO_NAME, _
+            sDelimiter _
+        )
+        sSuffix = InputBox( _
+            "「末尾文字」を指定してください", _
+            sMACRO_NAME, _
+            sSuffix _
+        )
+        sPreffix = clSetting.ConvStrCntrlChr2Raw(sPreffix)
+        sDelimiter = clSetting.ConvStrCntrlChr2Raw(sDelimiter)
+        sSuffix = clSetting.ConvStrCntrlChr2Raw(sSuffix)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
+        MsgBox _
+            "設定を変更しました" & vbNewLine & _
+            "　先頭文字：" & sPreffix & vbNewLine & _
+            "　区切り文字：" & sDelimiter & vbNewLine & _
+            "　末尾文字：" & sSuffix, _
+            vbOKOnly, _
+            sMACRO_NAME
+    ElseIf vRet = vbNo Then
+        sPreffix = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_PREFFIX)
+        sDelimiter = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_DELIMITER)
+        sSuffix = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_SUFFIX)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
+        Application.ScreenUpdating = True
+        MsgBox _
+            "設定をデフォルトに戻しました" & vbNewLine & _
+            "　先頭文字：" & sPreffix & vbNewLine & _
+            "　区切り文字：" & sDelimiter & vbNewLine & _
+            "　末尾文字：" & sSuffix, _
+            vbOKOnly, _
+            sMACRO_NAME
+    Else
+        Application.ScreenUpdating = True
+        MsgBox "処理をキャンセルします", vbExclamation, sMACRO_NAME
+    End If
 End Sub
 
 ' =============================================================================
@@ -1160,7 +1252,7 @@ Public Sub 背景色をトグル()
     sSettingFilePath = GetAddinSettingFilePath()
     Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sValue, lCLRTGLBG_CLR, True)
     
-    'フォント色変更
+    '背景色変更
     If Selection(1).Interior.Color = CLng(sValue) Then
         Selection.Interior.ColorIndex = 0
     Else
@@ -1281,6 +1373,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 先頭シートへジャンプ()
+    Application.ScreenUpdating = False
     Dim shSheet As Worksheet
     For Each shSheet In ActiveWorkbook.Sheets
         If shSheet.Visible = True Then
@@ -1288,6 +1381,7 @@ Public Sub 先頭シートへジャンプ()
             Exit For
         End If
     Next
+    Application.ScreenUpdating = True
 End Sub
 
 ' =============================================================================
@@ -1297,6 +1391,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub 末尾シートへジャンプ()
+    Application.ScreenUpdating = False
     With ActiveWorkbook
         Dim lShtCnt As Long
         For lShtCnt = .Sheets.Count To 1 Step -1
@@ -1306,6 +1401,7 @@ Public Sub 末尾シートへジャンプ()
             End If
         Next
     End With
+    Application.ScreenUpdating = True
 End Sub
 
 ' =============================================================================

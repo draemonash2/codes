@@ -28,7 +28,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;***** Global *****
 	;ホットキーヘルプ表示
 		!^+F1::
-			sFilePath = "C:\other\template\$hotkey_help.vsdx"
+			sFilePath = "C:\codes\ahk\UserDefHotKeyHotkeyHelp.vsdx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	
@@ -113,13 +113,28 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;Window最前面化
 		Pause::
-			WinSet, AlwaysOnTop, On, A
-			MsgBox, 0x43000, Window最前面化, Window最前面On, 2
+			WinSet, AlwaysOnTop, TOGGLE, A
+			WinGetTitle, sActiveWinTitle, A
+			if bEnableAlwaysOnTop = 
+			{
+				MsgBox, 0x43000, Window最前面化, Window最前面を【有効】にします`n`n%sActiveWinTitle%, 5
+				bEnableAlwaysOnTop = 1
+			}
+			else
+			{
+				if bEnableAlwaysOnTop = 0
+				{
+					MsgBox, 0x43000, Window最前面化, Window最前面を【有効】にします`n`n%sActiveWinTitle%, 5
+					bEnableAlwaysOnTop = 1
+				}
+				else
+				{
+					MsgBox, 0x43000, Window最前面化, Window最前面を【解除】します`n`n%sActiveWinTitle%, 5
+					bEnableAlwaysOnTop = 0
+				}
+			}
 			Return
-		!Pause::
-			WinSet, AlwaysOnTop, Off, A
-			MsgBox, 0x43000, Window最前面化, Window最前面Off, 2
-			Return
+			
 	;かなキーをコンテキストメニュー表示へ
 		RAlt::AppsKey
 			return

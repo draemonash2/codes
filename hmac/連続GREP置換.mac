@@ -16,5 +16,7 @@
 //  result‚É‚ÍŒ©‚Â‚©‚Á‚½ŒÂ”‚ª“ü‚è‚Ü‚·B“r’†‚Å’†’f‚³‚ê‚½ê‡‚Íresult‚Í-1‚É‚È‚è‚Ü‚·B
 
 begingroupundo;
+//¥¥¥‚±‚±‚©‚ç¥¥¥
 grepreplace "[abc]", "d", "*.cpp;*.c", ".", regular, backup;
+//£££‚±‚±‚Ü‚Å£££
 endgroupundo;
