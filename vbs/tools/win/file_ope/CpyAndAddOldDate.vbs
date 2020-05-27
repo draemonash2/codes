@@ -150,9 +150,9 @@ Else
 End If
 
 ' ==================================================================
-' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 20170322-182014）
+' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 170322-1820）
 ' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
-' = 戻値                String        日時（YYYYMMDD-HHMMSS）
+' = 戻値                String        日時（YYMMDD-HHMM）
 ' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
 ' = 依存    なし
 ' = 所属    String.vbs
@@ -163,13 +163,12 @@ Public Function ConvDate2String( _
     On Error Resume Next
     Dim sDateStr
     sDateStr = _
-        String(4 - Len(Year(sDateTime)),   "0") & Year(sDateTime)   & _
+        Right(Year(sDateTime), 2 )                                  & _
         String(2 - Len(Month(sDateTime)),  "0") & Month(sDateTime)  & _
         String(2 - Len(Day(sDateTime)),    "0") & Day(sDateTime)    & _
         "-" & _
         String(2 - Len(Hour(sDateTime)),   "0") & Hour(sDateTime)   & _
-        String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
-        String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
+        String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime)
     If Err.Number = 0 Then
         ConvDate2String = sDateStr
     Else
