@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.34
+' user define macros v2.35
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -384,27 +384,28 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート選択ウィンドウを表示()
-    Dim Sh As Worksheet
-    Dim ShBackup As Worksheet
+    Dim wSht As Worksheet
+    Dim wShtBak As Worksheet
+    
     Application.ScreenUpdating = False
-    Set ShBackup = ActiveSheet
+    Set wShtBak = ActiveSheet
     With CommandBars.Add(Temporary:=True)
         .Controls.Add(ID:=957).Execute
         .Delete
     End With
     ' Return
-    If Not ActiveSheet Is ShBackup Then
-        Set Sh = ActiveSheet
-    End If
-    ShBackup.Select
+'    If Not ActiveSheet Is wShtBak Then
+'        Set wSht = ActiveSheet
+'    End If
+'    wShtBak.Select
     Application.ScreenUpdating = True
-
-    If Not Sh Is Nothing Then
-        Sh.Activate
-    Else
-        'キャンセル押下
-    End If
-    Set Sh = Nothing
+'
+'    If Not wSht Is Nothing Then
+'        wSht.Activate
+'    Else
+'        'キャンセル押下
+'    End If
+'    Set wSht = Nothing
 End Sub
 
 ' ==================================================================
