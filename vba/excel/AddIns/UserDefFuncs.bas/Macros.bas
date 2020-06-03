@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.33
+' user define macros v2.34
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -40,6 +40,8 @@ Option Explicit
 ' =         フォント色をトグル                          フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
 ' =         背景色をトグル                              背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
 ' =         オートフィル実行                            オートフィルを実行する
+' =         インデントを上げる                          インデントを上げる
+' =         インデントを下げる                          インデントを下げる
 ' =         アクティブセルコメント設定切り替え          アクティブセルコメント設定を切り替える
 ' =         アクティブセルコメントのみ表示              他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して下移動    下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
@@ -181,8 +183,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     
     dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
     dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
-    dMacroShortcutKeys.Add "^%{RIGHT}", "'オートフィル実行(""Right"")'"
-    dMacroShortcutKeys.Add "^%{LEFT}", "'オートフィル実行(""Left"")'"
+    
+    dMacroShortcutKeys.Add "^%{RIGHT}", "インデントを上げる"
+    dMacroShortcutKeys.Add "^%{LEFT}", "インデントを下げる"
     
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
@@ -1258,6 +1261,36 @@ Public Sub 背景色をトグル()
     Else
         Selection.Interior.Color = CLng(sValue)
     End If
+End Sub
+
+' =============================================================================
+' = 概要    インデントを上げる
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub インデントを上げる()
+    Dim rCell As Range
+    For Each rCell In Selection
+        rCell.IndentLevel = rCell.IndentLevel + 1
+    Next
+End Sub
+
+' =============================================================================
+' = 概要    インデントを下げる
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub インデントを下げる()
+    Dim rCell As Range
+    For Each rCell In Selection
+        If rCell.IndentLevel = 0 Then
+            'Do Nothing
+        Else
+            rCell.IndentLevel = rCell.IndentLevel - 1
+        End If
+    Next
 End Sub
 
 ' =============================================================================
