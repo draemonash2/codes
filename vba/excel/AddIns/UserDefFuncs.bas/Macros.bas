@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.35
+' user define macros v2.36
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -48,6 +48,8 @@ Option Explicit
 ' =         アクティブセルコメントのみ表示して上移動    上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して右移動    右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して左移動    左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         Excel数式整形化実施                         Excel数式整形化実施
+' =         Excel数式整形化解除                         Excel数式整形化解除
 ' =
 ' =     ・オブジェクト操作
 ' =         最前面へ移動                                最前面へ移動する
@@ -198,6 +200,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     
     dMacroShortcutKeys.Add "^+f", "最前面へ移動"
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
+    
+'   dMacroShortcutKeys.Add "", "Excel数式整形化実施"
+'   dMacroShortcutKeys.Add "", "Excel数式整形化解除"
     
     If sCmntVsblEnb = "True" Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
@@ -1744,6 +1749,19 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     MsgBox "関数コールツリー作成完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
+' =============================================================================
+' = 概要    Excel数式整形化実施/解除
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub Excel数式整形化実施()
+    Call ExcelBeautifer(True)
+End Sub
+Public Sub Excel数式整形化解除()
+    Call ExcelBeautifer(False)
+End Sub
+
 ' *****************************************************************************
 ' * 内部プロシージャ定義
 ' *****************************************************************************
@@ -2537,3 +2555,91 @@ Public Function ExtractTailWord( _
         ExtractTailWord = asSplitWord(UBound(asSplitWord))
     End If
 End Function
+
+' ==================================================================
+' = 概要    Excel数式を整形する
+' = 引数    bValid      Boolean  [in]   整形実施/整形解除
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Public Function ExcelBeautifer( _
+    ByVal bValid As Boolean _
+)
+    Const lINDENT_WIDTH As Long = 4
+    
+    '選択範囲のセル数式を更新する
+    Dim rSelectRange As Range
+    For Each rSelectRange In Selection
+        Dim sInputCellFormula As String
+        Dim sOutputCellFormula As String
+        
+        'セル数式 取得
+        sInputCellFormula = rSelectRange.Formula
+        sOutputCellFormula = ""
+        
+        If Left(sInputCellFormula, 1) = "=" Then '数式の場合
+            Dim bStrMode As Boolean
+            Dim lNestCnt As Long
+            bStrMode = False
+            lNestCnt = 0
+            '文字列操作
+            Dim lChrIdx As Long
+            For lChrIdx = 1 To Len(sInputCellFormula)
+                Dim sInputCellFormulaChr As String
+                sInputCellFormulaChr = Mid(sInputCellFormula, lChrIdx, 1)
+                '文字列モードの場合
+                If bStrMode = True Then
+                    Select Case sInputCellFormulaChr
+                    Case """"
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                        bStrMode = False
+                    Case Else
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    End Select
+                '文字列モードでない場合
+                Else
+                    Select Case sInputCellFormulaChr
+                    Case ","
+                        If bValid = True Then
+                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lINDENT_WIDTH, " ")
+                        Else
+                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                        End If
+                    Case "("
+                        If bValid = True Then
+                            lNestCnt = lNestCnt + 1
+                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lINDENT_WIDTH, " ")
+                        Else
+                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                        End If
+                    Case ")"
+                        If bValid = True Then
+                            lNestCnt = lNestCnt - 1
+                            sOutputCellFormula = sOutputCellFormula & vbLf & String(lNestCnt * lINDENT_WIDTH, " ") & sInputCellFormulaChr
+                        Else
+                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                        End If
+                    Case """"
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                        bStrMode = True
+                    Case vbLf
+                        'Do Nothing
+                    Case " "
+                        'Do Nothing
+                    Case Else
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    End Select
+                End If
+            Next lChrIdx
+        Else '数式でない場合
+            sOutputCellFormula = sInputCellFormula
+        End If
+        
+        'セル数式 更新
+        rSelectRange.Formula = sOutputCellFormula
+    Next
+End Function
+
+
