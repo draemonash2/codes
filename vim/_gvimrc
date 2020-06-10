@@ -52,12 +52,12 @@
 	noremap		<silent>			<c-g>		:call ExecuteHNXgrep()<cr>|						" 【HNXGrep】起動
 	noremap		<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
 	noremap		<silent>			<F2>		:Tlist<cr>|										" タグリスト作成
-	noremap		<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
-	noremap		<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
+"	noremap		<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
+"	noremap		<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
 	noremap		<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
 	noremap		<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
 "	noremap		<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
-	noremap		<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
+"	noremap		<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
 	noremap		<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
 	noremap		<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
 	noremap		<silent>			<F11>		:set expandtab<cr>:retab!<cr>|					" タブ⇒空白 変換
@@ -104,6 +104,7 @@
 	vnoremap	<silent>			<F4>		:s/\\/\//g<cr>|									" ファイルパス区切り変換（\→/）
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
+	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パス取得
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" ファイル種別と行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
