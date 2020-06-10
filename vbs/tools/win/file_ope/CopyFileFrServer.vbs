@@ -222,7 +222,7 @@ End If
 ' ==================================================================
 ' = 概要    日時文字列をファイル/フォルダ名に適用できる形式に変換する
 ' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
-' = 戻値                String          日時（例：170805#1259）
+' = 戻値                String          日時（例：170805-1259）
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    String.vbs
@@ -247,7 +247,7 @@ Public Function ConvDate2String( _
         sDateStr = Right( .SubMatches(0), 2 ) & _
                    String( 2 - Len( .SubMatches(1) ), "0" ) & .SubMatches(1) & _
                    String( 2 - Len( .SubMatches(2) ), "0" ) & .SubMatches(2) & _
-                   "#" & _
+                   "-" & _
                    String( 2 - Len( .SubMatches(3) ), "0" ) & .SubMatches(3) & _
                    String( 2 - Len( .SubMatches(4) ), "0" ) & .SubMatches(4)
     End With

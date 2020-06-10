@@ -78,7 +78,7 @@ Else
     Dim cRltvFilePaths
     Set cRltvFilePaths = CreateObject("System.Collections.ArrayList")
     For Each oFilePath In cFilePaths
-        cRltvFilePaths.Add ReplaceRelatevePath(oFilePath, sMatchDirName, lRemeveDirLevel)
+        cRltvFilePaths.Add ReplaceRelativePath(oFilePath, sMatchDirName, lRemeveDirLevel)
     Next
     Set cFilePaths = cRltvFilePaths
 End If
@@ -104,7 +104,7 @@ End If
 'ëäëŒÉpÉXÇ÷íuä∑
 ' = àÀë∂    Ç»Çµ
 ' = èäëÆ    CpyFilePath.vbs
-Private Function ReplaceRelatevePath( _
+Private Function ReplaceRelativePath( _
     ByVal sInFilePath, _
     ByVal sMatchDirName, _
     ByVal lRemeveDirLevel _
