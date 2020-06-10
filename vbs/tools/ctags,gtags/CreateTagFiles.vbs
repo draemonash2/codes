@@ -14,8 +14,6 @@ Const PROG_NAME = "タグファイル作成"
 Dim bIsContinue
 bIsContinue = True
 
-Dim sCTagExePath
-Dim sGTagExePath
 Dim sTrgtDirPath
 
 If bIsContinue = True Then
@@ -29,17 +27,11 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sCTagExePath = "C:\prg_exe\Ctags\ctags.exe"
-        sGTagExePath = "C:\prg_exe\Gtags\bin\gtags.exe"
         sTrgtDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-        sCTagExePath = "C:\prg_exe\Ctags\ctags.exe"
-        sGTagExePath = "C:\prg_exe\Gtags\bin\gtags.exe"
         sTrgtDirPath = WScript.Env("Current")
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
-        sCTagExePath = "C:\prg_exe\Ctags\ctags.exe"
-        sGTagExePath = "C:\prg_exe\Gtags\bin\gtags.exe"
         sTrgtDirPath = "C:\codes\c"
     End If
 Else

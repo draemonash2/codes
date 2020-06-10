@@ -225,9 +225,9 @@ endif
 " ==============================================================================
 " ファイルパス設定
 " ==============================================================================
-	let $CTAGS = expand( "$VIM/../Ctags/ctags.exe" )
-	let $GTAGS = expand( "$VIM/../Gtags/bin/gtags.exe" )
-	let $HNXGREP = expand( "$VIM/../HNXgrep/HNXgrep.exe" )
+	let $CTAGS = expand( "$MYSYSPATH_CTAGS" )
+	let $GTAGS = expand( "$MYSYSPATH_GTAGS" )
+	let $HNXGREP = expand( "$MYSYSPATH_HNXGREP" )
 	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
 
 " ==============================================================================

@@ -16,7 +16,6 @@ bIsContinue = True
 
 Dim objFSO
 Dim sOutputBatDirPath
-Dim sExePath
 Dim cFilePaths
 
 If bIsContinue = True Then
@@ -32,15 +31,12 @@ If bIsContinue = True Then
             End If
         Next
         sOutputBatDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
-        sExePath = "C:\prg_exe\Vim\gvim.exe"
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sOutputBatDirPath = WScript.Env("Current")
-        sExePath = WScript.Env("Vim")
         Set cFilePaths = WScript.Col( WScript.Env("Selected") )
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
         sOutputBatDirPath = "C:\Users\draem_000\Desktop\test"
-        sExePath = "C:\prg_exe\Vim\gvim.exe"
         Set cFilePaths = CreateObject("System.Collections.ArrayList")
         cFilePaths.Add "C:\Users\draem_000\Desktop\test\aabbbbb.txt"
         cFilePaths.Add "C:\Users\draem_000\Desktop\test\b b"

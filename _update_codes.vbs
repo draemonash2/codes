@@ -2,7 +2,6 @@ Option Explicit
 
 Const sDownloadUrl = "https://github.com/draemonash2/codes/archive/master.zip"
 Const sDownloadTrgtFileName = "codes.zip"
-Const sDiffProgramPath = "C:\prg_exe\WinMerge\WinMergeU.exe"
 Const sDiffSrcDirName = "codes-master"
 Const sDiffTrgtDirPath = "C:\codes"
 Const lPopupWaitSecond = 5
@@ -37,6 +36,13 @@ End With
 '=== 比較 ===
 sPopupMsg = "解凍完了!" & vbNewLine & "比較を開始します…"
 objWshShell.Popup sPopupMsg, lPopupWaitSecond, sPopupTitle, vbInformation
+
+Dim sDiffProgramPath
+sDiffProgramPath = objWshShell.Environment("System").Item("MYSYSPATH_WINMERGE")
+If sDiffProgramPath = "" then
+	MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+	WScript.Quit
+end if
 objWshShell.Run sDiffProgramPath & " " & sDiffSrcDirPath & " " & sDiffTrgtDirPath, 0, True
 
 '[参考URL] https://viewse.blogspot.com/2013/08/vbscriptweb.html

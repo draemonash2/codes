@@ -16,17 +16,15 @@ bIsContinue = True
 
 Dim objWshShell
 Dim objFSO
-Dim sTmpPath
 Dim sExePath
 Dim cSelected
 Dim sTmpFileDeleteMode
 
+Set objWshShell = WScript.CreateObject("WScript.Shell")
+
 '*** 選択ファイル取得 ***
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
-        Set objWshShell = WScript.CreateObject("WScript.Shell")
-        sTmpPath = objWshShell.SpecialFolders("Templates") & "\" & TEMP_FILE_NAME
-        sExePath = "C:\prg_exe\WinMerge\WinMergeU.exe"
         Set cSelected = CreateObject("System.Collections.ArrayList")
         Dim sArg
         If WScript.Arguments.Count = 0 Then
@@ -38,8 +36,6 @@ If bIsContinue = True Then
             sTmpFileDeleteMode = False
         End If
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-        sTmpPath = WScript.Env("Temp") & "\" & TEMP_FILE_NAME
-        sExePath = WScript.Env("WinMerge")
         Set cSelected = WScript.Col(WScript.Env("Selected"))
         If TMP_FILE_DELETE_MODE = 1 Then
             sTmpFileDeleteMode = True
@@ -48,8 +44,6 @@ If bIsContinue = True Then
         End If
     Else
         MsgBox "デバッグモードです。"
-        sTmpPath = "C:\prg_exe\X-Finder\" & TEMP_FILE_NAME
-        sExePath = "C:\prg_exe\WinMerge\WinMergeU.exe"
         Set cSelected = CreateObject("System.Collections.ArrayList")
         cSelected.Add "C:\prg_exe\X-Finder\script\FileNameCopy.vbs"
         cSelected.Add "C:\prg_exe\X-Finder\script\FilePathCopy.vbs"
@@ -61,6 +55,7 @@ End If
 
 '*** 比較 ***
 If bIsContinue = True Then
+    sTmpPath = "C:\Users\"& CreateObject("WScript.Network").UserName &"\AppData\Local\Temp\" & TEMP_FILE_NAME
     If sTmpFileDeleteMode = True Then
         If objFSO.FileExists( sTmpPath ) Then
             objFSO.DeleteFile sTmpPath, True
@@ -70,6 +65,12 @@ If bIsContinue = True Then
     Else
         Set objWshShell = WScript.CreateObject("WScript.Shell")
         Set objFSO = CreateObject("Scripting.FileSystemObject")
+        
+        sExePath = objWshShell.Environment("System").Item("MYSYSPATH_WINMERGE")
+        If sExePath = "" then
+            MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+            WScript.Quit
+        end if
         
         Dim sExecCmd
         Dim sDiffPath1

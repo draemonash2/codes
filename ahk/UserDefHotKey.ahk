@@ -34,14 +34,14 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;#todo.itmz
 		^+!Up::
-			sExePath = "C:\Program Files (x86)\toketaWare\iThoughts\iThoughts.exe"
+			EnvGet, sExePath, MYSYSPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			StartProgramAndActivate( sExePath, sFilePath )
 			Send, {F2}{esc}
 			return
 	;#temp.txt
 		^+!Down::
-			sExePath = "C:\prg_exe\Vim\gvim.exe"
+			EnvGet, sExePath, MYSYSPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
@@ -75,7 +75,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;rapture.exe
 		^+!x::
-			Run "C:\prg_exe\Rapture\rapture.exe"
+			EnvGet, sExePath, MYSYSPATH_RAPTURE
+			Run %sExePath%
 			return
 	;KitchenTimer.vbs
 		^+!k::
@@ -83,11 +84,13 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;xf.exe
 		^+!z::
-			Run "C:\prg_exe\X-Finder\XF.exe"
+			EnvGet, sExePath, MYSYSPATH_XF
+			Run %sExePath%
 			return
 	;cCalc.exe
 		^+!;::
-			RunSuppressMultiStart( "C:\prg_exe\cCalc\cCalc.exe", "" )
+			EnvGet, sExePath, MYSYSPATH_CCALC
+			RunSuppressMultiStart( sExePath, "" )
 			return
 	
 	;Bluetoothテザリング起動
@@ -106,7 +109,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;UserDefHotKey.ahk
 		^+!F12::
-			sExePath = "C:\prg_exe\Vim\gvim.exe"
+			EnvGet, sExePath, MYSYSPATH_GVIM
 			sFilePath = "%A_ScriptFullPath%"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return

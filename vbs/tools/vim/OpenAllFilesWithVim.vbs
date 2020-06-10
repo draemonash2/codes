@@ -15,7 +15,6 @@ Dim bIsContinue
 bIsContinue = True
 
 Dim objFSO
-Dim sExePath
 Dim sCurDirPath
 
 '*** 選択ファイル取得 ***
@@ -29,14 +28,11 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sExePath = "C:\prg_exe\Vim\gvim.exe"
         sCurDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-        sExePath = WScript.Env("Vim")
         sCurDirPath = WScript.Env("Current")
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
-        sExePath = "C:\prg_exe\Vim\gvim.exe"
         sCurDirPath = "C:\codes\c"
     End If
 Else
@@ -128,6 +124,13 @@ If bIsContinue = True Then
         lIdx = lIdx + 1
     Next
     'MsgBox sFilePathList '★DEBUG★
+    
+    Dim sExePath
+    sExePath = objWshShell.Environment("System").Item("MYSYSPATH_GVIM")
+    If sExePath = "" then
+        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+        WScript.Quit
+    End If
     
     objWshShell.Run "cmd /c " & sExePath & " " & sFilePathList, 0, False
 Else

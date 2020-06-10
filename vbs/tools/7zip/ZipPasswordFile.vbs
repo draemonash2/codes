@@ -51,24 +51,20 @@ Const PROG_NAME = "7-Zip でパスワード圧縮"
 Dim bIsContinue
 bIsContinue = True
 
-Dim sExePath
 Dim cSelectedPaths
 
 '*** 選択ファイル取得 ***
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
-        sExePath = "C:\prg_exe\7-ZipPortable\App\7-Zip64\7z.exe"
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
         Dim sArg
         For Each sArg In WScript.Arguments
             cSelectedPaths.add sArg
         Next
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
-        sExePath = WScript.Env("7-Zip")
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
-        sExePath = "C:\prg_exe\7-ZipPortable\App\7-Zip64\7z.exe"
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
         cSelectedPaths.Add "C:\Users\draem_000\Desktop\test\aa"
         cSelectedPaths.Add "C:\Users\draem_000\Desktop\test\b b"
@@ -278,6 +274,13 @@ End If
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 If bIsContinue = True Then
+    Dim sExePath
+    sExePath = objWshShell.Environment("System").Item("MYSYSPATH_7Z")
+    If sExePath = "" then
+        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+        WScript.Quit
+    End If
+    
     For Each sTrgtPath In cTrgtPaths
         Dim sArchiveFilePath
         Dim bRet
