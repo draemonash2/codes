@@ -38,11 +38,6 @@ If bIsContinue = True Then
                 sSrcParDirPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        '出力先フォルダパスをクリップボードから取得
-        sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
-        If objFSO.FolderExists( sIniDstParDirPath ) = False Then
-            sIniDstParDirPath = objWshShell.SpecialFolders("Desktop")
-        End If
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sSrcParDirPath = WScript.Env("Current")
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
@@ -87,6 +82,11 @@ End If
 
 '*** 出力先選択 ***
 If bIsContinue = True Then
+    '出力先フォルダパスをクリップボードから取得
+    sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
+    If objFSO.FolderExists( sIniDstParDirPath ) = False Then
+        sIniDstParDirPath = objWshShell.SpecialFolders("Desktop")
+    End If
     Dim sDstParDirPath
     If CHOOSE_FILE_AT_DIALOG_BOX = True Then
         sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
