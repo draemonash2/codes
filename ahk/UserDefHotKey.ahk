@@ -34,14 +34,14 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;#todo.itmz
 		^+!Up::
-			EnvGet, sExePath, MYSYSPATH_ITHOUGHTS
+			EnvGet, sExePath, MYPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			StartProgramAndActivate( sExePath, sFilePath )
 			Send, {F2}{esc}
 			return
 	;#temp.txt
 		^+!Down::
-			EnvGet, sExePath, MYSYSPATH_GVIM
+			EnvGet, sExePath, MYPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
@@ -75,7 +75,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;rapture.exe
 		^+!x::
-			EnvGet, sExePath, MYSYSPATH_RAPTURE
+			EnvGet, sExePath, MYPATH_RAPTURE
 			Run %sExePath%
 			return
 	;KitchenTimer.vbs
@@ -84,12 +84,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;xf.exe
 		^+!z::
-			EnvGet, sExePath, MYSYSPATH_XF
+			EnvGet, sExePath, MYPATH_XF
 			Run %sExePath%
 			return
 	;cCalc.exe
 		^+!;::
-			EnvGet, sExePath, MYSYSPATH_CCALC
+			EnvGet, sExePath, MYPATH_CCALC
 			RunSuppressMultiStart( sExePath, "" )
 			return
 	
@@ -109,7 +109,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;UserDefHotKey.ahk
 		^+!F12::
-			EnvGet, sExePath, MYSYSPATH_GVIM
+			EnvGet, sExePath, MYPATH_GVIM
 			sFilePath = "%A_ScriptFullPath%"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
@@ -149,6 +149,10 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Return
 		+Pause::
 			MsgBox, shiftpause
+			Return
+		+^!F11::
+			EnvGet, sVar, OneDrive
+			MsgBox %sVar%
 			Return
 		+^!i::
 			Send, ^c

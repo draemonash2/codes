@@ -126,7 +126,7 @@ If bIsContinue = True Then
     'MsgBox sFilePathList 'šDEBUGš
     
     Dim sExePath
-    sExePath = objWshShell.Environment("System").Item("MYSYSPATH_GVIM")
+    sExePath = objWshShell.Environment("System").Item("MYPATH_GVIM")
     If sExePath = "" then
         MsgBox "ŠÂ‹«•Ï”‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB" & vbNewLine & "ˆ—‚ğ’†’f‚µ‚Ü‚·B", vbYes, PROG_NAME
         WScript.Quit
