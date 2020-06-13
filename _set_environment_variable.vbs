@@ -9,7 +9,6 @@ With objWshShell.Environment("System")
     .Item("MYPATH_HIDEMARU")   = "C:\prg_exe\Hidemaru\Hidemaru.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_WINMERGE")   = "C:\prg_exe\WinMerge\WinMergeU.exe"                                 ' |  ÅZ  |  Å|  |  Å|  |     ÅZ     |      ÅZ      |
     .Item("MYPATH_GVIM")       = "C:\prg_exe\Vim\gvim.exe"                                           ' |  ÅZ  |  ÅZ  |  Å|  |     ÅZ     |      Å|      |
-    .Item("MYPATH_HNXGREP")    = "C:\prg_exe\HNXgrep\HNXgrep.exe"                                    ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_TRESGREP")   = "C:\prg_exe\TresGrep\TresGrep.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_EVERYTHING") = "C:\prg_exe\Everything\Everything.exe"                              ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_DISKINFO3")  = "C:\prg_exe\diskinfo64\DiskInfo3.exe"                               ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
