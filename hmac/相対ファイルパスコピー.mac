@@ -1,5 +1,12 @@
-$script_path = "C:\\codes\\bat\\win\\clipboard\\CpyRmvdFilePath_codes.bat";
+$script_path = "C:\\codes\\bat\\tools\\win\\clipboard\\CpyRmvdFilePath_codes.bat";
 $file_path = filename2;
+$exec_cmd = $script_path + " " + $file_path;
 
-runsync2 $script_path + " " + $file_path;
+runsync2 $exec_cmd;
+if( result == yes ) {
+    //message "プログラムの起動に成功しました";
+} else {
+    message "プログラムの起動に失敗しました：" + $exec_cmd;
+	endmacro;
+}
 message "相対ファイルパスをコピーしました";

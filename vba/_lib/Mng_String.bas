@@ -2585,25 +2585,25 @@ Public Function ExtractRelativePath( _
     ByVal lRemeveDirLevel As Long, _
     ByRef sRelativePath As String _
 ) As Boolean
-    Dim sRemoveDirLevelPath
+    Dim sRemoveDirLevelPath As String
     sRemoveDirLevelPath = ""
-    Dim lIdx
+    Dim lIdx As Long
     For lIdx = 0 To lRemeveDirLevel - 1
         sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
     Next
     
-    Dim sSearchPattern
-    Dim sTargetStr
+    Dim sSearchPattern As String
+    Dim sTargetStr As String
     sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
     sTargetStr = sInFilePath
     
-    Dim oRegExp
+    Dim oRegExp As Object
     Set oRegExp = CreateObject("VBScript.RegExp")
     oRegExp.Pattern = sSearchPattern                '検索パターンを設定
     oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
     oRegExp.Global = True                           '文字列全体を検索
     
-    Dim oMatchResult
+    Dim oMatchResult As Object
     Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
     
     If oMatchResult.Count > 0 Then

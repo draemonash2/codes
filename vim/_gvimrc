@@ -49,7 +49,7 @@
 	noremap		<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える ←:幅down
 "	noremap		<silent>			<c-w>		:tabclose<cr>|									" タブを閉じる
 "	noremap		<silent>			<c-n>		:tabnew<cr>|									" 新規タブを開く
-	noremap		<silent>			<c-g>		:call ExecuteHNXgrep()<cr>|						" 【HNXGrep】起動
+	noremap		<silent>			<c-g>		:call ExecuteGuiGrep()<cr>|						" GUIのGrepソフト起動
 	noremap		<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
 	noremap		<silent>			<F2>		:Tlist<cr>|										" タグリスト作成
 "	noremap		<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
@@ -228,7 +228,7 @@ endif
 " ==============================================================================
 	let $CTAGS = expand( "$MYPATH_CTAGS" )
 	let $GTAGS = expand( "$MYPATH_GTAGS" )
-	let $HNXGREP = expand( "$MYPATH_HNXGREP" )
+	let $GUIGREP = expand( "$MYPATH_TRESGREP" )
 	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
 
 " ==============================================================================
@@ -565,20 +565,20 @@ endif
 	endfunction
 
 " ==============================================================================
-" HNXGrep で Grep する
+" GUIのGrepソフトでGrepする
 " [参照] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
 	let g:sProjectRootFileName = "tags"
-	function! ExecuteHNXgrep()
-		let l:sHNXGrepPath = substitute( $HNXGREP, "/", "\\", "g" )
+	function! ExecuteGuiGrep()
+		let l:sGuiGrepSoftPath = substitute( $GUIGREP, "/", "\\", "g" )
 		let l:sRootDirPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), g:sProjectRootFileName )
 		if l:sRootDirPath == ""
 			let l:sRootDirPath = GetCurDirPath("\\")
 		endif
 		let l:sSearchKeyword = ""
-	"	execute "!cmd.exe /c start /max " . l:sHNXGrepPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-	"	execute "!cmd.exe /c start /b /max " . l:sHNXGrepPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-		execute "!start " . l:sHNXGrepPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+	"	execute "!cmd.exe /c start /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+	"	execute "!cmd.exe /c start /b /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+		execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
 	endfunction
 
 " ==============================================================================

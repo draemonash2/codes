@@ -645,7 +645,7 @@ Public Function ExtractValuesFrKeys( _
         End If
     End If
 End Function
-    Call Test_ExtractValuesFrKeys()
+    'Call Test_ExtractValuesFrKeys()
     Private Sub Test_ExtractValuesFrKeys()
         Dim asKeyList()
         Dim sOutMsg
@@ -739,10 +739,78 @@ End Function
         sOutMsg = sOutMsg & vbNewLine & ""
     End Function
 
-'★TODO★実装
-'Public Function ExtractRelativePath( _
-'    ByVal sInFilePath As String, _
-'    ByVal sMatchDirName As String, _
-'    ByVal lRemeveDirLevel As Long, _
-'    ByRef sRelativePath As String _
-') As Boolean
+' ==================================================================
+' = 概要    絶対パスから検索キー配下階層の相対パスへ置換
+' = 引数    sInFilePath     String  [in]    絶対パス
+' = 引数    sMatchDirName   String  [in]    検索対象フォルダ名
+' = 引数    lRemeveDirLevel Long    [in]    階層レベル
+' = 引数    sRelativePath   String  [out]   相対パス
+' = 戻値                    Boolean         検索結果
+' = 覚書    実行例1)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : codes
+'             lRemeveDirLevel : 1
+'             ↓
+'             sRelativePath   : bbb\ccc\test.txt
+'             戻値            : true
+'
+'           実行例2)
+'             sInFilePath     : c\codes\aaa\bbb\ccc\test.txt
+'             sMatchDirName   : code
+'             lRemeveDirLevel : 2
+'             ↓
+'             sRelativePath   : c\codes\aaa\bbb\ccc\test.txt
+'             戻値            : false
+' = 依存    なし
+' = 所属    String.vbs
+' ==================================================================
+Public Function ExtractRelativePath( _
+    ByVal sInFilePath, _
+    ByVal sMatchDirName, _
+    ByVal lRemeveDirLevel, _
+    ByRef sRelativePath _
+)
+    Dim sRemoveDirLevelPath
+    sRemoveDirLevelPath = ""
+    Dim lIdx
+    For lIdx = 0 To lRemeveDirLevel - 1
+        sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
+    Next
+    
+    Dim sSearchPattern
+    Dim sTargetStr
+    sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
+    sTargetStr = sInFilePath
+    
+    Dim oRegExp
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.Pattern = sSearchPattern                '検索パターンを設定
+    oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
+    oRegExp.Global = True                           '文字列全体を検索
+    
+    Dim oMatchResult
+    Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
+    
+    If oMatchResult.Count > 0 Then
+        sRelativePath = Replace(sInFilePath, oMatchResult.Item(0), "")
+        ExtractRelativePath = True
+    Else
+        sRelativePath = sInFilePath
+        ExtractRelativePath = False
+    End If
+End Function
+    'Call Test_ExtractRelativePath()
+    Private Sub Test_ExtractRelativePath()
+        Dim sResult
+        Dim sInFilePath
+        Dim sOutFilePath
+        sInFilePath = "c:\test\a\aa\bbb\test.txt"
+        sOutFilePath = ""
+        sResult = "[Result]"
+        sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "a", 1, sOutFilePath )          & "：" & sOutFilePath    ' True：bbb\test.txt
+        sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "a", 0, sOutFilePath )          & "：" & sOutFilePath    ' True：aa\bbb\test.txt
+        sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "a", -1, sOutFilePath )         & "：" & sOutFilePath    ' True：aa\bbb\test.txt
+        sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "a", 5, sOutFilePath )          & "：" & sOutFilePath    ' False：c:\test\a\aa\bbb\test.txt
+        sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "test.txt", 0, sOutFilePath )   & "：" & sOutFilePath    ' False：c:\test\a\aa\bbb\test.txt
+        MsgBox sResult
+    End Sub

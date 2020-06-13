@@ -23,6 +23,11 @@
 Const INCLUDE_DOUBLE_QUOTATION = False
 
 '####################################################################
+'### インクルード
+'####################################################################
+Call Include( "C:\codes\vbs\_lib\String.vbs" )
+
+'####################################################################
 '### 本処理
 '####################################################################
 Const PROG_NAME = "ファイルパスをコピー"
@@ -78,7 +83,10 @@ Else
     Dim cRltvFilePaths
     Set cRltvFilePaths = CreateObject("System.Collections.ArrayList")
     For Each oFilePath In cFilePaths
-        cRltvFilePaths.Add ReplaceRelativePath(oFilePath, sMatchDirName, lRemeveDirLevel)
+        Dim sRltvFilePath
+        Call ExtractRelativePath(oFilePath, sMatchDirName, lRemeveDirLevel, sRltvFilePath)
+        'Msgbox oFilePath & "：" & sRltvFilePath '★debug
+        cRltvFilePaths.Add sRltvFilePath
     Next
     Set cFilePaths = cRltvFilePaths
 End If
@@ -101,42 +109,20 @@ Else
     'Do Nothing
 End If
 
-'相対パスへ置換
-' = 依存    なし
-' = 所属    CpyFilePath.vbs
-Private Function ReplaceRelativePath( _
-    ByVal sInFilePath, _
-    ByVal sMatchDirName, _
-    ByVal lRemeveDirLevel _
+' 外部プログラム インクルード関数
+Private Function Include( _
+	ByVal sOpenFile _
 )
-    Dim sRemoveDirLevelPath
-    sRemoveDirLevelPath = ""
-    Dim lIdx
-    For lIdx = 0 To lRemeveDirLevel - 1
-        sRemoveDirLevelPath = sRemoveDirLevelPath & "\\.+?"
-    Next
-    
-    Dim sSearchPattern
-    Dim sTargetStr
-    sSearchPattern = ".*\\" & sMatchDirName & sRemoveDirLevelPath & "\\"
-    sTargetStr = sInFilePath
-    
-    Dim oRegExp
-    Set oRegExp = CreateObject("VBScript.RegExp")
-    oRegExp.Pattern = sSearchPattern                '検索パターンを設定
-    oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
-    oRegExp.Global = True                           '文字列全体を検索
-    
-    Dim oMatchResult
-    Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
-    
-    Dim sOutFilePath
-    sOutFilePath = ""
-    If oMatchResult.Count > 0 THen
-        sOutFilePath = Replace( sInFilePath, oMatchResult.item(0), "" )
-    Else
-        sOutFilePath = sInFilePath
-    End If
-    
-    ReplaceRelativePath = sOutFilePath
+	Dim objFSO
+	Dim objVbsFile
+	
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
+	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+	
+	ExecuteGlobal objVbsFile.ReadAll()
+	objVbsFile.Close
+	
+	Set objVbsFile = Nothing
+	Set objFSO = Nothing
 End Function
