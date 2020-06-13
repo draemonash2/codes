@@ -9,7 +9,7 @@
 '   場合は、該当する文字列を除去してコピーする。
 '   それ以外の場合は、そのままコピーする。
 '       ex1)
-'           set REMOVE_DIR_LEVEL=codes
+'           set MATCH_DIR_NAME=codes
 '           set REMOVE_DIR_LEVEL=1
 '           c\codes\aaa\bbb\ccc\test.txt
 '               → bbb\ccc\test.txt をコピー
@@ -73,18 +73,17 @@ End If
 '*** 相対パスに置換 ***
 Dim objWshShellEnv
 Set objWshShellEnv = WScript.CreateObject("WScript.Shell").Environment("Process")
+Dim sMatchDirName
+Dim sRemoveDirLevel
 sMatchDirName = objWshShellEnv.Item("MATCH_DIR_NAME")
-lRemeveDirLevel = objWshShellEnv.Item("REMOVE_DIR_LEVEL")
+sRemoveDirLevel = objWshShellEnv.Item("REMOVE_DIR_LEVEL")
 Dim oFilePath
-Dim sRelativePath
-If sMatchDirName = "" And lRemeveDirLevel = "" Then
-    'Do Nothing
-Else
+If sMatchDirName <> "" And sRemoveDirLevel <> "" Then
     Dim cRltvFilePaths
     Set cRltvFilePaths = CreateObject("System.Collections.ArrayList")
     For Each oFilePath In cFilePaths
         Dim sRltvFilePath
-        Call ExtractRelativePath(oFilePath, sMatchDirName, lRemeveDirLevel, sRltvFilePath)
+        Call ExtractRelativePath(oFilePath, sMatchDirName, CLng(sRemoveDirLevel), sRltvFilePath)
         'Msgbox oFilePath & "：" & sRltvFilePath '★debug
         cRltvFilePaths.Add sRltvFilePath
     Next
@@ -111,18 +110,18 @@ End If
 
 ' 外部プログラム インクルード関数
 Private Function Include( _
-	ByVal sOpenFile _
+    ByVal sOpenFile _
 )
-	Dim objFSO
-	Dim objVbsFile
-	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")
-	sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
-	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-	
-	ExecuteGlobal objVbsFile.ReadAll()
-	objVbsFile.Close
-	
-	Set objVbsFile = Nothing
-	Set objFSO = Nothing
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
