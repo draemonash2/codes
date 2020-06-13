@@ -138,5 +138,5 @@ Private Function ReplaceRelativePath( _
         sOutFilePath = sInFilePath
     End If
     
-    ReplaceRelatevePath = sOutFilePath
+    ReplaceRelativePath = sOutFilePath
 End Function
