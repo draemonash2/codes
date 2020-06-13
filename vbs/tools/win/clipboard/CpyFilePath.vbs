@@ -1,21 +1,19 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
-
-'使い方
-'   CpyFilePath.vbs <file_path1> [<file_path2>]...
 '
-'応用的な使用方法
-'   あらかじめ「MATCH_DIR_NAME」と「REMOVE_DIR_LEVEL」を設定している
-'   場合は、該当する文字列を除去してコピーする。
-'   それ以外の場合は、そのままコピーする。
-'       ex1)
-'           set MATCH_DIR_NAME=codes
-'           set REMOVE_DIR_LEVEL=1
-'           c\codes\aaa\bbb\ccc\test.txt
-'               → bbb\ccc\test.txt をコピー
-'       ex2)
-'           c\codes\aaa\bbb\ccc\test.txt
-'               → c\codes\aaa\bbb\ccc\test.txt をコピー
+' 使い方
+'   CpyFilePath.vbs [-d <match_dir_name>] [-l <rem_dir_level>] <file_path1> [<file_path2>]...
+'   
+'     ex1)
+'         CpyFilePath.vbs c\test1.txt c\test2.txt
+'             → c\test1.txt<改行>c\test2.txt をコピー
+'     ex2)
+'         CpyFilePath.vbs -d codes -l 1 c\codes\aaa\bbb\ccc\test.txt c\codes\aaa\bbb\a.txt
+'             → bbb\ccc\test.txt<改行>bbb\a.txt をコピー
+'     
+'     (※) EXECUTION_MODE = 1 にて相対パス置換したい場合は、本スクリプト実行前に
+'          sMatchDirNamesRemoveDirLevelに値を設定しておくこと
+'          （ex. sMatchDirName = "codes" sRemoveDirLevel = "1"）
 
 '####################################################################
 '### 設定
@@ -36,14 +34,37 @@ Dim bIsContinue
 bIsContinue = True
 
 Dim cFilePaths
+Dim sMatchDirName
+Dim sRemoveDirLevel
 
 '*** 選択ファイル取得 ***
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
+        Dim bIsGetDirNameTiming
+        Dim bIsGetDirLevelTiming
+        bIsGetDirNameTiming = False
+        bIsGetDirLevelTiming = False
         Set cFilePaths = CreateObject("System.Collections.ArrayList")
         Dim sArg
         For Each sArg In WScript.Arguments
-            cFilePaths.add sArg
+            Select Case sArg
+                Case "-d"
+                    bIsGetDirNameTiming = True
+                    bIsGetDirLevelTiming = False
+                Case "-l"
+                    bIsGetDirLevelTiming = True
+                    bIsGetDirNameTiming = False
+                Case Else
+                    If bIsGetDirNameTiming = True Then
+                        sMatchDirName = sArg
+                        bIsGetDirNameTiming = False
+                    ElseIf bIsGetDirLevelTiming = True Then
+                        sRemoveDirLevel = sArg
+                        bIsGetDirLevelTiming = False
+                    Else
+                        cFilePaths.add sArg
+                    End If
+            End Select
         Next
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         Set cFilePaths = WScript.Col( WScript.Env("Selected") )
@@ -71,12 +92,6 @@ Else
 End If
 
 '*** 相対パスに置換 ***
-Dim objWshShellEnv
-Set objWshShellEnv = WScript.CreateObject("WScript.Shell").Environment("Process")
-Dim sMatchDirName
-Dim sRemoveDirLevel
-sMatchDirName = objWshShellEnv.Item("MATCH_DIR_NAME")
-sRemoveDirLevel = objWshShellEnv.Item("REMOVE_DIR_LEVEL")
 Dim oFilePath
 If sMatchDirName <> "" And sRemoveDirLevel <> "" Then
     Dim cRltvFilePaths

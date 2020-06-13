@@ -1,12 +1,14 @@
-$script_path = "C:\\codes\\bat\\tools\\win\\clipboard\\CpyRmvdFilePath_codes.bat";
+$script_path = "C:\\codes\\vbs\\tools\\win\\clipboard\\CpyFilePath.vbs";
+$match_dir_name = "codes";
+$rem_dir_level = "0";
 $file_path = filename2;
-$exec_cmd = $script_path + " " + $file_path;
+
+$exec_cmd = "WScript.exe " + $script_path + " -d " + $match_dir_name + " -l " + $rem_dir_level + " " + $file_path;
 
 runsync2 $exec_cmd;
 if( result == yes ) {
-    //message "プログラムの起動に成功しました";
+    message "相対ファイルパスをコピーしました";
 } else {
     message "プログラムの起動に失敗しました：" + $exec_cmd;
-	endmacro;
+    endmacro;
 }
-message "相対ファイルパスをコピーしました";
