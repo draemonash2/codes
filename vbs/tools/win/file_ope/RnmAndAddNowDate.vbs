@@ -9,7 +9,7 @@
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "現在日時追加＆リネーム"
+Const sPROG_NAME = "現在日時追加＆リネーム"
 
 Dim bIsContinue
 bIsContinue = True
@@ -18,12 +18,12 @@ Dim lAnswer
 lAnswer = MsgBox ( _
                 "ファイル/フォルダ名の末尾に現在日時を付与します。よろしいですか？", _
                 vbYesNo, _
-                PROG_NAME _
+                sPROG_NAME _
             )
 If lAnswer = vbYes Then
     'Do Nothing
 Else
-    MsgBox "実行をキャンセルしました。", vbOKOnly, PROG_NAME
+    MsgBox "実行をキャンセルしました。", vbOKOnly, sPROG_NAME
     bIsContinue = False
 End If
 
@@ -54,8 +54,8 @@ If bIsContinue = True Then
     
     '*** ファイルパスチェック ***
     If cFilePaths.Count = 0 Then
-        MsgBox "ファイルが選択されていません", vbYes, PROG_NAME
-        MsgBox "処理を中断します", vbYes, PROG_NAME
+        MsgBox "ファイルが選択されていません", vbYes, sPROG_NAME
+        MsgBox "処理を中断します", vbYes, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -127,7 +127,7 @@ If bIsContinue = True Then
                 oFilePath, _
                 sTrgtDirPath & "\" & sTrgtFileName & sAddStr
         Else
-            MsgBox "ファイル/フォルダが不正です。", vbOKOnly, PROG_NAME
+            MsgBox "ファイル/フォルダが不正です。", vbOKOnly, sPROG_NAME
             bIsContinue = False
         End If
         

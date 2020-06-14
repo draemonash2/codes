@@ -44,7 +44,7 @@ Const INITIAL_FILE_EXT = "zip"
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "7-Zip で圧縮"
+Const sPROG_NAME = "7-Zip で圧縮"
 
 Dim bIsContinue
 bIsContinue = True
@@ -75,8 +75,8 @@ End If
 '*** ファイルパスチェック ***
 If bIsContinue = True Then
     If cSelectedPaths.Count = 0 Then
-        MsgBox "ファイル/フォルダが選択されていません。", vbOKOnly, PROG_NAME
-        MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+        MsgBox "ファイル/フォルダが選択されていません。", vbOKOnly, sPROG_NAME
+        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -102,12 +102,12 @@ If bIsContinue = True Then
         sArchiveFileExt = InputBox( _
                             "以下の中から圧縮形式を選択して入力してください。" & vbNewLine & _
                             sAcceptFileFormatsStr & vbNewLine, _
-                            PROG_NAME, _
+                            sPROG_NAME, _
                             INITIAL_FILE_EXT _
                         )
         If sArchiveFileExt = "" Then
-            MsgBox "実行をキャンセルしました。", vbOKOnly, PROG_NAME
-            MsgBox "処理を中断します。", vbYes, PROG_NAME
+            MsgBox "実行をキャンセルしました。", vbOKOnly, sPROG_NAME
+            MsgBox "処理を中断します。", vbYes, sPROG_NAME
             bIsReEnter = False
             bIsContinue = False
         Else
@@ -123,7 +123,7 @@ If bIsContinue = True Then
             If bIsExist = True Then
                 bIsReEnter = False
             Else
-                MsgBox "対応する圧縮形式ではありません。" & vbNewLine & vbNewLine & sArchiveFileExt, vbOKOnly, PROG_NAME
+                MsgBox "対応する圧縮形式ではありません。" & vbNewLine & vbNewLine & sArchiveFileExt, vbOKOnly, sPROG_NAME
                 bIsReEnter = True
             End If
             bIsContinue = True
@@ -153,8 +153,8 @@ If bIsContinue = True Then
         ElseIf bFolderExists = True And bFileExists = False Then
             cTrgtPaths.Add sSelectedPath
         Else
-            MsgBox "選択されたオブジェクトが存在しません" & vbNewLine & vbNewLine & sSelectedPath, vbOKOnly, PROG_NAME
-            MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+            MsgBox "選択されたオブジェクトが存在しません" & vbNewLine & vbNewLine & sSelectedPath, vbOKOnly, sPROG_NAME
+            MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
             bIsContinue = False
         End If
     Next
@@ -165,8 +165,8 @@ End If
 '*** ファイルパスチェック ***
 If bIsContinue = True Then
     If cTrgtPaths.Count = 0 Then
-        MsgBox "対象となるファイル/フォルダが存在しません。", vbYes, PROG_NAME
-        MsgBox "処理を中断します。", vbYes, PROG_NAME
+        MsgBox "対象となるファイル/フォルダが存在しません。", vbYes, sPROG_NAME
+        MsgBox "処理を中断します。", vbYes, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -203,13 +203,13 @@ If bIsContinue = True Then
                     "(※) それぞれのファイル/フォルダが圧縮されます！" & vbNewLine & _
                     "     一つの圧縮ファイルになる訳ではありません！", _
                     vbYesNo, _
-                    PROG_NAME _
+                    sPROG_NAME _
                 )
     If lAnswer = vbYes Then
         'Do Nothing
     Else
-        MsgBox "実行をキャンセルしました。", vbOKOnly, PROG_NAME
-        MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+        MsgBox "実行をキャンセルしました。", vbOKOnly, sPROG_NAME
+        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
         bIsContinue = False
     End If
 Else
@@ -225,7 +225,7 @@ If bIsContinue = True Then
     Dim sExePath
     sExePath = objWshShell.Environment("System").Item("MYPATH_7Z")
     If sExePath = "" then
-        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, sPROG_NAME
         WScript.Quit
     End If
     
@@ -238,7 +238,7 @@ If bIsContinue = True Then
         sExecCmd = """" & sExePath & """ a """ & sArchiveFilePath & """ """ & sTrgtPath & """"
         objWshShell.Run sExecCmd, 1, True
     Next
-    MsgBox "圧縮が完了しました。", vbOKOnly, PROG_NAME
+    MsgBox "圧縮が完了しました。", vbOKOnly, sPROG_NAME
 Else
     'Do Nothing
 End If

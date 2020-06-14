@@ -12,7 +12,7 @@ Const COPY_FILE_PREFIX     = "#Cpy#"
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "ショートカット＆コピーファイル作成(SVN)"
+Const sPROG_NAME = "ショートカット＆コピーファイル作成(SVN)"
 
 Dim bIsContinue
 bIsContinue = True
@@ -34,7 +34,7 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sOrgDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
+        sOrgDirPath = InputBox( "ファイルパスを指定してください", sPROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sOrgDirPath = WScript.Env("Current")
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
@@ -52,8 +52,8 @@ End If
 '*** ファイルパスチェック ***
 If bIsContinue = True Then
     If cSelectedPaths.Count = 0 Then
-        MsgBox "ファイル/フォルダが選択されていません。", vbOKOnly, PROG_NAME
-        MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+        MsgBox "ファイル/フォルダが選択されていません。", vbOKOnly, sPROG_NAME
+        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -65,11 +65,11 @@ End If
 '*** 上書き確認 ***
 If bIsContinue = True Then
     Dim vbAnswer
-    vbAnswer = MsgBox( "既にファイルが存在している場合、上書きされます。実行しますか？", vbOkCancel, PROG_NAME )
+    vbAnswer = MsgBox( "既にファイルが存在している場合、上書きされます。実行しますか？", vbOkCancel, sPROG_NAME )
     If vbAnswer = vbOk Then
         'Do Nothing
     Else
-        MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
         bIsContinue = False
     End If
 Else
@@ -79,9 +79,9 @@ End If
 '*** 出力先選択 ***
 If bIsContinue = True Then
     Dim sDstParDirPath
-    sDstParDirPath = InputBox( "出力先を入力してください。", PROG_NAME, sOrgDirPath )
+    sDstParDirPath = InputBox( "出力先を入力してください。", sPROG_NAME, sOrgDirPath )
     If sDstParDirPath = "" Then 'キャンセルの場合
-        MsgBox "実行がキャンセルされました。", vbOKOnly, PROG_NAME
+        MsgBox "実行がキャンセルされました。", vbOKOnly, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -120,8 +120,8 @@ If bIsContinue = True Then
                 sAddDate = ConvDate2String( objFile.DateLastModified )
                 Set objFile = Nothing
             Else
-                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, PROG_NAME
-                MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
+                MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
                 Exit For
             End If
             
@@ -156,8 +156,8 @@ If bIsContinue = True Then
                 sAddDate = ConvDate2String( objFolder.DateLastModified )
                 Set objFolder = Nothing
             Else
-                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, PROG_NAME
-                MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
+                MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
                 Exit For
             End If
             
@@ -179,8 +179,8 @@ If bIsContinue = True Then
             
         '### ファイル/フォルダ以外 ###
         Else
-            MsgBox "選択されたオブジェクトが存在しません" & vbNewLine & vbNewLine & sSelectedPath, vbOKOnly, PROG_NAME
-            MsgBox "処理を中断します。", vbOKOnly, PROG_NAME
+            MsgBox "選択されたオブジェクトが存在しません" & vbNewLine & vbNewLine & sSelectedPath, vbOKOnly, sPROG_NAME
+            MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
             bIsContinue = False
         End If
     Next
@@ -188,7 +188,7 @@ If bIsContinue = True Then
     Set objFSO = Nothing
     Set objWshShell = Nothing
     
-    MsgBox "ショートカット＆コピーファイルの作成が完了しました！", vbOKOnly, PROG_NAME
+    MsgBox "ショートカット＆コピーファイルの作成が完了しました！", vbOKOnly, sPROG_NAME
 Else
     'Do Nothing
 End If

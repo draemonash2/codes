@@ -9,7 +9,7 @@ Const INCLUDE_DOUBLE_QUOTATION = False
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "ファイル名をコピー"
+Const sPROG_NAME = "ファイル名をコピー"
 
 Dim bIsContinue
 bIsContinue = True
@@ -39,8 +39,8 @@ End If
 '*** ファイルパスチェック ***
 If bIsContinue = True Then
     If cFilePaths.Count = 0 Then
-        MsgBox "ファイルが選択されていません", vbYes, PROG_NAME
-        MsgBox "処理を中断します", vbYes, PROG_NAME
+        MsgBox "ファイルが選択されていません", vbYes, sPROG_NAME
+        MsgBox "処理を中断します", vbYes, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing

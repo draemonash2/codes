@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.36
+' user define macros v2.37
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -37,8 +37,10 @@ Option Explicit
 ' =         選択範囲内で中央                            選択セルに対して「選択範囲内で中央」を実行する
 ' =         範囲を維持したままセルコピー                選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
 ' =         一行にまとめてセルコピー                    選択範囲を一行にまとめてセルコピーする。
-' =         フォント色をトグル                          フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
-' =         背景色をトグル                              背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
+' =         フォント色をトグル                          フォント色を「設定色」⇔「自動」でトグルする
+' =         フォント色をトグルの色を変更                「フォント色をトグル」の設定色を変更する
+' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
+' =         背景色をトグルの色を変更                    「背景色をトグル」の設定色を変更する
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
@@ -77,6 +79,21 @@ Public Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 '本来はＣ言語用の文字列コピーだが、２つ目の引数をStringとしているので変換が行われた上でコピーされる。
 Public Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As Long, ByVal lpString2 As String) As Long
 '△△△Mng_Clipboard.bas/SetToClipboard()△△△
+
+'▽▽▽Macro.bas/ShowColorPalette()▽▽▽
+Private Type ChooseColor
+    lStructSize As Long
+    hWndOwner As Long
+    hInstance As Long
+    rgbResult As Long
+    lpCustColors As String
+    flags As Long
+    lCustData As Long
+    lpfnHook As Long
+    lpTemplateName As String
+End Type
+Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
+'△△△Macro.bas/ShowColorPalette()△△△
 
 '******************************************************************************
 '* 設定値
@@ -181,7 +198,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     
 '   dMacroShortcutKeys.Add "", "フォント色をトグル"
+'   dMacroShortcutKeys.Add "", "フォント色をトグルの色を変更"
 '   dMacroShortcutKeys.Add "", "背景色をトグル"
+'   dMacroShortcutKeys.Add "", "背景色をトグルの色を変更"
     
     dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
     dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
@@ -1226,7 +1245,7 @@ Public Sub ハイパーリンク一括オープン()
 End Sub
 
 ' =============================================================================
-' = 概要    フォント色を「lCLRTGLFONT_CLR」⇔「自動」でトグルする
+' = 概要    フォント色を「設定色」⇔「自動」でトグルする
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
@@ -1248,7 +1267,39 @@ Public Sub フォント色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要    背景色を「lCLRTGLBG_CLR」⇔「背景色なし」でトグルする
+' = 概要    「フォント色をトグル」の設定色を変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' =         Macros.bas/ShowColorPalette()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub フォント色をトグルの色を変更()
+    Const sMACRO_NAME As String = "フォント色をトグルの色を変更"
+    
+    'アドイン設定読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sClrIdx As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sClrIdx, lCLRTGLFONT_CLR, False)
+    
+    Dim lClrIdx As Long
+    lClrIdx = CLng(sClrIdx)
+    
+    '色選択
+    Dim bRet As Boolean
+    bRet = ShowColorPalette(lClrIdx)
+    If bRet = False Then
+        MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
+        Exit Sub
+    End If
+    
+    'アドイン設定更新
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR", CStr(lClrIdx))
+End Sub
+
+' =============================================================================
+' = 概要    背景色を「設定色」⇔「背景色なし」でトグルする
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
@@ -1267,6 +1318,38 @@ Public Sub 背景色をトグル()
     Else
         Selection.Interior.Color = CLng(sValue)
     End If
+End Sub
+
+' =============================================================================
+' = 概要    「背景色をトグル」の設定色を変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' =         Macros.bas/ShowColorPalette()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 背景色をトグルの色を変更()
+    Const sMACRO_NAME As String = "背景色をトグルの色を変更"
+    
+    'アドイン設定読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sClrIdx As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sClrIdx, lCLRTGLBG_CLR, False)
+    
+    Dim lClrIdx As Long
+    lClrIdx = CLng(sClrIdx)
+    
+    '色選択
+    Dim bRet As Boolean
+    bRet = ShowColorPalette(lClrIdx)
+    If bRet = False Then
+        MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
+        Exit Sub
+    End If
+    
+    'アドイン設定更新
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR", CStr(lClrIdx))
 End Sub
 
 ' =============================================================================
@@ -2564,7 +2647,7 @@ End Function
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' ==================================================================
-Public Function ExcelBeautifer( _
+Private Function ExcelBeautifer( _
     ByVal bValid As Boolean _
 )
     Const lINDENT_WIDTH As Long = 4
@@ -2642,4 +2725,46 @@ Public Function ExcelBeautifer( _
     Next
 End Function
 
+' ==================================================================
+' = 概要    色の設定ダイアログを表示し、そこで選択された色のRGB値を返す
+' = 引数    lColorIdx   Long    [in/out]    RGB値 初期値/選択値
+' = 戻値                Boolean             選択結果
+' =                                           (True:成功,False:キャンセルor失敗)
+' = 覚書    ・キャンセルor失敗時、lColorIdxは更新しない
+' = 依存    なし
+' = 所属    Macro.bas
+' ==================================================================
+Private Function ShowColorPalette( _
+    ByRef lColorIdx As Long _
+) As Boolean
+    Const CC_RGBINIT = &H1          '色のデフォルト値を設定
+    Const CC_LFULLOPEN = &H2        '色の作成を行う部分を表示
+    Const CC_PREVENTFULLOPEN = &H4  '色の作成ボタンを無効にする
+    Const CC_SHOWHELP = &H8         'ヘルプボタンを表示
+    
+    Dim udtChooseColor As ChooseColor
+    With udtChooseColor
+        'ダイアログの設定
+        .lStructSize = Len(udtChooseColor)
+        .lpCustColors = String$(64, Chr$(0))
+        .flags = CC_RGBINIT + CC_LFULLOPEN
+        .rgbResult = lColorIdx
+        
+        'ダイアログを表示
+        Dim lngRet As Long
+        lngRet = ChooseColor(udtChooseColor)
+        
+        'ダイアログからの返り値をチェック
+        If lngRet <> 0 Then
+            If .rgbResult > RGB(255, 255, 255) Then 'エラー
+                ShowColorPalette = False
+            Else '正常終了
+                ShowColorPalette = True
+                lColorIdx = .rgbResult
+            End If
+        Else 'キャンセル押下
+            ShowColorPalette = False
+        End If
+    End With
+End Function
 

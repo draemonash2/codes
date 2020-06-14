@@ -9,7 +9,7 @@ Const TEMP_FILE_NAME = "diff_target_path.tmp"
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "WinMergeで比較"
+Const sPROG_NAME = "WinMergeで比較"
 
 Dim bIsContinue
 bIsContinue = True
@@ -68,7 +68,7 @@ If bIsContinue = True Then
         
         sExePath = objWshShell.Environment("System").Item("MYPATH_WINMERGE")
         If sExePath = "" then
-            MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+            MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, sPROG_NAME
             WScript.Quit
         end if
         
@@ -100,7 +100,7 @@ If bIsContinue = True Then
                 MsgBox "以下を比較対象として選択します。" & vbNewLine & vbNewLine & sDiffPath1
             End If
         Else
-            MsgBox "ファイルが選択されていません", vbYes, PROG_NAME
+            MsgBox "ファイルが選択されていません", vbYes, sPROG_NAME
         End If
     End If
 Else

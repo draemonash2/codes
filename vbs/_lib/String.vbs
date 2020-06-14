@@ -256,27 +256,43 @@ End Function
 
 ' ==================================================================
 ' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 20170322-182014）
-' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
-' = 戻値                String        日時（YYYYMMDD-HHMMSS）
-' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
+' = 引数    sDateBfr        String  [in]    変換前 日時文字列
+' = 引数    lNamingRuleType Long    [in]    命名規則種別
+' =                                           1(短縮モード) : YYMMDD-HHMM
+' =                                           other         : YYYYMMDD-HHMMSS
+' = 戻値                    String          変換後 日時文字列
+' = 覚書    ・主に日時をファイル名やフォルダ名に使用する際に使用する。
+' =         ・日時の形式が誤っていた場合(ex.2017/13/22 18:25:14)、空文字列を返す。
 ' = 依存    なし
 ' = 所属    String.vbs
 ' ==================================================================
 Public Function ConvDate2String( _
-    ByVal sDateTime _
+    ByVal sDateBfr, _
+    ByVal lNamingRuleType _
 )
     On Error Resume Next
-    Dim sDateStr
-    sDateStr = _
-        String(4 - Len(Year(sDateTime)),   "0") & Year(sDateTime)   & _
-        String(2 - Len(Month(sDateTime)),  "0") & Month(sDateTime)  & _
-        String(2 - Len(Day(sDateTime)),    "0") & Day(sDateTime)    & _
-        "-" & _
-        String(2 - Len(Hour(sDateTime)),   "0") & Hour(sDateTime)   & _
-        String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime) & _
-        String(2 - Len(Second(sDateTime)), "0") & Second(sDateTime)
+    Dim sDateAfr
+    Select Case lNamingRuleType
+        Case 1  '短縮モード
+            sDateAfr = _
+                Right(Year(sDateBfr), 2) & _
+                String(2 - Len(Month(sDateBfr)),  "0") & Month(sDateBfr)  & _
+                String(2 - Len(Day(sDateBfr)),    "0") & Day(sDateBfr)    & _
+                "-" & _
+                String(2 - Len(Hour(sDateBfr)),   "0") & Hour(sDateBfr)   & _
+                String(2 - Len(Minute(sDateBfr)), "0") & Minute(sDateBfr)
+        Case Else
+            sDateAfr = _
+                String(4 - Len(Year(sDateBfr)),   "0") & Year(sDateBfr)   & _
+                String(2 - Len(Month(sDateBfr)),  "0") & Month(sDateBfr)  & _
+                String(2 - Len(Day(sDateBfr)),    "0") & Day(sDateBfr)    & _
+                "-" & _
+                String(2 - Len(Hour(sDateBfr)),   "0") & Hour(sDateBfr)   & _
+                String(2 - Len(Minute(sDateBfr)), "0") & Minute(sDateBfr) & _
+                String(2 - Len(Second(sDateBfr)), "0") & Second(sDateBfr)
+    End Select
     If Err.Number = 0 Then
-        ConvDate2String = sDateStr
+        ConvDate2String = sDateAfr
     Else
         ConvDate2String = ""
     End If
@@ -284,8 +300,26 @@ Public Function ConvDate2String( _
 End Function
     'Call Test_ConvDate2String()
     Private Sub Test_ConvDate2String()
-        MsgBox  ConvDate2String(Now()) & vbNewLine & _
-                ConvDate2String("2001/12/32 1:00:0")
+        Dim Result
+        Result = "[Result]"
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 21:23:45", 0) ' 20011231-212345
+        Result = Result & vbNewLine & ConvDate2String("2001/1/1 21:23:45", 0)   ' 20010101-212345
+        Result = Result & vbNewLine & ConvDate2String("1986/01/01 0:0:0", 0)    ' 19860101-000000
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31", 0)          ' 20011231-000000
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 21:23:45", 1) ' 011231-2123
+        Result = Result & vbNewLine & ConvDate2String("2001/1/1 21:23:45", 1)   ' 010101-2123
+        Result = Result & vbNewLine & ConvDate2String("1986/01/01 0:0:0", 1)    ' 860101-0000
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31", 1)          ' 011231-0000
+        Result = Result & vbNewLine & ConvDate2String("01/12/31 21:23:45", 0)   ' 20011231-212345
+        Result = Result & vbNewLine & ConvDate2String("96/12/31 21:23:45", 0)   ' 19960101-212345
+        
+        Result = Result & vbNewLine & ConvDate2String("2001/0/31 21:23:45", 0)   ' 
+        Result = Result & vbNewLine & ConvDate2String("2001/13/31 21:23:45", 0)  ' 
+        Result = Result & vbNewLine & ConvDate2String("2001/12/32 21:23:45", 0)  ' 
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 25:23:45", 0)  ' 
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 21:60:45", 0)  ' 
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 21:23:60", 0)  ' 
+        MsgBox Result
     End Sub
 
 ' ==================================================================

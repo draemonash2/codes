@@ -19,18 +19,18 @@ Option Explicit
 '==============================================================================
 ' 設定
 '==============================================================================
-Const PROG_NAME = "キッチンタイマー"
+Const sPROG_NAME = "キッチンタイマー"
 
 Dim lWaitMinites
-lWaitMinites = InputBox( "待ち時間(分)を入力してください", PROG_NAME, 1 )
+lWaitMinites = InputBox( "待ち時間(分)を入力してください", sPROG_NAME, 1 )
 
 If lWaitMinites = 0 Then
-	MsgBox "キャンセルしました", vbYes, PROG_NAME
+	MsgBox "キャンセルしました", vbYes, sPROG_NAME
 Else
 	Dim vAnswer
-	vAnswer = MsgBox( lWaitMinites & "分間のタイマーを設定しました", vbOkCancel, PROG_NAME )
+	vAnswer = MsgBox( lWaitMinites & "分間のタイマーを設定しました", vbOkCancel, sPROG_NAME )
 	If vAnswer <> vbOk Then
-		MsgBox "キャンセルしました", vbYes, PROG_NAME
+		MsgBox "キャンセルしました", vbYes, sPROG_NAME
 	Else
 		WScript.sleep(lWaitMinites * 60 * 1000)
 		MsgBox lWaitMinites & "分が経過しました", vbYes, lWaitMinites & "分経過"

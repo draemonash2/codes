@@ -9,7 +9,7 @@ Const OUTPUT_BAT_FILE_BASE_NAME = "rename"
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "リネーム用バッチファイル出力"
+Const sPROG_NAME = "リネーム用バッチファイル出力"
 
 Dim bIsContinue
 bIsContinue = True
@@ -30,7 +30,7 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sOutputBatDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
+        sOutputBatDirPath = InputBox( "ファイルパスを指定してください", sPROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sOutputBatDirPath = WScript.Env("Current")
         Set cFilePaths = WScript.Col( WScript.Env("Selected") )
@@ -48,8 +48,8 @@ End If
 '*** ファイルパスチェック ***
 If bIsContinue = True Then
     If cFilePaths.Count = 0 Then
-        MsgBox "ファイルが選択されていません", vbYes, PROG_NAME
-        MsgBox "処理を中断します", vbYes, PROG_NAME
+        MsgBox "ファイルが選択されていません", vbYes, sPROG_NAME
+        MsgBox "処理を中断します", vbYes, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing

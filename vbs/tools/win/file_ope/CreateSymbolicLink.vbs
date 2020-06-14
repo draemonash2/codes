@@ -11,7 +11,7 @@ Const OBJECT_SUFFIX = " - シンボリックリンク"
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "シンボリックリンク作成"
+Const sPROG_NAME = "シンボリックリンク作成"
 
 '*** ファイル/フォルダ名取得 ***
 DIm cFilePaths
@@ -49,8 +49,8 @@ End If
 
 '*** ファイルパスチェック ***
 If cFilePaths.Count = 0 Then
-    MsgBox "オブジェクトが選択されていません", vbYes, PROG_NAME
-    MsgBox "処理を中断します", vbYes, PROG_NAME
+    MsgBox "オブジェクトが選択されていません", vbYes, sPROG_NAME
+    MsgBox "処理を中断します", vbYes, sPROG_NAME
     WScript.Quit
 End If
 
@@ -76,8 +76,8 @@ For Each oObjPath In cFilePaths
         sSrcPath = oObjPath & OBJECT_SUFFIX
         sCmd = "mklink /d """ & sSrcPath & """ """ & sDstPath & """"
     Else 'not exists
-        MsgBox "オブジェクトが存在しません", vbYes, PROG_NAME
-        MsgBox "処理を中断します", vbYes, PROG_NAME
+        MsgBox "オブジェクトが存在しません", vbYes, sPROG_NAME
+        MsgBox "処理を中断します", vbYes, sPROG_NAME
         WScript.Quit
     End If
     '▼▼▼debug▼▼▼
@@ -86,7 +86,7 @@ For Each oObjPath In cFilePaths
     call ExecDosCmd( sCmd )
 Next
 
-MsgBox "シンボリックリンクを作成しました", vbYes, PROG_NAME
+MsgBox "シンボリックリンクを作成しました", vbYes, sPROG_NAME
 
 '####################################################################
 '### 関数定義

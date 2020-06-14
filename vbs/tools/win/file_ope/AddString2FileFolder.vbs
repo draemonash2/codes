@@ -9,18 +9,18 @@
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "ファイル/フォルダ名末尾文字列付与"
+Const sPROG_NAME = "ファイル/フォルダ名末尾文字列付与"
 
 Dim lAnswer
 lAnswer = MsgBox ( _
                 "ファイル/フォルダ名の末尾に文字列を付与します。よろしいですか？", _
                 vbYesNo, _
-                PROG_NAME _
+                sPROG_NAME _
             )
 If lAnswer = vbYes Then
     'Do Nothing
 Else
-    MsgBox "実行をキャンセルしました。", vbOKOnly, PROG_NAME
+    MsgBox "実行をキャンセルしました。", vbOKOnly, sPROG_NAME
     WScript.Quit()
 End If
 
@@ -50,8 +50,8 @@ End If
 
 '*** ファイルパスチェック ***
 If cFilePaths.Count = 0 Then
-    MsgBox "ファイルが選択されていません", vbYes, PROG_NAME
-    MsgBox "処理を中断します", vbYes, PROG_NAME
+    MsgBox "ファイルが選択されていません", vbYes, sPROG_NAME
+    MsgBox "処理を中断します", vbYes, sPROG_NAME
     WScript.Quit
 Else
     'Do Nothing
@@ -86,7 +86,7 @@ Set oMatchResult = Nothing
 Set oRegExp = Nothing
 
 Dim sAddStr
-sAddStr = InputBox( "末尾に付与する文字列を入力してください", PROG_NAME, "_" & sNowStr )
+sAddStr = InputBox( "末尾に付与する文字列を入力してください", sPROG_NAME, "_" & sNowStr )
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -141,7 +141,7 @@ For Each oFilePath In cFilePaths
             oFilePath, _
             sTrgtDirPath & "\" & sTrgtFileName & sAddStr
     Else
-        MsgBox "ファイル/フォルダが不正です。", vbOKOnly, PROG_NAME
+        MsgBox "ファイル/フォルダが不正です。", vbOKOnly, sPROG_NAME
         WScript.Quit()
     End If
 Next

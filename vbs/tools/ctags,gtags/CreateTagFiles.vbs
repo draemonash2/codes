@@ -9,7 +9,7 @@
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "タグファイル作成"
+Const sPROG_NAME = "タグファイル作成"
 
 Dim bIsContinue
 bIsContinue = True
@@ -27,7 +27,7 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sTrgtDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
+        sTrgtDirPath = InputBox( "ファイルパスを指定してください", sPROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sTrgtDirPath = WScript.Env("Current")
     Else 'デバッグ実行
@@ -40,12 +40,12 @@ End If
 
 '*** タグファイル作成 ***
 If bIsContinue = True Then
-    MsgBox "「ctags」と「gtags」にパスが通っていない場合は、パスを通してから実行してください。", vbOk, PROG_NAME
+    MsgBox "「ctags」と「gtags」にパスが通っていない場合は、パスを通してから実行してください。", vbOk, sPROG_NAME
     Dim objWshShell
     Set objWshShell = WScript.CreateObject("WScript.Shell")
     objWshShell.Run "cmd /c pushd """ & sTrgtDirPath & """ & ctags -R", 0, True
     objWshShell.Run "cmd /c pushd """ & sTrgtDirPath & """ & gtags -v", 0, True
-    MsgBox "タグファイルの作成が完了しました。", vbOk, PROG_NAME
+    MsgBox "タグファイルの作成が完了しました。", vbOk, sPROG_NAME
 Else
     'Do Nothing
 End If

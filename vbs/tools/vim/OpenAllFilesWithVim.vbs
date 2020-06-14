@@ -9,7 +9,7 @@
 '####################################################################
 '### 本処理
 '####################################################################
-Const PROG_NAME = "カレントフォルダ配下の特定ファイルを Vim で全て開く"
+Const sPROG_NAME = "カレントフォルダ配下の特定ファイルを Vim で全て開く"
 
 Dim bIsContinue
 bIsContinue = True
@@ -28,7 +28,7 @@ If bIsContinue = True Then
                 sDefaultPath = objFSO.GetParentFolderName( sArg )
             End If
         Next
-        sCurDirPath = InputBox( "ファイルパスを指定してください", PROG_NAME, sDefaultPath )
+        sCurDirPath = InputBox( "ファイルパスを指定してください", sPROG_NAME, sDefaultPath )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sCurDirPath = WScript.Env("Current")
     Else 'デバッグ実行
@@ -52,8 +52,8 @@ If bIsContinue = True Then
         "*.c *.h" _
     )
     If sExtNames = "" Then
-        MsgBox "拡張子が選択されていません", vbYes, PROG_NAME
-        MsgBox "処理を中断します", vbYes, PROG_NAME
+        MsgBox "拡張子が選択されていません", vbYes, sPROG_NAME
+        MsgBox "処理を中断します", vbYes, sPROG_NAME
         bIsContinue = False
     Else
         'Do Nothing
@@ -91,14 +91,14 @@ If bIsContinue = True Then
             asFileList = Split( sTextAll, vbNewLine )
             objFile.Close
         Else
-            MsgBox "エラーが発生しました。 [ErrorNo." & Err.Number & "] " & Err.Description, vbYes, PROG_NAME
-            MsgBox "処理を中断します", vbYes, PROG_NAME
+            MsgBox "エラーが発生しました。 [ErrorNo." & Err.Number & "] " & Err.Description, vbYes, sPROG_NAME
+            MsgBox "処理を中断します", vbYes, sPROG_NAME
             bIsContinue = False
         End If
         Set objFile = Nothing   'オブジェクトの破棄
     Else
-        MsgBox "エラーが発生しました。 [ErrorNo." & Err.Number & "] " & Err.Description, vbYes, PROG_NAME
-        MsgBox "処理を中断します。", vbYes, PROG_NAME
+        MsgBox "エラーが発生しました。 [ErrorNo." & Err.Number & "] " & Err.Description, vbYes, sPROG_NAME
+        MsgBox "処理を中断します。", vbYes, sPROG_NAME
         bIsContinue = False
     End If
     objFSO.DeleteFile sTmpFilePath, True
@@ -128,7 +128,7 @@ If bIsContinue = True Then
     Dim sExePath
     sExePath = objWshShell.Environment("System").Item("MYPATH_GVIM")
     If sExePath = "" then
-        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, PROG_NAME
+        MsgBox "環境変数が設定されていません。" & vbNewLine & "処理を中断します。", vbYes, sPROG_NAME
         WScript.Quit
     End If
     
