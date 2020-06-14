@@ -10,17 +10,19 @@ Const CHOOSE_FILE_AT_DIALOG_BOX = True
 Const SHORTCUT_FILE_SUFFIX = "#s#"
 Const ORIGINAL_FILE_PREFIX = "#o#"
 Const EDIT_FILE_PREFIX     = "#e#"
+Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"
 
 '####################################################################
 '### インクルード
 '####################################################################
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
 Call Include( "C:\codes\vbs\_lib\String.vbs" )
+Call Include( "C:\codes\vbs\_lib\SettingFileClass.vbs" )
 
 '####################################################################
 '### 本処理
 '####################################################################
-Const sPROG_NAME = "ショートカット＆コピーファイル作成"
+Const sPROG_NAME = "作業ファイルとしてファイル/フォルダ複製"
 
 Dim bIsContinue
 bIsContinue = True
@@ -88,17 +90,27 @@ End If
 
 '*** 出力先選択 ***
 If bIsContinue = True Then
-    '出力先フォルダパスをクリップボードから取得
-    sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
-    If objFSO.FolderExists( sIniDstParDirPath ) = False Then
-        sIniDstParDirPath = objWshShell.SpecialFolders("Desktop")
-    End If
+    '出力先フォルダパス取得 from クリップボード
+    'sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
+    'If objFSO.FolderExists( sIniDstParDirPath ) = False Then
+    '    sIniDstParDirPath = objWshShell.SpecialFolders("Desktop")
+    'End If
+    
+    '出力先フォルダパス取得 from 設定ファイル
+    Dim clSetting
+    Set clSetting = New SettingFile
+    Dim sSettingFilePath
+    sSettingFilePath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
+    
     Dim sDstParDirPath
     If CHOOSE_FILE_AT_DIALOG_BOX = True Then
         sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
     Else
         sDstParDirPath = InputBox( "フォルダを選択してください", sPROG_NAME, sIniDstParDirPath )
     End If
+    
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sDstParDirPath)
     
     If objFSO.FolderExists( sDstParDirPath ) = False Then 'キャンセルの場合
         MsgBox "実行がキャンセルされました。", vbOKOnly, sPROG_NAME
