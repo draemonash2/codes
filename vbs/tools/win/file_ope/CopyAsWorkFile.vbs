@@ -15,9 +15,9 @@ Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"
 '####################################################################
 '### インクルード
 '####################################################################
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )
-Call Include( "C:\codes\vbs\_lib\String.vbs" )
-Call Include( "C:\codes\vbs\_lib\SettingFileClass.vbs" )
+Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )          ' ShowFolderSelectDialog()
+Call Include( "C:\codes\vbs\_lib\String.vbs" )              ' ConvDate2String()
+Call Include( "C:\codes\vbs\_lib\SettingFileClass.vbs" )    ' SettingFile
 
 '####################################################################
 '### 本処理
@@ -105,6 +105,13 @@ If bIsContinue = True Then
     
     Dim sDstParDirPath
     If CHOOSE_FILE_AT_DIALOG_BOX = True Then
+        'フォルダ選択ダイアログ表示＠BrowseForFolder(Shell.Application)
+        '  →初期パスを指定できないため、使用しない
+        'Dim objFolder
+        'Set objFolder = CreateObject("Shell.Application").BrowseForFolder(0, "出力先フォルダを選択してください", &H200, "c:\")
+        'sDstParDirPath = objFolder
+        
+        'フォルダ選択ダイアログ表示＠FileDialog(Excel.Application)
         sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
     Else
         sDstParDirPath = InputBox( "フォルダを選択してください", sPROG_NAME, sIniDstParDirPath )
