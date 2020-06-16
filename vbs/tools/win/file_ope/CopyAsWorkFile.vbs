@@ -99,8 +99,10 @@ If bIsContinue = True Then
     '出力先フォルダパス取得 from 設定ファイル
     Dim clSetting
     Set clSetting = New SettingFile
+    Dim sUserDirPath
+    sUserDirPath = CreateObject("Shell.Application").Namespace(40).Self.Path
     Dim sSettingFilePath
-    sSettingFilePath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
+    sSettingFilePath = sUserDirPath & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
     
     Dim sDstParDirPath
@@ -112,7 +114,7 @@ If bIsContinue = True Then
         'sDstParDirPath = objFolder
         
         'フォルダ選択ダイアログ表示＠FileDialog(Excel.Application)
-        sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath )
+        sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath, "" )
     Else
         sDstParDirPath = InputBox( "フォルダを選択してください", sPROG_NAME, sIniDstParDirPath )
     End If

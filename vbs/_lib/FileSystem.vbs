@@ -592,6 +592,7 @@ End Function
 ' ==================================================================
 ' = 概要    フォルダ選択ダイアログを表示する
 ' = 引数    sInitPath   String  [in]  デフォルトフォルダパス
+' = 引数    sTitle      String  [in]  タイトル名
 ' = 戻値                String        フォルダ選択結果
 ' = 覚書    ・存在しないフォルダパスを選択した場合、空文字列を返却する
 ' =         ・キャンセルを押下した場合、空文字列を返却する
@@ -599,7 +600,8 @@ End Function
 ' = 所属    FileSystem.vbs
 ' ==================================================================
 Private Function ShowFolderSelectDialog( _
-    ByVal sInitPath _
+    ByVal sInitPath, _
+    ByVal sTitle _
 )
     Const msoFileDialogFolderPicker = 4
     Const xlMinimized = -4140
@@ -611,7 +613,11 @@ Private Function ShowFolderSelectDialog( _
     
     Dim fdDialog
     Set fdDialog = objExcel.FileDialog(msoFileDialogFolderPicker)
-    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+    If sTitle = "" Then
+	    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+    Else
+        fdDialog.Title = sTitle
+    End If
     If sInitPath = "" Then
         'Do Nothing
     Else
@@ -639,7 +645,7 @@ Private Function ShowFolderSelectDialog( _
     
     Set fdDialog = Nothing
 End Function
-'   Call Test_ShowFolderSelectDialog()
+    'Call Test_ShowFolderSelectDialog()
     Private Sub Test_ShowFolderSelectDialog()
         Dim objWshShell
         Set objWshShell = CreateObject("WScript.Shell")
@@ -648,7 +654,8 @@ End Function
         sInitPath = objWshShell.SpecialFolders("Desktop")
         'sInitPath = ""
         
-        MsgBox ShowFolderSelectDialog( sInitPath )
+        MsgBox ShowFolderSelectDialog( sInitPath, "title" )
+        MsgBox ShowFolderSelectDialog( sInitPath, "" )
     End Sub
 
 ' ==================================================================
