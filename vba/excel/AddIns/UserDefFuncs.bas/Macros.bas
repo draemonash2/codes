@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.37
+' user define macros v2.38
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -140,6 +140,8 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
     Const sCELLCOPYLINE_PREFFIX As String = "("
     Const sCELLCOPYLINE_DELIMITER As String = "|"
     Const sCELLCOPYLINE_SUFFIX As String = ")"
+'=== シート選択ウィンドウを表示() ===
+    Const sSHTSELWIN_MSGBOX_SHOW As String = "False"
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
@@ -403,33 +405,29 @@ End Sub
 
 ' =============================================================================
 ' = 概要    シート選択ウィンドウを表示する
-' = 覚書    なし
+' = 覚書    ・環境によってはシートがアクティブ化されないことがあるが、
+' =           なぜか事前にMsgBoxすれば対処できる。
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート選択ウィンドウを表示()
-    Dim wSht As Worksheet
-    Dim wShtBak As Worksheet
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Dim sMsgBoxShow As String
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sSHTSELWIN_MSGBOX_SHOW", sMsgBoxShow, sSHTSELWIN_MSGBOX_SHOW, True)
+    If sMsgBoxShow = "True" Then
+        MsgBox "シート選択ウィンドウを表示します", vbOKOnly, "シート選択ウィンドウ表示"
+    Else
+        'Do Nothing
+    End If
     
     Application.ScreenUpdating = False
-    Set wShtBak = ActiveSheet
     With CommandBars.Add(Temporary:=True)
         .Controls.Add(ID:=957).Execute
         .Delete
     End With
-    ' Return
-'    If Not ActiveSheet Is wShtBak Then
-'        Set wSht = ActiveSheet
-'    End If
-'    wShtBak.Select
     Application.ScreenUpdating = True
-'
-'    If Not wSht Is Nothing Then
-'        wSht.Activate
-'    Else
-'        'キャンセル押下
-'    End If
-'    Set wSht = Nothing
 End Sub
 
 ' ==================================================================
