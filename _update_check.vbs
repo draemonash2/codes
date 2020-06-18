@@ -53,5 +53,5 @@ If sDiffProgramPath = "" then
 	MsgBox "環境変数「MYPATH_WINMERGE」が設定されていません。" & vbNewLine & "処理を中断します。", vbExclamation, sScriptName
 	WScript.Quit
 end if
-objWshShell.Run """" & sDiffProgramPath & """ """ & sDiffSrcDirPath & """ """ & sDiffTrgtDirPath & """", 0, True
+objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcDirPath & """ """ & sDiffTrgtDirPath & """", 0, True
 

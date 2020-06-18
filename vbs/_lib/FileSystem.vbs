@@ -613,8 +613,9 @@ Private Function ShowFolderSelectDialog( _
     
     Dim fdDialog
     Set fdDialog = objExcel.FileDialog(msoFileDialogFolderPicker)
+    CreateObject("WScript.Shell").AppActivate objExcel.Caption 'ウィンドウ最前面化
     If sTitle = "" Then
-	    fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
+        fdDialog.Title = "フォルダを選択してください（空欄の場合は親フォルダが選択されます）"
     Else
         fdDialog.Title = sTitle
     End If
@@ -686,6 +687,7 @@ Private Function ShowFileSelectDialog( _
     
     Dim fdDialog
     Set fdDialog = objExcel.FileDialog(msoFileDialogFilePicker)
+    CreateObject("WScript.Shell").AppActivate objExcel.Caption 'ウィンドウ最前面化
     fdDialog.Title = "ファイルを選択してください"
     fdDialog.AllowMultiSelect = False
     If sInitPath = "" Then
@@ -760,6 +762,7 @@ Private Function ShowFilesSelectDialog( _
     
     Dim fdDialog
     Set fdDialog = objExcel.FileDialog(msoFileDialogFilePicker)
+    CreateObject("WScript.Shell").AppActivate objExcel.Caption 'ウィンドウ最前面化
     fdDialog.Title = "ファイルを選択してください（複数可）"
     fdDialog.AllowMultiSelect = True
     If sInitPath = "" Then

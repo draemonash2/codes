@@ -99,10 +99,9 @@ If bIsContinue = True Then
     '出力先フォルダパス取得 from 設定ファイル
     Dim clSetting
     Set clSetting = New SettingFile
-    Dim sUserDirPath
-    sUserDirPath = CreateObject("Shell.Application").Namespace(40).Self.Path
     Dim sSettingFilePath
-    sSettingFilePath = sUserDirPath & "\AppData\Local\Temp\" & sTEMP_FILE_NAME
+    sSettingFilePath = objFSO.GetSpecialFolder(2) & "\" & sTEMP_FILE_NAME
+    
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
     
     Dim sDstParDirPath
@@ -238,10 +237,10 @@ If bIsContinue = True Then
         End If
     Next
     
+    CreateObject("Shell.Application").Explore sDstParDirPath
+    
     Set objFSO = Nothing
     Set objWshShell = Nothing
-    
-    MsgBox "ショートカット＆コピーファイルの作成が完了しました！", vbOKOnly, sPROG_NAME
 Else
     'Do Nothing
 End If
