@@ -1,0 +1,1533 @@
+!_TAG_FILE_ENCODING	cp932	//
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_JP_AUTHOR	HIGASHI Hirohito	/Twitter: @h_east/
+!_TAG_PROGRAM_JP_URL	http://hp.vector.co.jp/authors/VA025040/	//
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8J2	//
+' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z	.\_lib\FileSystem.vbs	/^' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z:$/;"	l
+' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z	.\tools\win\clipboard\CpyFileInfo.vbs	/^' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z:$/;"	l
+' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z:$/;"	l
+' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^' =         4       ファイル格納先ドライブ  Drive               vbString    文字列型    Get         Z:$/;"	l
+ADD_DATE_TYPE	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Const ADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル\/フォルダ更新日時）$/;"	c
+ADD_DATE_TYPE	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const ADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル\/フォルダ更新日時）$/;"	c
+ARG_COUNT_LOGINVALID	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_COUNT_LOGINVALID = 3$/;"	c
+ARG_COUNT_LOGINVALID	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_COUNT_LOGINVALID = 3$/;"	c
+ARG_COUNT_LOGVALID	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_COUNT_LOGVALID = 4$/;"	c
+ARG_COUNT_LOGVALID	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_COUNT_LOGVALID = 4$/;"	c
+ARG_IDX_DSTPATH	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_IDX_DSTPATH = 2$/;"	c
+ARG_IDX_DSTPATH	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_IDX_DSTPATH = 2$/;"	c
+ARG_IDX_LOGDIR	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_IDX_LOGDIR = 3$/;"	c
+ARG_IDX_LOGDIR	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_IDX_LOGDIR = 3$/;"	c
+ARG_IDX_RUNAS	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_IDX_RUNAS = 0$/;"	c
+ARG_IDX_RUNAS	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_IDX_RUNAS = 0$/;"	c
+ARG_IDX_SRCPATH	.\tools\win\other\EvacuateSettingFiles.vbs	/^Const ARG_IDX_SRCPATH = 1$/;"	c
+ARG_IDX_SRCPATH	.\tools\win\other\RestoreSettingFiles.vbs	/^Const ARG_IDX_SRCPATH = 1$/;"	c
+Activate	.\_lib\IE.vbs	/^    Public Sub Activate()$/;"	f
+ActiveIE	.\_lib\IE.vbs	/^    Private Function ActiveIE()$/;"	f
+ActiveIE	.\_lib\ProgressBarIE.vbs	/^    Private Function ActiveIE()$/;"	f
+Add	.\_lib\SettingFileClass.vbs	/^    Public Function Add( _$/;"	f
+BACKUP_PATH_DST	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Const BACKUP_PATH_DST = "700_Evacuate_iTunes\\MobileSync"$/;"	c
+BACKUP_PATH_SRC	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Const BACKUP_PATH_SRC = "C:\\Users\\draem_000\\AppData\\Roaming\\Apple Computer\\MobileSync"$/;"	c
+CHOOSE_FILE_AT_DIALOG_BOX	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const CHOOSE_FILE_AT_DIALOG_BOX = True$/;"	c
+COPY_FILE_PREFIX	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Const COPY_FILE_PREFIX     = "#Cpy#"$/;"	c
+CREATE_BACKUP_FILE	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^CONST CREATE_BACKUP_FILE = False$/;"	c
+CREATE_BACKUP_FILE	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^CONST CREATE_BACKUP_FILE = False$/;"	c
+CalcPaddingTabWidth	.\_lib\String.vbs	/^Public Function CalcPaddingTabWidth( _$/;"	f
+CalcPaddingWidth	.\_lib\String.vbs	/^Public Function CalcPaddingWidth( _$/;"	f
+CalcWinHeight	.\_lib\ProgressBarIE.vbs	/^    Private Function CalcWinHeight( _$/;"	f
+Case 1	.\_lib\Excel.vbs	/^            Case 1:$/;"	l
+Case 1	.\_lib\StopWatch.vbs	/^                Case 1:$/;"	l
+Case 2	.\_lib\Excel.vbs	/^            Case 2:$/;"	l
+Case 2	.\_lib\StopWatch.vbs	/^                Case 2:$/;"	l
+Case 3	.\_lib\Excel.vbs	/^            Case 3:$/;"	l
+Case 3	.\_lib\StopWatch.vbs	/^                Case 3:$/;"	l
+Case Else	.\_lib\Excel.vbs	/^            Case Else:$/;"	l
+Case Else	.\_lib\StopWatch.vbs	/^                Case Else:$/;"	l
+Case Else	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Case Else:$/;"	l
+Case vbNo	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Case vbNo:$/;"	l
+Case vbYes	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Case vbYes:$/;"	l
+Class_Initialize	.\_lib\IE.vbs	/^    Private Sub Class_Initialize()$/;"	f
+Class_Initialize	.\_lib\Log.vbs	/^    Private Sub Class_Initialize()$/;"	f
+Class_Initialize	.\_lib\ProgressBarCscript.vbs	/^    Private Sub Class_Initialize$/;"	f
+Class_Initialize	.\_lib\ProgressBarIE.vbs	/^    Private Sub Class_Initialize()$/;"	f
+Class_Initialize	.\_lib\SettingFileClass.vbs	/^    Private Sub Class_Initialize()$/;"	f
+Class_Initialize	.\_lib\StopWatch.vbs	/^    Private Sub Class_Initialize()$/;"	f
+Class_Initialize	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Class_Initialize$/;"	f
+Class_Initialize	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Class_Initialize$/;"	f
+Class_Terminate	.\_lib\IE.vbs	/^    Private Sub Class_Terminate()$/;"	f
+Class_Terminate	.\_lib\Log.vbs	/^    Private Sub Class_Terminate()$/;"	f
+Class_Terminate	.\_lib\ProgressBarCscript.vbs	/^    Private Sub Class_Terminate$/;"	f
+Class_Terminate	.\_lib\ProgressBarIE.vbs	/^    Private Sub Class_Terminate()$/;"	f
+Class_Terminate	.\_lib\SettingFileClass.vbs	/^    Private Sub Class_Terminate()$/;"	f
+Class_Terminate	.\_lib\StopWatch.vbs	/^    Private Sub Class_Terminate()$/;"	f
+Class_Terminate	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Class_Terminate$/;"	f
+Class_Terminate	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Class_Terminate$/;"	f
+Close	.\_lib\Log.vbs	/^    Public Function Close()$/;"	f
+ConvDate2String	.\_lib\String.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvDate2String	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^Public Function ConvDate2String( _$/;"	f
+ConvFormat	.\_lib\StopWatch.vbs	/^    Public Function ConvFormat( _$/;"	f
+ConvProgRange	.\_lib\ProgressBarIE.vbs	/^    Public Function ConvProgRange( _$/;"	f
+ConvSec2SplitTime	.\_lib\ProgressBarIE.vbs	/^    Private Function ConvSec2SplitTime( _$/;"	f
+ConvStrCntrlChr2Raw	.\_lib\SettingFileClass.vbs	/^    Public Function ConvStrCntrlChr2Raw( _$/;"	f
+ConvStrRaw2CntrlChr	.\_lib\SettingFileClass.vbs	/^    Public Function ConvStrRaw2CntrlChr( _$/;"	f
+ConvTypeBool2Str	.\_lib\SettingFileClass.vbs	/^    Public Function ConvTypeBool2Str( _$/;"	f
+ConvTypeStr2Bool	.\_lib\SettingFileClass.vbs	/^    Public Function ConvTypeStr2Bool( _$/;"	f
+CreateDirectry	.\_lib\FileSystem.vbs	/^Public Function CreateDirectry( _$/;"	f
+CreateNewExcelFile	.\_lib\Excel.vbs	/^Public Function CreateNewExcelFile( _$/;"	f
+DATATYPE_ROW_KEYWORD	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Const DATATYPE_ROW_KEYWORD = "DataType"$/;"	c
+DATATYPE_ROW_KEYWORD	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Const DATATYPE_ROW_KEYWORD = "DataType"$/;"	c
+DATATYPE_ROW_KEYWORD	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Const DATATYPE_ROW_KEYWORD = "DataType"$/;"	c
+DATATYPE_ROW_KEYWORD	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Const DATATYPE_ROW_KEYWORD = "DataType"$/;"	c
+DATA_TYPE_LIST_FILE_NAME	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"$/;"	c
+DATA_TYPE_LIST_FILE_NAME	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"$/;"	c
+DATA_TYPE_LIST_FILE_NAME	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"$/;"	c
+DATA_TYPE_LIST_FILE_NAME	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^CONST DATA_TYPE_LIST_FILE_NAME = "data_type_list.csv"$/;"	c
+DEBUG_FUNCVALID_ADDFILES	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_ADDFILES              = True$/;"	c
+DEBUG_FUNCVALID_BACKUPITUNELIBRARYS	.\tools\itunes\ClearItunesTags.vbs	/^Const DEBUG_FUNCVALID_BACKUPITUNELIBRARYS   = True$/;"	c
+DEBUG_FUNCVALID_BACKUPITUNELIBRARYS	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_BACKUPITUNELIBRARYS   = True$/;"	c
+DEBUG_FUNCVALID_DATEINPUT	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_DATEINPUT             = True$/;"	c
+DEBUG_FUNCVALID_DIRCMDEXEC	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_DIRCMDEXEC            = True$/;"	c
+DEBUG_FUNCVALID_DIRRESULTDELETE	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_DIRRESULTDELETE       = True$/;"	c
+DEBUG_FUNCVALID_TAGUPDATE	.\tools\itunes\ClearItunesTags.vbs	/^Const DEBUG_FUNCVALID_TAGUPDATE             = True$/;"	c
+DEBUG_FUNCVALID_TAGUPDATE	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_TAGUPDATE             = True$/;"	c
+DEBUG_FUNCVALID_TRGTLISTUP	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const DEBUG_FUNCVALID_TRGTLISTUP            = True$/;"	c
+DEFAULT_DATA_TYPE	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^CONST DEFAULT_DATA_TYPE = "uint8"$/;"	c
+DEFAULT_DATA_TYPE	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^CONST DEFAULT_DATA_TYPE = "uint8"$/;"	c
+DEFAULT_ENV_NAME	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Const DEFAULT_ENV_NAME = "Path"$/;"	c
+DEFAULT_TARGET_GROUP	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Const DEFAULT_TARGET_GROUP = "User"   'System：すべてのユーザー 、User：現在のユーザー 、Volatile：現在のログオン 、Process：現在のプロセス$/;"	c
+DRIVE_TYPE_TABLE	.\_lib\FileSystem.vbs	/^    Dim DRIVE_TYPE_TABLE$/;"	v
+DeInit	.\_lib\SettingFileClass.vbs	/^    Private Sub DeInit()$/;"	f
+Delete	.\_lib\SettingFileClass.vbs	/^    Public Function Delete( _$/;"	f
+DeleteAll	.\_lib\SettingFileClass.vbs	/^    Public Function DeleteAll( _$/;"	f
+DeleteEmptyFolder	.\_lib\FileSystem.vbs	/^Public Function DeleteEmptyFolder( _$/;"	f
+EDIT_FILE_PREFIX	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const EDIT_FILE_PREFIX     = "#e#"$/;"	c
+EVACUATE_ORG_FILE	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const EVACUATE_ORG_FILE = True$/;"	c
+EXE_PATH_NEW	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Const EXE_PATH_NEW = "C:\\prg_exe"$/;"	c
+EXE_PATH_ORG	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Const EXE_PATH_ORG = "C:\\Users\\draem\\Programs\\program\\prg_exe"$/;"	c
+ErrorCheck	.\tools\win\other\EvacuateSettingFiles.vbs	/^Function ErrorCheck( _$/;"	f
+ErrorCheck	.\tools\win\other\RestoreSettingFiles.vbs	/^Function ErrorCheck( _$/;"	f
+ExcelApp	.\_lib\Excel.vbs	/^        Dim ExcelApp    ' アプリケーション$/;"	v
+ExcelBook	.\_lib\Excel.vbs	/^        Dim ExcelBook   ' ブック$/;"	v
+ExecDosCmd	.\_lib\Windows.vbs	/^Public Function ExecDosCmd( _$/;"	f
+ExecDosCmd	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Public Function ExecDosCmd( _$/;"	f
+ExecExcelMacro	.\_lib\Excel.vbs	/^Public Function ExecExcelMacro( _$/;"	f
+ExecRunas	.\_lib\Windows.vbs	/^Public Function ExecRunas()$/;"	f
+ExecRunas	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Public Function ExecRunas()$/;"	f
+Exists	.\_lib\SettingFileClass.vbs	/^    Public Function Exists( _$/;"	f
+ExtractRelativePath	.\_lib\String.vbs	/^Public Function ExtractRelativePath( _$/;"	f
+ExtractTailWord	.\_lib\String.vbs	/^Public Function ExtractTailWord( _$/;"	f
+ExtractTailWord	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Public Function ExtractTailWord( _$/;"	f
+ExtractValuesFrKeys	.\_lib\String.vbs	/^Public Function ExtractValuesFrKeys( _$/;"	f
+FileLoad	.\_lib\SettingFileClass.vbs	/^    Public Function FileLoad( _$/;"	f
+FileSave	.\_lib\SettingFileClass.vbs	/^    Public Function FileSave()$/;"	f
+FileSysem_Include	.\_lib\FileSystem.vbs	/^Private Function FileSysem_Include( _$/;"	f
+Finish	.\tools\itunes\ClearItunesTags.vbs	/^Function Finish()$/;"	f
+Finish	.\tools\itunes\UpdateItunesLibTags.vbs	/^Function Finish()$/;"	f
+GetDetailsOfGetDetailsOf	.\_lib\FileSystem.vbs	/^Public Sub GetDetailsOfGetDetailsOf()$/;"	f
+GetDirPath	.\_lib\String.vbs	/^Public Function GetDirPath( _$/;"	f
+GetDriveInfoFromDriveLetter	.\_lib\FileSystem.vbs	/^Public Function GetDriveInfoFromDriveLetter( _$/;"	f
+GetDriveInfoFromVolumeLabel	.\_lib\FileSystem.vbs	/^Public Function GetDriveInfoFromVolumeLabel( _$/;"	f
+GetFileBase	.\_lib\String.vbs	/^Public Function GetFileBase( _$/;"	f
+GetFileDetailInfo	.\_lib\FileSystem.vbs	/^Public Function GetFileDetailInfo( _$/;"	f
+GetFileDetailInfoIndex	.\_lib\FileSystem.vbs	/^Public Function GetFileDetailInfoIndex( _$/;"	f
+GetFileExt	.\_lib\String.vbs	/^Public Function GetFileExt( _$/;"	f
+GetFileInfo	.\_lib\FileSystem.vbs	/^Public Function GetFileInfo( _$/;"	f
+GetFileInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^Public Function GetFileInfo( _$/;"	f
+GetFileInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Public Function GetFileInfo( _$/;"	f
+GetFileInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Public Function GetFileInfo( _$/;"	f
+GetFileList	.\_lib\FileSystem.vbs	/^Public Function GetFileList( _$/;"	f
+GetFileList2	.\_lib\FileSystem.vbs	/^Public Function GetFileList2( _$/;"	f
+GetFileList3	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Public Function GetFileList3( _$/;"	f
+GetFileList3	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Public Function GetFileList3( _$/;"	f
+GetFileListCmdClct	.\_lib\FileSystem.vbs	/^Public Function GetFileListCmdClct( _$/;"	f
+GetFileName	.\_lib\String.vbs	/^Public Function GetFileName( _$/;"	f
+GetFileNotExistPath	.\_lib\FileSystem.vbs	/^Public Function GetFileNotExistPath( _$/;"	f
+GetFileNotExistPath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Public Function GetFileNotExistPath( _$/;"	f
+GetFileNotExistPath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Public Function GetFileNotExistPath( _$/;"	f
+GetFileNotExistPath	.\tools\7zip\ZipFile.vbs	/^Private Function GetFileNotExistPath( _$/;"	f
+GetFileNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^Private Function GetFileNotExistPath( _$/;"	f
+GetFileOrFolder	.\_lib\FileSystem.vbs	/^Public Function GetFileOrFolder( _$/;"	f
+GetFileOrFolder	.\tools\win\clipboard\CpyFileInfo.vbs	/^Public Function GetFileOrFolder( _$/;"	f
+GetFileOrFolder	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Public Function GetFileOrFolder( _$/;"	f
+GetFilePart	.\_lib\String.vbs	/^Public Function GetFilePart( _$/;"	f
+GetFolderInfo	.\_lib\FileSystem.vbs	/^Public Function GetFolderInfo( _$/;"	f
+GetFolderInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^Public Function GetFolderInfo( _$/;"	f
+GetFolderInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Public Function GetFolderInfo( _$/;"	f
+GetFolderInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Public Function GetFolderInfo( _$/;"	f
+GetFolderNotExistPath	.\_lib\FileSystem.vbs	/^Public Function GetFolderNotExistPath( _$/;"	f
+GetFolderNotExistPath	.\tools\7zip\ZipFile.vbs	/^Private Function GetFolderNotExistPath( _$/;"	f
+GetFolderNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^Private Function GetFolderNotExistPath( _$/;"	f
+GetNotExistPath	.\_lib\FileSystem.vbs	/^Public Function GetNotExistPath( _$/;"	f
+GetNotExistPath	.\tools\7zip\ZipFile.vbs	/^Public Function GetNotExistPath( _$/;"	f
+GetNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^Public Function GetNotExistPath( _$/;"	f
+GetObjFromPerID	.\_lib\iTunes.vbs	/^Function GetObjFromPerID( sID )$/;"	f
+GetPerIDFromObj	.\_lib\iTunes.vbs	/^Function GetPerIDFromObj( objTrack )$/;"	f
+GetProcID	.\_lib\ProgressBarIE.vbs	/^    Private Function GetProcID( _$/;"	f
+GetSvnRevision	.\tools\svn\CpySvnRev.vbs	/^Private Function GetSvnRevision( _$/;"	f
+GetTailIdx	.\_lib\X-Finder.vbs	/^Private Function GetTailIdx( _$/;"	f
+HIDE_PASSWORD	.\tools\7zip\ZipPasswordFile.vbs	/^Const HIDE_PASSWORD = True$/;"	c
+IE_HEADER_HEIGHT	.\_lib\IE.vbs	/^Const IE_HEADER_HEIGHT = 65$/;"	c
+IE_LINE_HEIGHT_RATIO	.\_lib\IE.vbs	/^Const IE_LINE_HEIGHT_RATIO = 1.22$/;"	c
+IE_WIN_LINE_HEIGHT_RATIO	.\_lib\IE.vbs	/^Const IE_WIN_LINE_HEIGHT_RATIO = 1.27$/;"	c
+INCLUDE_DOUBLE_QUOTATION	.\tools\win\clipboard\CpyFileInfo.vbs	/^Const INCLUDE_DOUBLE_QUOTATION = False$/;"	c
+INCLUDE_DOUBLE_QUOTATION	.\tools\win\clipboard\CpyFileName.vbs	/^Const INCLUDE_DOUBLE_QUOTATION = False$/;"	c
+INCLUDE_DOUBLE_QUOTATION	.\tools\win\clipboard\CpyFilePath.vbs	/^Const INCLUDE_DOUBLE_QUOTATION = False$/;"	c
+INDEX_MAX	.\tools\win\file_info\OutputFileInfo.vbs	/^Const INDEX_MAX = 500$/;"	c
+INITIAL_FILE_EXT	.\tools\7zip\ZipFile.vbs	/^Const INITIAL_FILE_EXT = "zip"$/;"	c
+INITIAL_FILE_EXT	.\tools\7zip\ZipPasswordFile.vbs	/^Const INITIAL_FILE_EXT = "zip"$/;"	c
+INPUT_PATH_FILE_NAME	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Const INPUT_PATH_FILE_NAME = "_repository_path"$/;"	c
+ITUNES_BACKUP_FOLDER_MAX	.\tools\itunes\ClearItunesTags.vbs	/^Const ITUNES_BACKUP_FOLDER_MAX = 20$/;"	c
+ITUNES_BACKUP_FOLDER_MAX	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const ITUNES_BACKUP_FOLDER_MAX = 20$/;"	c
+Include	.\_lib\_include_sample.vbs	/^Private Function Include( _$/;"	f
+Include	.\command\ReplaceStrInTxtFile.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\itunes\ClearItunesTags.vbs	/^Function Include( _$/;"	f
+Include	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Function Include( _$/;"	f
+Include	.\tools\itunes\UpdateItunesLibTags.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\clipboard\CpyFilePath.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\file_info\OutputFileInfo.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\win\file_ope\CopyToDir.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\win\file_ope\MoveToDir.vbs	/^Private Function Include( _$/;"	f
+Include	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\other\EvacuateSettingFiles.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\other\RestoreSettingFiles.vbs	/^Function Include( _$/;"	f
+Include	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Function Include( _$/;"	f
+Include	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Function Include( _$/;"	f
+Init	.\_lib\Log.vbs	/^    Private Function Init()$/;"	f
+Init	.\_lib\SettingFileClass.vbs	/^    Private Sub Init()$/;"	f
+IsArrayDefined	.\_lib\Array.vbs	/^Public Function IsArrayDefined( _$/;"	f
+Item	.\_lib\SettingFileClass.vbs	/^    Public Function Item( _$/;"	f
+LenByte	.\_lib\String.vbs	/^Public Function LenByte( _$/;"	f
+LenByte	.\tools\win\file_ope\CreateRenameBat.vbs	/^Public Function LenByte( _$/;"	f
+Mode	.\_lib\Log.vbs	/^    Public Function Mode( _$/;"	f
+Name	.\_lib\FileSystem.vbs	/^            TypeName(objFolder.GetDetailsOf(objFile, i)) & Chr(9) & _$/;"	t
+OBJECT_SUFFIX	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Const OBJECT_SUFFIX = " - シンボリックリンク"$/;"	c
+ORIGINAL_FILE_PREFIX	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Const ORIGINAL_FILE_PREFIX = "#Org#"$/;"	c
+ORIGINAL_FILE_PREFIX	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const ORIGINAL_FILE_PREFIX = "#o#"$/;"	c
+OUTPUT_BAT_FILE_BASE_NAME	.\tools\win\file_ope\CreateRenameBat.vbs	/^Const OUTPUT_BAT_FILE_BASE_NAME = "rename"$/;"	c
+OUTPUT_FINISH_MESSAGE	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^CONST OUTPUT_FINISH_MESSAGE = True$/;"	c
+OUTPUT_FINISH_MESSAGE	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^CONST OUTPUT_FINISH_MESSAGE = True$/;"	c
+OUTPUT_FINISH_MESSAGE	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^CONST OUTPUT_FINISH_MESSAGE = True$/;"	c
+OUTPUT_FINISH_MESSAGE	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^CONST OUTPUT_FINISH_MESSAGE = True$/;"	c
+Open	.\_lib\Log.vbs	/^    Public Function Open( _$/;"	f
+OutputAllElement2Console	.\_lib\Array.vbs	/^Public Function OutputAllElement2Console( _$/;"	f
+OutputAllElement2LogFile	.\_lib\Array.vbs	/^Public Function OutputAllElement2LogFile( _$/;"	f
+PrintExcelSheet	.\_lib\Excel.vbs	/^Public Function PrintExcelSheet( _$/;"	f
+Puts	.\_lib\Log.vbs	/^    Public Function Puts( _$/;"	f
+Qfe	.\_lib\IE.vbs	/^        Dim Qfe$/;"	v
+Qfe	.\_lib\ProgressBarIE.vbs	/^        Dim Qfe$/;"	v
+QfeSet	.\_lib\IE.vbs	/^        Dim QfeSet$/;"	v
+QfeSet	.\_lib\ProgressBarIE.vbs	/^        Dim QfeSet$/;"	v
+Quit	.\_lib\IE.vbs	/^    Public Sub Quit()$/;"	f
+Quit	.\_lib\ProgressBarIE.vbs	/^    Public Function Quit()$/;"	f
+RAMNAME_ROW_KEYWORD	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Const RAMNAME_ROW_KEYWORD = "TimeStamp,"$/;"	c
+RAMNAME_ROW_KEYWORD	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Const RAMNAME_ROW_KEYWORD = "TimeStamp,"$/;"	c
+RAMNAME_ROW_KEYWORD	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Const RAMNAME_ROW_KEYWORD = "TimeStamp,"$/;"	c
+RAMNAME_ROW_KEYWORD	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Const RAMNAME_ROW_KEYWORD = "TimeStamp,"$/;"	c
+REPLACE_RAM_SYMBOL	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^CONST REPLACE_RAM_SYMBOL = False$/;"	c
+REPLACE_RAM_SYMBOL	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^CONST REPLACE_RAM_SYMBOL = False$/;"	c
+REPLACE_RAM_SYMBOL	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^CONST REPLACE_RAM_SYMBOL = False$/;"	c
+REPLACE_RAM_SYMBOL	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^CONST REPLACE_RAM_SYMBOL = False$/;"	c
+ReadItemFromFile	.\_lib\SettingFileClass.vbs	/^    Public Function ReadItemFromFile( _$/;"	f
+ReadTxtFileToCollection	.\_lib\Collection.vbs	/^Public Function ReadTxtFileToCollection( _$/;"	f
+ReadTxtFileToCollection	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Public Function ReadTxtFileToCollection( _$/;"	f
+ReadTxtFileToCollection	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Public Function ReadTxtFileToCollection( _$/;"	f
+RemoveTailWord	.\_lib\String.vbs	/^Public Function RemoveTailWord( _$/;"	f
+RenameRamSymbol	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Private Function RenameRamSymbol( _$/;"	f
+RenameRamSymbol	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Private Function RenameRamSymbol( _$/;"	f
+RenameRamSymbol	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Private Function RenameRamSymbol( _$/;"	f
+RenameRamSymbol	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Private Function RenameRamSymbol( _$/;"	f
+Result	.\_lib\Array.vbs	/^        Dim Result$/;"	v
+Result	.\_lib\Math.vbs	/^        Dim Result$/;"	v
+Result	.\_lib\String.vbs	/^        Dim Result$/;"	v
+Result	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^        Dim Result$/;"	v
+Result	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim Result$/;"	v
+Result = Result & vbNewLine & RemoveTailWord( "C:\test", "\" )          ' C	.\_lib\String.vbs	/^        Result = Result & vbNewLine & RemoveTailWord( "C:\\test", "\\" )          ' C:$/;"	l
+RoundUp	.\_lib\Math.vbs	/^Public Function RoundUp( _$/;"	f
+RoundUp	.\_lib\ProgressBarIE.vbs	/^    Private Function RoundUp( _$/;"	f
+SEARCH_VOLUME_LAVEL	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Const SEARCH_VOLUME_LAVEL = "PocketHdd"$/;"	c
+SHORTCUT_FILE_SUFFIX	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Const SHORTCUT_FILE_SUFFIX = "#Src#"$/;"	c
+SHORTCUT_FILE_SUFFIX	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const SHORTCUT_FILE_SUFFIX = "#s#"$/;"	c
+SPLIT_BYTE_SIZE	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Const SPLIT_BYTE_SIZE = 1024000$/;"	c
+Select case lObjType	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Select case lObjType:$/;"	l
+Service	.\_lib\IE.vbs	/^        Dim Service$/;"	v
+Service	.\_lib\ProgressBarIE.vbs	/^        Dim Service$/;"	v
+SetDialogFilters	.\_lib\FileSystem.vbs	/^Private Function SetDialogFilters( _$/;"	f
+SetFileDetailInfo	.\_lib\FileSystem.vbs	/^Public Function SetFileDetailInfo( _$/;"	f
+SetFileInfo	.\_lib\FileSystem.vbs	/^Public Function SetFileInfo( _$/;"	f
+SetFileInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Public Function SetFileInfo( _$/;"	f
+SetFileInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Public Function SetFileInfo( _$/;"	f
+SetFolderInfo	.\_lib\FileSystem.vbs	/^Public Function SetFolderInfo( _$/;"	f
+ShowFileSelectDialog	.\_lib\FileSystem.vbs	/^Private Function ShowFileSelectDialog( _$/;"	f
+ShowFilesSelectDialog	.\_lib\FileSystem.vbs	/^Private Function ShowFilesSelectDialog( _$/;"	f
+ShowFolderSelectDialog	.\_lib\FileSystem.vbs	/^Private Function ShowFolderSelectDialog( _$/;"	f
+StartT	.\_lib\StopWatch.vbs	/^    Public Function StartT()$/;"	f
+StopT	.\_lib\StopWatch.vbs	/^    Public Function StopT()$/;"	f
+StopWatchInit	.\_lib\StopWatch.vbs	/^    Private Sub StopWatchInit()$/;"	f
+TEMP_FILE_NAME	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Const TEMP_FILE_NAME = "diff_target_path.tmp"$/;"	c
+TRGT_DIR	.\tools\itunes\ClearItunesTags.vbs	/^Const TRGT_DIR = "Z:\\300_Musics"$/;"	c
+TRGT_DIR	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const TRGT_DIR = "Z:\\300_Musics"$/;"	c
+TRGT_NETWORKDRIVE_PATH	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Const TRGT_NETWORKDRIVE_PATH = "\\\\RASPBERRYPI\\LogitecHdd3T"$/;"	c
+TestSub_ExtractValuesFrKeysTrim	.\_lib\String.vbs	/^    Private Function TestSub_ExtractValuesFrKeysTrim( _$/;"	f
+Test_CalcPaddingTabWidth	.\_lib\String.vbs	/^    Private Sub Test_CalcPaddingTabWidth()$/;"	f
+Test_CalcPaddingWidth	.\_lib\String.vbs	/^    Private Sub Test_CalcPaddingWidth()$/;"	f
+Test_ConvDate2String	.\_lib\String.vbs	/^    Private Sub Test_ConvDate2String()$/;"	f
+Test_CreateNewExcelFile	.\_lib\Excel.vbs	/^    Private Sub Test_CreateNewExcelFile()$/;"	f
+Test_DeleteEmptyFolder	.\_lib\FileSystem.vbs	/^    Private Sub Test_DeleteEmptyFolder()$/;"	f
+Test_ExecDosCmd	.\_lib\Windows.vbs	/^    Private Sub Test_ExecDosCmd()$/;"	f
+Test_ExecDosCmd	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Private Sub Test_ExecDosCmd()$/;"	f
+Test_ExecExcelMacro	.\_lib\Excel.vbs	/^    Private Sub Test_ExecExcelMacro()$/;"	f
+Test_ExtractRelativePath	.\_lib\String.vbs	/^    Private Sub Test_ExtractRelativePath()$/;"	f
+Test_ExtractTailWord	.\_lib\String.vbs	/^    Private Sub Test_ExtractTailWord()$/;"	f
+Test_ExtractTailWord	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^    Private Sub Test_ExtractTailWord()$/;"	f
+Test_ExtractValuesFrKeys	.\_lib\String.vbs	/^    Private Sub Test_ExtractValuesFrKeys()$/;"	f
+Test_GetDirPath	.\_lib\String.vbs	/^    Private Sub Test_GetDirPath()$/;"	f
+Test_GetDriveInfoFromDriveLetter	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetDriveInfoFromDriveLetter()$/;"	f
+Test_GetDriveInfoFromVolumeLabel	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetDriveInfoFromVolumeLabel()$/;"	f
+Test_GetFileBase	.\_lib\String.vbs	/^    Private Sub Test_GetFileBase()$/;"	f
+Test_GetFileDetailInfo	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileDetailInfo()$/;"	f
+Test_GetFileDetailInfoIndex	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileDetailInfoIndex()$/;"	f
+Test_GetFileExt	.\_lib\String.vbs	/^    Private Sub Test_GetFileExt()$/;"	f
+Test_GetFileInfo	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileInfo()$/;"	f
+Test_GetFileInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Private Sub Test_GetFileInfo()$/;"	f
+Test_GetFileInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Private Sub Test_GetFileInfo()$/;"	f
+Test_GetFileInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Private Sub Test_GetFileInfo()$/;"	f
+Test_GetFileList	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileList()$/;"	f
+Test_GetFileList2	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileList2()$/;"	f
+Test_GetFileList3	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Test_GetFileList3()$/;"	f
+Test_GetFileList3	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Test_GetFileList3()$/;"	f
+Test_GetFileListCmdClct	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileListCmdClct()$/;"	f
+Test_GetFileName	.\_lib\String.vbs	/^    Private Sub Test_GetFileName()$/;"	f
+Test_GetFileNotExistPath	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFileNotExistPath()$/;"	f
+Test_GetFileNotExistPath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Test_GetFileNotExistPath()$/;"	f
+Test_GetFileNotExistPath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Test_GetFileNotExistPath()$/;"	f
+Test_GetFileNotExistPath	.\tools\7zip\ZipFile.vbs	/^    Private Sub Test_GetFileNotExistPath()$/;"	f
+Test_GetFileNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Private Sub Test_GetFileNotExistPath()$/;"	f
+Test_GetFilePart	.\_lib\String.vbs	/^    Private Sub Test_GetFilePart()$/;"	f
+Test_GetFolderInfo	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFolderInfo()$/;"	f
+Test_GetFolderInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Private Sub Test_GetFolderInfo()$/;"	f
+Test_GetFolderInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Private Sub Test_GetFolderInfo()$/;"	f
+Test_GetFolderInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Private Sub Test_GetFolderInfo()$/;"	f
+Test_GetFolderNotExistPath	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetFolderNotExistPath()$/;"	f
+Test_GetFolderNotExistPath	.\tools\7zip\ZipFile.vbs	/^    Private Sub Test_GetFolderNotExistPath()$/;"	f
+Test_GetFolderNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Private Sub Test_GetFolderNotExistPath()$/;"	f
+Test_GetNotExistPath	.\_lib\FileSystem.vbs	/^    Private Sub Test_GetNotExistPath()$/;"	f
+Test_GetNotExistPath	.\tools\7zip\ZipFile.vbs	/^    Private Sub Test_GetNotExistPath()$/;"	f
+Test_GetNotExistPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Private Sub Test_GetNotExistPath()$/;"	f
+Test_GetTailIdx	.\_lib\X-Finder.vbs	/^    Private Sub Test_GetTailIdx()$/;"	f
+Test_IE	.\_lib\IE.vbs	/^    Private Sub Test_IE$/;"	f
+Test_IsArrayDefined	.\_lib\Array.vbs	/^    Private Sub Test_IsArrayDefined()$/;"	f
+Test_LenByte	.\_lib\String.vbs	/^    Private Sub Test_LenByte()$/;"	f
+Test_LenByte	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Private Sub Test_LenByte()$/;"	f
+Test_LogMng	.\_lib\Log.vbs	/^    Private Sub Test_LogMng$/;"	f
+Test_OpenTxtFile2Array	.\_lib\Collection.vbs	/^    Private Sub Test_OpenTxtFile2Array()$/;"	f
+Test_OpenTxtFile2Array	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Test_OpenTxtFile2Array()$/;"	f
+Test_OpenTxtFile2Array	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Test_OpenTxtFile2Array()$/;"	f
+Test_OutputAllElement2LogFile	.\_lib\Array.vbs	/^    Private Sub Test_OutputAllElement2LogFile$/;"	f
+Test_PrintExcelSheet	.\_lib\Excel.vbs	/^    Private Sub Test_PrintExcelSheet()$/;"	f
+Test_ProgressBar	.\_lib\ProgressBarCscript.vbs	/^    Private Sub Test_ProgressBar$/;"	f
+Test_ProgressBar	.\_lib\ProgressBarIE.vbs	/^    Private Sub Test_ProgressBar$/;"	f
+Test_ProgressBar	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Test_ProgressBar$/;"	f
+Test_ProgressBar	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Test_ProgressBar$/;"	f
+Test_RemoveTailWord	.\_lib\String.vbs	/^    Private Sub Test_RemoveTailWord()$/;"	f
+Test_RoundUp	.\_lib\Math.vbs	/^    Private Sub Test_RoundUp()$/;"	f
+Test_SettingFile	.\_lib\SettingFileClass.vbs	/^    Private Sub Test_SettingFile()$/;"	f
+Test_ShowFileSelectDialog	.\_lib\FileSystem.vbs	/^    Private Sub Test_ShowFileSelectDialog()$/;"	f
+Test_ShowFilesSelectDialog	.\_lib\FileSystem.vbs	/^    Private Sub Test_ShowFilesSelectDialog()$/;"	f
+Test_ShowFolderSelectDialog	.\_lib\FileSystem.vbs	/^    Private Sub Test_ShowFolderSelectDialog()$/;"	f
+Test_StopWatch	.\_lib\StopWatch.vbs	/^    Private Sub Test_StopWatch$/;"	f
+Test_TextFile2VariantArray	.\_lib\X-Finder.vbs	/^    Private Sub Test_TextFile2VariantArray()$/;"	f
+Test_UpdateIniFile	.\_lib\X-Finder.vbs	/^    Private Sub Test_UpdateIniFile()$/;"	f
+Test_WriteTxtFileFrCollection	.\_lib\Collection.vbs	/^    Private Sub Test_WriteTxtFileFrCollection()$/;"	f
+Test_WriteTxtFileFrCollection	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Private Sub Test_WriteTxtFileFrCollection()$/;"	f
+Test_WriteTxtFileFrCollection	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Private Sub Test_WriteTxtFileFrCollection()$/;"	f
+TextFile2VariantArray	.\_lib\X-Finder.vbs	/^Private Function TextFile2VariantArray( _$/;"	f
+TimeDiff	.\_lib\StopWatch.vbs	/^    Public Function TimeDiff( _$/;"	f
+UPDATE_MODIFIED_DATE	.\tools\itunes\ClearItunesTags.vbs	/^Const UPDATE_MODIFIED_DATE = False$/;"	c
+UPDATE_MODIFIED_DATE	.\tools\itunes\UpdateItunesLibTags.vbs	/^Const UPDATE_MODIFIED_DATE = False$/;"	c
+Update	.\_lib\ProgressBarCscript.vbs	/^    Public Sub Update( _$/;"	f
+Update	.\_lib\ProgressBarIE.vbs	/^    Public Function Update( _$/;"	f
+Update	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Public Sub Update( _$/;"	f
+Update	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Public Sub Update( _$/;"	f
+UpdateIniFile	.\_lib\X-Finder.vbs	/^Public Function UpdateIniFile( _$/;"	f
+WriteItemToFile	.\_lib\SettingFileClass.vbs	/^    Public Function WriteItemToFile( _$/;"	f
+WriteTxtFileFrCollection	.\_lib\Collection.vbs	/^Public Function WriteTxtFileFrCollection( _$/;"	f
+WriteTxtFileFrCollection	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Public Function WriteTxtFileFrCollection( _$/;"	f
+WriteTxtFileFrCollection	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Public Function WriteTxtFileFrCollection( _$/;"	f
+aTestArr01	.\_lib\Array.vbs	/^        Dim aTestArr01(0)$/;"	v
+aTestArr02	.\_lib\Array.vbs	/^        Dim aTestArr02(1)$/;"	v
+aTestArr04	.\_lib\Array.vbs	/^        Dim aTestArr04()$/;"	v
+aTestArr05	.\_lib\Array.vbs	/^        Dim aTestArr05()$/;"	v
+aTestArr06	.\_lib\Array.vbs	/^        Dim aTestArr06()$/;"	v
+aTestArr07	.\_lib\Array.vbs	/^        Dim aTestArr07$/;"	v
+aTestArr08	.\_lib\Array.vbs	/^        Dim aTestArr08$/;"	v
+aTestArr09	.\_lib\Array.vbs	/^        Dim aTestArr09()$/;"	v
+alKeyMatchCharIdx	.\_lib\String.vbs	/^    Dim alKeyMatchCharIdx()$/;"	v
+bAllTestExec	.\_lib\ProgressBarIE.vbs	/^        Dim bAllTestExec$/;"	v
+bAllTestExec	.\_lib\StopWatch.vbs	/^        Dim bAllTestExec$/;"	v
+bExecStore	.\_lib\FileSystem.vbs	/^    Dim bExecStore$/;"	v
+bExistFile	.\_lib\SettingFileClass.vbs	/^        Dim bExistFile$/;"	v
+bExistItem	.\_lib\SettingFileClass.vbs	/^        Dim bExistItem$/;"	v
+bFileExists	.\_lib\FileSystem.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\7zip\UnzipFile.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\7zip\ZipFile.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\7zip\ZipFile.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim bFileExists$/;"	v
+bFileExists	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim bFileExists$/;"	v
+bFinished	.\tools\win\other\PopupTimeSignal.vbs	/^Dim bFinished$/;"	v
+bFirstStore	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim bFirstStore$/;"	v
+bFirstStore	.\tools\win\clipboard\CpyFileName.vbs	/^    Dim bFirstStore$/;"	v
+bFirstStore	.\tools\win\clipboard\CpyFilePath.vbs	/^    Dim bFirstStore$/;"	v
+bFirstStore	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim bFirstStore$/;"	v
+bFolderExists	.\_lib\FileSystem.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\7zip\UnzipFile.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\7zip\ZipFile.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\7zip\ZipFile.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim bFolderExists$/;"	v
+bFolderExists	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim bFolderExists$/;"	v
+bIsContinue	.\_lib\FileSystem.vbs	/^    Dim bIsContinue$/;"	v
+bIsContinue	.\tools\7zip\UnzipFile.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\7zip\ZipFile.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\7zip\ZipPasswordFile.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\ctags,gtags\CreateTagFiles.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\svn\CpySvnRev.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\vim\OpenAllFilesWithVim.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\clipboard\CpyFileInfo.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\clipboard\CpyFileName.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\clipboard\CpyFilePath.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\clipboard\CpyPrgNo.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\CreateRenameBat.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^Dim bIsContinue$/;"	v
+bIsContinue	.\tools\x-finder\ToggleHiddenFileVisibility.vbs	/^Dim bIsContinue$/;"	v
+bIsError	.\tools\svn\CpySvnRev.vbs	/^        Dim bIsError$/;"	v
+bIsExecLibAdd	.\tools\itunes\UpdateItunesLibTags.vbs	/^Dim bIsExecLibAdd$/;"	v
+bIsExecLibMod	.\tools\itunes\UpdateItunesLibTags.vbs	/^Dim bIsExecLibMod$/;"	v
+bIsExecutableOs	.\_lib\Windows.vbs	/^    Dim bIsExecutableOs$/;"	v
+bIsExecutableOs	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim bIsExecutableOs$/;"	v
+bIsExist	.\tools\7zip\ZipFile.vbs	/^            Dim bIsExist$/;"	v
+bIsExist	.\tools\7zip\ZipPasswordFile.vbs	/^            Dim bIsExist$/;"	v
+bIsFileExist	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim bIsFileExist$/;"	v
+bIsFileFolderExists	.\_lib\FileSystem.vbs	/^        Dim bIsFileFolderExists$/;"	v
+bIsFilePathMatched	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim bIsFilePathMatched$/;"	v
+bIsGetDirLevelTiming	.\tools\win\clipboard\CpyFilePath.vbs	/^        Dim bIsGetDirLevelTiming$/;"	v
+bIsGetDirNameTiming	.\tools\win\clipboard\CpyFilePath.vbs	/^        Dim bIsGetDirNameTiming$/;"	v
+bIsMatch	.\command\ReplaceStrInTxtFile.vbs	/^Dim bIsMatch$/;"	v
+bIsReEnter	.\tools\7zip\ZipFile.vbs	/^    Dim bIsReEnter$/;"	v
+bIsReEnter	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim bIsReEnter$/;"	v
+bIsRegExp	.\command\ReplaceStrInTxtFile.vbs	/^Dim bIsRegExp$/;"	v
+bIsRunas	.\_lib\Windows.vbs	/^    Dim bIsRunas$/;"	v
+bIsRunas	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim bIsRunas$/;"	v
+bIsTestFinish	.\_lib\ProgressBarIE.vbs	/^        Dim bIsTestFinish$/;"	v
+bIsTestFinish	.\_lib\StopWatch.vbs	/^        Dim bIsTestFinish$/;"	v
+bIsTrgtFile	.\tools\7zip\UnzipFile.vbs	/^            Dim bIsTrgtFile$/;"	v
+bIsTrgtPathExists	.\_lib\FileSystem.vbs	/^    Dim bIsTrgtPathExists$/;"	v
+bIsTrgtPathExists	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim bIsTrgtPathExists$/;"	v
+bIsTrgtPathExists	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim bIsTrgtPathExists$/;"	v
+bIsTrgtPathExists	.\tools\7zip\ZipFile.vbs	/^    Dim bIsTrgtPathExists$/;"	v
+bIsTrgtPathExists	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim bIsTrgtPathExists$/;"	v
+bRet	.\_lib\Collection.vbs	/^        Dim bRet$/;"	v
+bRet	.\_lib\FileSystem.vbs	/^        Dim bRet$/;"	v
+bRet	.\_lib\String.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\7zip\ZipFile.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim bRet$/;"	v
+bRet	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim bRet$/;"	v
+bTestContinue	.\_lib\ProgressBarIE.vbs	/^        Dim bTestContinue$/;"	v
+bTestContinue	.\_lib\StopWatch.vbs	/^        Dim bTestContinue$/;"	v
+cAcceptFileFormats	.\tools\7zip\UnzipFile.vbs	/^Dim cAcceptFileFormats$/;"	v
+cAcceptFileFormats	.\tools\7zip\ZipFile.vbs	/^Dim cAcceptFileFormats$/;"	v
+cAcceptFileFormats	.\tools\7zip\ZipPasswordFile.vbs	/^Dim cAcceptFileFormats$/;"	v
+cCsvFileList	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^dim cCsvFileList$/;"	v
+cCsvFileList	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^dim cCsvFileList$/;"	v
+cCsvFileList	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^dim cCsvFileList$/;"	v
+cCsvFileList	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^dim cCsvFileList$/;"	v
+cDataTypeList	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^dim cDataTypeList$/;"	v
+cDataTypeList	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^dim cDataTypeList$/;"	v
+cFileContents	.\_lib\Collection.vbs	/^        Dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim cFileContents$/;"	v
+cFileContents	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    dim cFileContents$/;"	v
+cFileList	.\_lib\Collection.vbs	/^        Dim cFileList$/;"	v
+cFileList	.\_lib\FileSystem.vbs	/^        Dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim cFileList$/;"	v
+cFileList	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    dim cFileList$/;"	v
+cFileNames	.\tools\win\clipboard\CpyFileName.vbs	/^    Dim cFileNames$/;"	v
+cFileNames	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim cFileNames$/;"	v
+cFilePaths	.\tools\svn\CpySvnRev.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\clipboard\CpyFileInfo.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\clipboard\CpyFileName.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\clipboard\CpyFilePath.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\clipboard\CpyPrgNo.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\CreateRenameBat.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^DIm cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^Dim cFilePaths$/;"	v
+cFilePaths	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^Dim cFilePaths$/;"	v
+cInputFile	.\command\ReplaceStrInTxtFile.vbs	/^Dim cInputFile$/;"	v
+cOutputFile	.\command\ReplaceStrInTxtFile.vbs	/^Dim cOutputFile$/;"	v
+cRepoFilePaths	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim cRepoFilePaths$/;"	v
+cRltvFilePaths	.\tools\win\clipboard\CpyFilePath.vbs	/^    Dim cRltvFilePaths$/;"	v
+cSelected	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim cSelected$/;"	v
+cSelectedPaths	.\tools\7zip\UnzipFile.vbs	/^Dim cSelectedPaths$/;"	v
+cSelectedPaths	.\tools\7zip\ZipFile.vbs	/^Dim cSelectedPaths$/;"	v
+cSelectedPaths	.\tools\7zip\ZipPasswordFile.vbs	/^Dim cSelectedPaths$/;"	v
+cSelectedPaths	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Dim cSelectedPaths$/;"	v
+cSelectedPaths	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim cSelectedPaths$/;"	v
+cTrgtPaths	.\tools\7zip\UnzipFile.vbs	/^    Dim cTrgtPaths$/;"	v
+cTrgtPaths	.\tools\7zip\ZipFile.vbs	/^    Dim cTrgtPaths$/;"	v
+cTrgtPaths	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim cTrgtPaths$/;"	v
+clSetting	.\_lib\SettingFileClass.vbs	/^        Dim clSetting$/;"	v
+clSetting	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim clSetting$/;"	v
+colItems	.\_lib\IE.vbs	/^        Dim colItems$/;"	v
+colItems	.\_lib\ProgressBarIE.vbs	/^        Dim colItems$/;"	v
+dCalcResult	.\_lib\String.vbs	/^    Dim dCalcResult$/;"	v
+dCurPoint	.\_lib\StopWatch.vbs	/^        Dim dCurPoint$/;"	v
+dDataTypeList	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^dim dDataTypeList$/;"	v
+dDataTypeList	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^dim dDataTypeList$/;"	v
+dDataTypeListDupChk	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^dim dDataTypeListDupChk '重複チェック用$/;"	v
+dDataTypeListDupChk	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^dim dDataTypeListDupChk '重複チェック用$/;"	v
+dElapsedTime1PerCur	.\_lib\ProgressBarIE.vbs	/^            Dim dElapsedTime1PerCur$/;"	v
+dElapsedTimeAvg	.\_lib\ProgressBarIE.vbs	/^            Dim dElapsedTimeAvg$/;"	v
+dElapsedTimeCur	.\_lib\ProgressBarIE.vbs	/^        Dim dElapsedTimeCur$/;"	v
+dElapsedTimeDiff	.\_lib\ProgressBarIE.vbs	/^            Dim dElapsedTimeDiff$/;"	v
+dElapsedTimeSum	.\_lib\ProgressBarIE.vbs	/^            Dim dElapsedTimeSum$/;"	v
+dProgPerCur	.\_lib\ProgressBarIE.vbs	/^        Dim dProgPerCur$/;"	v
+dProgPerDiff	.\_lib\ProgressBarIE.vbs	/^        Dim dProgPerDiff$/;"	v
+dProgPerRem	.\_lib\ProgressBarIE.vbs	/^            Dim dProgPerRem$/;"	v
+dSecondNow	.\_lib\ProgressBarIE.vbs	/^        Dim dSecondNow$/;"	v
+dSecondOld	.\_lib\ProgressBarIE.vbs	/^        Dim dSecondOld$/;"	v
+fdDialog	.\_lib\FileSystem.vbs	/^    Dim fdDialog$/;"	v
+gbIsMeasuring	.\_lib\StopWatch.vbs	/^    Dim gbIsMeasuring$/;"	v
+gdElapsedTime	.\_lib\ProgressBarIE.vbs	/^    Dim gdElapsedTime$/;"	v
+gdElapsedTimeDiffTable	.\_lib\ProgressBarIE.vbs	/^    Dim gdElapsedTimeDiffTable()$/;"	v
+gdElapsedTimeLastCalc	.\_lib\ProgressBarIE.vbs	/^    Dim gdElapsedTimeLastCalc$/;"	v
+gdIntervalPoint	.\_lib\StopWatch.vbs	/^    Dim gdIntervalPoint$/;"	v
+gdProgPer10	.\_lib\ProgressBarIE.vbs	/^    Dim gdProgPer10$/;"	v
+gdProgPer100	.\_lib\ProgressBarIE.vbs	/^    Dim gdProgPer100$/;"	v
+gdProgPerLastCalc	.\_lib\ProgressBarIE.vbs	/^    Dim gdProgPerLastCalc$/;"	v
+gdProgPerRaw	.\_lib\ProgressBarIE.vbs	/^    Dim gdProgPerRaw$/;"	v
+gdRemainingTime	.\_lib\ProgressBarIE.vbs	/^    Dim gdRemainingTime$/;"	v
+gdStartPoint	.\_lib\StopWatch.vbs	/^    Dim gdStartPoint$/;"	v
+gdStartTime	.\_lib\ProgressBarIE.vbs	/^    Dim gdStartTime$/;"	v
+gdStopPoint	.\_lib\StopWatch.vbs	/^    Dim gdStopPoint$/;"	v
+glElapsedTimeStoreNum	.\_lib\ProgressBarIE.vbs	/^    Dim glElapsedTimeStoreNum$/;"	v
+glFontSize	.\_lib\IE.vbs	/^    Dim glFontSize$/;"	v
+glHorizontal	.\_lib\IE.vbs	/^    Dim glHorizontal$/;"	v
+glLineHeight	.\_lib\IE.vbs	/^    Dim glLineHeight$/;"	v
+glVertical	.\_lib\IE.vbs	/^    Dim glVertical$/;"	v
+glWinHeight	.\_lib\ProgressBarIE.vbs	/^    Dim glWinHeight$/;"	v
+glWinHeightOld	.\_lib\ProgressBarIE.vbs	/^    Dim glWinHeightOld$/;"	v
+gobjExplorer	.\_lib\IE.vbs	/^    Dim gobjExplorer$/;"	v
+gobjExplorer	.\_lib\ProgressBarIE.vbs	/^    Dim gobjExplorer$/;"	v
+gsFont	.\_lib\IE.vbs	/^    Dim gsFont$/;"	v
+gsIntervalDate	.\_lib\StopWatch.vbs	/^    Dim gsIntervalDate$/;"	v
+gsProgMsg	.\_lib\ProgressBarIE.vbs	/^    Dim gsProgMsg$/;"	v
+gsStartDate	.\_lib\ProgressBarIE.vbs	/^    Dim gsStartDate$/;"	v
+gsStartDate	.\_lib\StopWatch.vbs	/^    Dim gsStartDate$/;"	v
+gsStopDate	.\_lib\StopWatch.vbs	/^    Dim gsStopDate$/;"	v
+i	.\_lib\FileSystem.vbs	/^    Dim i$/;"	v
+i	.\_lib\ProgressBarIE.vbs	/^            Dim i$/;"	v
+i	.\_lib\ProgressBarIE.vbs	/^        Dim i$/;"	v
+i	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim i$/;"	v
+i	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim i$/;"	v
+iAfter	.\_lib\ProgressBarIE.vbs	/^        Dim iAfter$/;"	v
+iBefore	.\_lib\ProgressBarIE.vbs	/^        Dim iBefore$/;"	v
+iMatchIdx	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim iMatchIdx$/;"	v
+iPercentage	.\_lib\ProgressBarCscript.vbs	/^        Dim iPercentage$/;"	v
+iPercentage	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim iPercentage$/;"	v
+iPercentage	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim iPercentage$/;"	v
+intHorizontal	.\_lib\ProgressBarIE.vbs	/^        Dim intHorizontal$/;"	v
+intProcID	.\_lib\ProgressBarIE.vbs	/^        Dim intProcID$/;"	v
+intVertical	.\_lib\ProgressBarIE.vbs	/^        Dim intVertical$/;"	v
+lAddedPathType	.\_lib\FileSystem.vbs	/^        Dim lAddedPathType$/;"	v
+lAddedPathType	.\tools\7zip\ZipFile.vbs	/^        Dim lAddedPathType$/;"	v
+lAddedPathType	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim lAddedPathType$/;"	v
+lAnswer	.\tools\7zip\UnzipFile.vbs	/^    Dim lAnswer$/;"	v
+lAnswer	.\tools\7zip\ZipFile.vbs	/^    Dim lAnswer$/;"	v
+lAnswer	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^Dim lAnswer$/;"	v
+lAnswer	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^Dim lAnswer$/;"	v
+lArgIdx	.\tools\win\file_info\OutputFileInfo.vbs	/^    Dim lArgIdx$/;"	v
+lArgIdx	.\tools\win\file_ope\JoinBinaryFile.vbs	/^    Dim lArgIdx$/;"	v
+lArrayLastIdx	.\_lib\Array.vbs	/^    Dim lArrayLastIdx$/;"	v
+lBakFileIdx	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^            Dim lBakFileIdx$/;"	v
+lBakFileIdx	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^            Dim lBakFileIdx$/;"	v
+lBrNum	.\_lib\ProgressBarIE.vbs	/^        Dim lBrNum$/;"	v
+lCnfrmKeyIdxNow	.\_lib\String.vbs	/^        Dim lCnfrmKeyIdxNow '0=未確定$/;"	v
+lCnfrmKeyIdxOld	.\_lib\String.vbs	/^    Dim lCnfrmKeyIdxOld '0=未確定$/;"	v
+lCnfrmKeyStrPosOld	.\_lib\String.vbs	/^    Dim lCnfrmKeyStrPosOld$/;"	v
+lContextLenBMax	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim lContextLenBMax$/;"	v
+lContextNum	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim lContextNum$/;"	v
+lConvMax	.\_lib\ProgressBarIE.vbs	/^        Dim lConvMax$/;"	v
+lConvProg	.\_lib\ProgressBarIE.vbs	/^        Dim lConvProg$/;"	v
+lCurStrPos	.\_lib\String.vbs	/^    Dim lCurStrPos$/;"	v
+lDateDiff	.\_lib\ProgressBarIE.vbs	/^        Dim lDateDiff$/;"	v
+lDateDiff	.\_lib\StopWatch.vbs	/^        Dim lDateDiff$/;"	v
+lDelDirIdx	.\tools\itunes\ClearItunesTags.vbs	/^        Dim lDelDirIdx$/;"	v
+lDelDirIdx	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lDelDirIdx$/;"	v
+lDelFolderMax	.\tools\itunes\ClearItunesTags.vbs	/^        Dim lDelFolderMax$/;"	v
+lDelFolderMax	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lDelFolderMax$/;"	v
+lDigit	.\_lib\String.vbs	/^    Dim lDigit$/;"	v
+lDrvLtrAscLast	.\_lib\FileSystem.vbs	/^    Dim lDrvLtrAscLast$/;"	v
+lDrvLtrAscStrt	.\_lib\FileSystem.vbs	/^    Dim lDrvLtrAscStrt$/;"	v
+lDrvLtrIdx	.\_lib\FileSystem.vbs	/^    Dim lDrvLtrIdx$/;"	v
+lDrvLttrAscLast	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim lDrvLttrAscLast$/;"	v
+lDrvLttrAscStrt	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim lDrvLttrAscStrt$/;"	v
+lDrvLttrIdx	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim lDrvLttrIdx$/;"	v
+lExtractLen	.\_lib\String.vbs	/^        Dim lExtractLen$/;"	v
+lFileInfoTagIndex	.\_lib\FileSystem.vbs	/^        Dim lFileInfoTagIndex$/;"	v
+lFileNameLenMax	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim lFileNameLenMax$/;"	v
+lFileNum	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim lFileNum$/;"	v
+lFileOrFolder	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFileOrFolder	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim lFileOrFolder '1:ファイル、2:フォルダ、0:エラー（存在しないパス）$/;"	v
+lFilterIdx	.\_lib\FileSystem.vbs	/^            Dim lFilterIdx$/;"	v
+lHitFileNum	.\tools\itunes\ClearItunesTags.vbs	/^    Dim lHitFileNum$/;"	v
+lHitIdx	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim lHitIdx$/;"	v
+lHour	.\_lib\StopWatch.vbs	/^        Dim lHour$/;"	v
+lINTERVEL_TIME_MIN	.\tools\win\other\PopupTimeSignal.vbs	/^Const lINTERVEL_TIME_MIN = 30	'30[min]$/;"	c
+lIOMode	.\_lib\Log.vbs	/^        Dim lIOMode$/;"	v
+lIdx	.\_lib\Array.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\_lib\FileSystem.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\_lib\String.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\_lib\String.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\_lib\String.vbs	/^    Dim lIdx, sChar$/;"	v
+lIdx	.\_lib\X-Finder.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\tools\7zip\ZipFile.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim lIdx$/;"	v
+lIdx	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim lIdx$/;"	v
+lIdx	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim lIdx, sChar$/;"	v
+lIdx	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim lIdx$/;"	v
+lKeyIdx	.\_lib\String.vbs	/^    Dim lKeyIdx$/;"	v
+lKeyNum	.\_lib\String.vbs	/^    Dim lKeyNum$/;"	v
+lLastIdx	.\_lib\FileSystem.vbs	/^    Dim lLastIdx$/;"	v
+lLineIdx	.\_lib\X-Finder.vbs	/^    Dim lLineIdx$/;"	v
+lLineNum	.\_lib\IE.vbs	/^        Dim lLineNum$/;"	v
+lLineNum	.\_lib\ProgressBarIE.vbs	/^        Dim lLineNum$/;"	v
+lMSG_OUT_TIME_S	.\tools\win\other\PopupTimeSignal.vbs	/^Const lMSG_OUT_TIME_S = 10		'10[s]$/;"	c
+lMatchResultCount	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lMatchResultCount$/;"	v
+lMinSec	.\_lib\StopWatch.vbs	/^        Dim lMinSec$/;"	v
+lMinite	.\_lib\StopWatch.vbs	/^        Dim lMinite$/;"	v
+lMod	.\_lib\ProgressBarIE.vbs	/^        Dim lMod$/;"	v
+lObjType	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim lObjType$/;"	v
+lObjType	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Dim lObjType '0:notexists 1:file 2:folder$/;"	v
+lOutHour	.\_lib\ProgressBarIE.vbs	/^        Dim lOutHour$/;"	v
+lOutMin	.\_lib\ProgressBarIE.vbs	/^        Dim lOutMin$/;"	v
+lOutSec	.\_lib\ProgressBarIE.vbs	/^        Dim lOutSec$/;"	v
+lPaddingLen	.\_lib\Math.vbs	/^        Dim lPaddingLen$/;"	v
+lPaddingLen	.\_lib\String.vbs	/^        Dim lPaddingLen$/;"	v
+lPaddingLen	.\_lib\String.vbs	/^    Dim lPaddingLen$/;"	v
+lPaddingWidth	.\_lib\String.vbs	/^    Dim lPaddingWidth$/;"	v
+lProcID	.\_lib\IE.vbs	/^        Dim lProcID$/;"	v
+lProcIdx	.\_lib\ProgressBarCscript.vbs	/^        Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim lProcIdx$/;"	v
+lProcIdx	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim lProcIdx$/;"	v
+lProcNum	.\_lib\ProgressBarCscript.vbs	/^        Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim lProcNum$/;"	v
+lProcNum	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim lProcNum$/;"	v
+lRemoveLen	.\_lib\String.vbs	/^    Dim lRemoveLen$/;"	v
+lResult	.\_lib\FileSystem.vbs	/^    Dim lResult$/;"	v
+lRet	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim lRet$/;"	v
+lRet	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim lRet$/;"	v
+lSLEEP_TIME_MS	.\tools\win\other\PopupTimeSignal.vbs	/^Const lSLEEP_TIME_MS = 30000	'30000[ms]（1000[ms] * 30[s]）= 30[s]$/;"	c
+lSecond	.\_lib\StopWatch.vbs	/^        Dim lSecond$/;"	v
+lSelIdx	.\_lib\FileSystem.vbs	/^        Dim lSelIdx$/;"	v
+lSelNum	.\_lib\FileSystem.vbs	/^        Dim lSelNum$/;"	v
+lSplitByteSize	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim lSplitByteSize$/;"	v
+lSplitIdx	.\_lib\FileSystem.vbs	/^        Dim lSplitIdx$/;"	v
+lSrcPathType	.\tools\win\file_ope\CopyToDir.vbs	/^Dim lSrcPathType$/;"	v
+lSrcPathType	.\tools\win\file_ope\MoveToDir.vbs	/^Dim lSrcPathType$/;"	v
+lTagInfoIndexMax	.\_lib\FileSystem.vbs	/^    Const lTagInfoIndexMax = 999$/;"	c
+lTailIdx	.\_lib\X-Finder.vbs	/^        Dim lTailIdx$/;"	v
+lTemp	.\_lib\StopWatch.vbs	/^        Dim lTemp$/;"	v
+lTestCase	.\_lib\Excel.vbs	/^        Dim lTestCase$/;"	v
+lTestCase	.\_lib\ProgressBarIE.vbs	/^        Dim lTestCase$/;"	v
+lTestCase	.\_lib\StopWatch.vbs	/^        Dim lTestCase$/;"	v
+lTime	.\_lib\StopWatch.vbs	/^        Dim lTime$/;"	v
+lTrgtFileListIdx	.\tools\itunes\ClearItunesTags.vbs	/^    Dim lTrgtFileListIdx$/;"	v
+lTrgtFileListIdx	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lTrgtFileListIdx$/;"	v
+lTrgtFileListNum	.\tools\itunes\ClearItunesTags.vbs	/^    Dim lTrgtFileListNum$/;"	v
+lTrgtFileListNum	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lTrgtFileListNum$/;"	v
+lTrgtFileNameLen	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim lTrgtFileNameLen$/;"	v
+lWaitMinites	.\tools\win\other\KitchenTimer.vbs	/^Dim lWaitMinites$/;"	v
+msoFileDialogFilePicker	.\_lib\FileSystem.vbs	/^    Const msoFileDialogFilePicker = 3$/;"	c
+msoFileDialogFolderPicker	.\_lib\FileSystem.vbs	/^    Const msoFileDialogFolderPicker = 4$/;"	c
+oArgs	.\_lib\Windows.vbs	/^    Dim oArgs$/;"	v
+oArgs	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oArgs$/;"	v
+oDirPath	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim oDirPath$/;"	v
+oDstStream	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim oDstStream$/;"	v
+oExeResult	.\_lib\Windows.vbs	/^    Dim oExeResult$/;"	v
+oExeResult	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oExeResult$/;"	v
+oFile	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim oFile$/;"	v
+oFileName	.\tools\win\clipboard\CpyFileName.vbs	/^    Dim oFileName$/;"	v
+oFileName	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim oFileName$/;"	v
+oFilePath	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\clipboard\CpyFileName.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\clipboard\CpyFilePath.vbs	/^Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim oFilePath$/;"	v
+oFilePath	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim oFilePath$/;"	v
+oFileSys	.\_lib\FileSystem.vbs	/^    Dim oFileSys$/;"	v
+oFileSys	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim oFileSys$/;"	v
+oFileSys	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oFileSys$/;"	v
+oFileSys	.\tools\win\file_ope\JoinBinaryFile.vbs	/^Dim oFileSys$/;"	v
+oFileSys	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim oFileSys$/;"	v
+oIE	.\_lib\IE.vbs	/^        Dim oIE$/;"	v
+oLog	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim oLog$/;"	v
+oLog	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim oLog$/;"	v
+oLog1	.\_lib\Log.vbs	/^        Dim oLog1$/;"	v
+oLog2	.\_lib\Log.vbs	/^        Dim oLog2$/;"	v
+oLogMng	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim oLogMng$/;"	v
+oLogMng	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim oLogMng$/;"	v
+oLogMng	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim oLogMng$/;"	v
+oMatchResult	.\_lib\String.vbs	/^    Dim oMatchResult$/;"	v
+oMatchResult	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim oMatchResult$/;"	v
+oMatchResult	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim oMatchResult$/;"	v
+oMatchResult	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim oMatchResult$/;"	v
+oObjPath	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Dim oObjPath$/;"	v
+oOs	.\_lib\Windows.vbs	/^    Dim oOs$/;"	v
+oOs	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oOs$/;"	v
+oOsInfos	.\_lib\Windows.vbs	/^    Dim oOsInfos$/;"	v
+oOsInfos	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oOsInfos$/;"	v
+oPrgBar	.\tools\itunes\ClearItunesTags.vbs	/^    Dim oPrgBar$/;"	v
+oPrgBar	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim oPrgBar$/;"	v
+oProgBar	.\_lib\ProgressBarIE.vbs	/^        Dim oProgBar$/;"	v
+oRegExp	.\_lib\String.vbs	/^    Dim oRegExp$/;"	v
+oRegExp	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim oRegExp$/;"	v
+oRegExp	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim oRegExp$/;"	v
+oRegExp	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim oRegExp$/;"	v
+oSrcStream	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim oSrcStream$/;"	v
+oStpWtch	.\_lib\FileSystem.vbs	/^        Dim oStpWtch$/;"	v
+oStpWtch	.\_lib\StopWatch.vbs	/^        Dim oStpWtch$/;"	v
+oStpWtch	.\tools\itunes\ClearItunesTags.vbs	/^    Dim oStpWtch$/;"	v
+oStpWtch	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim oStpWtch$/;"	v
+oTrgtDirFiles	.\tools\itunes\ClearItunesTags.vbs	/^    Dim oTrgtDirFiles$/;"	v
+oTrgtDirFiles	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim oTrgtDirFiles$/;"	v
+oTrgtFile	.\tools\itunes\ClearItunesTags.vbs	/^    Dim oTrgtFile$/;"	v
+oTrgtFile	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim oTrgtFile$/;"	v
+oWsh	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim oWsh$/;"	v
+oWshShell	.\_lib\Windows.vbs	/^    Dim oWshShell$/;"	v
+oWshShell	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim oWshShell$/;"	v
+objDrive	.\_lib\FileSystem.vbs	/^                Dim objDrive$/;"	v
+objDrive	.\_lib\FileSystem.vbs	/^        Dim objDrive$/;"	v
+objDrive	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^            Dim objDrive$/;"	v
+objExcel	.\_lib\Excel.vbs	/^    Dim objExcel$/;"	v
+objExcel	.\_lib\FileSystem.vbs	/^    Dim objExcel$/;"	v
+objExcelBook	.\_lib\Excel.vbs	/^    Dim objExcelBook$/;"	v
+objExecResult	.\tools\svn\CpySvnRev.vbs	/^    Dim objExecResult$/;"	v
+objFSO	.\_lib\Collection.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\_lib\Excel.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\_lib\FileSystem.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\_lib\FileSystem.vbs	/^    Dim objFSO  'FileSystemObjectの格納先$/;"	v
+objFSO	.\_lib\FileSystem.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\_lib\SettingFileClass.vbs	/^            Dim objFSO$/;"	v
+objFSO	.\_lib\SettingFileClass.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\_lib\X-Finder.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\_lib\_include_sample.vbs	/^	Dim objFSO$/;"	v
+objFSO	.\command\ReplaceStrInTxtFile.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim objFSO  'FileSystemObjectの格納先$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim objFSO  'FileSystemObjectの格納先$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\7zip\UnzipFile.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\7zip\ZipFile.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\7zip\ZipFile.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\7zip\ZipPasswordFile.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\ctags,gtags\CreateTagFiles.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\svn\CpySvnRev.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\vim\OpenAllFilesWithVim.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\clipboard\CpyFilePath.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_info\CheckFolderExist.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim objFSO$/;"	v
+objFSO	.\tools\win\file_info\OutputFileInfo.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CopyToDir.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CopyToDir.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CreateRenameBat.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\MoveToDir.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\MoveToDir.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\other\EvacuateSettingFiles.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\other\RestoreSettingFiles.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim objFSO$/;"	v
+objFSO	.\tools\win\sys_ope\AddEnvVariable.vbs	/^	Dim objFSO$/;"	v
+objFSO	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^    Dim objFSO$/;"	v
+objFSO	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim objFSO  'FileSystemObjectの格納先$/;"	v
+objFile	.\_lib\FileSystem.vbs	/^        Dim objFile$/;"	v
+objFile	.\_lib\FileSystem.vbs	/^    Dim objFile$/;"	v
+objFile	.\_lib\X-Finder.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim objFile$/;"	v
+objFile	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^                Dim objFile$/;"	v
+objFile	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim objFile$/;"	v
+objFile	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^                Dim objFile$/;"	v
+objFile	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Dim objFile$/;"	v
+objFile	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim objFile$/;"	v
+objFileOpenAsWrite	.\_lib\X-Finder.vbs	/^    Dim objFileOpenAsWrite$/;"	v
+objFileSys	.\_lib\FileSystem.vbs	/^    Dim objFileSys$/;"	v
+objFolder	.\_lib\FileSystem.vbs	/^        Dim objFolder$/;"	v
+objFolder	.\_lib\FileSystem.vbs	/^    Dim objFolder$/;"	v
+objFolder	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^                Dim objFolder$/;"	v
+objFolder	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim objFolder$/;"	v
+objFolder	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim objFolder$/;"	v
+objFolder	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^                Dim objFolder$/;"	v
+objFolder	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Dim objFolder$/;"	v
+objFolder	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Dim objFolder$/;"	v
+objItem	.\_lib\IE.vbs	/^        Dim objItem$/;"	v
+objItem	.\_lib\ProgressBarIE.vbs	/^        Dim objItem$/;"	v
+objItunes	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objItunes$/;"	v
+objItunes	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim objItunes$/;"	v
+objLogFile	.\_lib\Array.vbs	/^    Dim objLogFile$/;"	v
+objLogFile	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objLogFile$/;"	v
+objLogFile	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim objLogFile$/;"	v
+objLogFile	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim objLogFile$/;"	v
+objPlayList	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objPlayList$/;"	v
+objPlayList	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim objPlayList$/;"	v
+objPrgrsBar	.\_lib\ProgressBarCscript.vbs	/^        Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim objPrgrsBar$/;"	v
+objPrgrsBar	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim objPrgrsBar$/;"	v
+objSearchResult	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim objSearchResult$/;"	v
+objShell	.\tools\win\file_ope\JoinBinaryFile.vbs	/^Dim objShell$/;"	v
+objSubFolder	.\_lib\FileSystem.vbs	/^        Dim objSubFolder$/;"	v
+objSubFolder	.\_lib\FileSystem.vbs	/^    Dim objSubFolder$/;"	v
+objTrack	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objTrack$/;"	v
+objTxtFile	.\_lib\Collection.vbs	/^        Dim objTxtFile$/;"	v
+objTxtFile	.\_lib\Collection.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\_lib\FileSystem.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\_lib\SettingFileClass.vbs	/^            Dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^dim objTxtFile$/;"	v
+objTxtFile	.\tools\svn\CpySvnRev.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim objTxtFile$/;"	v
+objTxtFile	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim objTxtFile$/;"	v
+objTxtFile	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim objTxtFile$/;"	v
+objTxtFile	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim objTxtFile$/;"	v
+objUsrEnv	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim objUsrEnv$/;"	v
+objVbsFile	.\_lib\FileSystem.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\_lib\_include_sample.vbs	/^	Dim objVbsFile$/;"	v
+objVbsFile	.\command\ReplaceStrInTxtFile.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\itunes\ClearItunesTags.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\clipboard\CpyFilePath.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_info\OutputFileInfo.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_ope\CopyToDir.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_ope\MoveToDir.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\other\EvacuateSettingFiles.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\other\RestoreSettingFiles.vbs	/^    Dim objVbsFile$/;"	v
+objVbsFile	.\tools\win\sys_ope\AddEnvVariable.vbs	/^	Dim objVbsFile$/;"	v
+objVbsFile	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^    Dim objVbsFile$/;"	v
+objWMIService	.\_lib\IE.vbs	/^        Dim objWMIService$/;"	v
+objWMIService	.\_lib\ProgressBarIE.vbs	/^        Dim objWMIService$/;"	v
+objWords	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    dim objWords$/;"	v
+objWords	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    dim objWords$/;"	v
+objWshShell	.\_lib\Array.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\_lib\FileSystem.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\_lib\IE.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\_lib\ProgressBarIE.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\command\CreateShortcutFile.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\command\OutputShortcutTrgtPath.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\7zip\UnzipFile.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\7zip\ZipFile.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\7zip\ZipPasswordFile.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\ctags,gtags\CreateTagFiles.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\itunes\ClearItunesTags.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\itunes\UpdateItunesLibTags.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\svn\CpySvnRev.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim objWshShell$/;"	v
+objWshShell	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\win\other\PopupTimeSignal.vbs	/^			Dim objWshShell$/;"	v
+objWshShell	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim objWshShell$/;"	v
+objWshShell	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim objWshShell$/;"	v
+sAcceptFileFormat	.\tools\7zip\UnzipFile.vbs	/^            Dim sAcceptFileFormat$/;"	v
+sAcceptFileFormat	.\tools\7zip\ZipFile.vbs	/^    Dim sAcceptFileFormat$/;"	v
+sAcceptFileFormat	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sAcceptFileFormat$/;"	v
+sAcceptFileFormatsStr	.\tools\7zip\ZipFile.vbs	/^    Dim sAcceptFileFormatsStr$/;"	v
+sAcceptFileFormatsStr	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sAcceptFileFormatsStr$/;"	v
+sAccessDate	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sAccessDate$/;"	v
+sAddDate	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sAddDate$/;"	v
+sAddDate	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim sAddDate$/;"	v
+sAddStr	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^    Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^    Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim sAddStr$/;"	v
+sAddStr	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim sAddStr$/;"	v
+sAddedPath	.\_lib\FileSystem.vbs	/^        Dim sAddedPath$/;"	v
+sAddedPath	.\tools\7zip\ZipFile.vbs	/^        Dim sAddedPath$/;"	v
+sAddedPath	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sAddedPath$/;"	v
+sAnswer	.\tools\itunes\UpdateItunesLibTags.vbs	/^Dim sAnswer$/;"	v
+sArchiveFileExt	.\tools\7zip\ZipFile.vbs	/^        Dim sArchiveFileExt$/;"	v
+sArchiveFileExt	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sArchiveFileExt$/;"	v
+sArchiveFilePath	.\tools\7zip\ZipFile.vbs	/^        Dim sArchiveFilePath$/;"	v
+sArchiveFilePath	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sArchiveFilePath$/;"	v
+sArg	.\tools\7zip\UnzipFile.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\7zip\ZipFile.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\ctags,gtags\CreateTagFiles.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\svn\CpySvnRev.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\vim\OpenAllFilesWithVim.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\clipboard\CpyFileName.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\clipboard\CpyFilePath.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\clipboard\CpyPrgNo.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim sArg$/;"	v
+sArg	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim sArg$/;"	v
+sArgs	.\_lib\Windows.vbs	/^    Dim sArgs$/;"	v
+sArgs	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sArgs$/;"	v
+sAttribute	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sAttribute$/;"	v
+sBackUpDirName	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sBackUpDirName$/;"	v
+sBackUpDirName	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sBackUpDirName$/;"	v
+sBackUpDirPath	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sBackUpDirPath$/;"	v
+sBackUpDirPath	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sBackUpDirPath$/;"	v
+sBakFilePath	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim sBakFilePath$/;"	v
+sBatFilePath	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim sBatFilePath$/;"	v
+sBuf	.\_lib\FileSystem.vbs	/^        Dim sBuf$/;"	v
+sBuf	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim sBuf$/;"	v
+sBuf	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sBuf$/;"	v
+sBuf	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sBuf$/;"	v
+sCmd	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sCmd$/;"	v
+sCmpBaseTime	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sCmpBaseTime$/;"	v
+sCmpBaseTime	.\tools\win\file_info\CheckFolderExist.vbs	/^Dim sCmpBaseTime$/;"	v
+sContext	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sContext$/;"	v
+sCreDirPath	.\_lib\FileSystem.vbs	/^    Dim sCreDirPath$/;"	v
+sCreDirPath	.\tools\7zip\ZipFile.vbs	/^    Dim sCreDirPath$/;"	v
+sCreDirPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sCreDirPath$/;"	v
+sCreFilePath	.\_lib\FileSystem.vbs	/^    Dim sCreFilePath$/;"	v
+sCreFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sCreFilePath$/;"	v
+sCreFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sCreFilePath$/;"	v
+sCreFilePath	.\tools\7zip\ZipFile.vbs	/^    Dim sCreFilePath$/;"	v
+sCreFilePath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sCreFilePath$/;"	v
+sCreateDate	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sCreateDate$/;"	v
+sCsvBakFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^            Dim sCsvBakFilePath$/;"	v
+sCsvBakFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^            Dim sCsvBakFilePath$/;"	v
+sCsvBakFilePathRaw	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^            Dim sCsvBakFilePathRaw$/;"	v
+sCsvBakFilePathRaw	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^            Dim sCsvBakFilePathRaw$/;"	v
+sCsvFilePath	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^dim sCsvFilePath$/;"	v
+sCsvFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^dim sCsvFilePath$/;"	v
+sCsvFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^dim sCsvFilePath$/;"	v
+sCsvFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^dim sCsvFilePath$/;"	v
+sCurChar	.\_lib\String.vbs	/^        Dim sCurChar$/;"	v
+sCurDate	.\_lib\StopWatch.vbs	/^        Dim sCurDate$/;"	v
+sCurDateTime	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sCurDateTime$/;"	v
+sCurDateTime	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sCurDateTime$/;"	v
+sCurDir	.\_lib\FileSystem.vbs	/^        Dim sCurDir$/;"	v
+sCurDir	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sCurDir$/;"	v
+sCurDir	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sCurDir$/;"	v
+sCurDir	.\tools\itunes\ClearItunesTags.vbs	/^Dim sCurDir$/;"	v
+sCurDir	.\tools\itunes\UpdateItunesLibTags.vbs	/^Dim sCurDir$/;"	v
+sCurDirPath	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim sCurDirPath$/;"	v
+sCurDirPath	.\tools\vim\OpenAllFilesWithVim.vbs	/^Dim sCurDirPath$/;"	v
+sCurKeyChar	.\_lib\String.vbs	/^                Dim sCurKeyChar$/;"	v
+sDataTypeLine	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^        Dim sDataTypeLine$/;"	v
+sDataTypeLine	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sDataTypeLine$/;"	v
+sDataTypeListFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim sDataTypeListFilePath$/;"	v
+sDataTypeListFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim sDataTypeListFilePath$/;"	v
+sDataTypeListLine	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^                Dim sDataTypeListLine$/;"	v
+sDataTypeListLine	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^                Dim sDataTypeListLine$/;"	v
+sDateAfr	.\_lib\String.vbs	/^    Dim sDateAfr$/;"	v
+sDateNow	.\_lib\ProgressBarIE.vbs	/^        Dim sDateNow$/;"	v
+sDateOld	.\_lib\ProgressBarIE.vbs	/^        Dim sDateOld$/;"	v
+sDateRaw	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^    Dim sDateRaw$/;"	v
+sDateRaw	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^    Dim sDateRaw$/;"	v
+sDateRaw	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim sDateRaw$/;"	v
+sDateRaw	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim sDateRaw$/;"	v
+sDateStr	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim sDateStr$/;"	v
+sDateStr	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim sDateStr$/;"	v
+sDateValue	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sDateValue$/;"	v
+sDefaultPath	.\tools\ctags,gtags\CreateTagFiles.vbs	/^        Dim sDefaultPath$/;"	v
+sDefaultPath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sDefaultPath$/;"	v
+sDefaultPath	.\tools\vim\OpenAllFilesWithVim.vbs	/^        Dim sDefaultPath$/;"	v
+sDefaultPath	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim sDefaultPath$/;"	v
+sDesktop	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sDesktop$/;"	v
+sDiffPath1	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim sDiffPath1$/;"	v
+sDiffPath2	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim sDiffPath2$/;"	v
+sDirName	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sDirName$/;"	v
+sDirPath	.\tools\win\file_info\CheckFolderExist.vbs	/^Dim sDirPath$/;"	v
+sDirPath	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sDirPath$/;"	v
+sDriveInfo	.\_lib\FileSystem.vbs	/^        Dim sDriveInfo$/;"	v
+sDriveLetter	.\_lib\FileSystem.vbs	/^        Dim sDriveLetter$/;"	v
+sDrvLttr	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim sDrvLttr$/;"	v
+sDstCpyFilePath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sDstCpyFilePath$/;"	v
+sDstCpyFilePath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim sDstCpyFilePath$/;"	v
+sDstOrgFilePath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sDstOrgFilePath$/;"	v
+sDstOrgFilePath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim sDstOrgFilePath$/;"	v
+sDstParDir	.\tools\win\file_ope\CopyToDir.vbs	/^dim sDstParDir$/;"	v
+sDstParDir	.\tools\win\file_ope\MoveToDir.vbs	/^dim sDstParDir$/;"	v
+sDstParDirPath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim sDstParDirPath$/;"	v
+sDstParDirPath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim sDstParDirPath$/;"	v
+sDstParEvaDirPath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim sDstParEvaDirPath$/;"	v
+sDstParentDirPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sDstParentDirPath$/;"	v
+sDstParentDirPath	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sDstParentDirPath$/;"	v
+sDstPath	.\tools\win\file_ope\CopyToDir.vbs	/^dim sDstPath$/;"	v
+sDstPath	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sDstPath$/;"	v
+sDstPath	.\tools\win\file_ope\MoveToDir.vbs	/^dim sDstPath$/;"	v
+sDstPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sDstPath$/;"	v
+sDstPath	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sDstPath$/;"	v
+sDstShrtctFilePath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^        Dim sDstShrtctFilePath$/;"	v
+sDstShrtctFilePath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^        Dim sDstShrtctFilePath$/;"	v
+sEXT_KEYWORD_NOTSVN	.\tools\svn\CpySvnRev.vbs	/^    Const sEXT_KEYWORD_NOTSVN = "is not a working copy"$/;"	c
+sEXT_KEYWORD_REV	.\tools\svn\CpySvnRev.vbs	/^    Const sEXT_KEYWORD_REV = "Last Changed Rev: "$/;"	c
+sEnvName	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sEnvName$/;"	v
+sEnvValNew	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sEnvValNew$/;"	v
+sEnvValOrg	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sEnvValOrg$/;"	v
+sEnvValue	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sEnvValue$/;"	v
+sErrorDetail	.\_lib\FileSystem.vbs	/^        Dim sErrorDetail$/;"	v
+sExcelFileName	.\_lib\Excel.vbs	/^        Dim sExcelFileName$/;"	v
+sExeCmd	.\tools\svn\CpySvnRev.vbs	/^    Dim sExeCmd$/;"	v
+sExeFileName	.\_lib\ProgressBarCscript.vbs	/^        Dim sExeFileName$/;"	v
+sExeFileName	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sExeFileName$/;"	v
+sExeFileName	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sExeFileName$/;"	v
+sExePath	.\tools\7zip\UnzipFile.vbs	/^    Dim sExePath$/;"	v
+sExePath	.\tools\7zip\ZipFile.vbs	/^    Dim sExePath$/;"	v
+sExePath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sExePath$/;"	v
+sExePath	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sExePath$/;"	v
+sExePath	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim sExePath$/;"	v
+sExecCmd	.\_lib\FileSystem.vbs	/^    Dim sExecCmd$/;"	v
+sExecCmd	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sExecCmd$/;"	v
+sExecCmd	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sExecCmd$/;"	v
+sExecCmd	.\tools\7zip\UnzipFile.vbs	/^        Dim sExecCmd$/;"	v
+sExecCmd	.\tools\7zip\ZipFile.vbs	/^        Dim sExecCmd$/;"	v
+sExecCmd	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sExecCmd$/;"	v
+sExecCmd	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sExecCmd$/;"	v
+sExecCmd	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sExecCmd$/;"	v
+sExecCmd	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim sExecCmd$/;"	v
+sExtName	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sExtName$/;"	v
+sExtNames	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sExtNames$/;"	v
+sFileBaseName	.\_lib\FileSystem.vbs	/^    Dim sFileBaseName$/;"	v
+sFileBaseName	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sFileBaseName$/;"	v
+sFileBaseName	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sFileBaseName$/;"	v
+sFileBaseName	.\tools\7zip\ZipFile.vbs	/^    Dim sFileBaseName$/;"	v
+sFileBaseName	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sFileBaseName$/;"	v
+sFileDirParentDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sFileDirParentDirPath$/;"	v
+sFileDirPath	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^    Dim sFileDirPath$/;"	v
+sFileDirPath	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim sFileDirPath$/;"	v
+sFileDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sFileDirPath$/;"	v
+sFileExt	.\_lib\Excel.vbs	/^        Dim sFileExt$/;"	v
+sFileExt	.\tools\7zip\UnzipFile.vbs	/^            Dim sFileExt$/;"	v
+sFileExtName	.\_lib\FileSystem.vbs	/^    Dim sFileExtName$/;"	v
+sFileExtName	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sFileExtName$/;"	v
+sFileExtName	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sFileExtName$/;"	v
+sFileExtName	.\tools\7zip\ZipFile.vbs	/^    Dim sFileExtName$/;"	v
+sFileExtName	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sFileExtName$/;"	v
+sFileLine	.\_lib\Collection.vbs	/^        Dim sFileLine$/;"	v
+sFileLine	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sFileLine$/;"	v
+sFileLine	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sFileLine$/;"	v
+sFileName	.\_lib\String.vbs	/^    Dim sFileName$/;"	v
+sFileName	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sFileName$/;"	v
+sFileName	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sFileName$/;"	v
+sFileParDirPath	.\_lib\FileSystem.vbs	/^    Dim sFileParDirPath$/;"	v
+sFileParDirPath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sFileParDirPath$/;"	v
+sFileParDirPath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sFileParDirPath$/;"	v
+sFileParDirPath	.\tools\7zip\ZipFile.vbs	/^    Dim sFileParDirPath$/;"	v
+sFileParDirPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sFileParDirPath$/;"	v
+sFilePath	.\_lib\Collection.vbs	/^        dim sFilePath$/;"	v
+sFilePath	.\_lib\FileSystem.vbs	/^            Dim sFilePath$/;"	v
+sFilePath	.\_lib\FileSystem.vbs	/^        dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^            Dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^            Dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        dim sFilePath$/;"	v
+sFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    dim sFilePath$/;"	v
+sFilePath	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sFilePath$/;"	v
+sFilePath	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sFilePath$/;"	v
+sFilePathList	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sFilePathList$/;"	v
+sFileSize	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sFileSize$/;"	v
+sFileStr	.\tools\win\file_ope\JoinBinaryFile.vbs	/^Dim sFileStr$/;"	v
+sFileType	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sFileType$/;"	v
+sFileType	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sFileType$/;"	v
+sFilters	.\_lib\FileSystem.vbs	/^        Dim sFilters$/;"	v
+sInFileName	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim sInFileName$/;"	v
+sInFilePath	.\_lib\String.vbs	/^        Dim sInFilePath$/;"	v
+sInTrgtFilePath	.\_lib\Collection.vbs	/^        Dim sInTrgtFilePath$/;"	v
+sInTrgtFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sInTrgtFilePath$/;"	v
+sInTrgtFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sInTrgtFilePath$/;"	v
+sIniDstParDirPath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim sIniDstParDirPath$/;"	v
+sIniFileName	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sIniFileName$/;"	v
+sIniFilePath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sIniFilePath$/;"	v
+sIniRootDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sIniRootDirPath$/;"	v
+sIniTrgtFileName	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sIniTrgtFileName$/;"	v
+sInitPath	.\_lib\FileSystem.vbs	/^        Dim sInitPath$/;"	v
+sInputPathFilePath	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim sInputPathFilePath$/;"	v
+sItem	.\_lib\SettingFileClass.vbs	/^        Dim sItem$/;"	v
+sItem	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sItem$/;"	v
+sItemExt	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sItemExt$/;"	v
+sItemIcon	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sItemIcon$/;"	v
+sItemName	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sItemName$/;"	v
+sItemPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sItemPath$/;"	v
+sItemType	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sItemType$/;"	v
+sItuneBackUpDirPath	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sItuneBackUpDirPath$/;"	v
+sItuneBackUpDirPath	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sItuneBackUpDirPath$/;"	v
+sItuneDirPath	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sItuneDirPath$/;"	v
+sItuneDirPath	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sItuneDirPath$/;"	v
+sLine	.\_lib\SettingFileClass.vbs	/^                Dim sLine$/;"	v
+sLine	.\command\ReplaceStrInTxtFile.vbs	/^Dim sLine$/;"	v
+sLine	.\tools\svn\CpySvnRev.vbs	/^        Dim sLine$/;"	v
+sLogFilePath	.\_lib\Array.vbs	/^    Dim sLogFilePath$/;"	v
+sLogFilePath	.\_lib\FileSystem.vbs	/^    Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim sLogFilePath$/;"	v
+sLogFilePath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sLogFilePath$/;"	v
+sLogMsg	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^            Dim sLogMsg$/;"	v
+sLogPath	.\tools\win\file_info\OutputFileInfo.vbs	/^        Dim sLogPath$/;"	v
+sMatchDirName	.\tools\win\clipboard\CpyFilePath.vbs	/^Dim sMatchDirName$/;"	v
+sModDate	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sModDate$/;"	v
+sModDate	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sModDate$/;"	v
+sMyDirPath	.\_lib\_include_sample.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\command\ReplaceStrInTxtFile.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_info\OutputFileInfo.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_ope\CopyToDir.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_ope\MoveToDir.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sMyDirPath$/;"	v
+sMyDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sMyDirPath$/;"	v
+sMyFileBaseName	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim sMyFileBaseName$/;"	v
+sMyFileBaseName	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim sMyFileBaseName$/;"	v
+sNewDirPath	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim sNewDirPath$/;"	v
+sNow	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sNow$/;"	v
+sNow	.\tools\win\file_info\CheckFolderExist.vbs	/^Dim sNow$/;"	v
+sNowStr	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim sNowStr$/;"	v
+sObjInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sObjInfo$/;"	v
+sObjName	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sObjName$/;"	v
+sObjSize	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sObjSize$/;"	v
+sObjType	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sObjType$/;"	v
+sOrgDirName	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^            Dim sOrgDirName$/;"	v
+sOrgDirPath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Dim sOrgDirPath$/;"	v
+sOrgDirPath	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim sOrgDirPath$/;"	v
+sOrgFileBaseName	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^            Dim sOrgFileBaseName$/;"	v
+sOrgFileExt	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^            Dim sOrgFileExt$/;"	v
+sOrgFileName	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^            Dim sOrgFileName$/;"	v
+sOutFileName	.\tools\win\file_ope\JoinBinaryFile.vbs	/^Dim sOutFileName$/;"	v
+sOutFileName	.\tools\win\file_ope\SplitBinaryFile.vbs	/^Dim sOutFileName$/;"	v
+sOutFilePath	.\_lib\String.vbs	/^        Dim sOutFilePath$/;"	v
+sOutLine	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sOutLine$/;"	v
+sOutMsg	.\_lib\StopWatch.vbs	/^            Dim sOutMsg$/;"	v
+sOutMsg	.\_lib\String.vbs	/^        Dim sOutMsg$/;"	v
+sOutStr	.\_lib\Array.vbs	/^    Dim sOutStr$/;"	v
+sOutStr	.\_lib\FileSystem.vbs	/^        Dim sOutStr$/;"	v
+sOutStr	.\_lib\X-Finder.vbs	/^        Dim sOutStr$/;"	v
+sOutStr	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sOutStr$/;"	v
+sOutStr	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sOutStr$/;"	v
+sOutStr	.\tools\7zip\ZipFile.vbs	/^        Dim sOutStr$/;"	v
+sOutStr	.\tools\7zip\ZipPasswordFile.vbs	/^        Dim sOutStr$/;"	v
+sOutString	.\tools\svn\CpySvnRev.vbs	/^    Dim sOutString$/;"	v
+sOutString	.\tools\win\clipboard\CpyFileInfo.vbs	/^    Dim sOutString$/;"	v
+sOutString	.\tools\win\clipboard\CpyFileName.vbs	/^    Dim sOutString$/;"	v
+sOutString	.\tools\win\clipboard\CpyFilePath.vbs	/^    Dim sOutString$/;"	v
+sOutString	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim sOutString$/;"	v
+sOutWord	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^    Dim sOutWord$/;"	v
+sOutWord	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sOutWord$/;"	v
+sOutWord	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    Dim sOutWord$/;"	v
+sOutWord	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sOutWord$/;"	v
+sOutput	.\_lib\Collection.vbs	/^        dim sOutput$/;"	v
+sOutput	.\_lib\FileSystem.vbs	/^        dim sOutput$/;"	v
+sOutput	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        dim sOutput$/;"	v
+sOutput	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        dim sOutput$/;"	v
+sOutputBatDirPath	.\tools\win\file_ope\CreateRenameBat.vbs	/^Dim sOutputBatDirPath$/;"	v
+sOutputDirPath	.\tools\7zip\UnzipFile.vbs	/^        Dim sOutputDirPath$/;"	v
+sOutputPassword	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sOutputPassword$/;"	v
+sPROG_NAME	.\tools\7zip\UnzipFile.vbs	/^Const sPROG_NAME = "7-Zip で解凍"$/;"	c
+sPROG_NAME	.\tools\7zip\ZipFile.vbs	/^Const sPROG_NAME = "7-Zip で圧縮"$/;"	c
+sPROG_NAME	.\tools\7zip\ZipPasswordFile.vbs	/^Const sPROG_NAME = "7-Zip でパスワード圧縮"$/;"	c
+sPROG_NAME	.\tools\ctags,gtags\CreateTagFiles.vbs	/^Const sPROG_NAME = "タグファイル作成"$/;"	c
+sPROG_NAME	.\tools\svn\CpySvnRev.vbs	/^Const sPROG_NAME = "Svn リビジョンをコピー"$/;"	c
+sPROG_NAME	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^Const sPROG_NAME = "ショートカット＆コピーファイル作成(SVN)"$/;"	c
+sPROG_NAME	.\tools\vim\OpenAllFilesWithVim.vbs	/^Const sPROG_NAME = "カレントフォルダ配下の特定ファイルを Vim で全て開く"$/;"	c
+sPROG_NAME	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Const sPROG_NAME = "WinMergeで比較"$/;"	c
+sPROG_NAME	.\tools\win\clipboard\CpyFileInfo.vbs	/^Const sPROG_NAME = "ファイルパス\/名前\/更新日時コピー"$/;"	c
+sPROG_NAME	.\tools\win\clipboard\CpyFileName.vbs	/^Const sPROG_NAME = "ファイル名をコピー"$/;"	c
+sPROG_NAME	.\tools\win\clipboard\CpyFilePath.vbs	/^Const sPROG_NAME = "ファイルパスをコピー"$/;"	c
+sPROG_NAME	.\tools\win\clipboard\CpyPrgNo.vbs	/^Const sPROG_NAME = "プログラムNo.をコピー"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Const sPROG_NAME = "ファイル\/フォルダ名末尾文字列付与"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const sPROG_NAME = "作業ファイルとしてファイル\/フォルダ複製"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^Const sPROG_NAME = "更新日時追加＆コピー"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^Const sPROG_NAME = "現在日時追加＆コピー"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^Const sPROG_NAME = "前日末日時追加＆コピー"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CreateRenameBat.vbs	/^Const sPROG_NAME = "リネーム用バッチファイル出力"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^Const sPROG_NAME = "シンボリックリンク作成"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^Const sPROG_NAME = "更新日時追加＆リネーム"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^Const sPROG_NAME = "現在日時追加＆リネーム"$/;"	c
+sPROG_NAME	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^Const sPROG_NAME = "前日末日時追加＆リネーム"$/;"	c
+sPROG_NAME	.\tools\win\other\KitchenTimer.vbs	/^Const sPROG_NAME = "キッチンタイマー"$/;"	c
+sPROG_NAME	.\tools\x-finder\ToggleHiddenFileVisibility.vbs	/^Const sPROG_NAME = "隠しファイル表示切り替え"$/;"	c
+sParentDir	.\_lib\FileSystem.vbs	/^    Dim sParentDir$/;"	v
+sParentDirName	.\tools\win\file_ope\JoinBinaryFile.vbs	/^Dim sParentDirName$/;"	v
+sPassword	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sPassword$/;"	v
+sPasswordCheck	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sPasswordCheck$/;"	v
+sPercentage	.\_lib\ProgressBarCscript.vbs	/^        Dim sPercentage$/;"	v
+sPercentage	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sPercentage$/;"	v
+sPercentage	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sPercentage$/;"	v
+sPrgNo	.\tools\svn\CpySvnRev.vbs	/^    Dim sPrgNo$/;"	v
+sPrgNo	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim sPrgNo$/;"	v
+sProgressBar	.\_lib\ProgressBarCscript.vbs	/^        Dim sProgressBar$/;"	v
+sProgressBar	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sProgressBar$/;"	v
+sProgressBar	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sProgressBar$/;"	v
+sRamName	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^        Dim sRamName$/;"	v
+sRamName	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim sRamName$/;"	v
+sRamName	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^        Dim sRamName$/;"	v
+sRamName	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim sRamName$/;"	v
+sRemoveDirLevel	.\tools\win\clipboard\CpyFilePath.vbs	/^Dim sRemoveDirLevel$/;"	v
+sRemoveDirLevelPath	.\_lib\String.vbs	/^    Dim sRemoveDirLevelPath$/;"	v
+sReplaceStr	.\command\ReplaceStrInTxtFile.vbs	/^Dim sReplaceStr$/;"	v
+sRepoDirName	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^    Dim sRepoDirName$/;"	v
+sRepoDirPath	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim sRepoDirPath$/;"	v
+sResult	.\_lib\FileSystem.vbs	/^        Dim sResult$/;"	v
+sResult	.\_lib\String.vbs	/^        Dim sResult$/;"	v
+sRet	.\tools\svn\CpySvnRev.vbs	/^    Dim sRet$/;"	v
+sRetStr	.\_lib\FileSystem.vbs	/^    Dim sRetStr$/;"	v
+sRevision	.\tools\svn\CpySvnRev.vbs	/^        Dim sRevision$/;"	v
+sRltvFilePath	.\tools\win\clipboard\CpyFilePath.vbs	/^        Dim sRltvFilePath$/;"	v
+sRootDirPath	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^Dim sRootDirPath$/;"	v
+sRootDirPath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^Dim sRootDirPath$/;"	v
+sRootDirPath	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^Dim sRootDirPath$/;"	v
+sRootDirPath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^Dim sRootDirPath$/;"	v
+sRootDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sRootDirPath$/;"	v
+sSCRIPT_NAME	.\tools\win\other\PopupTimeSignal.vbs	/^Const sSCRIPT_NAME = "時報"$/;"	c
+sSearchPattern	.\_lib\String.vbs	/^    Dim sSearchPattern$/;"	v
+sSearchPattern	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sSearchPattern$/;"	v
+sSearchPattern	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim sSearchPattern$/;"	v
+sSearchPattern	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim sSearchPattern$/;"	v
+sSearchStr	.\command\ReplaceStrInTxtFile.vbs	/^Dim sSearchStr$/;"	v
+sSelectedPath	.\_lib\FileSystem.vbs	/^        Dim sSelectedPath$/;"	v
+sSelectedPath	.\tools\7zip\UnzipFile.vbs	/^    Dim sSelectedPath$/;"	v
+sSelectedPath	.\tools\7zip\ZipFile.vbs	/^    Dim sSelectedPath$/;"	v
+sSelectedPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sSelectedPath$/;"	v
+sSelectedPath	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim sSelectedPath$/;"	v
+sSelectedPath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim sSelectedPath$/;"	v
+sSettingFilePath	.\_lib\SettingFileClass.vbs	/^        Dim sSettingFilePath$/;"	v
+sSettingFilePath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^    Dim sSettingFilePath$/;"	v
+sShortcutDirPath	.\tools\x-finder\UpdateXFindersIniFiles.vbs	/^Dim sShortcutDirPath$/;"	v
+sShortcutFilePath	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^    Dim sShortcutFilePath$/;"	v
+sShortcutPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sShortcutPath$/;"	v
+sShortcutPath	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sShortcutPath$/;"	v
+sShortcutTrgtPath	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^    Dim sShortcutTrgtPath$/;"	v
+sShrtctFilePath	.\command\CreateShortcutFile.vbs	/^Dim sShrtctFilePath$/;"	v
+sShrtctFilePath	.\command\OutputShortcutTrgtPath.vbs	/^Dim sShrtctFilePath$/;"	v
+sShrtctTrgtPath	.\command\CreateShortcutFile.vbs	/^Dim sShrtctTrgtPath$/;"	v
+sShrtctTrgtPath	.\command\OutputShortcutTrgtPath.vbs	/^Dim sShrtctTrgtPath$/;"	v
+sSrcDirName	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^            Dim sSrcDirName$/;"	v
+sSrcFileBaseName	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^            Dim sSrcFileBaseName$/;"	v
+sSrcFileExt	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^            Dim sSrcFileExt$/;"	v
+sSrcFileName	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^            Dim sSrcFileName$/;"	v
+sSrcParDirPath	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Dim sSrcParDirPath$/;"	v
+sSrcParentDirPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sSrcParentDirPath$/;"	v
+sSrcPath	.\tools\win\file_ope\CopyToDir.vbs	/^dim sSrcPath$/;"	v
+sSrcPath	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sSrcPath$/;"	v
+sSrcPath	.\tools\win\file_ope\MoveToDir.vbs	/^dim sSrcPath$/;"	v
+sSrcPath	.\tools\win\other\EvacuateSettingFiles.vbs	/^Dim sSrcPath$/;"	v
+sSrcPath	.\tools\win\other\RestoreSettingFiles.vbs	/^Dim sSrcPath$/;"	v
+sStrOut	.\_lib\Windows.vbs	/^    Dim sStrOut$/;"	v
+sStrOut	.\tools\win\file_ope\CreateSymbolicLink.vbs	/^    Dim sStrOut$/;"	v
+sTEMP_FILE_NAME	.\_lib\SettingFileClass.vbs	/^        Const sTEMP_FILE_NAME = "SettingFileClass.cfg"$/;"	c
+sTEMP_FILE_NAME	.\tools\win\file_ope\CopyAsWorkFile.vbs	/^Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"$/;"	c
+sTEST_KEY	.\_lib\SettingFileClass.vbs	/^        Const sTEST_KEY = "init value"$/;"	c
+sTailLine	.\_lib\X-Finder.vbs	/^    Dim sTailLine$/;"	v
+sTailWord	.\_lib\String.vbs	/^    Dim sTailWord$/;"	v
+sTargetGroup	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim sTargetGroup$/;"	v
+sTargetStr	.\_lib\String.vbs	/^    Dim sTargetStr$/;"	v
+sTargetStr	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sTargetStr$/;"	v
+sTargetStr	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim sTargetStr$/;"	v
+sTargetStr	.\tools\win\file_ope\AddString2FileFolder.vbs	/^Dim sTargetStr$/;"	v
+sTestGenre	.\tools\itunes\ClearItunesTags.vbs	/^                Dim sTestGenre$/;"	v
+sTestValue	.\_lib\SettingFileClass.vbs	/^        Dim sTestValue$/;"	v
+sTextAll	.\_lib\FileSystem.vbs	/^    Dim sTextAll$/;"	v
+sTextAll	.\_lib\X-Finder.vbs	/^    Dim sTextAll$/;"	v
+sTextAll	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sTextAll$/;"	v
+sTextAll	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sTextAll$/;"	v
+sTextAll	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sTextAll$/;"	v
+sTextAll	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sTextAll$/;"	v
+sTime	.\tools\win\other\PopupTimeSignal.vbs	/^			Dim sTime$/;"	v
+sTimeValue	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sTimeValue$/;"	v
+sTmpFileDeleteMode	.\tools\wimmerge\CompareWithWinmerge.vbs	/^Dim sTmpFileDeleteMode$/;"	v
+sTmpFilePath	.\_lib\FileSystem.vbs	/^    Dim sTmpFilePath$/;"	v
+sTmpFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^    Dim sTmpFilePath$/;"	v
+sTmpFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sTmpFilePath$/;"	v
+sTmpFilePath	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sTmpFilePath$/;"	v
+sTmpFilePath	.\tools\vim\OpenAllFilesWithVim.vbs	/^    Dim sTmpFilePath$/;"	v
+sTrgtDir	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^Dim sTrgtDir$/;"	v
+sTrgtDir	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^Dim sTrgtDir$/;"	v
+sTrgtDirPath	.\_lib\FileSystem.vbs	/^    Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\ctags,gtags\CreateTagFiles.vbs	/^Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\itunes\ClearItunesTags.vbs	/^                    Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirPath	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim sTrgtDirPath$/;"	v
+sTrgtDirStr	.\_lib\FileSystem.vbs	/^    Dim sTrgtDirStr$/;"	v
+sTrgtDrvPath	.\tools\itunes\UpdateItunesBakDstPath.vbs	/^Dim sTrgtDrvPath$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\AddString2FileFolder.vbs	/^            Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileBaseName	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^                Dim sTrgtFileBaseName$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\AddString2FileFolder.vbs	/^            Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileExt	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^                Dim sTrgtFileExt$/;"	v
+sTrgtFileName	.\_lib\FileSystem.vbs	/^    Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\itunes\ClearItunesTags.vbs	/^                    Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\AddString2FileFolder.vbs	/^    Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\CpyAndAddNowDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\CpyAndAddOldDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFileName	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^        Dim sTrgtFileName$/;"	v
+sTrgtFilePath	.\_lib\Collection.vbs	/^        DIm sTrgtFilePath$/;"	v
+sTrgtFilePath	.\command\ReplaceStrInTxtFile.vbs	/^Dim sTrgtFilePath$/;"	v
+sTrgtFilePath	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        DIm sTrgtFilePath$/;"	v
+sTrgtFilePath	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        DIm sTrgtFilePath$/;"	v
+sTrgtFilePath	.\tools\itunes\ClearItunesTags.vbs	/^                    Dim sTrgtFilePath$/;"	v
+sTrgtFilePath	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtFilePath$/;"	v
+sTrgtFilePath	.\tools\win\file_info\ExecGetDetailsOf.vbs	/^Dim sTrgtFilePath$/;"	v
+sTrgtFolderPath	.\_lib\FileSystem.vbs	/^    Dim sTrgtFolderPath$/;"	v
+sTrgtModDate	.\tools\itunes\ClearItunesTags.vbs	/^                    Dim sTrgtModDate$/;"	v
+sTrgtModDate	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtModDate$/;"	v
+sTrgtParentDirPath	.\_lib\FileSystem.vbs	/^    Dim sTrgtParentDirPath$/;"	v
+sTrgtPath	.\_lib\FileSystem.vbs	/^        Dim sTrgtPath$/;"	v
+sTrgtPath	.\_lib\X-Finder.vbs	/^        Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\7zip\UnzipFile.vbs	/^    Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\7zip\ZipFile.vbs	/^    Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim sTrgtPath$/;"	v
+sTrgtPath	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sTrgtPath$/;"	v
+sTrgtPathsStr	.\tools\7zip\UnzipFile.vbs	/^    Dim sTrgtPathsStr$/;"	v
+sTrgtPathsStr	.\tools\7zip\ZipFile.vbs	/^    Dim sTrgtPathsStr$/;"	v
+sTrgtPathsStr	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sTrgtPathsStr$/;"	v
+sTrgtTrackName	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtTrackName$/;"	v
+sTxtLine	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    Dim sTxtLine$/;"	v
+sTxtLine	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sTxtLine$/;"	v
+strComputer	.\_lib\ProgressBarIE.vbs	/^        Dim strComputer$/;"	v
+strIEexe	.\_lib\ProgressBarIE.vbs	/^        Const strIEexe = "iexplore.exe" 'IEのプロセス名$/;"	c
+vAnswer	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^    Dim vAnswer$/;"	v
+vAnswer	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim vAnswer$/;"	v
+vAnswer	.\tools\win\other\KitchenTimer.vbs	/^	Dim vAnswer$/;"	v
+vDataTypes	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^        Dim vDataTypes$/;"	v
+vDataTypes	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim vDataTypes$/;"	v
+vDateRaw	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim vDateRaw$/;"	v
+vDateRaw	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim vDateRaw$/;"	v
+vFileExtentions	.\_lib\FileSystem.vbs	/^        Dim vFileExtentions$/;"	v
+vFileInfo	.\_lib\FileSystem.vbs	/^        Dim vFileInfo$/;"	v
+vFileInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim vFileInfo$/;"	v
+vFileInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim vFileInfo$/;"	v
+vFileInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim vFileInfo$/;"	v
+vFileInfoTitle	.\_lib\FileSystem.vbs	/^        Dim vFileInfoTitle$/;"	v
+vFileInfoValue	.\_lib\FileSystem.vbs	/^        Dim vFileInfoValue$/;"	v
+vFileLineAll	.\_lib\SettingFileClass.vbs	/^            Dim vFileLineAll()$/;"	v
+vFileList	.\_lib\FileSystem.vbs	/^            Dim vFileList$/;"	v
+vFileList	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^            Dim vFileList$/;"	v
+vFileList	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^            Dim vFileList$/;"	v
+vFilter	.\_lib\FileSystem.vbs	/^        Dim vFilter$/;"	v
+vFilters	.\_lib\FileSystem.vbs	/^            Dim vFilters$/;"	v
+vFolderInfo	.\_lib\FileSystem.vbs	/^        Dim vFolderInfo$/;"	v
+vFolderInfo	.\tools\win\clipboard\CpyFileInfo.vbs	/^        Dim vFolderInfo$/;"	v
+vFolderInfo	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim vFolderInfo$/;"	v
+vFolderInfo	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim vFolderInfo$/;"	v
+vGetTitle	.\_lib\FileSystem.vbs	/^        Dim vGetTitle$/;"	v
+vKey	.\_lib\SettingFileClass.vbs	/^            Dim vKey$/;"	v
+vKeyValue	.\_lib\SettingFileClass.vbs	/^                Dim vKeyValue$/;"	v
+vRamNames	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^        Dim vRamNames$/;"	v
+vRamNames	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim vRamNames$/;"	v
+vRamNames	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^        Dim vRamNames$/;"	v
+vRamNames	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim vRamNames$/;"	v
+vTextAll	.\_lib\X-Finder.vbs	/^        Dim vTextAll$/;"	v
+vTextAll	.\_lib\X-Finder.vbs	/^    Dim vTextAll$/;"	v
+vbAnswer	.\tools\svn\CreateShortcutAndCopyFileSvn.vbs	/^    Dim vbAnswer$/;"	v
+xlExcel8	.\_lib\Excel.vbs	/^    Const xlExcel8 = 56$/;"	c
+xlMinimized	.\_lib\FileSystem.vbs	/^    Const xlMinimized = -4140$/;"	c
+xlOpenXMLWorkbookMacroEnabled	.\_lib\Excel.vbs	/^    Const xlOpenXMLWorkbookMacroEnabled = 52$/;"	c
+xlWorkbookDefault	.\_lib\Excel.vbs	/^    Const xlWorkbookDefault = 51$/;"	c
