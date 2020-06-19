@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.38
+' user define macros v2.39
 
 ' =============================================================================
 ' =  <<ƒ}ƒNƒˆê——>>
@@ -1939,7 +1939,10 @@ End Sub
 Private Function GetAddinSettingFilePath() As String
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    GetAddinSettingFilePath = ThisWorkbook.Path & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"
+    Dim objWshShell
+    Set objWshShell = CreateObject("WScript.Shell")
+    GetAddinSettingFilePath = _
+        objWshShell.SpecialFolders("MyDocuments") & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"
 End Function
 
 ' ==================================================================
