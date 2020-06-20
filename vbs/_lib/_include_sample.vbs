@@ -11,18 +11,10 @@ Call Include( "C:\codes\vbs\_lib\String.vbs" ) '★()
 '===============================================================================
 '= インクルード関数
 '===============================================================================
-Private Function Include( _
-    ByVal sOpenFile _
-)
-    Dim objFSO
-    Dim objVbsFile
-    
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-    
-    ExecuteGlobal objVbsFile.ReadAll()
-    objVbsFile.Close
-    
-    Set objVbsFile = Nothing
-    Set objFSO = Nothing
+Private Function Include( ByVal sOpenFile )
+    With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
+        ExecuteGlobal .ReadAll()
+        .Close
+    End With
 End Function
+
