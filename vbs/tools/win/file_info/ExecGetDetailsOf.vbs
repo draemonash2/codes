@@ -4,8 +4,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetDetailsOfGetDetailsOf()
 
 '==========================================================
@@ -23,10 +21,9 @@ Call GetDetailsOfGetDetailsOf( sTrgtFilePath, sLogFilePath )
 WScript.CreateObject("WScript.Shell").Run sLogFilePath, 1, True
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO

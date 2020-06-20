@@ -10,6 +10,11 @@ Const ORIGINAL_FILE_PREFIX = "#Org#"
 Const COPY_FILE_PREFIX     = "#Cpy#"
 
 '####################################################################
+'### 事前処理
+'####################################################################
+Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'ConvDate2String()
+
+'####################################################################
 '### 本処理
 '####################################################################
 Const sPROG_NAME = "ショートカット＆コピーファイル作成(SVN)"
@@ -113,11 +118,11 @@ If bIsContinue = True Then
         If bFolderExists = False And bFileExists = True Then
             '追加文字列取得＆整形
             If ADD_DATE_TYPE = 1 Then
-                sAddDate = ConvDate2String( Now() )
+                sAddDate = ConvDate2String( Now(), 1 )
             ElseIf ADD_DATE_TYPE = 2 Then
                 Dim objFile
                 Set objFile = objFSO.GetFile( sSelectedPath )
-                sAddDate = ConvDate2String( objFile.DateLastModified )
+                sAddDate = ConvDate2String( objFile.DateLastModified, 1 )
                 Set objFile = Nothing
             Else
                 MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
@@ -149,11 +154,11 @@ If bIsContinue = True Then
         ElseIf bFolderExists = True And bFileExists = False Then
             '追加文字列取得＆整形
             If ADD_DATE_TYPE = 1 Then
-                sAddDate = ConvDate2String( Now() )
+                sAddDate = ConvDate2String( Now(), 1 )
             ElseIf ADD_DATE_TYPE = 2 Then
                 Dim objFolder
                 Set objFolder = objFSO.GetFolder( sSelectedPath )
-                sAddDate = ConvDate2String( objFolder.DateLastModified )
+                sAddDate = ConvDate2String( objFolder.DateLastModified, 1 )
                 Set objFolder = Nothing
             Else
                 MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
@@ -193,41 +198,21 @@ Else
     'Do Nothing
 End If
 
-' ==================================================================
-' = 概要    日時文字列をファイル/フォルダ名に適用できる形式に変換する
-' = 引数    sDateRaw    String  [in]    日時（例：2017/8/5 12:59:58）
-' = 戻値                String          日時（例：20170805_125958）
-' = 覚書    なし
-' = 依存    なし
-' = 所属    CreateShortcutAndCopyFileSvn.vbs
-' ==================================================================
-Public Function ConvDate2String( _
-    ByVal sDateRaw _
+'####################################################################
+'### インクルード関数
+'####################################################################
+Private Function Include( _
+    ByVal sOpenFile _
 )
-    Dim sSearchPattern
-    Dim sTargetStr
-    sSearchPattern = "(\w{4})/(\w{1,2})/(\w{1,2}) (\w{1,2}):(\w{1,2}):(\w{1,2})"
-    sTargetStr = sDateRaw
+    Dim objFSO
+    Dim objVbsFile
     
-    Dim oRegExp
-    Set oRegExp = CreateObject("VBScript.RegExp")
-    oRegExp.Pattern = sSearchPattern                '検索パターンを設定
-    oRegExp.IgnoreCase = True                       '大文字と小文字を区別しない
-    oRegExp.Global = True                           '文字列全体を検索
-    Dim oMatchResult
-    Set oMatchResult = oRegExp.Execute(sTargetStr)  'パターンマッチ実行
-    Dim sDateStr
-    With oMatchResult(0)
-        sDateStr = String( 4 - Len( .SubMatches(0) ), "0" ) & .SubMatches(0) & _
-                   String( 2 - Len( .SubMatches(1) ), "0" ) & .SubMatches(1) & _
-                   String( 2 - Len( .SubMatches(2) ), "0" ) & .SubMatches(2) & _
-                   "-" & _
-                   String( 2 - Len( .SubMatches(3) ), "0" ) & .SubMatches(3) & _
-                   String( 2 - Len( .SubMatches(4) ), "0" ) & .SubMatches(4) & _
-                   String( 2 - Len( .SubMatches(5) ), "0" ) & .SubMatches(5)
-    End With
-    Set oMatchResult = Nothing
-    Set oRegExp = Nothing
-    ConvDate2String = sDateStr
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
-

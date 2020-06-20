@@ -7,6 +7,11 @@
 
 
 '####################################################################
+'### 事前処理
+'####################################################################
+Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'ConvDate2String()
+
+'####################################################################
 '### 本処理
 '####################################################################
 Const sPROG_NAME = "現在日時追加＆リネーム"
@@ -72,7 +77,7 @@ If bIsContinue = True Then
     Dim sDateStr
     Dim sAddStr
     sDateRaw = Now()
-    sDateStr = ConvDate2String( sDateRaw )
+    sDateStr = ConvDate2String( sDateRaw, 1 )
     sAddStr = "_" & sDateStr
     
     Dim objFSO
@@ -143,31 +148,22 @@ Else
     'Do Nothing
 End If
 
-' ==================================================================
-' = 概要    日時形式を変換する。（例：2017/03/22 18:20:14 ⇒ 170322-1820）
-' = 引数    sDateTime   String  [in]  日時（YYYY/MM/DD HH:MM:SS）
-' = 戻値                String        日時（YYMMDD-HHMM）
-' = 覚書    主に日時をファイル名やフォルダ名に使用する際に使用する。
-' = 依存    なし
-' = 所属    String.vbs
-' ==================================================================
-Public Function ConvDate2String( _
-    ByVal sDateTime _
+'####################################################################
+'### インクルード関数
+'####################################################################
+Private Function Include( _
+    ByVal sOpenFile _
 )
-    On Error Resume Next
-    Dim sDateStr
-    sDateStr = _
-        Right(Year(sDateTime), 2 )                                  & _
-        String(2 - Len(Month(sDateTime)),  "0") & Month(sDateTime)  & _
-        String(2 - Len(Day(sDateTime)),    "0") & Day(sDateTime)    & _
-        "-" & _
-        String(2 - Len(Hour(sDateTime)),   "0") & Hour(sDateTime)   & _
-        String(2 - Len(Minute(sDateTime)), "0") & Minute(sDateTime)
-    If Err.Number = 0 Then
-        ConvDate2String = sDateStr
-    Else
-        ConvDate2String = ""
-    End If
-    On Error Goto 0
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
 

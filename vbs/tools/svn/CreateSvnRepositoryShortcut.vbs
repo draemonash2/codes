@@ -16,6 +16,8 @@ Option Explicit
 
 Const INPUT_PATH_FILE_NAME = "_repository_path"
 
+Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'ExtractTailWord()
+
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 Dim sInputPathFilePath
@@ -67,40 +69,19 @@ Next
 
 MsgBox "リポジトリへのショートカットを作成しました。"
 
-' ==================================================================
-' = 概要    末尾区切り文字以降の文字列を返却する。
-' = 引数    sStr        String  [in]  分割する文字列
-' = 引数    sDlmtr      String  [in]  区切り文字
-' = 戻値                String        抽出文字列
-' = 覚書    なし
-' = 依存    なし
-' = 所属    String.vbs
-' ==================================================================
-Public Function ExtractTailWord( _
-    ByVal sStr, _
-    ByVal sDlmtr _
+' 外部プログラム インクルード関数
+Private Function Include( _
+    ByVal sOpenFile _
 )
-    Dim asSplitWord
+    Dim objFSO
+    Dim objVbsFile
     
-    If Len(sStr) = 0 Then
-        ExtractTailWord = ""
-    Else
-        ExtractTailWord = ""
-        asSplitWord = Split(sStr, sDlmtr)
-        ExtractTailWord = asSplitWord(UBound(asSplitWord))
-    End If
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
-'   Call Test_ExtractTailWord()
-    Private Sub Test_ExtractTailWord()
-        Dim Result
-        Result = "[Result]"
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "\" )   ' a.txt
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test\a", "\" )       ' a
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test\", "\" )        ' 
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test", "\" )         ' test
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test", "\\" )        ' C:\test
-        Result = Result & vbNewLine & ExtractTailWord( "a.txt", "\" )           ' a.txt
-        Result = Result & vbNewLine & ExtractTailWord( "", "\" )                ' 
-        Result = Result & vbNewLine & ExtractTailWord( "C:\test\a.txt", "" )    ' C:\test\a.txt
-        MsgBox Result
-    End Sub

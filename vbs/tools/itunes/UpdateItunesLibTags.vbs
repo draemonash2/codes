@@ -618,11 +618,24 @@ Call Finish
 WScript.CreateObject("WScript.Shell").Run "%comspec% /c """ & sLogFilePath & """"
 MsgBox "プログラムが正常に終了しました。"
 
+Function Finish()
+    Call oStpWtch.StopT
+    Call oPrgBar.Quit
+    objLogFile.WriteLine ""
+    objLogFile.WriteLine "開始時刻               : " & oStpWtch.StartPoint
+    objLogFile.WriteLine "終了時刻               : " & oStpWtch.StopPoint
+    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
+    objLogFile.WriteLine ""
+    objLogFile.WriteLine "script finished."
+    objLogFile.Close
+    Set oStpWtch = Nothing
+    Set oPrgBar = Nothing
+End Function
+
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO
@@ -638,16 +651,3 @@ Function Include( _
     Set objFSO = Nothing
 End Function
 
-Function Finish()
-    Call oStpWtch.StopT
-    Call oPrgBar.Quit
-    objLogFile.WriteLine ""
-    objLogFile.WriteLine "開始時刻               : " & oStpWtch.StartPoint
-    objLogFile.WriteLine "終了時刻               : " & oStpWtch.StopPoint
-    objLogFile.WriteLine "経過時間（総時間）     : " & oStpWtch.ElapsedTime
-    objLogFile.WriteLine ""
-    objLogFile.WriteLine "script finished."
-    objLogFile.Close
-    Set oStpWtch = Nothing
-    Set oPrgBar = Nothing
-End Function

@@ -5,8 +5,6 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
                                                             'WriteTxtFileFrCollection()
 
@@ -53,7 +51,6 @@ end if
 '===============================================================================
 '= インクルード関数
 '===============================================================================
-' 外部プログラム インクルード関数
 Private Function Include( _
     ByVal sOpenFile _
 )
@@ -61,7 +58,6 @@ Private Function Include( _
     Dim objVbsFile
     
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
     Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
     
     ExecuteGlobal objVbsFile.ReadAll()

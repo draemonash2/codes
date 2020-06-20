@@ -574,7 +574,11 @@ Public Function GetFileNotExistPath( _
             sCreFilePath = sFileParDirPath & "\" & sFileBaseName & "." & sFileExtName
         End If
     Loop
-    GetFileNotExistPath = sCreFilePath
+    If bIsTrgtPathExists = True Then
+        GetFileNotExistPath = sCreFilePath
+    Else
+        GetFileNotExistPath = ""
+    End If
 End Function
 '    Call Test_GetFileNotExistPath()
     Private Sub Test_GetFileNotExistPath()

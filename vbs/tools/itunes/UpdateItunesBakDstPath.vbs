@@ -3,8 +3,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'RunasCheck()
 
 '==========================================================
@@ -93,10 +91,9 @@ Else
 End If
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO

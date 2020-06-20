@@ -123,7 +123,9 @@ Else
     'Do Nothing
 End If
 
-' 外部プログラム インクルード関数
+'####################################################################
+'### インクルード関数
+'####################################################################
 Private Function Include( _
     ByVal sOpenFile _
 )
@@ -131,7 +133,6 @@ Private Function Include( _
     Dim objVbsFile
     
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
     Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
     
     ExecuteGlobal objVbsFile.ReadAll()

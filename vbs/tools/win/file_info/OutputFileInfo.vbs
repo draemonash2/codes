@@ -3,8 +3,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\String.vbs" )  'GetDirPath()
                                                 'GetFileName()
 
@@ -117,24 +115,16 @@ Else
 End if
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO
     Dim objVbsFile
     
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    On Error Resume Next
     Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-    If Err.Number <> 0 Then
-        MsgBox Err.Description & vbNewLine & _
-               sOpenFile
-        WScript.Quit
-    End If
-    On Error Goto 0
     
     ExecuteGlobal objVbsFile.ReadAll()
     objVbsFile.Close

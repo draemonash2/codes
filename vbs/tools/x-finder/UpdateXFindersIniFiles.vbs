@@ -3,8 +3,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
 Call Include( "C:\codes\vbs\_lib\X-Finder.vbs" )    'UpdateIniFile()
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileList()
@@ -20,6 +18,8 @@ Dim sLogFilePath
 Dim sRootDirPath
 Dim sShortcutDirPath
 Dim sIniRootDirPath
+Dim sMyDirPath
+sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 sLogFilePath = sMyDirPath & "\" & objFSO.GetBaseName( WScript.ScriptName ) & ".log"
 sRootDirPath = sMyDirPath & "\.."
 sShortcutDirPath = sRootDirPath & "\favorite"
@@ -122,10 +122,9 @@ Call oLogMng.Close()
 Set oLogMng = Nothing
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO

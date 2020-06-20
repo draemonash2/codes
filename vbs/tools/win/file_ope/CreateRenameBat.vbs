@@ -7,6 +7,11 @@
 Const OUTPUT_BAT_FILE_BASE_NAME = "rename"
 
 '####################################################################
+'### 事前処理
+'####################################################################
+Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'LenByte()
+
+'####################################################################
 '### 本処理
 '####################################################################
 Const sPROG_NAME = "リネーム用バッチファイル出力"
@@ -125,45 +130,21 @@ Else
     'Do Nothing
 End If
 
-' ==================================================================
-' = 概要    指定された文字列の文字列長（バイト数）を返却する
-' = 引数    sInStr      String  [in]  文字列
-' = 戻値                Long          文字列長（バイト数）
-' = 覚書    標準で用意されている LenB() 関数は、Unicode における
-' =         バイト数を返却するため半角文字も２文字としてカウントする。
-' =           （例：LenB("ファイルサイズ ") ⇒ 16）
-' =         そのため、半角文字を１文字としてカウントする本関数を用意。
-' = 依存    なし
-' = 所属    String.vbs
-' ==================================================================
-Public Function LenByte( _
-    ByVal sInStr _
+'####################################################################
+'### インクルード関数
+'####################################################################
+Private Function Include( _
+    ByVal sOpenFile _
 )
-    Dim lIdx, sChar
-    LenByte = 0
-    If Trim(sInStr) <> "" Then
-        For lIdx = 1 To Len(sInStr)
-            sChar = Mid(sInStr, lIdx, 1)
-            '２バイト文字は＋２
-            If (Asc(sChar) And &HFF00) <> 0 Then
-                LenByte = LenByte + 2
-            Else
-                LenByte = LenByte + 1
-            End If
-        Next
-    End If
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
-'   Call Test_LenByte()
-    Private Sub Test_LenByte()
-        Dim Result
-        Result = "[Result]"
-        Result = Result & vbNewLine & LenByte( "aaa" )      ' 3
-        Result = Result & vbNewLine & LenByte( "aaa " )     ' 4
-        Result = Result & vbNewLine & LenByte( "" )         ' 0
-        Result = Result & vbNewLine & LenByte( "あああ" )   ' 6
-        Result = Result & vbNewLine & LenByte( "あああ " )  ' 7
-        Result = Result & vbNewLine & LenByte( "ああ あ" )  ' 7
-        Result = Result & vbNewLine & LenByte( Chr(9) )     ' 1
-        Result = Result & vbNewLine & LenByte( Chr(10) )    ' 1
-        MsgBox Result
-    End Sub

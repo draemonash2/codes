@@ -30,8 +30,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileOrFolder()
                                                     'CreateDirectry()
 Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'ExecRunas()
@@ -166,26 +164,6 @@ Set oLog = Nothing
 Set objFSO = Nothing
 Set objWshShell = Nothing
 
-'==========================================================
-'= 関数定義
-'==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
-    ByVal sOpenFile _
-)
-    Dim objFSO
-    Dim objVbsFile
-    
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-    
-    ExecuteGlobal objVbsFile.ReadAll()
-    objVbsFile.Close
-    
-    Set objVbsFile = Nothing
-    Set objFSO = Nothing
-End Function
-
 ' = 依存    なし
 ' = 所属    EvacuateSettingFiles.vbs
 Function ErrorCheck( _
@@ -204,3 +182,23 @@ Function ErrorCheck( _
         'Do Nothing
     End If
 End Function
+
+'==========================================================
+'= インクルード関数
+'==========================================================
+Private Function Include( _
+    ByVal sOpenFile _
+)
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
+End Function
+

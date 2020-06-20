@@ -45,8 +45,6 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )          'GetFileList3()
                                                             'GetFileNotExistPath()
 Call Include( "C:\codes\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
@@ -246,7 +244,6 @@ Private Function Include( _
     Dim objVbsFile
     
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sOpenFile = objFSO.GetAbsolutePathName( sOpenFile )
     Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
     
     ExecuteGlobal objVbsFile.ReadAll()

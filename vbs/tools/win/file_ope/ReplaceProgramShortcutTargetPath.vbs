@@ -12,8 +12,6 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileList2()
 Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
 
@@ -108,10 +106,9 @@ MsgBox _
     "  " & sLogFilePath
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
+Private Function Include( _
     ByVal sOpenFile _
 )
     Dim objFSO

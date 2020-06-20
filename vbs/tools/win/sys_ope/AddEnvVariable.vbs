@@ -17,9 +17,7 @@ Const DEFAULT_TARGET_GROUP = "User"   'System：すべてのユーザー 、User：現在のユ
 '==========================================================
 '= インクルード
 '==========================================================
-Dim sMyDirPath
-sMyDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
-'Call Include( "C:\codes\vbs\_lib\Log.vbs" )		'Class LogMng
+'Call Include( "C:\codes\vbs\_lib\Log.vbs" )        'Class LogMng
 
 '==========================================================
 '= 本処理
@@ -32,18 +30,18 @@ Dim sTargetGroup
 sEnvName = DEFAULT_ENV_NAME
 sTargetGroup = DEFAULT_TARGET_GROUP
 If WScript.Arguments.Count = 1 Then
-	sEnvValue = WScript.Arguments(0)
+    sEnvValue = WScript.Arguments(0)
 ElseIf WScript.Arguments.Count = 2 Then
-	sEnvValue = WScript.Arguments(0)
-	sEnvName = WScript.Arguments(1)
+    sEnvValue = WScript.Arguments(0)
+    sEnvName = WScript.Arguments(1)
 ElseIf WScript.Arguments.Count > 3 Then
-	sEnvValue = WScript.Arguments(0)
-	sEnvName = WScript.Arguments(1)
-	sTargetGroup = WScript.Arguments(2)
+    sEnvValue = WScript.Arguments(0)
+    sEnvName = WScript.Arguments(1)
+    sTargetGroup = WScript.Arguments(2)
 Else
-	WScript.StdOut.WriteLine "引数が指定されていません"
-	WScript.StdOut.WriteLine "処理を中断します"
-	WScript.Quit
+    WScript.StdOut.WriteLine "引数が指定されていません"
+    WScript.StdOut.WriteLine "処理を中断します"
+    WScript.Quit
 End If
 'MsgBox sEnvValue
 
@@ -54,29 +52,29 @@ End If
 Dim objUsrEnv
 Set objUsrEnv = WScript.CreateObject("WScript.Shell").Environment(sTargetGroup)
 If Err.Number = 0 Then
-	'Do Nothing
+    'Do Nothing
 Else
-	WScript.StdOut.WriteLine "エラー: " & Err.Description
-	WScript.StdOut.WriteLine "環境変数エラー"
-	WScript.Quit
+    WScript.StdOut.WriteLine "エラー: " & Err.Description
+    WScript.StdOut.WriteLine "環境変数エラー"
+    WScript.Quit
 End If
 
 Dim sEnvValOrg
 Dim sEnvValNew
 sEnvValOrg = objUsrEnv.Item(sEnvName)
 If sEnvValOrg = "" Then
-	objUsrEnv.Item(sEnvName) = sEnvValue
-	WScript.StdOut.WriteLine sEnvName & "を追加しました"
+    objUsrEnv.Item(sEnvName) = sEnvValue
+    WScript.StdOut.WriteLine sEnvName & "を追加しました"
 Else
-	If InStr( sEnvValOrg, sEnvValue ) > 0 Then
-		WScript.StdOut.WriteLine sEnvValue & "は" & sEnvName & "に存在します"
-	Else
-		sEnvValNew = sEnvValOrg & ";" & sEnvValue
-	'	oLog.Puts sEnvValOrg
-	'	oLog.Puts sEnvValNew
-		objUsrEnv.Item(sEnvName) = sEnvValNew
-		WScript.StdOut.WriteLine sEnvValue & "を" & sEnvName & "に追加しました"
-	End If
+    If InStr( sEnvValOrg, sEnvValue ) > 0 Then
+        WScript.StdOut.WriteLine sEnvValue & "は" & sEnvName & "に存在します"
+    Else
+        sEnvValNew = sEnvValOrg & ";" & sEnvValue
+    '   oLog.Puts sEnvValOrg
+    '   oLog.Puts sEnvValNew
+        objUsrEnv.Item(sEnvName) = sEnvValNew
+        WScript.StdOut.WriteLine sEnvValue & "を" & sEnvName & "に追加しました"
+    End If
 End If
 
 Set objUsrEnv = Nothing
@@ -85,21 +83,20 @@ Set objUsrEnv = Nothing
 'Set oLog = Nothing
 
 '==========================================================
-'= 関数定義
+'= インクルード関数
 '==========================================================
-' 外部プログラム インクルード関数
-Function Include( _
-	ByVal sOpenFile _
+Private Function Include( _
+    ByVal sOpenFile _
 )
-	Dim objFSO
-	Dim objVbsFile
-	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")
-	Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
-	
-	ExecuteGlobal objVbsFile.ReadAll()
-	objVbsFile.Close
-	
-	Set objVbsFile = Nothing
-	Set objFSO = Nothing
+    Dim objFSO
+    Dim objVbsFile
+    
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objVbsFile = objFSO.OpenTextFile( sOpenFile )
+    
+    ExecuteGlobal objVbsFile.ReadAll()
+    objVbsFile.Close
+    
+    Set objVbsFile = Nothing
+    Set objFSO = Nothing
 End Function
