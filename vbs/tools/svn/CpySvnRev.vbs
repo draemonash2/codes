@@ -34,6 +34,8 @@ If bIsContinue = True Then
         cFilePaths.Add "C:\codes_sample\c\FreeRTOSV7.1.1\Source\test.txt"
         cFilePaths.Add "C:\codes_sample\c\FreeRTOSV7.1.1\Source\nothing"
         cFilePaths.Add "C:\codes_sample\c\FreeRTOSV7.1.1\Source"
+        cFilePaths.Add "C:\codes_sample\_mergetest"
+        cFilePaths.Add "C:\codes_sample\_mergetest\01\Add_practice09.c"
     End If
 Else
     'Do Nothing
@@ -55,10 +57,6 @@ End If
 '*** クリップボードへコピー ***
 If bIsContinue = True Then
     Dim sOutString
-    Dim objTxtFile
-    Dim sPrgNo
-    Dim objFSO
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
     sOutString = ""
     For Each oFilePath In cFilePaths
         Dim sRevision
@@ -69,7 +67,6 @@ If bIsContinue = True Then
             sOutString = sOutString & vbNewLine & sRevision
         End If
     Next
-    Set objFSO = Nothing
     CreateObject( "WScript.Shell" ).Exec( "clip" ).StdIn.Write( sOutString )
 Else
     'Do Nothing
@@ -80,51 +77,33 @@ Private Function GetSvnRevision( _
     ByVal sTrgtPath _
 )
     Const sEXT_KEYWORD_REV = "Last Changed Rev: "
-    Const sEXT_KEYWORD_NOTSVN = "is not a working copy"
+    Const sCMD_RDRCT_FILE_NAME = "svn_info.log"
     
-    Dim sExeCmd
-    sExeCmd = "svn info " & sTrgtPath & "|find """ & sEXT_KEYWORD_REV & """"
-    MsgBox sExeCmd
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim sTmpDirPath
+    sTmpDirPath = objFSO.GetSpecialFolder(2) 'テンポラリフォルダ
+    Dim sCmdRdrctFilePath
+    sCmdRdrctFilePath = sTmpDirPath & "\" & sCMD_RDRCT_FILE_NAME
     
+    'svn info 実行
     Dim objWshShell
-    Set objWshShell = WScript.CreateObject("WScript.Shell")
-    Dim objExecResult
-    Set objExecResult = objWshShell.Exec( sExeCmd )
+    Set objWshShell = CreateObject("WScript.Shell")
+    objWshShell.Run "cmd /c svn info """ & sTrgtPath & """ > " & sCmdRdrctFilePath & " 2>&1", 0, True
     
-    '終了待ち
-    Do While objExecResult.Status = 0
-        WScript.Sleep 100
-    Loop
-    
-    Dim sRet
-    sRet = ""
-    MsgBox objExecResult.ExitCode
-    If objExecResult.ExitCode = 0 Then
-        Dim bIsError
-        bIsError = True
-        
+    'svn info 実行結果取得
+    Dim sRevision
+    Dim objTxtFile
+    Set objTxtFile = objFSO.OpenTextFile( sCmdRdrctFilePath, 1, True)
+    Do Until objTxtFile.AtEndOfStream
         Dim sLine
-        Do Until objExecResult.StdOut.AtEndOfStream
-            sLine = objExecResult.StdOut.ReadLine
-        Loop
-        MsgBox sLine
+        sLine = objTxtFile.ReadLine
         If InStr( sLine, sEXT_KEYWORD_REV ) > 0 Then
-            bIsError = False
-        ElseIf InStr( sLine, sEXT_KEYWORD_NOTSVN ) > 0 Then
-            bIsError = False
-        Else
-            'Do Nothing
-        End If
-        
-        Dim sRevision
-        If bIsError = False Then
             sRevision = Mid( sLine, Len( sEXT_KEYWORD_REV ) + 1, Len( sLine ) )
-            sRet = sRevision
-        Else
-            'MsgBox "svn コマンドが正常に実行できませんでした。"
+            Exit Do
         End If
-    Else
-        'MsgBox "異常終了！"
-    End If
-    GetSvnRevision = sRet
+    Loop
+    objTxtFile.Close
+    
+    GetSvnRevision = sRevision
 End Function
