@@ -175,6 +175,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 
 ;***** Software local *****
+	#IfWinActive ahk_exe gimp-2.8.exe
+		^Left::
+			Send, {Left}{Backspace}{Esc}
+			return
+	#IfWinActive
+	
 	#IfWinActive ahk_exe EXCEL.EXE
 		;F1ヘルプ無効化
 			F1::return

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.39
+' user define macros v2.40
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1265,6 +1265,28 @@ Public Sub フォント色をトグル()
 End Sub
 
 ' =============================================================================
+' = 概要    背景色を「設定色」⇔「背景色なし」でトグルする
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 背景色をトグル()
+    'アドイン設定読み出し
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    Dim sValue As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sValue, lCLRTGLBG_CLR, True)
+    
+    '背景色変更
+    If Selection(1).Interior.Color = CLng(sValue) Then
+        Selection.Interior.ColorIndex = 0
+    Else
+        Selection.Interior.Color = CLng(sValue)
+    End If
+End Sub
+
+' =============================================================================
 ' = 概要    「フォント色をトグル」の設定色を変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
@@ -1273,6 +1295,8 @@ End Sub
 ' =============================================================================
 Public Sub フォント色をトグルの色を変更()
     Const sMACRO_NAME As String = "フォント色をトグルの色を変更"
+    
+    MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
@@ -1297,28 +1321,6 @@ Public Sub フォント色をトグルの色を変更()
 End Sub
 
 ' =============================================================================
-' = 概要    背景色を「設定色」⇔「背景色なし」でトグルする
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 背景色をトグル()
-    'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    Dim sValue As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sValue, lCLRTGLBG_CLR, True)
-    
-    '背景色変更
-    If Selection(1).Interior.Color = CLng(sValue) Then
-        Selection.Interior.ColorIndex = 0
-    Else
-        Selection.Interior.Color = CLng(sValue)
-    End If
-End Sub
-
-' =============================================================================
 ' = 概要    「背景色をトグル」の設定色を変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
@@ -1327,6 +1329,8 @@ End Sub
 ' =============================================================================
 Public Sub 背景色をトグルの色を変更()
     Const sMACRO_NAME As String = "背景色をトグルの色を変更"
+    
+    MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
