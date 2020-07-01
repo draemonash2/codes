@@ -11,7 +11,7 @@ Dim sSrcTmpFilePath
 sDstTmpFilePath = sUserDirPath & "\AppData\Roaming\Microsoft\Templates\" & sTEMPLATE_FILE_NAME
 sSrcTmpFilePath = objFSO.GetParentFolderName( WScript.ScriptFullName ) & "\" & sTEMPLATE_FILE_NAME
 
-Msgbox sDstTmpFilePath & vbNewLine & sSrcTmpFilePath
+'Msgbox sDstTmpFilePath & vbNewLine & sSrcTmpFilePath
 objFSO.CopyFile sSrcTmpFilePath, sDstTmpFilePath, True
 
 Msgbox sTEMPLATE_FILE_NAME & "ÇçXêVÇµÇ‹ÇµÇΩÅI"
