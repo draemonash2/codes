@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.40
+' user define macros v2.41
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -177,7 +177,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
-    dMacroShortcutKeys.Add "^+\", "一行にまとめてセルコピー_設定変更"
+    dMacroShortcutKeys.Add "^%d", "一行にまとめてセルコピー_設定変更"
     
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
@@ -199,10 +199,10 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ツリーをグループ化"
 '   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     
-'   dMacroShortcutKeys.Add "", "フォント色をトグル"
-'   dMacroShortcutKeys.Add "", "フォント色をトグルの色を変更"
-'   dMacroShortcutKeys.Add "", "背景色をトグル"
-'   dMacroShortcutKeys.Add "", "背景色をトグルの色を変更"
+    dMacroShortcutKeys.Add "^2", "背景色をトグル"
+    dMacroShortcutKeys.Add "^%2", "背景色をトグルの色を変更"
+    dMacroShortcutKeys.Add "^3", "フォント色をトグル"
+    dMacroShortcutKeys.Add "^%3", "フォント色をトグルの色を変更"
     
     dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
     dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
