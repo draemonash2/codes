@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_ExcelOpe"
 Option Explicit
 
-' excel operation library v2.4
+' excel operation library v2.5
 
 '************************************************************
 '* 関数定義
@@ -145,4 +145,39 @@ End Function
         sSearchKeyword = "ccc"
         bRet = GetNearCellValue(ActiveSheet, sSearchKeyword, 0, 0, sOutputValue): Debug.Print bRet & " : " & sOutputValue
     End Function
+
+' ==================================================================
+' = 概要    対象シートのセルを検索する。見つからない場合、処理を中断する。
+' = 引数    shTrgtSht       Worksheet   [in]    検索対象シート
+' = 引数    sFindKeyword    String      [in]    検索対象キーワード
+' = 戻値                    Range               検索結果
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Mng_ExcelOpe.bas
+' ==================================================================
+Public Function FindCell( _
+    ByVal shTrgtSht As Worksheet, _
+    ByVal sFindKeyword As String _
+) As Range
+    Set FindCell = shTrgtSht.Cells.Find(sFindKeyword, LookAt:=xlWhole)
+    If FindCell Is Nothing Then
+        MsgBox _
+            "セルが見つからなかったため、処理を中断します。" & vbNewLine & _
+            "　検索対象シート：" & shTrgtSht.Name & vbNewLine & _
+            "　検索対象キーワード：" & sFindKeyword, _
+            vbCritical
+        End
+    End If
+End Function
+    Private Function Test_FindCell()
+        Dim rFindResult As Range
+        Debug.Print "*** test start!"
+        Set rFindResult = FindCell(ActiveSheet, "秀丸マクロ")
+        Debug.Print "r" & rFindResult.Row & "c" & rFindResult.Column
+        Set rFindResult = FindCell(ActiveSheet, "秀丸マク")
+        Debug.Print "r" & rFindResult.Row & "c" & rFindResult.Column
+        Debug.Print "*** test finish!"
+    End Function
+
+
 

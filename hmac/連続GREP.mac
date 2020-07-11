@@ -1,23 +1,8 @@
-//grep 検索文字列, 検索するファイル, カレントフォルダ [,word] [,casesense | nocasesense] [,regular | noregular] [,fuzzy] [,subdir] [,icon] [,filelist] [,fullpath] [, hilight | nohilight]
-//  検索するファイルはgrep対象ファイルを指定します。(ex."*.cpp;*.c")
-//  カレントフォルダはルートフォルダを指定します。(ex."." ex."c:\test")
-//  casesenseは大文字／小文字の区別をするという意味です。
-//  nocasesenseは大文字／小文字の区別をしません。
-//    casesenseとnocasesenseのいずれも指定しない場合は、正規表現(regular)の指定があるときは自動的にcasesenseの指定になり、正規表現の指定がないときは自動的にnocasesenseの指定になります。
-//  regularを付けると正規表現で検索します。
-//  fuzzyを付けるとあいまい検索をします。
-//  subdirはサブフォルダも検索をします。
-//  iconは最小化状態で実行します。
-//  filelistはファイル名一覧だけ作成します。
-//  fullpathはファイル名をフルパスで出力します。（V4.00以降）
-//  hilightを付けると「検索文字列の強調」になります。nohilightを付けると「検索文字列の強調」が無効になります。（V5.00以降）
-//  outputsingleを指定すると出力先を「単一」にできます。（V6.50以降）
-//  outputsametabを指定すると出力先を「タブグループごと」にできます。（V7.00以降）
-//    マクロでは「アウトプット枠」を指定することはできません。
-//  unmatchを指定すると「ヒットしない行」にできます。（V8.00以降）
-
 begingroupundo;
-//▼▼▼ここから▼▼▼
-grep "#include", "*.cpp;*.c", ".", regular;
-//▲▲▲ここまで▲▲▲
+grep "[abc]", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
+grep "aaa", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
+grep "[abc]", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
+grep "[abc]", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
+grep "[abc]", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
+grep "[abc]", "*.cpp;*.c", "C:\\codes\\hmac", regular, subdir, hilight;
 endgroupundo;
