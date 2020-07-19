@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.41
+' user define macros v2.42
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -12,6 +12,7 @@ Option Explicit
 ' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
 ' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
 ' =         一行にまとめてセルコピー_設定変更           一行にまとめてセルコピー_設定変更
+' =         アドインマクロ実行                          アドインマクロ実行
 ' =
 ' =     ・シート操作
 ' =         EpTreeの関数ツリーをExcelで取り込む         EpTreeの関数ツリーをExcelで取り込む
@@ -178,6 +179,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
     dMacroShortcutKeys.Add "^%d", "一行にまとめてセルコピー_設定変更"
+    dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
     
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
@@ -1845,6 +1847,16 @@ Public Sub Excel数式整形化実施()
 End Sub
 Public Sub Excel数式整形化解除()
     Call ExcelBeautifer(False)
+End Sub
+
+' =============================================================================
+' = 概要    アドインマクロ実行
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub アドインマクロ実行()
+    ExecMacro.Show
 End Sub
 
 ' *****************************************************************************
