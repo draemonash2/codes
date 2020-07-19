@@ -28,7 +28,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;***** Global *****
 	;ホットキーヘルプ表示
 		!^+F1::
-			sFilePath = "C:\codes\ahk\UserDefHotKeyHotkeyHelp.vsdx"
+			sFilePath = "C:\other\hotkey_help.vsdx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	
