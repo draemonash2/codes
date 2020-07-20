@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.42
+' user define macros v2.43
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -113,6 +113,7 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 '=== 検索文字の文字色を変更() ===
     Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
+    Const sWORDCOLOR_COLOR_IDX As String = ""
 '=== ファイルエクスポート() ===
     Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
     Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
@@ -1000,8 +1001,6 @@ Public Sub 検索文字の文字色を変更()
     
     '▼▼▼色設定▼▼▼
     Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
-    Const lCOLOR_NUM As Long = 8
-    Const lINIT_COLOR As Long = 0
     Dim vCOLOR_INFO() As Variant
     vCOLOR_INFO = _
         Array( _
@@ -1027,18 +1026,28 @@ Public Sub 検索文字の文字色を変更()
     
     Dim clSetting As New SettingFile
     Dim sSrchStr As String
+    Dim sColorIdx As String
     Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
+    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_COLOR_IDX", sColorIdx, sWORDCOLOR_COLOR_IDX, False)
+    
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
 
     Dim lColorIndex As Long
+    If sColorIdx = "" Then
+        lColorIndex = 0
+    Else
+        lColorIndex = CLng(sColorIdx)
+    End If
     lColorIndex = InputBox( _
         "文字色を選択してください" & vbNewLine & _
         "  " & sCOLOR_TYPE & vbNewLine _
         , _
         sMACRO_NAME, _
-        lINIT_COLOR _
+        lColorIndex _
     )
+    
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_COLOR_IDX", CStr(lColorIndex))
     
     If lColorIndex <= UBound(vCOLOR_INFO) Then
         Dim oCell As Range
@@ -1856,7 +1865,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub アドインマクロ実行()
-    ExecMacro.Show
+    ExecAddInMacro.Show
 End Sub
 
 ' *****************************************************************************
@@ -1952,7 +1961,7 @@ End Sub
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' ==================================================================
-Private Function GetAddinSettingFilePath() As String
+Public Function GetAddinSettingFilePath() As String
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objWshShell
