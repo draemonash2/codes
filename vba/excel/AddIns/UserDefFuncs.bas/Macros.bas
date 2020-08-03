@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.43
+' user define macros v2.44
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -222,7 +222,8 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "自動列幅調整"
 '   dMacroShortcutKeys.Add "", "自動行幅調整"
     
-    dMacroShortcutKeys.Add "^+f", "最前面へ移動"
+    dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
+'   dMacroShortcutKeys.Add "^+f", "最前面へ移動"
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     
 '   dMacroShortcutKeys.Add "", "Excel数式整形化実施"
@@ -281,6 +282,22 @@ End Sub
 ' =============================================================================
 Public Sub マクロショートカットキー全て無効化()
     Call SwitchMacroShortcutKeysActivation(False)
+End Sub
+
+' =============================================================================
+' = 概要    ショートカットキー重複時の振り分け処理（Ctrl+Shift+F）
+' = 覚書    なし
+' = 依存    Macros.bas/最前面へ移動()
+' =         Macros.bas/検索文字の文字色を変更()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub CtrlShiftFマクロ()
+    On Error Resume Next
+    Call 最前面へ移動
+    If Err.Number <> 0 Then
+        Call 検索文字の文字色を変更
+    End If
+    On Error GoTo 0
 End Sub
 
 ' =============================================================================
