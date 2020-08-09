@@ -69,8 +69,8 @@ Class ProgressBar
         gobjExplorer.StatusBar = 0
         gobjExplorer.Width = PROGBAR_WIN_WIDTH
         gobjExplorer.Height = glWinHeight
-        gobjExplorer.Left = ( intHorizontal - gobjExplorer.Width ) / 2
-        gobjExplorer.Top = ( intVertical - gobjExplorer.Height ) / 2
+        'gobjExplorer.Left = ( intHorizontal - gobjExplorer.Width ) / 2
+        'gobjExplorer.Top = ( intVertical - gobjExplorer.Height ) / 2
         gobjExplorer.Document.Body.InnerHTML = _
             "<font face=""‚l‚r ƒSƒVƒbƒN"">" & _
             "<span style=""font-size:18px; line-height:22px;"">" & _

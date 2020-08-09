@@ -20,7 +20,7 @@ With objWshShell.Environment("System")
     .Item("MYPATH_XF")         = "C:\prg_exe\X-Finder\XF.exe"                                        ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_CCALC")      = "C:\prg_exe\cCalc\cCalc.exe"                                        ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_RAPTURE")    = "C:\prg_exe\Rapture\rapture.exe"                                    ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_ITHOUGHTS")  = "C:\Program Files (x86)\toketaWare\iThoughts\iThoughts.exe"         ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Item("MYPATH_ITHOUGHTS")  = "C:\prg_exe\iThoughts\iThoughts.exe"                                ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_CTAGS")      = "C:\prg_exe\Ctags\ctags.exe"                                        ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
     .Item("MYPATH_GTAGS")      = "C:\prg_exe\Gtags\bin\gtags.exe"                                    ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
     .Item("MYPATH_7Z")         = "C:\prg_exe\7-ZipPortable\App\7-Zip64\7z.exe"                       ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Å|      |

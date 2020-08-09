@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' user define macros v2.44
+' my excel addin macros v2.44
 
 ' =============================================================================
 ' =  <<ƒ}ƒNƒˆê——>>

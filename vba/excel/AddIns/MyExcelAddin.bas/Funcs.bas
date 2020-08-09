@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' user define functions v1.11
+' my excel addin functions v1.11
 
 ' ==================================================================
 ' =  <<ŠÖ”ˆê——>>
