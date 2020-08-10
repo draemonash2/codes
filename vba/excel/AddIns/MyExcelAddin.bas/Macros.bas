@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.44
+' my excel addin macros v2.45
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -113,7 +113,7 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 '=== 検索文字の文字色を変更() ===
     Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
-    Const sWORDCOLOR_COLOR_IDX As String = ""
+    Const sWORDCOLOR_COLOR As String = "0"
 '=== ファイルエクスポート() ===
     Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
     Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
@@ -185,7 +185,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
-'   dMacroShortcutKeys.Add "", "検索文字の文字色を変更"
+'   dMacroShortcutKeys.Add "^+f", "検索文字の文字色を変更" '「CtrlShiftFマクロ」にて実行
     
     dMacroShortcutKeys.Add "^%c", "全シート名をコピー"
 '   dMacroShortcutKeys.Add "", "選択シート切り出し"
@@ -216,18 +216,18 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
     
-'   dMacroShortcutKeys.Add "", "Excel方眼紙"
+    dMacroShortcutKeys.Add "^%h", "Excel方眼紙"
 '   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
     
 '   dMacroShortcutKeys.Add "", "自動列幅調整"
 '   dMacroShortcutKeys.Add "", "自動行幅調整"
     
     dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
-'   dMacroShortcutKeys.Add "^+f", "最前面へ移動"
+'   dMacroShortcutKeys.Add "^+f", "最前面へ移動" '「CtrlShiftFマクロ」にて実行
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     
-'   dMacroShortcutKeys.Add "", "Excel数式整形化実施"
-'   dMacroShortcutKeys.Add "", "Excel数式整形化解除"
+    dMacroShortcutKeys.Add "^+i", "Excel数式整形化実施"
+    dMacroShortcutKeys.Add "^%i", "Excel数式整形化解除"
     
     If sCmntVsblEnb = "True" Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
@@ -741,11 +741,9 @@ Public Sub ファイルエクスポート()
     bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
     
     '*** テンポラリファイルパス取得 ***
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim sTmpDirPath As String
     Dim sTmpFilePath As String
-    sTmpDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sTmpDirPath = GetAddinSettingDirPath()
     sTmpFilePath = sTmpDirPath & "\" & sFILEEXPORT_CFG_FILE_NAME
     Debug.Print sTmpFilePath
     
@@ -795,6 +793,8 @@ Public Sub ファイルエクスポート()
     End If
     
     '*** ファイル上書き判定 ***
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     If objFSO.FileExists(sOutputFilePath) Then
         Dim vAnswer As Variant
         vAnswer = MsgBox("ファイルが存在します。上書きしますか？", vbOKCancel, sMACRO_NAME)
@@ -895,9 +895,7 @@ Public Sub DOSコマンドを一括実行()
     
     Dim sBatFileDirPath As String
     Dim sBatFilePath As String
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sBatFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sBatFileDirPath = GetAddinSettingDirPath()
     sBatFilePath = sBatFileDirPath & "\" & sCMDEXEBAT_BAT_FILE_NAME
     Debug.Print sBatFilePath
     
@@ -1015,79 +1013,117 @@ End Sub
 ' =============================================================================
 Public Sub 検索文字の文字色を変更()
     Const sMACRO_NAME As String = "検索文字の文字色を変更"
+    Const lSELECT_CLR_PALETTE As Boolean = True
     
     '▼▼▼色設定▼▼▼
     Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
-    Dim vCOLOR_INFO() As Variant
-    vCOLOR_INFO = _
-        Array( _
-            &HFF, _
-            &HC6AC4B, _
-            &H3C9376, _
-            &HA03070, _
-            &H4696F7, _
-            &HC0FF, _
-            &HFFFFFF, _
-            &H0 _
-        )
+    Dim cCLR_RGBS As Variant
+    Set cCLR_RGBS = CreateObject("System.Collections.ArrayList")
+    cCLR_RGBS.Add &HFF
+    cCLR_RGBS.Add &HC6AC4B
+    cCLR_RGBS.Add &H3C9376
+    cCLR_RGBS.Add &HA03070
+    cCLR_RGBS.Add &H4696F7
+    cCLR_RGBS.Add &HC0FF
+    cCLR_RGBS.Add &HFFFFFF
+    cCLR_RGBS.Add &H0
     '▲▲▲色設定▲▲▲
     
     '*** アドイン設定ファイルから設定読み出し ***
     Dim sTempFileDirPath As String
     Dim sTempFileFilePath As String
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    sTempFileDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sTempFileDirPath = GetAddinSettingDirPath()
     sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_CFG_FILE_NAME
     Debug.Print sTempFileFilePath
     
     Dim clSetting As New SettingFile
     Dim sSrchStr As String
-    Dim sColorIdx As String
+    Dim sClrRgbInit As String
     Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
-    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_COLOR_IDX", sColorIdx, sWORDCOLOR_COLOR_IDX, False)
+    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_COLOR", sClrRgbInit, sWORDCOLOR_COLOR, False)
     
+    '検索対象文字列選択
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
-
-    Dim lColorIndex As Long
-    If sColorIdx = "" Then
-        lColorIndex = 0
+    If StrPtr(sSrchStr) = 0 Then
+        MsgBox "キャンセルが押されたため、処理を中断します。", vbCritical, sMACRO_NAME
+        Exit Sub
+    ElseIf sSrchStr = "" Then
+        MsgBox "文字列が指定されなかったため、処理を中断します。", vbCritical, sMACRO_NAME
+        Exit Sub
     Else
-        lColorIndex = CLng(sColorIdx)
+        'Do Nothing
     End If
-    lColorIndex = InputBox( _
-        "文字色を選択してください" & vbNewLine & _
-        "  " & sCOLOR_TYPE & vbNewLine _
-        , _
-        sMACRO_NAME, _
-        lColorIndex _
-    )
     
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_COLOR_IDX", CStr(lColorIndex))
-    
-    If lColorIndex <= UBound(vCOLOR_INFO) Then
-        Dim oCell As Range
-        For Each oCell In Selection
-            Dim sTrgtStr As String
-            sTrgtStr = oCell.Value
-            Dim lStartIdx As Long
-            lStartIdx = 1
-            Do
-                Dim lIdx As Long
-                lIdx = InStr(lStartIdx, sTrgtStr, sSrchStr)
-                If lIdx = 0 Then
-                    Exit Do
-                Else
-                    lStartIdx = lIdx + Len(sSrchStr)
-                    oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = vCOLOR_INFO(lColorIndex)
-                End If
-            Loop While 1
+    '色選択
+    Dim lClrRgbSelected As Long
+    If lSELECT_CLR_PALETTE = True Then 'カラーパレットで選択
+        Dim bRet As Boolean
+        bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
+        If bRet = False Then
+            MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
+            Exit Sub
+        End If
+    Else '色種別名で選択
+        '色→色種別 変換
+        Dim lClrTypeIdx As Long
+        lClrTypeIdx = 0
+        Dim bExist As Boolean
+        bExist = False
+        Dim vClrRgb As Variant
+        For Each vClrRgb In cCLR_RGBS
+            If vClrRgb = CLng(sClrRgbInit) Then
+                bExist = True
+                Exit For
+            Else
+                lClrTypeIdx = lClrTypeIdx + 1
+            End If
         Next
-        MsgBox "完了！", vbOKOnly, sMACRO_NAME
-    Else
-        MsgBox "文字色は指定の範囲内で選択してください。" & vbNewLine & sCOLOR_TYPE, vbOKOnly, sMACRO_NAME
+        If bExist = True Then
+            'Do Nothing
+        Else
+            lClrTypeIdx = 0
+        End If
+        '色種別 選択
+        lClrTypeIdx = InputBox( _
+            "文字色を選択してください" & vbNewLine & _
+            "  " & sCOLOR_TYPE & vbNewLine _
+            , _
+            sMACRO_NAME, _
+            lClrTypeIdx _
+        )
+        '色種別→色 変換
+        If lClrTypeIdx < cCLR_RGBS.Count Then
+            lClrRgbSelected = cCLR_RGBS(lClrTypeIdx)
+        Else
+            MsgBox "文字色は指定の範囲内で選択してください。" & vbNewLine & sCOLOR_TYPE, vbOKOnly, sMACRO_NAME
+            Exit Sub
+        End If
     End If
+    
+    'アドイン設定更新
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_COLOR", CStr(lClrRgbSelected))
+    
+    '検索文字列色変更
+    Dim oCell As Range
+    For Each oCell In Selection
+        Dim sTrgtStr As String
+        sTrgtStr = oCell.Value
+        Dim lStartIdx As Long
+        lStartIdx = 1
+        Do
+            Dim lIdx As Long
+            lIdx = InStr(lStartIdx, sTrgtStr, sSrchStr)
+            If lIdx = 0 Then
+                Exit Do
+            Else
+                lStartIdx = lIdx + Len(sSrchStr)
+                oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = lClrRgbSelected
+            End If
+        Loop While 1
+    Next
+    
+    MsgBox "完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -1329,23 +1365,21 @@ Public Sub フォント色をトグルの色を変更()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sClrIdx As String
+    Dim sClrRgbInit As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sClrIdx, lCLRTGLFONT_CLR, False)
-    
-    Dim lClrIdx As Long
-    lClrIdx = CLng(sClrIdx)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sClrRgbInit, lCLRTGLFONT_CLR, False)
     
     '色選択
     Dim bRet As Boolean
-    bRet = ShowColorPalette(lClrIdx)
+    Dim lClrRgbSelected As Long
+    bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
     If bRet = False Then
         MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR", CStr(lClrIdx))
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR", CStr(lClrRgbSelected))
 End Sub
 
 ' =============================================================================
@@ -1363,23 +1397,21 @@ Public Sub 背景色をトグルの色を変更()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sClrIdx As String
+    Dim sClrRgbInit As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sClrIdx, lCLRTGLBG_CLR, False)
-    
-    Dim lClrIdx As Long
-    lClrIdx = CLng(sClrIdx)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sClrRgbInit, lCLRTGLBG_CLR, False)
     
     '色選択
     Dim bRet As Boolean
-    bRet = ShowColorPalette(lClrIdx)
+    Dim lClrRgbSelected As Long
+    bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
     If bRet = False Then
         MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR", CStr(lClrIdx))
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR", CStr(lClrRgbSelected))
 End Sub
 
 ' =============================================================================
@@ -1721,11 +1753,9 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
     
     '*** テンポラリファイルから設定読み出し ***
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim sTempDirPath As String
     Dim sTempFilePath As String
-    sTempDirPath = objFSO.GetSpecialFolder(2)  '2:テンポラリフォルダ
+    sTempDirPath = GetAddinSettingDirPath()
     sTempFilePath = sTempDirPath & "\" & sEPTREE_CFG_FILE_NAME
     Debug.Print sTempFilePath
     
@@ -1869,10 +1899,16 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub Excel数式整形化実施()
-    Call ExcelBeautifer(True)
+    Dim rSelectRange As Range
+    For Each rSelectRange In Selection
+        rSelectRange.Formula = ConvFormuraIndentation(rSelectRange.Formula, True)
+    Next
 End Sub
 Public Sub Excel数式整形化解除()
-    Call ExcelBeautifer(False)
+    Dim rSelectRange As Range
+    For Each rSelectRange In Selection
+        rSelectRange.Formula = ConvFormuraIndentation(rSelectRange.Formula, False)
+    Next
 End Sub
 
 ' =============================================================================
@@ -1981,10 +2017,24 @@ End Sub
 Public Function GetAddinSettingFilePath() As String
     Dim objFSO As Object
     Set objFSO = CreateObject("Scripting.FileSystemObject")
+    GetAddinSettingFilePath = GetAddinSettingDirPath() & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"
+End Function
+
+' ==================================================================
+' = 概要    アドイン設定用のフォルダパスを取得する
+' = 引数    なし
+' = 戻値                    String      アドイン設定用のフォルダパス
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Public Function GetAddinSettingDirPath() As String
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objWshShell
     Set objWshShell = CreateObject("WScript.Shell")
-    GetAddinSettingFilePath = _
-        objWshShell.SpecialFolders("MyDocuments") & "\" & objFSO.GetBaseName(ThisWorkbook.Name) & ".cfg"
+    GetAddinSettingDirPath = _
+        objWshShell.SpecialFolders("MyDocuments") & "\" & objFSO.GetBaseName(ThisWorkbook.Name)
 End Function
 
 ' ==================================================================
@@ -2684,126 +2734,125 @@ End Function
 
 ' ==================================================================
 ' = 概要    Excel数式を整形する
-' = 引数    bValid      Boolean  [in]   整形実施/整形解除
-' = 戻値    なし
-' = 覚書    なし
+' = 引数    sInputCellFormula   String   [in]   入力数式
+' = 引数    bExecIndentation    Boolean  [in]   整形実施/整形解除
+' = 引数    lIndentWidth        Long     [in]   インデント文字数(省略可)
+' = 戻値                        String          出力数式
+' = 覚書    ・整形解除時は、数式に関係のない空白はすべて除去する
 ' = 依存    なし
-' = 所属    Macros.bas
+' = 所属    Mng_ExcelOpe.bas
 ' ==================================================================
-Private Function ExcelBeautifer( _
-    ByVal bValid As Boolean _
-)
-    Const lINDENT_WIDTH As Long = 4
+Private Function ConvFormuraIndentation( _
+    ByVal sInputCellFormula As String, _
+    ByVal bExecIndentation As Boolean, _
+    Optional ByVal lIndentWidth As Long = 4 _
+) As String
+    Dim sOutputCellFormula As String
+    sOutputCellFormula = ""
     
-    '選択範囲のセル数式を更新する
-    Dim rSelectRange As Range
-    For Each rSelectRange In Selection
-        Dim sInputCellFormula As String
-        Dim sOutputCellFormula As String
-        
-        'セル数式 取得
-        sInputCellFormula = rSelectRange.Formula
-        sOutputCellFormula = ""
-        
-        If Left(sInputCellFormula, 1) = "=" Then '数式の場合
-            Dim bStrMode As Boolean
-            Dim lNestCnt As Long
-            bStrMode = False
-            lNestCnt = 0
-            '文字列操作
-            Dim lChrIdx As Long
-            For lChrIdx = 1 To Len(sInputCellFormula)
-                Dim sInputCellFormulaChr As String
-                sInputCellFormulaChr = Mid(sInputCellFormula, lChrIdx, 1)
-                '文字列モードの場合
-                If bStrMode = True Then
-                    Select Case sInputCellFormulaChr
-                    Case """"
+    '数式の場合
+    If Left(sInputCellFormula, 1) = "=" Then
+        Dim bStrMode As Boolean
+        Dim lNestCnt As Long
+        bStrMode = False
+        lNestCnt = 0
+        '文字列操作
+        Dim lChrIdx As Long
+        For lChrIdx = 1 To Len(sInputCellFormula)
+            Dim sInputCellFormulaChr As String
+            sInputCellFormulaChr = Mid(sInputCellFormula, lChrIdx, 1)
+            
+            '文字列モードの場合
+            If bStrMode = True Then
+                Select Case sInputCellFormulaChr
+                Case """"
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    bStrMode = False
+                Case Else
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                End Select
+            '文字列モードでない場合
+            Else
+                Select Case sInputCellFormulaChr
+                Case ","
+                    If bExecIndentation = True Then
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lIndentWidth, " ")
+                    Else
                         sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                        bStrMode = False
-                    Case Else
+                    End If
+                Case "("
+                    If bExecIndentation = True Then
+                        lNestCnt = lNestCnt + 1
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lIndentWidth, " ")
+                    Else
                         sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                    End Select
-                '文字列モードでない場合
-                Else
-                    Select Case sInputCellFormulaChr
-                    Case ","
-                        If bValid = True Then
-                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lINDENT_WIDTH, " ")
-                        Else
-                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                        End If
-                    Case "("
-                        If bValid = True Then
-                            lNestCnt = lNestCnt + 1
-                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lINDENT_WIDTH, " ")
-                        Else
-                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                        End If
-                    Case ")"
-                        If bValid = True Then
-                            lNestCnt = lNestCnt - 1
-                            sOutputCellFormula = sOutputCellFormula & vbLf & String(lNestCnt * lINDENT_WIDTH, " ") & sInputCellFormulaChr
-                        Else
-                            sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                        End If
-                    Case """"
+                    End If
+                Case ")"
+                    If bExecIndentation = True Then
+                        lNestCnt = lNestCnt - 1
+                        sOutputCellFormula = sOutputCellFormula & vbLf & String(lNestCnt * lIndentWidth, " ") & sInputCellFormulaChr
+                    Else
                         sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                        bStrMode = True
-                    Case vbLf
-                        'Do Nothing
-                    Case " "
-                        'Do Nothing
-                    Case Else
-                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
-                    End Select
-                End If
-            Next lChrIdx
-        Else '数式でない場合
-            sOutputCellFormula = sInputCellFormula
-        End If
-        
-        'セル数式 更新
-        rSelectRange.Formula = sOutputCellFormula
-    Next
+                    End If
+                Case """"
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    bStrMode = True
+                Case vbLf
+                    'Do Nothing
+                Case " "
+                    'Do Nothing
+                Case Else
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                End Select
+            End If
+        Next lChrIdx
+    '数式でない場合
+    Else
+        sOutputCellFormula = sInputCellFormula
+    End If
+    
+    ConvFormuraIndentation = sOutputCellFormula
 End Function
 
 ' ==================================================================
 ' = 概要    色の設定ダイアログを表示し、そこで選択された色のRGB値を返す
-' = 引数    lColorIdx   Long    [in/out]    RGB値 初期値/選択値
-' = 戻値                Boolean             選択結果
-' =                                           (True:成功,False:キャンセルor失敗)
-' = 覚書    ・キャンセルor失敗時、lColorIdxは更新しない
+' = 引数    lClrRgbInit       Long    [in]    RGB値 初期値
+' = 引数    lClrRgbSelected   Long    [out]   RGB値 選択値
+' = 戻値                      Boolean         選択結果
+' =                                               (True:成功,False:キャンセルor失敗)
+' = 覚書    ・キャンセルor失敗時、lClrRgbSelectedはInitと同じ値となる
 ' = 依存    なし
-' = 所属    Macro.bas
+' = 所属    Mng_ExcelOpe.bas
 ' ==================================================================
 Private Function ShowColorPalette( _
-    ByRef lColorIdx As Long _
+    ByVal lClrRgbInit As Long, _
+    ByRef lClrRgbSelected As Long _
 ) As Boolean
     Const CC_RGBINIT = &H1          '色のデフォルト値を設定
     Const CC_LFULLOPEN = &H2        '色の作成を行う部分を表示
     Const CC_PREVENTFULLOPEN = &H4  '色の作成ボタンを無効にする
     Const CC_SHOWHELP = &H8         'ヘルプボタンを表示
     
-    Dim udtChooseColor As ChooseColor
-    With udtChooseColor
+    Dim tChooseColor As ChooseColor
+    With tChooseColor
         'ダイアログの設定
-        .lStructSize = Len(udtChooseColor)
+        .lStructSize = Len(tChooseColor)
         .lpCustColors = String$(64, Chr$(0))
         .flags = CC_RGBINIT + CC_LFULLOPEN
-        .rgbResult = lColorIdx
+        .rgbResult = lClrRgbInit
         
         'ダイアログを表示
-        Dim lngRet As Long
-        lngRet = ChooseColor(udtChooseColor)
+        Dim lRet As Long
+        lRet = ChooseColor(tChooseColor)
         
         'ダイアログからの返り値をチェック
-        If lngRet <> 0 Then
+        lClrRgbSelected = lClrRgbInit
+        If lRet <> 0 Then
             If .rgbResult > RGB(255, 255, 255) Then 'エラー
                 ShowColorPalette = False
             Else '正常終了
                 ShowColorPalette = True
-                lColorIdx = .rgbResult
+                lClrRgbSelected = .rgbResult
             End If
         Else 'キャンセル押下
             ShowColorPalette = False

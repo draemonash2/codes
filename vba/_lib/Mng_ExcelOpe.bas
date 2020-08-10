@@ -1,7 +1,22 @@
 Attribute VB_Name = "Mng_ExcelOpe"
 Option Explicit
 
-' excel operation library v2.5
+' excel operation library v2.6
+
+'▽▽▽Mng_ExcelOpe.bas/ShowColorPalette()▽▽▽
+Private Type ChooseColor
+    lStructSize As Long
+    hWndOwner As Long
+    hInstance As Long
+    rgbResult As Long
+    lpCustColors As String
+    flags As Long
+    lCustData As Long
+    lpfnHook As Long
+    lpTemplateName As String
+End Type
+Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
+'△△△Mng_ExcelOpe.bas/ShowColorPalette()△△△
 
 '************************************************************
 '* 関数定義
@@ -179,5 +194,131 @@ End Function
         Debug.Print "*** test finish!"
     End Function
 
+' ==================================================================
+' = 概要    色の設定ダイアログを表示し、そこで選択された色のRGB値を返す
+' = 引数    lClrRgbInit       Long    [in]    RGB値 初期値
+' = 引数    lClrRgbSelected   Long    [out]   RGB値 選択値
+' = 戻値                      Boolean         選択結果
+' =                                               (True:成功,False:キャンセルor失敗)
+' = 覚書    ・キャンセルor失敗時、lClrRgbSelectedはInitと同じ値となる
+' = 依存    なし
+' = 所属    Mng_ExcelOpe.bas
+' ==================================================================
+Private Function ShowColorPalette( _
+    ByVal lClrRgbInit As Long, _
+    ByRef lClrRgbSelected As Long _
+) As Boolean
+    Const CC_RGBINIT = &H1          '色のデフォルト値を設定
+    Const CC_LFULLOPEN = &H2        '色の作成を行う部分を表示
+    Const CC_PREVENTFULLOPEN = &H4  '色の作成ボタンを無効にする
+    Const CC_SHOWHELP = &H8         'ヘルプボタンを表示
+    
+    Dim tChooseColor As ChooseColor
+    With tChooseColor
+        'ダイアログの設定
+        .lStructSize = Len(tChooseColor)
+        .lpCustColors = String$(64, Chr$(0))
+        .flags = CC_RGBINIT + CC_LFULLOPEN
+        .rgbResult = lClrRgbInit
+        
+        'ダイアログを表示
+        Dim lRet As Long
+        lRet = ChooseColor(tChooseColor)
+        
+        'ダイアログからの返り値をチェック
+        lClrRgbSelected = lClrRgbInit
+        If lRet <> 0 Then
+            If .rgbResult > RGB(255, 255, 255) Then 'エラー
+                ShowColorPalette = False
+            Else '正常終了
+                ShowColorPalette = True
+                lClrRgbSelected = .rgbResult
+            End If
+        Else 'キャンセル押下
+            ShowColorPalette = False
+        End If
+    End With
+End Function
 
+' ==================================================================
+' = 概要    Excel数式を整形する
+' = 引数    sInputCellFormula   String   [in]   入力数式
+' = 引数    bExecIndentation    Boolean  [in]   整形実施/整形解除
+' = 引数    lIndentWidth        Long     [in]   インデント文字数(省略可)
+' = 戻値                        String          出力数式
+' = 覚書    ・整形解除時は、数式に関係のない空白はすべて除去する
+' = 依存    なし
+' = 所属    Mng_ExcelOpe.bas
+' ==================================================================
+Private Function ConvFormuraIndentation( _
+    ByVal sInputCellFormula As String, _
+    ByVal bExecIndentation As Boolean, _
+    Optional ByVal lIndentWidth As Long = 4 _
+) As String
+    Dim sOutputCellFormula As String
+    sOutputCellFormula = ""
+    
+    '数式の場合
+    If Left(sInputCellFormula, 1) = "=" Then
+        Dim bStrMode As Boolean
+        Dim lNestCnt As Long
+        bStrMode = False
+        lNestCnt = 0
+        '文字列操作
+        Dim lChrIdx As Long
+        For lChrIdx = 1 To Len(sInputCellFormula)
+            Dim sInputCellFormulaChr As String
+            sInputCellFormulaChr = Mid(sInputCellFormula, lChrIdx, 1)
+            
+            '文字列モードの場合
+            If bStrMode = True Then
+                Select Case sInputCellFormulaChr
+                Case """"
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    bStrMode = False
+                Case Else
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                End Select
+            '文字列モードでない場合
+            Else
+                Select Case sInputCellFormulaChr
+                Case ","
+                    If bExecIndentation = True Then
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lIndentWidth, " ")
+                    Else
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    End If
+                Case "("
+                    If bExecIndentation = True Then
+                        lNestCnt = lNestCnt + 1
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr & vbLf & String(lNestCnt * lIndentWidth, " ")
+                    Else
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    End If
+                Case ")"
+                    If bExecIndentation = True Then
+                        lNestCnt = lNestCnt - 1
+                        sOutputCellFormula = sOutputCellFormula & vbLf & String(lNestCnt * lIndentWidth, " ") & sInputCellFormulaChr
+                    Else
+                        sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    End If
+                Case """"
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                    bStrMode = True
+                Case vbLf
+                    'Do Nothing
+                Case " "
+                    'Do Nothing
+                Case Else
+                    sOutputCellFormula = sOutputCellFormula & sInputCellFormulaChr
+                End Select
+            End If
+        Next lChrIdx
+    '数式でない場合
+    Else
+        sOutputCellFormula = sInputCellFormula
+    End If
+    
+    ConvFormuraIndentation = sOutputCellFormula
+End Function
 

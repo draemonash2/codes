@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.2.1
+'setting file class v1.2.2
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -332,6 +332,11 @@ Public Function ReadItemFromFile( _
 ) As Boolean
     Call Init
     
+    '格納先フォルダ作成
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
+    
     '設定ファイル読み出し
     Dim bExistFile As Boolean
     Dim bExistItem As Boolean
@@ -377,6 +382,11 @@ Public Function WriteItemToFile( _
     ByVal sValue As String _
 ) As Boolean
     Call Init
+    
+    '格納先フォルダ作成
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
     
     '設定ファイル読み出し
     Dim bExistFile As Boolean
@@ -462,5 +472,36 @@ Public Function ConvStrCntrlChr2Raw( _
         Case vbNewLine: ConvStrCntrlChr2Raw = "vbNewLine"
         Case Else:      ConvStrCntrlChr2Raw = sValue
     End Select
+End Function
+
+' ==================================================================
+' = 概要    ディレクトリを作成する。親ディレクトリも自動生成する。
+' = 引数    sDirPath    String  [in]  フォルダパス
+' = 戻値    なし
+' = 覚書    フォルダが既に存在している場合は何もしない
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Private Function CreateDirectry( _
+    ByVal sDirPath As String _
+)
+    Dim sParentDir As String
+    Dim oFileSys As Object
+ 
+    Set oFileSys = CreateObject("Scripting.FileSystemObject")
+ 
+    sParentDir = oFileSys.GetParentFolderName(sDirPath)
+ 
+    '親ディレクトリが存在しない場合、再帰呼び出し
+    If oFileSys.FolderExists(sParentDir) = False Then
+        Call CreateDirectry(sParentDir)
+    End If
+ 
+    'ディレクトリ作成
+    If oFileSys.FolderExists(sDirPath) = False Then
+        oFileSys.CreateFolder sDirPath
+    End If
+ 
+    Set oFileSys = Nothing
 End Function
 
