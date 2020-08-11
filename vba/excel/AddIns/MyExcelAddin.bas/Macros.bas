@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.45
+' my excel addin macros v2.46
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -11,7 +11,6 @@ Option Explicit
 ' =     ・マクロ設定
 ' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
 ' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
-' =         一行にまとめてセルコピー_設定変更           一行にまとめてセルコピー_設定変更
 ' =         アドインマクロ実行                          アドインマクロ実行
 ' =
 ' =     ・シート操作
@@ -38,10 +37,11 @@ Option Explicit
 ' =         選択範囲内で中央                            選択セルに対して「選択範囲内で中央」を実行する
 ' =         範囲を維持したままセルコピー                選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
 ' =         一行にまとめてセルコピー                    選択範囲を一行にまとめてセルコピーする。
+' =         ●設定変更●一行にまとめてセルコピー        一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
 ' =         フォント色をトグル                          フォント色を「設定色」⇔「自動」でトグルする
-' =         フォント色をトグルの色を変更                「フォント色をトグル」の設定色を変更する
+' =         ●設定変更●フォント色をトグル              「フォント色をトグル」の設定色を変更する
 ' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
-' =         背景色をトグルの色を変更                    「背景色をトグル」の設定色を変更する
+' =         ●設定変更●背景色をトグル                  「背景色をトグル」の設定色を変更する
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
@@ -179,7 +179,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
-    dMacroShortcutKeys.Add "^%d", "一行にまとめてセルコピー_設定変更"
+    dMacroShortcutKeys.Add "^%d", "●設定変更●一行にまとめてセルコピー"
     dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
     
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
@@ -203,9 +203,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     
     dMacroShortcutKeys.Add "^2", "背景色をトグル"
-    dMacroShortcutKeys.Add "^%2", "背景色をトグルの色を変更"
+    dMacroShortcutKeys.Add "^%2", "●設定変更●背景色をトグル"
     dMacroShortcutKeys.Add "^3", "フォント色をトグル"
-    dMacroShortcutKeys.Add "^%3", "フォント色をトグルの色を変更"
+    dMacroShortcutKeys.Add "^%3", "●設定変更●フォント色をトグル"
     
     dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
     dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
@@ -618,8 +618,8 @@ End Sub
 ' = 依存    SettingFile.cls
 ' = 所属    Macro.bas
 ' =============================================================================
-Public Sub 一行にまとめてセルコピー_設定変更()
-    Const sMACRO_NAME As String = "一行にまとめてセルコピー_設定変更"
+Public Sub ●設定変更●一行にまとめてセルコピー()
+    Const sMACRO_NAME As String = "●設定変更●一行にまとめてセルコピー"
     
     Application.ScreenUpdating = False
     
@@ -1357,8 +1357,8 @@ End Sub
 ' =         Macros.bas/ShowColorPalette()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub フォント色をトグルの色を変更()
-    Const sMACRO_NAME As String = "フォント色をトグルの色を変更"
+Public Sub ●設定変更●フォント色をトグル()
+    Const sMACRO_NAME As String = "●設定変更●フォント色をトグル"
     
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
@@ -1389,8 +1389,8 @@ End Sub
 ' =         Macros.bas/ShowColorPalette()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 背景色をトグルの色を変更()
-    Const sMACRO_NAME As String = "背景色をトグルの色を変更"
+Public Sub ●設定変更●背景色をトグル()
+    Const sMACRO_NAME As String = "●設定変更●背景色をトグル"
     
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
