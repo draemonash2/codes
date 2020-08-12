@@ -308,6 +308,7 @@ endif
 	colorscheme jellybeans
 	highlight NonText		guibg=NONE	guifg=#404040
 	highlight SpecialKey	guibg=NONE	guifg=#707070
+	autocmd BufNewFile,BufRead *.cls  set filetype=vb
 
 " ==============================================================================
 " window位置の保存と復帰

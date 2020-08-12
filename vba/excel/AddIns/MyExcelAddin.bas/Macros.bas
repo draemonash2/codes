@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.46
+' my excel addin macros v2.47
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -102,48 +102,48 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 '▼▼▼ 設定(初期値) ▼▼▼
 '=== 背景色をトグル()/フォント色をトグル() ===
     '[色名参考] https://excel-toshokan.com/vba-color-list/
-    Const lCLRTGLBG_CLR As Long = vbYellow
-    Const lCLRTGLFONT_CLR As Long = vbRed
+    Const lCLRTGLBG_CLR_RGB As Long = vbYellow
+    Const lCLRTGLFONT_CLR_RGB As Long = vbRed
 '=== アクティブセルコメント設定() ===
-    Const sCMNT_VSBL_ENB As String = "False"
+    Const bCMNT_VSBL_ENB As Boolean = False
 '=== Excel方眼紙() ===
     Const sEXCELGRID_FONT_NAME As String = "ＭＳ ゴシック"
-    Const sEXCELGRID_FONT_SIZE As String = "9"
-    Const sEXCELGRID_CLM_WIDTH As String = "3" '3文字分
+    Const lEXCELGRID_FONT_SIZE As Long = 9
+    Const lEXCELGRID_CLM_WIDTH As Long = 3 '3文字分
 '=== 検索文字の文字色を変更() ===
     Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
-    Const sWORDCOLOR_COLOR As String = "0"
+    Const lWORDCOLOR_CLR_RGB As Long = 0
 '=== ファイルエクスポート() ===
     Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
     Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
-    Const sFILEEXPORT_IGNORE_INVISIBLE_CELL As String = "True"
+    Const bFILEEXPORT_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを一括実行() ===
     Const sCMDEXEBAT_BAT_FILE_NAME As String = "userdeffuncs_cmdexebat_command.bat"
     Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexebat_redirect.log"
-    Const sCMDEXEBAT_IGNORE_INVISIBLE_CELL As String = "True"
+    Const bCMDEXEBAT_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを各々実行() ===
     Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexeuni_redirect.log"
-    Const sCMDEXEUNI_IGNORE_INVISIBLE_CELL As String = "True"
+    Const bCMDEXEUNI_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
     Const sEPTREE_CFG_FILE_NAME As String = "userdeffuncs_eptree.cfg"
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
-    Const sEPTREE_MAX_FUNC_LEVEL_INI As String = "10"
-    Const sEPTREE_CLM_WIDTH As String = "2"
+    Const lEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
+    Const lEPTREE_CLM_WIDTH As Long = 2
     Const sEPTREE_OUT_LOG_PATH As String = "c:\"
     Const sEPTREE_DEV_ROOT_DIR_PATH As String = "c:\"
-    Const sEPTREE_DEV_ROOT_DIR_LEVEL As String = "0"
+    Const lEPTREE_DEV_ROOT_DIR_LEVEL As Long = 0
 '=== 範囲を維持したままセルコピー() ===
-    Const sCELLCOPYRNG_IGNORE_INVISIBLE_CELL As String = "True"
+    Const bCELLCOPYRNG_IGNORE_INVISIBLE_CELL As Boolean = True
     Const sCELLCOPYRNG_DELIMITER As String = "vbTab"
 '=== 一行にまとめてセルコピー() ===
-    Const sCELLCOPYLINE_IGNORE_INVISIBLE_CELL As String = "True"
-    Const sCELLCOPYLINE_IGNORE_BLANK_CELL As String = "True"
+    Const bCELLCOPYLINE_IGNORE_INVISIBLE_CELL As Boolean = True
+    Const bCELLCOPYLINE_IGNORE_BLANK_CELL As Boolean = True
     Const sCELLCOPYLINE_PREFFIX As String = "("
     Const sCELLCOPYLINE_DELIMITER As String = "|"
     Const sCELLCOPYLINE_SUFFIX As String = ")"
 '=== シート選択ウィンドウを表示() ===
-    Const sSHTSELWIN_MSGBOX_SHOW As String = "False"
+    Const bSHTSELWIN_MSGBOX_SHOW As Boolean = False
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
@@ -162,9 +162,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     '*** アドイン設定読み出し ***
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sCmntVsblEnb As String
+    Dim bCmntVsblEnb As Boolean
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMNT_VSBL_ENB", sCmntVsblEnb, sCMNT_VSBL_ENB, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb, bCMNT_VSBL_ENB, False)
     
     '*** ショートカットキー設定更新 ***
     ' <<ショートカットキー追加方法>>
@@ -229,7 +229,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^+i", "Excel数式整形化実施"
     dMacroShortcutKeys.Add "^%i", "Excel数式整形化解除"
     
-    If sCmntVsblEnb = "True" Then
+    If bCmntVsblEnb = True Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
         dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
         dMacroShortcutKeys.Add "{RIGHT}", "アクティブセルコメントのみ表示して右移動"
@@ -434,9 +434,9 @@ Public Sub シート選択ウィンドウを表示()
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
-    Dim sMsgBoxShow As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sSHTSELWIN_MSGBOX_SHOW", sMsgBoxShow, sSHTSELWIN_MSGBOX_SHOW, True)
-    If sMsgBoxShow = "True" Then
+    Dim bMsgBoxShow As Boolean
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bSHTSELWIN_MSGBOX_SHOW", bMsgBoxShow, bSHTSELWIN_MSGBOX_SHOW, True)
+    If bMsgBoxShow = True Then
         MsgBox "シート選択ウィンドウを表示します", vbOKOnly, "シート選択ウィンドウ表示"
     Else
         'Do Nothing
@@ -468,14 +468,11 @@ Public Sub 範囲を維持したままセルコピー()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sIgnoreInvisible As String
     Dim bIgnoreInvisible As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYRNG_IGNORE_INVISIBLE_CELL", sIgnoreInvisible, sCELLCOPYRNG_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisible = clSetting.ConvTypeStr2Bool(sIgnoreInvisible)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYRNG_IGNORE_INVISIBLE_CELL", bIgnoreInvisible, bCELLCOPYRNG_IGNORE_INVISIBLE_CELL, True)
     
     Dim sDelimiter As String
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYRNG_DELIMITER", sDelimiter, sCELLCOPYRNG_DELIMITER, True)
-    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
     
     '*** 選択範囲取得 ***
     Dim sClipedText As String
@@ -537,27 +534,16 @@ Public Sub 一行にまとめてセルコピー()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCELLCOPYLINE_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
-    
-    Dim sIgnoreBlankCell As String
     Dim bIgnoreBlankCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_IGNORE_BLANK_CELL", sIgnoreBlankCell, sCELLCOPYLINE_IGNORE_BLANK_CELL, True)
-    bIgnoreBlankCell = clSetting.ConvTypeStr2Bool(sIgnoreBlankCell)
-    
     Dim sPreffix As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, True)
-    sPreffix = clSetting.ConvStrRaw2CntrlChr(sPreffix)
-    
     Dim sDelimiter As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, True)
-    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
-    
     Dim sSuffix As String
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYLINE_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCELLCOPYLINE_IGNORE_INVISIBLE_CELL, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYLINE_IGNORE_BLANK_CELL", bIgnoreBlankCell, bCELLCOPYLINE_IGNORE_BLANK_CELL, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, True)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, True)
-    sSuffix = clSetting.ConvStrRaw2CntrlChr(sSuffix)
     
     '*** 選択範囲取得 ***
     Dim sClipedText As String
@@ -636,10 +622,6 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, False)
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, False)
     
-    sPreffix = clSetting.ConvStrRaw2CntrlChr(sPreffix)
-    sDelimiter = clSetting.ConvStrRaw2CntrlChr(sDelimiter)
-    sSuffix = clSetting.ConvStrRaw2CntrlChr(sSuffix)
-    
     Dim vRet As Variant
     vRet = MsgBox( _
         "「" & sMACRO_NAME & "」の設定を変更します。" & vbNewLine & _
@@ -668,9 +650,6 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
             sMACRO_NAME, _
             sSuffix _
         )
-        sPreffix = clSetting.ConvStrCntrlChr2Raw(sPreffix)
-        sDelimiter = clSetting.ConvStrCntrlChr2Raw(sDelimiter)
-        sSuffix = clSetting.ConvStrCntrlChr2Raw(sSuffix)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
@@ -682,9 +661,6 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
             vbOKOnly, _
             sMACRO_NAME
     ElseIf vRet = vbNo Then
-        sPreffix = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_PREFFIX)
-        sDelimiter = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_DELIMITER)
-        sSuffix = clSetting.ConvStrCntrlChr2Raw(sCELLCOPYLINE_SUFFIX)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
         Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
@@ -735,10 +711,8 @@ Public Sub ファイルエクスポート()
     sSettingFilePath = GetAddinSettingFilePath()
     
     '*** アドイン設定読み出し ***
-    Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bFILEEXPORT_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
     
     '*** テンポラリファイルパス取得 ***
     Dim sTmpDirPath As String
@@ -863,10 +837,8 @@ Public Sub DOSコマンドを一括実行()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMDEXEBAT_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCMDEXEBAT_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMDEXEBAT_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCMDEXEBAT_IGNORE_INVISIBLE_CELL, True)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -946,10 +918,8 @@ Public Sub DOSコマンドを各々実行()
     Dim sSettingFilePath As String
     sSettingFilePath = GetAddinSettingFilePath()
     
-    Dim sIgnoreInvisibleCell As String
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCMDEXEUNI_IGNORE_INVISIBLE_CELL", sIgnoreInvisibleCell, sCMDEXEUNI_IGNORE_INVISIBLE_CELL, True)
-    bIgnoreInvisibleCell = clSetting.ConvTypeStr2Bool(sIgnoreInvisibleCell)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMDEXEUNI_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCMDEXEUNI_IGNORE_INVISIBLE_CELL, True)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -1038,9 +1008,9 @@ Public Sub 検索文字の文字色を変更()
     
     Dim clSetting As New SettingFile
     Dim sSrchStr As String
-    Dim sClrRgbInit As String
+    Dim lClrRgbInit As Long
     Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
-    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_COLOR", sClrRgbInit, sWORDCOLOR_COLOR, False)
+    Call clSetting.ReadItemFromFile(sTempFileFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbInit, lWORDCOLOR_CLR_RGB, False)
     
     '検索対象文字列選択
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
@@ -1058,7 +1028,7 @@ Public Sub 検索文字の文字色を変更()
     Dim lClrRgbSelected As Long
     If lSELECT_CLR_PALETTE = True Then 'カラーパレットで選択
         Dim bRet As Boolean
-        bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
+        bRet = ShowColorPalette(lClrRgbInit, lClrRgbSelected)
         If bRet = False Then
             MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
             Exit Sub
@@ -1071,7 +1041,7 @@ Public Sub 検索文字の文字色を変更()
         bExist = False
         Dim vClrRgb As Variant
         For Each vClrRgb In cCLR_RGBS
-            If vClrRgb = CLng(sClrRgbInit) Then
+            If vClrRgb = lClrRgbInit Then
                 bExist = True
                 Exit For
             Else
@@ -1102,7 +1072,7 @@ Public Sub 検索文字の文字色を変更()
     
     'アドイン設定更新
     Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_COLOR", CStr(lClrRgbSelected))
+    Call clSetting.WriteItemToFile(sTempFileFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbSelected)
     
     '検索文字列色変更
     Dim oCell As Range
@@ -1316,15 +1286,15 @@ Public Sub フォント色をトグル()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sValue As String
+    Dim lClrRgb As Long
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sValue, lCLRTGLFONT_CLR, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgb, lCLRTGLFONT_CLR_RGB, True)
     
     'フォント色変更
-    If Selection(1).Font.Color = CLng(sValue) Then
+    If Selection(1).Font.Color = lClrRgb Then
         Selection.Font.ColorIndex = xlAutomatic
     Else
-        Selection.Font.Color = CLng(sValue)
+        Selection.Font.Color = lClrRgb
     End If
 End Sub
 
@@ -1338,15 +1308,15 @@ Public Sub 背景色をトグル()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sValue As String
+    Dim lClrRgb As Long
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sValue, lCLRTGLBG_CLR, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgb, lCLRTGLBG_CLR_RGB, True)
     
     '背景色変更
-    If Selection(1).Interior.Color = CLng(sValue) Then
+    If Selection(1).Interior.Color = lClrRgb Then
         Selection.Interior.ColorIndex = 0
     Else
-        Selection.Interior.Color = CLng(sValue)
+        Selection.Interior.Color = lClrRgb
     End If
 End Sub
 
@@ -1365,21 +1335,21 @@ Public Sub ●設定変更●フォント色をトグル()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sClrRgbInit As String
+    Dim lClrRgbInit As Long
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR", sClrRgbInit, lCLRTGLFONT_CLR, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgbInit, lCLRTGLFONT_CLR_RGB, False)
     
     '色選択
     Dim bRet As Boolean
     Dim lClrRgbSelected As Long
-    bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
+    bRet = ShowColorPalette(lClrRgbInit, lClrRgbSelected)
     If bRet = False Then
         MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR", CStr(lClrRgbSelected))
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgbSelected)
 End Sub
 
 ' =============================================================================
@@ -1397,21 +1367,21 @@ Public Sub ●設定変更●背景色をトグル()
     'アドイン設定読み出し
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
-    Dim sClrRgbInit As String
+    Dim lClrRgbInit As Long
     sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR", sClrRgbInit, lCLRTGLBG_CLR, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgbInit, lCLRTGLBG_CLR_RGB, False)
     
     '色選択
     Dim bRet As Boolean
     Dim lClrRgbSelected As Long
-    bRet = ShowColorPalette(CLng(sClrRgbInit), lClrRgbSelected)
+    bRet = ShowColorPalette(lClrRgbInit, lClrRgbSelected)
     If bRet = False Then
         MsgBox "色選択が失敗しましたので、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR", CStr(lClrRgbSelected))
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgbSelected)
 End Sub
 
 ' =============================================================================
@@ -1607,7 +1577,7 @@ Public Sub アクティブセルコメント設定切り替え()
     If bExistSettingFile = True Then
         Dim sSettingValue As String
         Dim bExistSettingItem As Boolean
-        bExistSettingItem = clSetting.Item("sCMNT_VSBL_ENB", sSettingValue)
+        bExistSettingItem = clSetting.Item("bCMNT_VSBL_ENB", sSettingValue)
         If bExistSettingItem = True Then
             If sSettingValue = "True" Then
                 MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
@@ -1624,7 +1594,7 @@ Public Sub アクティブセルコメント設定切り替え()
         MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
         sSettingValue = "True"
     End If
-    Call clSetting.Add("sCMNT_VSBL_ENB", sSettingValue)
+    Call clSetting.Add("bCMNT_VSBL_ENB", sSettingValue)
     
     'ショートカットキー設定 更新(有効化)
     Call SwitchMacroShortcutKeysActivation(True)
@@ -1677,19 +1647,19 @@ Public Sub Excel方眼紙()
     Dim clSetting As New SettingFile
     Dim sSettingFilePath As String
     Dim sFontName As String
-    Dim sFontSize As String
-    Dim sClmWidth As String
+    Dim lFontSize As Long
+    Dim lClmWidth As Long
     sSettingFilePath = GetAddinSettingFilePath()
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_FONT_NAME", sFontName, sEXCELGRID_FONT_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_FONT_SIZE", sFontSize, sEXCELGRID_FONT_SIZE, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_CLM_WIDTH", sClmWidth, sEXCELGRID_CLM_WIDTH, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEXCELGRID_FONT_SIZE", lFontSize, lEXCELGRID_FONT_SIZE, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEXCELGRID_CLM_WIDTH", lClmWidth, lEXCELGRID_CLM_WIDTH, True)
     
     'Excel方眼紙設定
     ActiveSheet.Cells.Select
     With Selection
         .Font.Name = sFontName
-        .Font.Size = CLng(sFontSize)
-        .ColumnWidth = CLng(sClmWidth)
+        .Font.Size = lFontSize
+        .ColumnWidth = lClmWidth
         .Rows.AutoFit
     End With
     ActiveSheet.Cells(1, 1).Select
@@ -1736,12 +1706,12 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     '= 事前処理
     '=============================================
     Dim sOutSheetName As String
-    Dim sMaxFuncLevelIni As String
-    Dim sClmWidth As String
+    Dim lMaxFuncLevelIni As Long
+    Dim lClmWidth As Long
     Dim sEptreeLogPath As String
     Dim sDevRootDirPath As String
     Dim sDevRootDirName As String
-    Dim sDevRootLevel As String
+    Dim lDevRootLevel As Long
     
     '*** アドイン設定ファイルから設定読み出し ***
     Dim clSetting As New SettingFile
@@ -1749,8 +1719,8 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     sAddinSettingFilePath = GetAddinSettingFilePath()
     
     Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_MAX_FUNC_LEVEL_INI", sMaxFuncLevelIni, sEPTREE_MAX_FUNC_LEVEL_INI, True)
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_CLM_WIDTH", sClmWidth, sEPTREE_CLM_WIDTH, True)
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "lEPTREE_MAX_FUNC_LEVEL_INI", lMaxFuncLevelIni, lEPTREE_MAX_FUNC_LEVEL_INI, True)
+    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "lEPTREE_CLM_WIDTH", lClmWidth, lEPTREE_CLM_WIDTH, True)
     
     '*** テンポラリファイルから設定読み出し ***
     Dim sTempDirPath As String
@@ -1779,13 +1749,14 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
     
     'ルートフォルダレベル取得
-    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel, sEPTREE_DEV_ROOT_DIR_LEVEL, False)
-    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, sDevRootLevel)
+    Call clSetting.ReadItemFromFile(sTempFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", lDevRootLevel, lEPTREE_DEV_ROOT_DIR_LEVEL, False)
+    Dim sDevRootLevel As String
+    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, CStr(lDevRootLevel))
     If sDevRootLevel = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
-    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
+    Call clSetting.WriteItemToFile(sTempFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
     
     '=============================================
     '= 本処理
@@ -1818,7 +1789,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     lRowIdx = lRowIdx + 1
     
     Dim lMaxFuncLevel As Long
-    lMaxFuncLevel = CLng(sMaxFuncLevelIni)
+    lMaxFuncLevel = lMaxFuncLevelIni
     Dim vFileLine As Variant
     For Each vFileLine In cFileContents
         Dim oMatchResult As Object
@@ -1868,7 +1839,7 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
         .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
         .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = CLng(sClmWidth)
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = lClmWidth
         
         'オートフィルタ
         .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter

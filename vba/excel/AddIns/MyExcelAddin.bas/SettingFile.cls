@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.2.2
+'setting file class v1.2.3
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -312,8 +312,8 @@ End Property
 ' = 概要    ファイルオープンから設定取得（＆なければ設定追加）を一括で行う
 ' = 引数    sFilePath       String      [in]    ファイルパス
 ' = 引数    sKey            String      [in]    設定キー
-' = 引数    sValue          String      [out]   設定値
-' = 引数    sInitValue      String      [in]    設定初期値
+' = 引数    vOutValue       Variant     [out]   設定値(出力値)
+' = 引数    vInitValue      Variant     [in]    設定値(初期値)
 ' = 引数    bDoSave         String      [in]    ファイル保存実施有無(省略可)
 ' = 戻値                    Boolean             取得結果
 ' = 覚書    ・ファイルオープン後、設定値を取得する。
@@ -326,8 +326,8 @@ End Property
 Public Function ReadItemFromFile( _
     ByVal sFilePath As String, _
     ByVal sKey As String, _
-    ByRef sValue As String, _
-    ByVal sInitValue As String, _
+    ByRef vOutValue As Variant, _
+    ByVal vInitValue As Variant, _
     Optional ByVal bDoSave As Boolean = True _
 ) As Boolean
     Call Init
@@ -343,21 +343,40 @@ Public Function ReadItemFromFile( _
     bExistFile = Me.FileLoad(sFilePath)
     
     '設定項目取得＆更新
-    Dim sItem As String
     If bExistFile = True Then
+        Dim sItem As String
         bExistItem = Me.Item(sKey, sItem)
         If bExistItem = True Then
-            sValue = sItem
-            'Call Me.Add(sKey, sValue, bDoSave)
+            '型変換
+            Select Case VarType(vOutValue)
+                Case vbInteger: vOutValue = CInt(sItem)
+                Case vbLong: vOutValue = CLng(sItem)
+                Case vbSingle: vOutValue = CSng(sItem)
+                Case vbDouble: vOutValue = CDbl(sItem)
+                Case vbBoolean: vOutValue = CBool(sItem)
+                Case vbString: vOutValue = CStr(ConvStrRaw2CntrlChr(sItem))
+                Case vbCurrency: vOutValue = CCur(sItem)
+                Case vbByte: vOutValue = CByte(sItem)
+                Case vbDate: vOutValue = CDate(sItem)
+                Case vbVariant: vOutValue = CVar(sItem)
+               'Case vbEmpty      : vOutValue = CXxx(sItem)
+               'Case vbNull       : vOutValue = CXxx(sItem)
+               'Case vbObject     : vOutValue = CXxx(sItem)
+               'Case vbError      : vOutValue = CXxx(sItem)
+               'Case vbDataObject : vOutValue = CXxx(sItem)
+               'Case vbArray      : vOutValue = CXxx(sItem)
+                Case Else: vOutValue = ""
+            End Select
+            'Call Me.Add(sKey, CStr(vOutValue), bDoSave)
             ReadItemFromFile = True
         Else
-            sValue = sInitValue
-            Call Me.Add(sKey, sValue, bDoSave)
+            vOutValue = vInitValue
+            Call Me.Add(sKey, CStr(vOutValue), bDoSave)
             ReadItemFromFile = False
         End If
     Else
-        sValue = sInitValue
-        Call Me.Add(sKey, sValue, bDoSave)
+        vOutValue = vInitValue
+        Call Me.Add(sKey, CStr(vOutValue), bDoSave)
         ReadItemFromFile = False
     End If
     
@@ -368,7 +387,7 @@ End Function
 ' = 概要    ファイルオープンから設定更新/追加を一括で行う
 ' = 引数    sFilePath       String      [in]    ファイルパス
 ' = 引数    sKey            String      [in]    設定キー
-' = 引数    sValue          String      [in]    設定値
+' = 引数    vValue          Variant     [in]    設定値
 ' = 戻値                    Boolean             取得結果
 ' = 覚書    ・ファイルオープン後、設定値を更新/追加する。
 ' =         ・以下の場合、Falseを返却する
@@ -379,7 +398,7 @@ End Function
 Public Function WriteItemToFile( _
     ByVal sFilePath As String, _
     ByVal sKey As String, _
-    ByVal sValue As String _
+    ByVal vValue As Variant _
 ) As Boolean
     Call Init
     
@@ -392,7 +411,7 @@ Public Function WriteItemToFile( _
     Dim bExistFile As Boolean
     Dim bExistItem As Boolean
     bExistFile = Me.FileLoad(sFilePath)
-    bExistItem = Me.Add(sKey, sValue)
+    bExistItem = Me.Add(sKey, ConvStrCntrlChr2Raw(CStr(vValue)))
     If bExistFile = True And bExistItem = True Then
         WriteItemToFile = True
     Else
@@ -403,47 +422,13 @@ Public Function WriteItemToFile( _
 End Function
 
 ' ==================================================================
-' = 概要    設定値変換用 文字列to真偽値変換
-' = 引数    sValue          String      [in]    値(文字列)
-' = 戻値                    Boolean             値(真偽値)
-' = 覚書    なし
-' = 依存    なし
-' ==================================================================
-Public Function ConvTypeStr2Bool( _
-    ByVal sValue As String _
-) As Boolean
-    If sValue = "True" Then
-        ConvTypeStr2Bool = True
-    Else
-        ConvTypeStr2Bool = False
-    End If
-End Function
-
-' ==================================================================
-' = 概要    設定値変換用 真偽値to文字列変換
-' = 引数    bValue          Boolean     [in]    値(真偽値)
-' = 戻値                    String              値(文字列)
-' = 覚書    なし
-' = 依存    なし
-' ==================================================================
-Public Function ConvTypeBool2Str( _
-    ByVal bValue As Boolean _
-) As String
-    If bValue = True Then
-        ConvTypeBool2Str = "True"
-    Else
-        ConvTypeBool2Str = "False"
-    End If
-End Function
-
-' ==================================================================
 ' = 概要    設定値変換用 生値to制御文字 変換
 ' = 引数    sValue          String      [in]    値(文字列)
 ' = 戻値                    String              値(制御文字)
 ' = 覚書    なし
 ' = 依存    なし
 ' ==================================================================
-Public Function ConvStrRaw2CntrlChr( _
+Private Function ConvStrRaw2CntrlChr( _
     ByVal sValue As String _
 ) As String
     Select Case sValue
@@ -462,7 +447,7 @@ End Function
 ' = 覚書    なし
 ' = 依存    なし
 ' ==================================================================
-Public Function ConvStrCntrlChr2Raw( _
+Private Function ConvStrCntrlChr2Raw( _
     ByVal sValue As String _
 ) As String
     Select Case sValue
