@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.2.3
+'setting file class v1.2.4
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -72,6 +72,7 @@ End Sub
 ' =           一致しない場合、処理を中断する。
 ' =         ・以下の場合、Falseを返却する
 ' =           - sFilePathが存在しない
+' =         ・ファイルが存在しない場合は何もしない(False返却のみ)
 ' = 依存    なし
 ' ==================================================================
 Public Function FileLoad( _
@@ -321,6 +322,7 @@ End Property
 ' =         ・以下の場合、Falseを返却する
 ' =           - sFilePathが存在しない
 ' =           - sKeyが存在しない
+' =         ・sFilePathが存在しない場合、作成する
 ' = 依存    なし
 ' ==================================================================
 Public Function ReadItemFromFile( _
@@ -330,20 +332,15 @@ Public Function ReadItemFromFile( _
     ByVal vInitValue As Variant, _
     Optional ByVal bDoSave As Boolean = True _
 ) As Boolean
+    '初期化処理
     Call Init
-    
-    '格納先フォルダ作成
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
     
     '設定ファイル読み出し
     Dim bExistFile As Boolean
-    Dim bExistItem As Boolean
     bExistFile = Me.FileLoad(sFilePath)
-    
-    '設定項目取得＆更新
     If bExistFile = True Then
+        '設定項目取得＆更新
+        Dim bExistItem As Boolean
         Dim sItem As String
         bExistItem = Me.Item(sKey, sItem)
         If bExistItem = True Then
@@ -375,11 +372,17 @@ Public Function ReadItemFromFile( _
             ReadItemFromFile = False
         End If
     Else
+        '格納先フォルダ作成
+        Dim objFSO As Object
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
+        
         vOutValue = vInitValue
         Call Me.Add(sKey, CStr(vOutValue), bDoSave)
         ReadItemFromFile = False
     End If
     
+    '終了処理
     Call DeInit
 End Function
 
@@ -393,6 +396,7 @@ End Function
 ' =         ・以下の場合、Falseを返却する
 ' =           - sFilePathが存在しない
 ' =           - sKeyが存在しない
+' =         ・sFilePathが存在しない場合、作成する
 ' = 依存    なし
 ' ==================================================================
 Public Function WriteItemToFile( _
@@ -400,6 +404,7 @@ Public Function WriteItemToFile( _
     ByVal sKey As String, _
     ByVal vValue As Variant _
 ) As Boolean
+    '初期化処理
     Call Init
     
     '格納先フォルダ作成
@@ -409,15 +414,21 @@ Public Function WriteItemToFile( _
     
     '設定ファイル読み出し
     Dim bExistFile As Boolean
-    Dim bExistItem As Boolean
     bExistFile = Me.FileLoad(sFilePath)
-    bExistItem = Me.Add(sKey, ConvStrCntrlChr2Raw(CStr(vValue)))
-    If bExistFile = True And bExistItem = True Then
-        WriteItemToFile = True
+    If bExistFile = True Then
+        '設定項目取得＆更新
+        Dim bExistItem As Boolean
+        bExistItem = Me.Add(sKey, ConvStrCntrlChr2Raw(CStr(vValue)))
+        If bExistItem = True Then
+            WriteItemToFile = True
+        Else
+            WriteItemToFile = False
+        End If
     Else
         WriteItemToFile = False
     End If
     
+    '終了処理
     Call DeInit
 End Function
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.47
+' my excel addin macros v2.48
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -45,7 +45,7 @@ Option Explicit
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
-' =         アクティブセルコメント設定切り替え          アクティブセルコメント設定を切り替える
+' =         ●設定変更●アクティブセルコメントのみ表示  アクティブセルコメント設定を切り替える
 ' =         アクティブセルコメントのみ表示              他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して下移動    下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して上移動    上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
@@ -111,22 +111,19 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
     Const lEXCELGRID_FONT_SIZE As Long = 9
     Const lEXCELGRID_CLM_WIDTH As Long = 3 '3文字分
 '=== 検索文字の文字色を変更() ===
-    Const sWORDCOLOR_CFG_FILE_NAME As String = "userdeffuncs_wordcolor.cfg"
     Const sWORDCOLOR_SRCH_WORD As String = ""
-    Const lWORDCOLOR_CLR_RGB As Long = 0
+    Const lWORDCOLOR_CLR_RGB As Long = vbRed
 '=== ファイルエクスポート() ===
-    Const sFILEEXPORT_CFG_FILE_NAME As String = "userdeffuncs_fileexport.cfg"
-    Const sFILEEXPORT_OUT_FILE_NAME As String = "export.csv"
+    Const sFILEEXPORT_OUT_FILE_NAME As String = "MyExcelAddinFileExport.csv"
     Const bFILEEXPORT_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを一括実行() ===
-    Const sCMDEXEBAT_BAT_FILE_NAME As String = "userdeffuncs_cmdexebat_command.bat"
-    Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexebat_redirect.log"
+    Const sCMDEXEBAT_BAT_FILE_NAME As String = "MyExcelAddinCmdexebat.bat"
+    Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdexebat.log"
     Const bCMDEXEBAT_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを各々実行() ===
-    Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "userdeffuncs_cmdexeuni_redirect.log"
+    Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdexeuni.log"
     Const bCMDEXEUNI_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
-    Const sEPTREE_CFG_FILE_NAME As String = "userdeffuncs_eptree.cfg"
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
     Const lEPTREE_MAX_FUNC_LEVEL_INI As Long = 10
     Const lEPTREE_CLM_WIDTH As Long = 2
@@ -135,7 +132,7 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
     Const lEPTREE_DEV_ROOT_DIR_LEVEL As Long = 0
 '=== 範囲を維持したままセルコピー() ===
     Const bCELLCOPYRNG_IGNORE_INVISIBLE_CELL As Boolean = True
-    Const sCELLCOPYRNG_DELIMITER As String = "vbTab"
+    Const sCELLCOPYRNG_DELIMITER As String = vbTab
 '=== 一行にまとめてセルコピー() ===
     Const bCELLCOPYLINE_IGNORE_INVISIBLE_CELL As Boolean = True
     Const bCELLCOPYLINE_IGNORE_BLANK_CELL As Boolean = True
@@ -213,7 +210,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^%{RIGHT}", "インデントを上げる"
     dMacroShortcutKeys.Add "^%{LEFT}", "インデントを下げる"
     
-    dMacroShortcutKeys.Add "^+{F11}", "アクティブセルコメント設定切り替え"
+    dMacroShortcutKeys.Add "^+{F11}", "●設定変更●アクティブセルコメントのみ表示"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
     
     dMacroShortcutKeys.Add "^%h", "Excel方眼紙"
@@ -714,13 +711,6 @@ Public Sub ファイルエクスポート()
     Dim bIgnoreInvisibleCell As Boolean
     Call clSetting.ReadItemFromFile(sSettingFilePath, "bFILEEXPORT_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
     
-    '*** テンポラリファイルパス取得 ***
-    Dim sTmpDirPath As String
-    Dim sTmpFilePath As String
-    sTmpDirPath = GetAddinSettingDirPath()
-    sTmpFilePath = sTmpDirPath & "\" & sFILEEXPORT_CFG_FILE_NAME
-    Debug.Print sTmpFilePath
-    
     '*** 出力先入力 ***
     'フォルダパス
     Dim objWshShell As Object
@@ -728,7 +718,7 @@ Public Sub ファイルエクスポート()
     Dim sOutputDirPathInit As String
     Dim sOutputDirPath As String
     sOutputDirPathInit = objWshShell.SpecialFolders("Desktop")
-    Call clSetting.ReadItemFromFile(sTmpFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath, sOutputDirPathInit, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath, sOutputDirPathInit, False)
     sOutputDirPath = ShowFolderSelectDialog(sOutputDirPath)
     If sOutputDirPath = "" Then
         MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。", vbCritical, sMACRO_NAME
@@ -737,14 +727,14 @@ Public Sub ファイルエクスポート()
     Else
         'Do Nothing
     End If
-    Call clSetting.WriteItemToFile(sTmpFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath)
     
     'ファイル名
     Dim sOutputFileName As String
     Dim sOutputFilePath As String
     Dim sFileExt As String
     Dim sDelimiter As String
-    Call clSetting.ReadItemFromFile(sTmpFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName, sFILEEXPORT_OUT_FILE_NAME, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName, sFILEEXPORT_OUT_FILE_NAME, False)
     sOutputFileName = InputBox("ファイル名を入力してください。(拡張子付き)", sMACRO_NAME, sOutputFileName)
     If InStr(sOutputFileName, ".") Then
         'Do Nothing
@@ -753,7 +743,7 @@ Public Sub ファイルエクスポート()
         MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
         End
     End If
-    Call clSetting.WriteItemToFile(sTmpFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName)
     
     'ファイルパス
     sOutputFilePath = sOutputDirPath & "\" & sOutputFileName
@@ -1000,17 +990,14 @@ Public Sub 検索文字の文字色を変更()
     '▲▲▲色設定▲▲▲
     
     '*** アドイン設定ファイルから設定読み出し ***
-    Dim sTempFileDirPath As String
-    Dim sTempFileFilePath As String
-    sTempFileDirPath = GetAddinSettingDirPath()
-    sTempFileFilePath = sTempFileDirPath & "\" & sWORDCOLOR_CFG_FILE_NAME
-    Debug.Print sTempFileFilePath
-    
     Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    
     Dim sSrchStr As String
     Dim lClrRgbInit As Long
-    Call clSetting.ReadItemFromFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
-    Call clSetting.ReadItemFromFile(sTempFileFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbInit, lWORDCOLOR_CLR_RGB, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbInit, lWORDCOLOR_CLR_RGB, False)
     
     '検索対象文字列選択
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
@@ -1071,8 +1058,8 @@ Public Sub 検索文字の文字色を変更()
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
-    Call clSetting.WriteItemToFile(sTempFileFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbSelected)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbSelected)
     
     '検索文字列色変更
     Dim oCell As Range
@@ -1144,7 +1131,7 @@ Public Sub シート並べ替え作業用シートを作成()
     Const ROW_SHT_NAME_STRT = 8
     Const CLM_BTN = 2
     Const CLM_SHT_NAME = 2
-
+    
     Dim lShtIdx As Long
     Dim asShtName() As String
     Dim shWorkSht As Worksheet
@@ -1565,36 +1552,32 @@ End Sub
 ' =         Macros.bas/SwitchMacroShortcutKeysActivation()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub アクティブセルコメント設定切り替え()
-    Const sMACRO_NAME As String = "アクティブセルコメント設定切り替え"
-
+Public Sub ●設定変更●アクティブセルコメントのみ表示()
+    Const sMACRO_NAME As String = "●設定変更●アクティブセルコメントのみ表示"
+    
     'アドイン設定ファイル読み出し
     Dim clSetting As New SettingFile
-    Dim bExistSettingFile As Boolean
-    bExistSettingFile = clSetting.FileLoad(GetAddinSettingFilePath())
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Dim bCmntVsblEnb As Boolean
+    Dim bExistSetting As Boolean
+    bExistSetting = clSetting.ReadItemFromFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb, bCMNT_VSBL_ENB, False)
     
     'アクティブセルコメント設定更新
-    If bExistSettingFile = True Then
-        Dim sSettingValue As String
-        Dim bExistSettingItem As Boolean
-        bExistSettingItem = clSetting.Item("bCMNT_VSBL_ENB", sSettingValue)
-        If bExistSettingItem = True Then
-            If sSettingValue = "True" Then
-                MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
-                sSettingValue = "False"
-            Else
-                MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-                sSettingValue = "True"
-            End If
+    If bExistSetting = True Then
+        If bCmntVsblEnb = True Then
+            MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
+            bCmntVsblEnb = False
         Else
             MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-            sSettingValue = "True"
+            bCmntVsblEnb = True
         End If
     Else
         MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-        sSettingValue = "True"
+        bCmntVsblEnb = True
     End If
-    Call clSetting.Add("bCMNT_VSBL_ENB", sSettingValue)
+    
+    Call clSetting.WriteItemToFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb)
     
     'ショートカットキー設定 更新(有効化)
     Call SwitchMacroShortcutKeysActivation(True)
@@ -1715,48 +1698,41 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     
     '*** アドイン設定ファイルから設定読み出し ***
     Dim clSetting As New SettingFile
-    Dim sAddinSettingFilePath As String
-    sAddinSettingFilePath = GetAddinSettingFilePath()
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
     
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "lEPTREE_MAX_FUNC_LEVEL_INI", lMaxFuncLevelIni, lEPTREE_MAX_FUNC_LEVEL_INI, True)
-    Call clSetting.ReadItemFromFile(sAddinSettingFilePath, "lEPTREE_CLM_WIDTH", lClmWidth, lEPTREE_CLM_WIDTH, True)
-    
-    '*** テンポラリファイルから設定読み出し ***
-    Dim sTempDirPath As String
-    Dim sTempFilePath As String
-    sTempDirPath = GetAddinSettingDirPath()
-    sTempFilePath = sTempDirPath & "\" & sEPTREE_CFG_FILE_NAME
-    Debug.Print sTempFilePath
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_MAX_FUNC_LEVEL_INI", lMaxFuncLevelIni, lEPTREE_MAX_FUNC_LEVEL_INI, True)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_CLM_WIDTH", lClmWidth, lEPTREE_CLM_WIDTH, True)
     
     'Eptreeログファイルパス取得
-    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
     sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
     If sEptreeLogPath = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
-    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
     
     '開発用ルートフォルダ取得
-    Call clSetting.ReadItemFromFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath, sEPTREE_DEV_ROOT_DIR_PATH, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath, sEPTREE_DEV_ROOT_DIR_PATH, False)
     sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
     If sDevRootDirPath = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
-    Call clSetting.WriteItemToFile(sTempFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
     
     'ルートフォルダレベル取得
-    Call clSetting.ReadItemFromFile(sTempFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", lDevRootLevel, lEPTREE_DEV_ROOT_DIR_LEVEL, False)
+    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", lDevRootLevel, lEPTREE_DEV_ROOT_DIR_LEVEL, False)
     Dim sDevRootLevel As String
     sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, CStr(lDevRootLevel))
     If sDevRootLevel = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
-    Call clSetting.WriteItemToFile(sTempFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
     
     '=============================================
     '= 本処理
