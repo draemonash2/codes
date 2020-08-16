@@ -51,7 +51,7 @@
 "	noremap		<silent>			<c-n>		:tabnew<cr>|									" 新規タブを開く
 	noremap		<silent>			<c-g>		:call ExecuteGuiGrep()<cr>|						" GUIのGrepソフト起動
 	noremap		<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
-	noremap		<silent>			<F2>		:Tlist<cr>|										" タグリスト作成
+	noremap		<silent>			<F2>		:TagbarToggle<cr>|								" タグリスト作成
 "	noremap		<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
 "	noremap		<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
 	noremap		<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
@@ -309,6 +309,7 @@ endif
 	highlight NonText		guibg=NONE	guifg=#404040
 	highlight SpecialKey	guibg=NONE	guifg=#707070
 	autocmd BufNewFile,BufRead *.cls  set filetype=vb
+	autocmd BufNewFile,BufRead *.frm  set filetype=vb
 
 " ==============================================================================
 " window位置の保存と復帰
@@ -1041,18 +1042,48 @@ endif
 		endif
 	endfunction
 
+" ==============================================================================
+" 辞書ファイル登録
+" [参考] https://nanasi.jp/articles/howto/config/dictionary.html
+" ==============================================================================
+"autocmd FileType vb :set dictionary=$VIM/vbscript.dict<CR>
+autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
+
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
 " **************************************************************************************************
 " ==============================================================================
 " Taglist 設定
 " ==============================================================================
-	let Tlist_Show_One_File = 1		" アクティブバッファのみタグ表示
-	let Tlist_Use_Right_Window = 1	" 右ウィンドウ表示
-	let Tlist_Exit_OnlyWindow = 1	" taglistのウインドウだけならVimを閉じる
-	let Tlist_Display_Prototype = 0	" プロトタイプを非表示
-	let Tlist_Display_Tag_Scope = 0	" タグスコープを非表示
-	let Tlist_Auto_Open = 0			" 自動起動無効
+"	let Tlist_Show_One_File = 1		" アクティブバッファのみタグ表示
+"	let Tlist_Use_Right_Window = 1	" 右ウィンドウ表示
+"	let Tlist_Exit_OnlyWindow = 1	" taglistのウインドウだけならVimを閉じる
+"	let Tlist_Display_Prototype = 0	" プロトタイプを非表示
+"	let Tlist_Display_Tag_Scope = 0	" タグスコープを非表示
+"	let Tlist_Auto_Open = 0			" 自動起動無効
+
+" ==============================================================================
+" Tagbar 設定
+" ==============================================================================
+"	let g:tagbar_ctags_bin 
+	let g:tagbar_type_vb = {
+		\ 'ctagstype' : 'vb',
+		\ 'kinds'     : [
+			\ 'd:macros:1:0',
+			\ 'p:prototypes:1:0',
+			\ 'g:enums',
+			\ 'e:enumerators:0:0',
+			\ 't:typedefs:0:0',
+			\ 'n:namespaces',
+			\ 'c:classes',
+			\ 's:structs',
+			\ 'u:unions',
+			\ 'f:functions',
+			\ 'm:members:0:0',
+			\ 'v:variables:0:0'
+		\ ]
+	\ }
+	let g:tagbar_sort = 0	" ソートしない
 
 " ==============================================================================
 " bufferlist 設定
