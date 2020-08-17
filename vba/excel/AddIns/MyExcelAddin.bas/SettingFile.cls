@@ -9,7 +9,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'setting file class v1.2.4
+'setting file class v1.2.5
 
 ' ******************************************************************
 ' * 概要    アドイン用の設定ファイルを管理するクラス
@@ -351,7 +351,7 @@ Public Function ReadItemFromFile( _
                 Case vbSingle: vOutValue = CSng(sItem)
                 Case vbDouble: vOutValue = CDbl(sItem)
                 Case vbBoolean: vOutValue = CBool(sItem)
-                Case vbString: vOutValue = CStr(ConvStrRaw2CntrlChr(sItem))
+                Case vbString: vOutValue = CStr(ConvStr2Ctrlchr(sItem))
                 Case vbCurrency: vOutValue = CCur(sItem)
                 Case vbByte: vOutValue = CByte(sItem)
                 Case vbDate: vOutValue = CDate(sItem)
@@ -368,7 +368,7 @@ Public Function ReadItemFromFile( _
             ReadItemFromFile = True
         Else
             vOutValue = vInitValue
-            Call Me.Add(sKey, CStr(vOutValue), bDoSave)
+            Call Me.Add(sKey, ConvCtrlchr2Str(CStr(vOutValue)), bDoSave)
             ReadItemFromFile = False
         End If
     Else
@@ -378,7 +378,7 @@ Public Function ReadItemFromFile( _
         Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
         
         vOutValue = vInitValue
-        Call Me.Add(sKey, CStr(vOutValue), bDoSave)
+        Call Me.Add(sKey, ConvCtrlchr2Str(CStr(vOutValue)), bDoSave)
         ReadItemFromFile = False
     End If
     
@@ -418,7 +418,7 @@ Public Function WriteItemToFile( _
     If bExistFile = True Then
         '設定項目取得＆更新
         Dim bExistItem As Boolean
-        bExistItem = Me.Add(sKey, ConvStrCntrlChr2Raw(CStr(vValue)))
+        bExistItem = Me.Add(sKey, ConvCtrlchr2Str(CStr(vValue)))
         If bExistItem = True Then
             WriteItemToFile = True
         Else
@@ -433,40 +433,40 @@ Public Function WriteItemToFile( _
 End Function
 
 ' ==================================================================
-' = 概要    設定値変換用 生値to制御文字 変換
+' = 概要    設定値変換用 文字列to制御文字 変換
 ' = 引数    sValue          String      [in]    値(文字列)
 ' = 戻値                    String              値(制御文字)
 ' = 覚書    なし
 ' = 依存    なし
 ' ==================================================================
-Private Function ConvStrRaw2CntrlChr( _
+Private Function ConvStr2Ctrlchr( _
     ByVal sValue As String _
 ) As String
     Select Case sValue
-        Case "vbTab":     ConvStrRaw2CntrlChr = vbTab
-        Case "vbCr":      ConvStrRaw2CntrlChr = vbCr
-        Case "vbLf":      ConvStrRaw2CntrlChr = vbLf
-        Case "vbNewLine": ConvStrRaw2CntrlChr = vbNewLine
-        Case Else:        ConvStrRaw2CntrlChr = sValue
+        Case "vbTab":     ConvStr2Ctrlchr = vbTab
+        Case "vbCr":      ConvStr2Ctrlchr = vbCr
+        Case "vbLf":      ConvStr2Ctrlchr = vbLf
+        Case "vbNewLine": ConvStr2Ctrlchr = vbNewLine
+        Case Else:        ConvStr2Ctrlchr = sValue
     End Select
 End Function
 
 ' ==================================================================
-' = 概要    設定値変換用 制御文字to生値 変換
+' = 概要    設定値変換用 制御文字to文字列 変換
 ' = 引数    sValue          String      [in]    値(制御文字)
 ' = 戻値                    String              値(文字列)
 ' = 覚書    なし
 ' = 依存    なし
 ' ==================================================================
-Private Function ConvStrCntrlChr2Raw( _
+Private Function ConvCtrlchr2Str( _
     ByVal sValue As String _
 ) As String
     Select Case sValue
-        Case vbTab:     ConvStrCntrlChr2Raw = "vbTab"
-        Case vbCr:      ConvStrCntrlChr2Raw = "vbCr"
-        Case vbLf:      ConvStrCntrlChr2Raw = "vbLf"
-        Case vbNewLine: ConvStrCntrlChr2Raw = "vbNewLine"
-        Case Else:      ConvStrCntrlChr2Raw = sValue
+        Case vbTab:     ConvCtrlchr2Str = "vbTab"
+        Case vbCr:      ConvCtrlchr2Str = "vbCr"
+        Case vbLf:      ConvCtrlchr2Str = "vbLf"
+        Case vbNewLine: ConvCtrlchr2Str = "vbNewLine"
+        Case Else:      ConvCtrlchr2Str = sValue
     End Select
 End Function
 
