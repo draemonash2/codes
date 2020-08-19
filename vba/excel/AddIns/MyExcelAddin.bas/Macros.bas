@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.48
+' my excel addin macros v2.49
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1068,7 +1068,7 @@ Public Sub 検索文字の文字色を変更()
         sTrgtStr = oCell.Value
         Dim lStartIdx As Long
         lStartIdx = 1
-        Do
+        Do While True '無限ループ
             Dim lIdx As Long
             lIdx = InStr(lStartIdx, sTrgtStr, sSrchStr)
             If lIdx = 0 Then
@@ -1077,7 +1077,7 @@ Public Sub 検索文字の文字色を変更()
                 lStartIdx = lIdx + Len(sSrchStr)
                 oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = lClrRgbSelected
             End If
-        Loop While 1
+        Loop
     Next
     
     MsgBox "完了！", vbOKOnly, sMACRO_NAME
