@@ -4,19 +4,11 @@ Const sAddinDirPath = "C:\codes\vba\excel\AddIns"
 Dim cDirPathList
 Set cDirPathList = CreateObject("System.Collections.ArrayList")
 Call GetFileListCmdClct(sAddinDirPath, cDirPathList, 2, "")
-
-''★デバッグ用★
-'Dim sDebugMsg
-'sDebugMsg = ""
-'Dim vDirPath
-'For Each vDirPath In cDirPathList
-'    sDebugMsg = sDebugMsg & vbNewLine & vDirPath
-'Next
-'MsgBox sDebugMsg
-'WScript.Quit
+'Call DebugPrintClct(cDirPathList) '★デバッグ用★
 
 'コピー元フォルダ判定
 Dim sSrcDirPath
+sSrcDirPath = ""
 Dim vDirPathTmp
 For Each vDirPathTmp In cDirPathList
     Dim oRegExp
@@ -35,24 +27,17 @@ For Each vDirPathTmp In cDirPathList
         Exit For
     End If
 Next
-
-''★デバッグ用★
-'MsgBox sSrcDirPath
-'WScript.Quit
+'MsgBox sSrcDirPath: WScript.Quit '★デバッグ用★
+If sSrcDirPath = "" Then
+    Msgbox "コピー元フォルダが見つからないため、処理を中断します", vbOkOnly, WScript.ScriptName
+    WScript.Quit
+End If
 
 'コピー元フォルダ内のファイルリスト取得
 Dim cSrcFilePathList
 Set cSrcFilePathList = CreateObject("System.Collections.ArrayList")
 Call GetFileListCmdClct(sSrcDirPath, cSrcFilePathList, 1, "")
-
-''★デバッグ用★
-'Dim sDebugMsg
-'sDebugMsg = ""
-'For Each vSrcFilePath In cSrcFilePathList
-'    sDebugMsg = sDebugMsg & vbNewLine & vSrcFilePath
-'Next
-'MsgBox sDebugMsg
-'WScript.Quit
+'Call DebugPrintClct(cSrcFilePathList) '★デバッグ用★
 
 'コピー元フォルダ内のファイルをコピー先フォルダへコピー
 Dim objFSO
@@ -66,11 +51,25 @@ For Each vSrcFilePath In cSrcFilePathList
     objFSO.CopyFile vSrcFilePath, sDstDirPath
     'sDebugMsg = sDebugMsg & vbNewLine & vSrcFilePath & "→" & sDstDirPath '★デバッグ用★
 Next
-'MsgBox sDebugMsg '★デバッグ用★
-'WScript.Quit '★デバッグ用★
+'MsgBox sDebugMsg: WScript.Quit '★デバッグ用★
 
 'コピー元フォルダ削除
 objFSO.DeleteFolder sSrcDirPath, True
+
+Msgbox "更新完了！", vbOkOnly, WScript.ScriptName
+
+'★デバッグ用★
+Private Function DebugPrintClct( _
+    ByRef cCollection _
+)
+    Dim sDebugMsg
+    Dim vValue
+    For Each vValue In cCollection
+        sDebugMsg = sDebugMsg & vbNewLine & vValue
+    Next
+    MsgBox sDebugMsg
+    WScript.Quit
+End Function
 
 ' ==================================================================
 ' = 概要    ファイル/フォルダパス一覧を取得する(Collection,Dirコマンド版)
@@ -156,25 +155,4 @@ Public Function GetFileListCmdClct( _
     Set objFSO = Nothing    'オブジェクトの破棄
     On Error Goto 0
 End Function
-'   Call Test_GetFileListCmdClct()
-    Private Sub Test_GetFileListCmdClct()
-        Dim objFSO
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
-        Dim sCurDir
-        sCurDir = "C:\codes"
-        
-        Dim cFileList
-        Set cFileList = CreateObject("System.Collections.ArrayList")
-        Call GetFileListCmdClct( sCurDir, cFileList, 1, "*.c *.h" )
-        'Call GetFileListCmdClct( sCurDir, cFileList, 1, "*.h" )
-        'Call GetFileListCmdClct( sCurDir, cFileList, 1, "" )
-        'Call GetFileListCmdClct( sCurDir, cFileList, 2, "" )
-        
-        dim sFilePath
-        dim sOutput
-        sOutput = ""
-        for each sFilePath in cFileList
-            sOutput = sOutput & vbNewLine & sFilePath
-        next
-        MsgBox sOutput
-    End Sub
+
