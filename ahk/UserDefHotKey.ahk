@@ -77,6 +77,11 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			sFilePath = "C:\other\template\$object.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
+	;用語集
+		^+!Ins::
+			sFilePath = "C:\github_io\klg_words\words.itmz"
+			StartProgramAndActivate( "", sFilePath )
+			return
 	
 	;rapture.exe
 		^+!x::
