@@ -26,9 +26,9 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;		#）		Windowsロゴキー
 
 ;***** Global *****
-	;ホットキーヘルプ表示
+	;ホットキー配置表示
 		!^+F1::
-			sFilePath = "C:\other\hotkey_help.vsdx"
+			sFilePath = "C:\other\ホットキー配置.vsdx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	
@@ -64,12 +64,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;言語チートシート
 		^+!_::
-			sFilePath = "C:\other\lang_cheet_sheet.xlsx"
+			sFilePath = "C:\other\言語チートシート.xlsx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;ショートカットキー
 		^+!/::
-			sFilePath = "C:\other\shortcut_keys.xlsx"
+			sFilePath = "C:\other\ショートカットキー一覧.xlsx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;$object.xlsm
