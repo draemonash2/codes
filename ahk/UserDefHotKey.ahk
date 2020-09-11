@@ -74,7 +74,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;$object.xlsm
 		^+!.::
-			sFilePath = "C:\other\template\$object.xlsm"
+			sFilePath = "C:\other\template\#object.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;用語集
