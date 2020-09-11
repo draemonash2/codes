@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.49
+' my excel addin macros v2.50
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -39,9 +39,11 @@ Option Explicit
 ' =         一行にまとめてセルコピー                    選択範囲を一行にまとめてセルコピーする。
 ' =         ●設定変更●一行にまとめてセルコピー        一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
 ' =         フォント色をトグル                          フォント色を「設定色」⇔「自動」でトグルする
-' =         ●設定変更●フォント色をトグル              「フォント色をトグル」の設定色を変更する
+' =         ●設定変更●フォント色をトグルの色選択      「フォント色をトグル」の設定色をカラーパレットから取得して変更する
+' =         ●設定変更●フォント色をトグルの色スポイト  「フォント色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
-' =         ●設定変更●背景色をトグル                  「背景色をトグル」の設定色を変更する
+' =         ●設定変更●背景色をトグルの色選択          「背景色をトグル」の設定色をカラーパレットから取得して変更する
+' =         ●設定変更●背景色をトグルの色スポイト      「背景色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
@@ -200,10 +202,12 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     
     dMacroShortcutKeys.Add "^2", "背景色をトグル"
-    dMacroShortcutKeys.Add "^%2", "●設定変更●背景色をトグル"
+    dMacroShortcutKeys.Add "^%2", "●設定変更●背景色をトグルの色選択"
+    dMacroShortcutKeys.Add "+%2", "●設定変更●背景色をトグルの色スポイト"
     dMacroShortcutKeys.Add "^3", "フォント色をトグル"
-    dMacroShortcutKeys.Add "^%3", "●設定変更●フォント色をトグル"
-    
+    dMacroShortcutKeys.Add "^%3", "●設定変更●フォント色をトグルの色選択"
+    dMacroShortcutKeys.Add "+%3", "●設定変更●フォント色をトグルの色スポイト"
+
     dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
     dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
     
@@ -1308,14 +1312,14 @@ Public Sub 背景色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要    「フォント色をトグル」の設定色を変更する
+' = 概要    「フォント色をトグル」の設定色をカラーパレットから取得して変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' =         Macros.bas/ShowColorPalette()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub ●設定変更●フォント色をトグル()
-    Const sMACRO_NAME As String = "●設定変更●フォント色をトグル"
+Public Sub ●設定変更●フォント色をトグルの色選択()
+    Const sMACRO_NAME As String = "●設定変更●フォント色をトグルの色選択"
     
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
@@ -1340,14 +1344,14 @@ Public Sub ●設定変更●フォント色をトグル()
 End Sub
 
 ' =============================================================================
-' = 概要    「背景色をトグル」の設定色を変更する
+' = 概要    「背景色をトグル」の設定色をカラーパレットから取得して変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
 ' =         Macros.bas/ShowColorPalette()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub ●設定変更●背景色をトグル()
-    Const sMACRO_NAME As String = "●設定変更●背景色をトグル"
+Public Sub ●設定変更●背景色をトグルの色選択()
+    Const sMACRO_NAME As String = "●設定変更●背景色をトグルの色選択"
     
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
@@ -1369,6 +1373,46 @@ Public Sub ●設定変更●背景色をトグル()
     
     'アドイン設定更新
     Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgbSelected)
+End Sub
+
+' =============================================================================
+' = 概要    「フォント色をトグル」の設定色をアクティブセルから取得して変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ●設定変更●フォント色をトグルの色スポイト()
+    Const sMACRO_NAME As String = "●設定変更●フォント色をトグルの色スポイト"
+    
+    '色取得
+    Dim lClrRgb As Long
+    lClrRgb = Selection(1).Font.Color
+    
+    'アドイン設定更新
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgb)
+End Sub
+
+' =============================================================================
+' = 概要    「背景色をトグル」の設定色をアクティブセルから取得して変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ●設定変更●背景色をトグルの色スポイト()
+    Const sMACRO_NAME As String = "●設定変更●背景色をトグルの色スポイト"
+    
+    '色取得
+    Dim lClrRgb As Long
+    lClrRgb = Selection(1).Interior.Color
+    
+    'アドイン設定更新
+    Dim clSetting As New SettingFile
+    Dim sSettingFilePath As String
+    sSettingFilePath = GetAddinSettingFilePath()
+    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgb)
 End Sub
 
 ' =============================================================================
