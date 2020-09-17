@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.50
+' my excel addin macros v2.51
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -39,10 +39,10 @@ Option Explicit
 ' =         一行にまとめてセルコピー                    選択範囲を一行にまとめてセルコピーする。
 ' =         ●設定変更●一行にまとめてセルコピー        一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
 ' =         フォント色をトグル                          フォント色を「設定色」⇔「自動」でトグルする
-' =         ●設定変更●フォント色をトグルの色選択      「フォント色をトグル」の設定色をカラーパレットから取得して変更する
-' =         ●設定変更●フォント色をトグルの色スポイト  「フォント色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
+' =         ●設定変更●フォント色をトグルの色選択      「フォント色をトグル」の設定色をカラーパレットから取得して変更する
 ' =         ●設定変更●背景色をトグルの色選択          「背景色をトグル」の設定色をカラーパレットから取得して変更する
+' =         ●設定変更●フォント色をトグルの色スポイト  「フォント色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         ●設定変更●背景色をトグルの色スポイト      「背景色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         インデントを上げる                          インデントを上げる
@@ -1065,9 +1065,13 @@ Public Sub 検索文字の文字色を変更()
     Call clSetting.WriteItemToFile(sSettingFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
     Call clSetting.WriteItemToFile(sSettingFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbSelected)
     
+    '対象範囲特定(選択範囲と使用されている範囲の共通部分)
+    Dim rTrgtRng As Range
+    Set rTrgtRng = Application.Intersect(Selection, ActiveSheet.UsedRange)
+    
     '検索文字列色変更
     Dim oCell As Range
-    For Each oCell In Selection
+    For Each oCell In rTrgtRng
         Dim sTrgtStr As String
         sTrgtStr = oCell.Value
         Dim lStartIdx As Long
