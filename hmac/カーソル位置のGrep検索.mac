@@ -1,0 +1,63 @@
+//ファイル種別判定
+$target_file = "*.c;*.cpp;*.h"; //初期値はC関連ファイル
+$filetype = filetype;
+//C関連
+if ($filetype == ".c") {
+	$target_file = "*.c;*.cpp;*.h";
+} else if ($filetype == ".h") {
+	$target_file = "*.c;*.cpp;*.h";
+//VBS
+} else if ($filetype == ".vbs") {
+	$target_file = "*.vbs";
+//VBA
+} else if ($filetype == ".bas") {
+	$target_file = "*.bas;.cls;.frm";
+} else if ($filetype == ".cls") {
+	$target_file = "*.bas;.cls;.frm";
+} else if ($filetype == ".frm") {
+	$target_file = "*.bas;.cls;.frm";
+//BAT
+} else if ($filetype == ".bat") {
+	$target_file = "*.bat";
+//他
+} else {
+	//初期値のまま
+}
+
+//ルートフォルダパス検索
+//tagsファイルがあればそのフォルダ、ない場合は入力させる
+$path = filename2;
+while ( true ) {
+	#idx = strrstr( $path, "\\" );
+	if (#idx == -1) {
+		#idx = strrstr( filename2, "\\" );
+		$path = leftstr( filename2, #idx );
+		$path = input("tagsファイルがありません。\nルートフォルダパスを指定してください。", $path);
+		if ( existfile( $path ) == false ) {
+			message "入力されたフォルダパスがありません。\n" + currentmacrobasename + "を中止します。";
+			goto Exit;
+		}
+		break;
+	} else {
+		$path = leftstr( $path, #idx );
+		if ( existfile( $path + "\\tags" ) ) {
+			break;
+		}
+	}
+}
+
+//Grep検索
+if (selecting) {
+	$keyword = gettext(seltopx, seltopy, selendx, selendy);
+	// 選択範囲に空白などが含まれている場合でも、選択されている位置から検索を開始する
+	moveto seltopx, seltopy;
+	grep $keyword, $target_file, $path, icon, casesense ,noregular, subdir, hilight, outputsingle;
+} else {
+	selectword;
+	$keyword = gettext(seltopx, seltopy, selendx, selendy);
+	if ($keyword != "") {
+		grep $keyword, $target_file, $path, word, icon, casesense ,noregular, subdir, hilight, outputsingle;
+	}
+}
+
+Exit:

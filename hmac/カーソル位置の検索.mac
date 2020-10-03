@@ -1,9 +1,3 @@
-//nocasesense：大小文字の区別しない
-//casesense：大小文字の区別
-//regular：正規表現
-//noregular：正規表現無し
-//word：単語検索
-
 // 検索条件を保存
 $ini_file = settingdir + "\\previous_search_option.ini";
 #search_option = getininum($ini_file, getenv("UserName"), "search_option");
@@ -11,19 +5,16 @@ if (#search_option == 0) {
 	writeininum $ini_file, getenv("UserName"), "search_option", searchoption;
 }
 
-//★TODO★すでに設定されているフォルダパスと拡張子を使いまわしたい
-$file = "*.mac";
-$dir = "C:\\codes\\hmac";
-
+//検索
 if (selecting) {
 	$keyword = gettext(seltopx, seltopy, selendx, selendy);
 	// 選択範囲に空白などが含まれている場合でも、選択されている位置から検索を開始する
 	moveto seltopx, seltopy;
-	grep $keyword, $file, $dir, #searchoption;
+	searchdown2 $keyword, hilight, casesense, noregular;
 } else {
 	selectword;
 	$keyword = gettext(seltopx, seltopy, selendx, selendy);
 	if ($keyword != "") {
-		grep $keyword, $file, $dir, #searchoption;
+		searchdown2 $keyword, word, hilight, casesense, noregular;
 	}
 }
