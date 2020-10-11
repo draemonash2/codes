@@ -1,2 +1,2 @@
 setclipboard filename2;
-message "ファイルパスをコピーしました";
+message "ファイルパスをコピーしました\n" + filename2;

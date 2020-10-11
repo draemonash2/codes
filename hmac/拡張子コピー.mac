@@ -1,2 +1,2 @@
 setclipboard filetype;
-message "拡張子をコピーしました";
+message "拡張子をコピーしました\n" + filetype;
