@@ -1,0 +1,6 @@
+begingroupundo;
+replaceallfast "\n", "|", regular, inselect;
+insert ")";
+movetolineno 0, lineno;
+insert "(";
+endgroupundo;
