@@ -65,8 +65,8 @@
 	noremap		<silent>			<c-F1>		:call CopyCurFilePath()<cr>|					" 現在ファイルパスコピー
 	noremap		<silent>			<c-F2>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
 	noremap		<silent>			<c-F3>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
-	noremap		<silent>			<c-F4>		:call CopyProgramNo()<cr>|						" プログラムNo.コピー
-	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" ファイル種別と行番号コピー
+"	noremap		<silent>			<c-F4>		:call CopyProgramNo()<cr>|						" プログラムNo.コピー
+"	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" ファイル種別と行番号コピー
 	noremap		<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
 	noremap		<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
 "	noremap		<silent>	<expr>	gp			'`[' . strpart(getregtype(), 0, 1) . '`]'|		" ペーストしたテキストを再選択できるようにする

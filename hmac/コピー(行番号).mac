@@ -1,0 +1,2 @@
+setclipboard str(lineno);
+message "行番号をコピーしました\n" + str(lineno);
