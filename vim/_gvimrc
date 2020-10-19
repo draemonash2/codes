@@ -63,12 +63,14 @@
 	noremap		<silent>			<F11>		:set expandtab<cr>:retab!<cr>|					" タブ⇒空白 変換
 	noremap		<silent>			<F12>		:set noexpandtab<cr>:retab!<cr>|				" 空白⇒タブ 変換
 	noremap		<silent>			<c-F1>		:call CopyCurFilePath()<cr>|					" 現在ファイルパスコピー
-	noremap		<silent>			<c-F2>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
-	noremap		<silent>			<c-F3>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
-"	noremap		<silent>			<c-F4>		:call CopyProgramNo()<cr>|						" プログラムNo.コピー
-"	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" ファイル種別と行番号コピー
+	noremap		<silent>			<c-F2>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
+	noremap		<silent>			<c-F3>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
+	noremap		<silent>			<c-F4>		:call CopyCurFileExt()<cr>|						" 現在ファイル拡張子コピー
+	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" 現在行番号コピー
+"	noremap		<silent>			<c-F5>		:call CopyFileExtAndLineNo()<cr>|				" 現在ファイル種別＆行番号コピー
 	noremap		<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
 	noremap		<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
+	noremap		<silent>			<s-F1>		:call CopyCurPrjRltvFilePath()<cr>|				" 現在相対ファイルパスコピー
 "	noremap		<silent>	<expr>	gp			'`[' . strpart(getregtype(), 0, 1) . '`]'|		" ペーストしたテキストを再選択できるようにする
 	map								go			<Plug>(openbrowser-smart-search)|				"【open-browser】ブラウザで開く
 "	map								<c-o>		:GtagsCursor<CR>|								"【gtags(※1)】
@@ -106,7 +108,7 @@
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パス取得
-	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" ファイル種別と行番号コピー
+	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
 "	vnoremap	<silent>			p			"0p|											" 上書きペースト(クリップボード上書きなし)
@@ -680,10 +682,10 @@ endif
 " ==============================================================================
 " ファイル保存時に「タブ」を「空白」に変換するかを選択する
 " ==============================================================================
-	let g:EnableTabConvAtSave = 0
-	autocmd BufWritePre * call TabConvAtSave()
-	function! TabConvAtSave()
-		if g:EnableTabConvAtSave == 1
+	let g:EnableTab2SpaceAtSave = 0
+	autocmd BufWritePre * call Tab2SpaceAtSave()
+	function! Tab2SpaceAtSave()
+		if g:EnableTab2SpaceAtSave == 1
 			set expandtab
 			retab!
 		else
@@ -710,6 +712,21 @@ endif
 		echo "copy file path      : " . l:sCurFilePath
 	endfunction
 	
+	function! CopyCurPrjRltvFilePath()
+		let l:sCurFilePath = GetCurFilePath( "\\" )
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), g:sProjectRootFileName ) . "\\"
+		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, "\v" . l:sPrjRootPath, "", "g" )
+		echom l:sCurFilePath . " " . l:sPrjRootPath
+		echom l:sCurPrjRltvFilePath
+		"if g:lCopy2UnnamedRegister == 1
+		"	let @* = l:sCurPrjRltvFilePath " * register.
+		"	let @" = l:sCurPrjRltvFilePath " unnamed register.
+		"else
+		"	let @* = l:sCurPrjRltvFilePath " * register.
+		"endif
+		"echo "copy rltv file path : " . l:sCurPrjRltvFilePath
+	endfunction
+	
 	function! CopyCurDirPath()
 		let l:sCurDirPath = GetCurDirPath( g:sPathDlmtr )
 		if g:lCopy2UnnamedRegister == 1
@@ -732,6 +749,17 @@ endif
 		echo "copy file name      : " . l:sCurFileName
 	endfunction
 	
+	function! CopyCurFileExt()
+		let l:sCurFileExt = GetCurFileExt()
+		if g:lCopy2UnnamedRegister == 1
+			let @* = l:sCurFileExt " * register.
+			let @" = l:sCurFileExt " unnamed register.
+		else
+			let @* = l:sCurFileExt " * register.
+		endif
+		echo "copy file extention : " . l:sCurFileExt
+	endfunction
+	
 	function! CopyProgramNo()
 		let l:sGetLine = getline(1)
 		let l:sPrgNoTmp = l:sGetLine
@@ -748,6 +776,17 @@ endif
 	endfunction
 	
 	function! CopyFileLineNo()
+		let l:sLineNo = g:sSelRowsRng
+		if g:lCopy2UnnamedRegister == 1
+			let @* = l:sLineNo " * register.
+			let @" = l:sLineNo " unnamed register.
+		else
+			let @* = l:sLineNo " * register.
+		endif
+		echo "copy line no        : " . l:sLineNo
+	endfunction
+	
+	function! CopyFileExtAndLineNo()
 		let l:sCurFileName = GetCurFileType()
 		"let l:sLineNo = line(".")
 		let l:sLineNo = g:sSelRowsRng

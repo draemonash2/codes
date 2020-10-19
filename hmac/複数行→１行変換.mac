@@ -1,3 +1,5 @@
 begingroupundo;
-replaceallfast "\n", "", regular, inselect;
+if (selecting) {
+	replaceallfast "\n", "", regular, inselect;
+}
 endgroupundo;

@@ -15,6 +15,7 @@ With objWshShell.Environment("System")
     .Item("MYPATH_EVERYTHING") = "C:\prg_exe\Everything\Everything.exe"                              ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_DISKINFO3")  = "C:\prg_exe\diskinfo64\DiskInfo3.exe"                               ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_NEEVIEW")    = "C:\prg_exe\NeeView\NeeView.exe"                                    ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Item("MYPATH_MASSIGRA")   = "C:\prg_exe\MassiGra\MassiGra.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_LINAME")     = "C:\prg_exe\LiName\LiName.exe"                                      ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_EXCEL")      = "C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE"   ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Item("MYPATH_XF")         = "C:\prg_exe\X-Finder\XF.exe"                                        ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |

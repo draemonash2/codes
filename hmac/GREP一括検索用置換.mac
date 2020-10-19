@@ -1,5 +1,6 @@
 begingroupundo;
-replaceallfast "\n", "|", regular, inselect;
+replaceallfast "\n", "|", regular, inselect;	// カーソルがある行の行末まですべてを置換対象とするため、行末を選択していなかったとしても末尾に"|"が付与されてしまう
+backspace;										// 付与されてしまった末尾の"|"を削除する
 insert ")";
 movetolineno 0, lineno;
 insert "(";
