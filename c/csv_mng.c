@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "csv_mng.h"
 
-char TEST_READ_CSV(
+char ReadCsv(
 	char* sInFileName,
 	float fData[YUC_ROW_MAX_NUM][YUC_CLM_MAX_NUM],
 	char cClmNum,
@@ -36,7 +36,7 @@ char TEST_READ_CSV(
 	return 0;
 }
 
-char TEST_WRITE_CSV(
+char WriteCsv(
 	char* sOutFileName,
 	float fData[YUC_ROW_MAX_NUM][YUC_CLM_MAX_NUM],
 	char cClmNum,
