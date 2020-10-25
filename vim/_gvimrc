@@ -107,7 +107,7 @@
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
-	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パス取得
+	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パスへ変換
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
@@ -440,7 +440,8 @@ endif
 " 関数名の色付け設定
 " [参照] http://ogawa.s18.xrea.com/tdiary/20070523.html
 " ==============================================================================
-	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*[^\*])@=/
+"	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*[^\*])@=/
+	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*)@=/
 	autocmd FileType ruby,c,cpp hi CFunction guifg=orange
 
 " ==============================================================================
