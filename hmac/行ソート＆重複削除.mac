@@ -4,7 +4,7 @@
 
 //                                R‡…–¾      2013”N9Œ16“ú
 
-$inifile = currentmacrodirectory + "\\MyMacro.ini";
+$inifile = getenv( "LOCALAPPDATA" ) + "\\Hidemaru" + "\\EraseSameLine.ini";
 #sort = getininum($inifile, "EraseSameLine", "sort");
 #delete = getininum($inifile, "EraseSameLine", "delete");
 #delspc = getininum($inifile, "EraseSameLine", "delspc");
