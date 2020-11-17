@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.51
+' my excel addin macros v2.52
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -208,8 +208,8 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^%3", "●設定変更●フォント色をトグルの色選択"
     dMacroShortcutKeys.Add "+%3", "●設定変更●フォント色をトグルの色スポイト"
 
-    dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
-    dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
+'   dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
+'   dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
     
     dMacroShortcutKeys.Add "^%{RIGHT}", "インデントを上げる"
     dMacroShortcutKeys.Add "^%{LEFT}", "インデントを下げる"
@@ -273,6 +273,10 @@ End Sub
 ' =============================================================================
 Public Sub マクロショートカットキー全て有効化()
     Call SwitchMacroShortcutKeysActivation(True)
+    
+    Application.StatusBar = "■■■マクロショートカットキーを有効化しました■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
 End Sub
 
 ' =============================================================================
@@ -283,6 +287,10 @@ End Sub
 ' =============================================================================
 Public Sub マクロショートカットキー全て無効化()
     Call SwitchMacroShortcutKeysActivation(False)
+    
+    Application.StatusBar = "■■■マクロショートカットキーを無効化しました■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
 End Sub
 
 ' =============================================================================
