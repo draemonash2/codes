@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.52
+' my excel addin macros v2.53
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -98,6 +98,10 @@ End Type
 Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 '△△△Macro.bas/ShowColorPalette()△△△
 
+'▽▽▽Macro.bas/ReadSettingFile()/WriteSettingFile()▽▽▽
+Const sDELIMITER_INIT As String = vbTab
+'△△△Macro.bas/ReadSettingFile()/WriteSettingFile()△△△
+
 '******************************************************************************
 '* 設定値
 '******************************************************************************
@@ -159,11 +163,8 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     Set dMacroShortcutKeys = CreateObject("Scripting.Dictionary")
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim bCmntVsblEnb As Boolean
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb, bCMNT_VSBL_ENB, False)
+    bCmntVsblEnb = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
     
     '*** ショートカットキー設定更新 ***
     ' <<ショートカットキー追加方法>>
@@ -440,11 +441,8 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート選択ウィンドウを表示()
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
     Dim bMsgBoxShow As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bSHTSELWIN_MSGBOX_SHOW", bMsgBoxShow, bSHTSELWIN_MSGBOX_SHOW, True)
+    bMsgBoxShow = ReadSettingFile("bSHTSELWIN_MSGBOX_SHOW", bSHTSELWIN_MSGBOX_SHOW)
     If bMsgBoxShow = True Then
         MsgBox "シート選択ウィンドウを表示します", vbOKOnly, "シート選択ウィンドウ表示"
     Else
@@ -473,15 +471,11 @@ Public Sub 範囲を維持したままセルコピー()
     Application.ScreenUpdating = False
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim bIgnoreInvisible As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYRNG_IGNORE_INVISIBLE_CELL", bIgnoreInvisible, bCELLCOPYRNG_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisible = ReadSettingFile("bCELLCOPYRNG_IGNORE_INVISIBLE_CELL", bCELLCOPYRNG_IGNORE_INVISIBLE_CELL)
     
     Dim sDelimiter As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYRNG_DELIMITER", sDelimiter, sCELLCOPYRNG_DELIMITER, True)
+    sDelimiter = ReadSettingFile("sCELLCOPYRNG_DELIMITER", sCELLCOPYRNG_DELIMITER)
     
     '*** 選択範囲取得 ***
     Dim sClipedText As String
@@ -539,20 +533,16 @@ Public Sub 一行にまとめてセルコピー()
     Application.ScreenUpdating = False
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim bIgnoreInvisibleCell As Boolean
     Dim bIgnoreBlankCell As Boolean
     Dim sPreffix As String
     Dim sDelimiter As String
     Dim sSuffix As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYLINE_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCELLCOPYLINE_IGNORE_INVISIBLE_CELL, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCELLCOPYLINE_IGNORE_BLANK_CELL", bIgnoreBlankCell, bCELLCOPYLINE_IGNORE_BLANK_CELL, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, True)
+    bIgnoreInvisibleCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_INVISIBLE_CELL", bCELLCOPYLINE_IGNORE_INVISIBLE_CELL)
+    bIgnoreBlankCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_BLANK_CELL", bCELLCOPYLINE_IGNORE_BLANK_CELL)
+    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
+    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
+    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
     
     '*** 選択範囲取得 ***
     Dim sClipedText As String
@@ -619,17 +609,12 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
     Application.ScreenUpdating = False
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim sPreffix As String
     Dim sDelimiter As String
     Dim sSuffix As String
-    
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix, sCELLCOPYLINE_PREFFIX, False)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter, sCELLCOPYLINE_DELIMITER, False)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix, sCELLCOPYLINE_SUFFIX, False)
+    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
+    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
+    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
     
     Dim vRet As Variant
     vRet = MsgBox( _
@@ -659,9 +644,9 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
             sMACRO_NAME, _
             sSuffix _
         )
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
+        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
         MsgBox _
             "設定を変更しました" & vbNewLine & _
             "　先頭文字：" & sPreffix & vbNewLine & _
@@ -670,9 +655,9 @@ Public Sub ●設定変更●一行にまとめてセルコピー()
             vbOKOnly, _
             sMACRO_NAME
     ElseIf vRet = vbNo Then
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_PREFFIX", sPreffix)
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_DELIMITER", sDelimiter)
-        Call clSetting.WriteItemToFile(sSettingFilePath, "sCELLCOPYLINE_SUFFIX", sSuffix)
+        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
         Application.ScreenUpdating = True
         MsgBox _
             "設定をデフォルトに戻しました" & vbNewLine & _
@@ -715,13 +700,9 @@ Public Sub ファイルエクスポート()
     End If
     
     '*** アドイン設定ファイルパス取得 ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     '*** アドイン設定読み出し ***
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bFILEEXPORT_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bFILEEXPORT_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = ReadSettingFile("bFILEEXPORT_IGNORE_INVISIBLE_CELL", bFILEEXPORT_IGNORE_INVISIBLE_CELL)
     
     '*** 出力先入力 ***
     'フォルダパス
@@ -730,7 +711,7 @@ Public Sub ファイルエクスポート()
     Dim sOutputDirPathInit As String
     Dim sOutputDirPath As String
     sOutputDirPathInit = objWshShell.SpecialFolders("Desktop")
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath, sOutputDirPathInit, False)
+    sOutputDirPath = ReadSettingFile("sFILEEXPORT_OUT_DIR_PATH", sOutputDirPathInit)
     sOutputDirPath = ShowFolderSelectDialog(sOutputDirPath)
     If sOutputDirPath = "" Then
         MsgBox "無効なフォルダを指定もしくはフォルダが選択されませんでした。", vbCritical, sMACRO_NAME
@@ -739,14 +720,14 @@ Public Sub ファイルエクスポート()
     Else
         'Do Nothing
     End If
-    Call clSetting.WriteItemToFile(sSettingFilePath, "sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath)
+    Call WriteSettingFile("sFILEEXPORT_OUT_DIR_PATH", sOutputDirPath)
     
     'ファイル名
     Dim sOutputFileName As String
     Dim sOutputFilePath As String
     Dim sFileExt As String
     Dim sDelimiter As String
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName, sFILEEXPORT_OUT_FILE_NAME, False)
+    sOutputFileName = ReadSettingFile("sFILEEXPORT_OUT_FILE_NAME", sFILEEXPORT_OUT_FILE_NAME)
     sOutputFileName = InputBox("ファイル名を入力してください。(拡張子付き)", sMACRO_NAME, sOutputFileName)
     If InStr(sOutputFileName, ".") Then
         'Do Nothing
@@ -755,7 +736,7 @@ Public Sub ファイルエクスポート()
         MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
         End
     End If
-    Call clSetting.WriteItemToFile(sSettingFilePath, "sFILEEXPORT_OUT_FILE_NAME", sOutputFileName)
+    Call WriteSettingFile("sFILEEXPORT_OUT_FILE_NAME", sOutputFileName)
     
     'ファイルパス
     sOutputFilePath = sOutputDirPath & "\" & sOutputFileName
@@ -835,12 +816,8 @@ Public Sub DOSコマンドを一括実行()
     Const sMACRO_NAME As String = "DOSコマンドを一括実行"
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMDEXEBAT_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCMDEXEBAT_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = ReadSettingFile("bCMDEXEBAT_IGNORE_INVISIBLE_CELL", bCMDEXEBAT_IGNORE_INVISIBLE_CELL)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -916,12 +893,8 @@ Public Sub DOSコマンドを各々実行()
     Const sMACRO_NAME As String = "DOSコマンドを各々実行"
     
     '*** アドイン設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim bIgnoreInvisibleCell As Boolean
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "bCMDEXEUNI_IGNORE_INVISIBLE_CELL", bIgnoreInvisibleCell, bCMDEXEUNI_IGNORE_INVISIBLE_CELL, True)
+    bIgnoreInvisibleCell = ReadSettingFile("bCMDEXEUNI_IGNORE_INVISIBLE_CELL", bCMDEXEUNI_IGNORE_INVISIBLE_CELL)
     
     '*** セル選択判定 ***
     If Selection.Count = 0 Then
@@ -1002,14 +975,10 @@ Public Sub 検索文字の文字色を変更()
     '▲▲▲色設定▲▲▲
     
     '*** アドイン設定ファイルから設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
     Dim sSrchStr As String
     Dim lClrRgbInit As Long
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr, sWORDCOLOR_SRCH_WORD, False)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbInit, lWORDCOLOR_CLR_RGB, False)
+    sSrchStr = ReadSettingFile("sWORDCOLOR_SRCH_WORD", sWORDCOLOR_SRCH_WORD)
+    lClrRgbInit = ReadSettingFile("lWORDCOLOR_CLR_RGB", lWORDCOLOR_CLR_RGB)
     
     '検索対象文字列選択
     sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
@@ -1070,8 +1039,8 @@ Public Sub 検索文字の文字色を変更()
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "sWORDCOLOR_SRCH_WORD", sSrchStr)
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lWORDCOLOR_CLR_RGB", lClrRgbSelected)
+    Call WriteSettingFile("sWORDCOLOR_SRCH_WORD", sSrchStr)
+    Call WriteSettingFile("lWORDCOLOR_CLR_RGB", lClrRgbSelected)
     
     '対象範囲特定(選択範囲と使用されている範囲の共通部分)
     Dim rTrgtRng As Range
@@ -1287,11 +1256,8 @@ End Sub
 ' =============================================================================
 Public Sub フォント色をトグル()
     'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim lClrRgb As Long
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgb, lCLRTGLFONT_CLR_RGB, True)
+    lClrRgb = ReadSettingFile("lCLRTGLFONT_CLR_RGB", lCLRTGLFONT_CLR_RGB)
     
     'フォント色変更
     If Selection(1).Font.Color = lClrRgb Then
@@ -1309,11 +1275,8 @@ End Sub
 ' =============================================================================
 Public Sub 背景色をトグル()
     'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim lClrRgb As Long
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgb, lCLRTGLBG_CLR_RGB, True)
+    lClrRgb = ReadSettingFile("lCLRTGLBG_CLR_RGB", lCLRTGLBG_CLR_RGB)
     
     '背景色変更
     If Selection(1).Interior.Color = lClrRgb Then
@@ -1336,11 +1299,8 @@ Public Sub ●設定変更●フォント色をトグルの色選択()
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
     'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim lClrRgbInit As Long
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgbInit, lCLRTGLFONT_CLR_RGB, False)
+    lClrRgbInit = ReadSettingFile("lCLRTGLFONT_CLR_RGB", lCLRTGLFONT_CLR_RGB)
     
     '色選択
     Dim bRet As Boolean
@@ -1352,7 +1312,7 @@ Public Sub ●設定変更●フォント色をトグルの色選択()
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgbSelected)
+    Call WriteSettingFile("lCLRTGLFONT_CLR_RGB", lClrRgbSelected)
 End Sub
 
 ' =============================================================================
@@ -1368,11 +1328,8 @@ Public Sub ●設定変更●背景色をトグルの色選択()
     MsgBox sMACRO_NAME & "を実行します", vbOKOnly, sMACRO_NAME
     
     'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim lClrRgbInit As Long
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgbInit, lCLRTGLBG_CLR_RGB, False)
+    lClrRgbInit = ReadSettingFile("lCLRTGLBG_CLR_RGB", lCLRTGLBG_CLR_RGB)
     
     '色選択
     Dim bRet As Boolean
@@ -1384,7 +1341,7 @@ Public Sub ●設定変更●背景色をトグルの色選択()
     End If
     
     'アドイン設定更新
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgbSelected)
+    Call WriteSettingFile("lCLRTGLBG_CLR_RGB", lClrRgbSelected)
 End Sub
 
 ' =============================================================================
@@ -1401,10 +1358,7 @@ Public Sub ●設定変更●フォント色をトグルの色スポイト()
     lClrRgb = Selection(1).Font.Color
     
     'アドイン設定更新
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLFONT_CLR_RGB", lClrRgb)
+    Call WriteSettingFile("lCLRTGLFONT_CLR_RGB", lClrRgb)
 End Sub
 
 ' =============================================================================
@@ -1421,10 +1375,7 @@ Public Sub ●設定変更●背景色をトグルの色スポイト()
     lClrRgb = Selection(1).Interior.Color
     
     'アドイン設定更新
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lCLRTGLBG_CLR_RGB", lClrRgb)
+    Call WriteSettingFile("lCLRTGLBG_CLR_RGB", lClrRgb)
 End Sub
 
 ' =============================================================================
@@ -1612,14 +1563,11 @@ Public Sub ●設定変更●アクティブセルコメントのみ表示()
     Const sMACRO_NAME As String = "●設定変更●アクティブセルコメントのみ表示"
     
     'アドイン設定ファイル読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    Dim bCmntVsblEnb As Boolean
     Dim bExistSetting As Boolean
-    bExistSetting = clSetting.ReadItemFromFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb, bCMNT_VSBL_ENB, False)
+    bExistSetting = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
     
     'アクティブセルコメント設定更新
+    Dim bCmntVsblEnb As Boolean
     If bExistSetting = True Then
         If bCmntVsblEnb = True Then
             MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
@@ -1633,7 +1581,7 @@ Public Sub ●設定変更●アクティブセルコメントのみ表示()
         bCmntVsblEnb = True
     End If
     
-    Call clSetting.WriteItemToFile(sSettingFilePath, "bCMNT_VSBL_ENB", bCmntVsblEnb)
+    Call WriteSettingFile("bCMNT_VSBL_ENB", bCmntVsblEnb)
     
     'ショートカットキー設定 更新(有効化)
     Call SwitchMacroShortcutKeysActivation(True)
@@ -1683,15 +1631,12 @@ End Sub
 ' =============================================================================
 Public Sub Excel方眼紙()
     'アドイン設定読み出し
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
     Dim sFontName As String
     Dim lFontSize As Long
     Dim lClmWidth As Long
-    sSettingFilePath = GetAddinSettingFilePath()
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEXCELGRID_FONT_NAME", sFontName, sEXCELGRID_FONT_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEXCELGRID_FONT_SIZE", lFontSize, lEXCELGRID_FONT_SIZE, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEXCELGRID_CLM_WIDTH", lClmWidth, lEXCELGRID_CLM_WIDTH, True)
+    sFontName = ReadSettingFile("sEXCELGRID_FONT_NAME", sEXCELGRID_FONT_NAME)
+    lFontSize = ReadSettingFile("lEXCELGRID_FONT_SIZE", lEXCELGRID_FONT_SIZE)
+    lClmWidth = ReadSettingFile("lEXCELGRID_CLM_WIDTH", lEXCELGRID_CLM_WIDTH)
     
     'Excel方眼紙設定
     ActiveSheet.Cells.Select
@@ -1753,42 +1698,38 @@ Public Sub EpTreeの関数ツリーをExcelで取り込む()
     Dim lDevRootLevel As Long
     
     '*** アドイン設定ファイルから設定読み出し ***
-    Dim clSetting As New SettingFile
-    Dim sSettingFilePath As String
-    sSettingFilePath = GetAddinSettingFilePath()
-    
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_SHEET_NAME", sOutSheetName, sEPTREE_OUT_SHEET_NAME, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_MAX_FUNC_LEVEL_INI", lMaxFuncLevelIni, lEPTREE_MAX_FUNC_LEVEL_INI, True)
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_CLM_WIDTH", lClmWidth, lEPTREE_CLM_WIDTH, True)
+    sOutSheetName = ReadSettingFile("sEPTREE_OUT_SHEET_NAME", sEPTREE_OUT_SHEET_NAME)
+    lMaxFuncLevelIni = ReadSettingFile("lEPTREE_MAX_FUNC_LEVEL_INI", lEPTREE_MAX_FUNC_LEVEL_INI)
+    lClmWidth = ReadSettingFile("lEPTREE_CLM_WIDTH", lEPTREE_CLM_WIDTH)
     
     'Eptreeログファイルパス取得
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath, sEPTREE_OUT_LOG_PATH, False)
+    sEptreeLogPath = ReadSettingFile("sEPTREE_OUT_LOG_PATH", sEPTREE_OUT_LOG_PATH)
     sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
     If sEptreeLogPath = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
-    Call clSetting.WriteItemToFile(sSettingFilePath, "sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
+    Call WriteSettingFile("sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
     
     '開発用ルートフォルダ取得
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath, sEPTREE_DEV_ROOT_DIR_PATH, False)
+    sDevRootDirPath = ReadSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sEPTREE_DEV_ROOT_DIR_PATH)
     sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
     If sDevRootDirPath = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
     sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
-    Call clSetting.WriteItemToFile(sSettingFilePath, "sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
+    Call WriteSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
     
     'ルートフォルダレベル取得
-    Call clSetting.ReadItemFromFile(sSettingFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", lDevRootLevel, lEPTREE_DEV_ROOT_DIR_LEVEL, False)
+    lDevRootLevel = ReadSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", lEPTREE_DEV_ROOT_DIR_LEVEL)
     Dim sDevRootLevel As String
     sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, CStr(lDevRootLevel))
     If sDevRootLevel = "" Then
         MsgBox "処理を中断します", vbCritical, sMACRO_NAME
         Exit Sub
     End If
-    Call clSetting.WriteItemToFile(sSettingFilePath, "lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
+    Call WriteSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
     
     '=============================================
     '= 本処理
@@ -2861,5 +2802,253 @@ Private Function ShowColorPalette( _
             ShowColorPalette = False
         End If
     End With
+End Function
+
+' ==================================================================
+' = 概要    設定ファイルから設定を取得する
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    vInitValue      Variant     [in]    設定値(初期値)
+' = 戻値                    Variant             設定値
+' = 覚書    ・ファイルオープン後、設定値を取得する。
+' =           設定値が存在しない場合、設定値(初期値)で設定値を更新して保存する。
+' =         ・以下の場合、vInitValueを返却する
+' =           - sFilePathが存在しない
+' =           - sKeyが存在しない
+' = 依存    Macros.bas/GetAddinSettingFilePath()
+' =         Mng_FileSys.bas/CreateDirectry()
+' =         Macros.bas/ConvCtrlchr2Str()
+' =         Macros.bas/ConvStr2Ctrlchr()
+' = 所属    Macros.bas
+' ==================================================================
+Public Function ReadSettingFile( _
+    ByVal sKey As String, _
+    ByVal vInitValue As Variant _
+) As Variant
+    Dim dSettingItems As Object
+    Set dSettingItems = CreateObject("Scripting.Dictionary")
+    
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim vKey As Variant
+    
+    '設定ファイルパス取得
+    Dim sFilePath As String
+    sFilePath = GetAddinSettingFilePath()
+    
+    '設定ファイル読み出し
+    If objFSO.FileExists(sFilePath) Then
+        'ファイル読み出し
+        Open sFilePath For Input As #1
+        Do Until EOF(1)
+            Dim vKeyValue As Variant
+            Dim sLine As String
+            Line Input #1, sLine
+            If InStr(sLine, sDELIMITER_INIT) Then
+                vKeyValue = Split(sLine, sDELIMITER_INIT)
+                If UBound(vKeyValue) = 0 Then
+                    dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
+                ElseIf UBound(vKeyValue) = 1 Then
+                    dSettingItems.Add vKeyValue(0), vKeyValue(1) '単一区切り文字(値あり)
+                Else
+                    Stop                                          '複数区切り文字
+                End If
+            Else
+                Stop                                              '区切り文字なし
+            End If
+        Loop
+        Close #1
+        
+        '設定項目取得＆更新
+        If dSettingItems.Exists(sKey) = True Then
+            Dim sItem As String
+            sItem = dSettingItems.Item(sKey)
+            '型変換
+            Dim vOutValue As Variant
+            Select Case VarType(vInitValue)
+                Case vbInteger: vOutValue = CInt(sItem)
+                Case vbLong: vOutValue = CLng(sItem)
+                Case vbSingle: vOutValue = CSng(sItem)
+                Case vbDouble: vOutValue = CDbl(sItem)
+                Case vbBoolean: vOutValue = CBool(sItem)
+                Case vbString: vOutValue = CStr(ConvStr2Ctrlchr(sItem))
+                Case vbCurrency: vOutValue = CCur(sItem)
+                Case vbByte: vOutValue = CByte(sItem)
+                Case vbDate: vOutValue = CDate(sItem)
+                Case vbVariant: vOutValue = CVar(sItem)
+               'Case vbEmpty      : vOutValue = CXxx(sItem)
+               'Case vbNull       : vOutValue = CXxx(sItem)
+               'Case vbObject     : vOutValue = CXxx(sItem)
+               'Case vbError      : vOutValue = CXxx(sItem)
+               'Case vbDataObject : vOutValue = CXxx(sItem)
+               'Case vbArray      : vOutValue = CXxx(sItem)
+                Case Else: vOutValue = ""
+            End Select
+            ReadSettingFile = vOutValue
+        Else
+            '項目追加
+            dSettingItems.Add sKey, ConvCtrlchr2Str(CStr(vInitValue))
+            
+            'ファイル保存
+            Open sFilePath For Output As #1
+            For Each vKey In dSettingItems
+                Print #1, vKey & sDELIMITER_INIT & dSettingItems.Item(vKey)
+            Next
+            Close #1
+            ReadSettingFile = vInitValue
+        End If
+    Else
+        '格納先フォルダ作成
+        Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
+        
+        '項目追加
+        dSettingItems.Add sKey, ConvCtrlchr2Str(CStr(vInitValue))
+        
+        'ファイル保存
+        Open sFilePath For Output As #1
+        For Each vKey In dSettingItems
+            Print #1, vKey & sDELIMITER_INIT & dSettingItems.Item(vKey)
+        Next
+        Close #1
+        
+        ReadSettingFile = vInitValue
+    End If
+End Function
+
+' ==================================================================
+' = 概要    設定ファイルから設定を更新して保存する
+' = 引数    sKey            String      [in]    設定キー
+' = 引数    vValue          Variant     [in]    設定値
+' = 戻値                                        なし
+' = 覚書    ・ファイルオープン後、設定値を更新/追加する。
+' = 依存    Macros.bas/GetAddinSettingFilePath()
+' =         Mng_FileSys.bas/CreateDirectry()
+' =         Macros.bas/ConvCtrlchr2Str()
+' = 所属    Macros.bas
+' ==================================================================
+Public Function WriteSettingFile( _
+    ByVal sKey As String, _
+    ByVal vValue As Variant _
+)
+    Dim dSettingItems As Object
+    Set dSettingItems = CreateObject("Scripting.Dictionary")
+    
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    Dim vKey As Variant
+    
+    '設定ファイルパス取得
+    Dim sFilePath As String
+    sFilePath = GetAddinSettingFilePath()
+    
+    '格納先フォルダ作成
+    Call CreateDirectry(objFSO.GetParentFolderName(sFilePath))
+    
+    '設定ファイル読み出し
+    Open sFilePath For Input As #1
+    Do Until EOF(1)
+        Dim vKeyValue As Variant
+        Dim sLine As String
+        Line Input #1, sLine
+        If InStr(sLine, sDELIMITER_INIT) Then
+            vKeyValue = Split(sLine, sDELIMITER_INIT)
+            If UBound(vKeyValue) = 0 Then
+                dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
+            ElseIf UBound(vKeyValue) = 1 Then
+                dSettingItems.Add vKeyValue(0), vKeyValue(1) '単一区切り文字(値あり)
+            Else
+                Stop                                          '複数区切り文字
+            End If
+        Else
+            Stop                                              '区切り文字なし
+        End If
+    Loop
+    Close #1
+    
+    '項目追加
+    If dSettingItems.Exists(sKey) Then
+        dSettingItems.Item(sKey) = vValue
+    Else
+        dSettingItems.Add sKey, ConvCtrlchr2Str(CStr(vValue))
+    End If
+    
+    'ファイル保存
+    Open sFilePath For Output As #1
+    For Each vKey In dSettingItems
+        Print #1, vKey & sDELIMITER_INIT & dSettingItems.Item(vKey)
+    Next
+    Close #1
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 制御文字to文字列 変換
+' = 引数    sValue          String      [in]    値(制御文字)
+' = 戻値                    String              値(文字列)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Private Function ConvCtrlchr2Str( _
+    ByVal sValue As String _
+) As String
+    Select Case sValue
+        Case vbTab:     ConvCtrlchr2Str = "vbTab"
+        Case vbCr:      ConvCtrlchr2Str = "vbCr"
+        Case vbLf:      ConvCtrlchr2Str = "vbLf"
+        Case vbNewLine: ConvCtrlchr2Str = "vbNewLine"
+        Case Else:      ConvCtrlchr2Str = sValue
+    End Select
+End Function
+
+' ==================================================================
+' = 概要    設定値変換用 文字列to制御文字 変換
+' = 引数    sValue          String      [in]    値(文字列)
+' = 戻値                    String              値(制御文字)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Private Function ConvStr2Ctrlchr( _
+    ByVal sValue As String _
+) As String
+    Select Case sValue
+        Case "vbTab":     ConvStr2Ctrlchr = vbTab
+        Case "vbCr":      ConvStr2Ctrlchr = vbCr
+        Case "vbLf":      ConvStr2Ctrlchr = vbLf
+        Case "vbNewLine": ConvStr2Ctrlchr = vbNewLine
+        Case Else:        ConvStr2Ctrlchr = sValue
+    End Select
+End Function
+
+' ==================================================================
+' = 概要    ディレクトリを作成する。親ディレクトリも自動生成する。
+' = 引数    sDirPath    String  [in]  フォルダパス
+' = 戻値    なし
+' = 覚書    フォルダが既に存在している場合は何もしない
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Private Function CreateDirectry( _
+    ByVal sDirPath As String _
+)
+    Dim sParentDir As String
+    Dim oFileSys As Object
+    
+    Set oFileSys = CreateObject("Scripting.FileSystemObject")
+    
+    sParentDir = oFileSys.GetParentFolderName(sDirPath)
+    
+    '親ディレクトリが存在しない場合、再帰呼び出し
+    If oFileSys.FolderExists(sParentDir) = False Then
+        Call CreateDirectry(sParentDir)
+    End If
+    
+    'ディレクトリ作成
+    If oFileSys.FolderExists(sDirPath) = False Then
+        oFileSys.CreateFolder sDirPath
+    End If
+    
+    Set oFileSys = Nothing
 End Function
 
