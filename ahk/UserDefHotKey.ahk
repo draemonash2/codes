@@ -63,17 +63,17 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	
 	;言語チートシート
-		^+!_::
+		^+!c::
 			sFilePath = "C:\other\言語チートシート.xlsx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;ショートカットキー
-		^+!/::
+		^+!s::
 			sFilePath = "C:\other\ショートカットキー一覧.xlsx"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;$object.xlsm
-		^+!.::
+		^+!o::
 			sFilePath = "C:\other\template\#object.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
