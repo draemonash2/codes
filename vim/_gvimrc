@@ -30,7 +30,7 @@
 "	nnoremap	<silent>			cc			dd|												" 行切取り
 	noremap		<silent>			H			0|												" カーソルを先頭に移動
 	noremap		<silent>			L			$|												" カーソルを末尾に移動
-	noremap							/			/\v|											" very magic で検索
+"	noremap							/			/\v|											" very magic で検索
 "	noremap							/			/\V|											" very nomagic で検索
 	noremap							ciy			ciw<c-r>0<esc>b|								" 単語コピー
 	noremap		<silent>			<tab>		a<tab><esc>|									" タブ挿入
@@ -96,6 +96,18 @@
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け（Windowsクリップボード用）
+	inoremap	<silent>			{			{}<LEFT>|										" 括弧とクォーテーションの自動補完
+	inoremap	<silent>			[			[]<LEFT>|										" 括弧とクォーテーションの自動補完
+	inoremap	<silent>			(			()<LEFT>|										" 括弧とクォーテーションの自動補完
+	inoremap	<silent>			"			""<LEFT>|										" 括弧とクォーテーションの自動補完
+	inoremap	<silent>			'			''<LEFT>|										" 括弧とクォーテーションの自動補完
+""	inoremap	<silent>			【			【】<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			「			「」<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			『			『』<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			“			“”<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			‘			‘’<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			（			（）<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+""	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 
 "=== ヴィジュアルモード ===
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
@@ -453,7 +465,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.c,*.h"
+	let g:sGrepFileExt = "*.c,*.h,*.cpp"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
@@ -483,10 +495,10 @@ endif
 	command! -nargs=? Gp call s:GrepAtTagsPrj(<f-args>)
 	function! s:GrepAtTagsPrj(...)
 		"### 対象単語 取得 ###
-		if a:0 < 1
-			echo "grep argument error!"
+		if a:0 >= 1
+			let g:sGrepWord = a:000[(a:0 - 1)]	"引数の単語で検索
 		else
-			let g:sGrepWord = a:000[(a:0 - 1)]
+			let g:sGrepWord = expand("<cword>")	"カーソル上の単語で検索
 		endif
 			
 		"### 対象パス 取得 ###
