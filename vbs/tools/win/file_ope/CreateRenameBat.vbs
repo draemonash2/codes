@@ -93,26 +93,11 @@ Else
     'Do Nothing
 End If
 
-'*** リネーム前ファイルリスト出力 ***
-If bIsContinue = True Then
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim objTxtFile
-    Dim sBakFilePath
-    sBakFilePath = sOutputBatDirPath & "\" & OUTPUT_BAT_FILE_BASE_NAME & "_bak.txt"
-    Set objTxtFile = objFSO.OpenTextFile( sBakFilePath, 2, True)
-    For Each oFileName In cFileNames
-        objTxtFile.WriteLine oFileName
-    Next
-    objTxtFile.Close
-    Set objTxtFile = Nothing
-Else
-    'Do Nothing
-End If
-
 '*** リネーム用バッチファイル出力 ***
 If bIsContinue = True Then
     Dim sBatFilePath
     sBatFilePath = sOutputBatDirPath & "\" & OUTPUT_BAT_FILE_BASE_NAME & ".bat"
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Set objTxtFile = objFSO.OpenTextFile( sBatFilePath, 2, True)
     For Each oFileName In cFileNames
         objTxtFile.WriteLine _
