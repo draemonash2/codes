@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.53
+' my excel addin macros v2.54
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -122,6 +122,8 @@ Const sDELIMITER_INIT As String = vbTab
 '=== ファイルエクスポート() ===
     Const sFILEEXPORT_OUT_FILE_NAME As String = "MyExcelAddinFileExport.csv"
     Const bFILEEXPORT_IGNORE_INVISIBLE_CELL As Boolean = True
+    Const sFILEEXPORT_CHAR_SET As String = "Shift_JIS" '(UTF-8|UTF-16|Shift_JIS|EUC-JP|ISO-2022-JP|...)
+    Const lFILEEXPORT_LINE_SEPARATER As Long = 10 '13:CR 10:LF -1:CRLF
 '=== DOSコマンドを一括実行() ===
     Const sCMDEXEBAT_BAT_FILE_NAME As String = "MyExcelAddinCmdexebat.bat"
     Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdexebat.log"
@@ -677,6 +679,7 @@ End Sub
 ' =         隣り合った列のセルにはタブ文字を挿入して出力する。
 ' = 覚書    なし
 ' = 依存    Mng_FileSys.bas/ShowFolderSelectDialog()
+' =         Mng_FileSys.bas/OutputTxtFile()
 ' =         Mng_Array.bas/ConvRange2Array()
 ' =         SettingFile.cls
 ' = 所属    Macros.bas
@@ -765,8 +768,7 @@ Public Sub ファイルエクスポート()
         'Do Nothing
     End If
     
-    '*** ファイル出力処理 ***
-    'Range型からString()型へ変換
+    '*** Range型からString()型へ変換 ***
     Dim asRange() As String
     Call ConvRange2Array( _
                 Selection, _
@@ -775,21 +777,8 @@ Public Sub ファイルエクスポート()
                 sDelimiter _
             )
     
-    On Error Resume Next
-    Open sOutputFilePath For Output As #1
-    If Err.Number = 0 Then
-        'Do Nothing
-    Else
-        MsgBox "無効なファイルパスが指定されました" & Err.Description, vbCritical, sMACRO_NAME
-        MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
-        End
-    End If
-    On Error GoTo 0
-    Dim lLineIdx As Long
-    For lLineIdx = LBound(asRange) To UBound(asRange)
-        Print #1, asRange(lLineIdx)
-    Next lLineIdx
-    Close #1
+    '*** ファイル出力処理 ***
+    Call OutputTxtFile(sOutputFilePath, asRange, sFILEEXPORT_CHAR_SET, lFILEEXPORT_LINE_SEPARATER)
     
     MsgBox "出力完了！"
     
@@ -2198,8 +2187,12 @@ End Function
 
 ' ============================================
 ' = 概要    配列の内容をファイルに書き込む。
-' = 引数    sFilePath     String  [in]  出力するファイルパス
-' =         asFileLine()  String  [in]  出力するファイルの内容
+' = 引数    sFilePath       String  [in]  出力するファイルパス
+' =         asFileLine()    String  [in]  出力するファイルの内容
+' =         sCharSet        String  [in]  文字コード(省略可)
+' =                                         (UTF-8|UTF-16|Shift_JIS|EUC-JP|ISO-2022-JP|...)
+' =         lLineSeparator  Long    [in]  改行コード(省略可)
+' =                                         13:CR 10:LF -1:CRLF
 ' = 戻値    なし
 ' = 覚書    なし
 ' = 依存    なし
@@ -2208,7 +2201,8 @@ End Function
 Private Function OutputTxtFile( _
     ByVal sFilePath As String, _
     ByRef asFileLine() As String, _
-    Optional ByVal sCharSet As String = "shift_jis" _
+    Optional ByVal sCharSet As String = "shift_jis", _
+    Optional ByVal lLineSeparator As Long = -1 _
 )
     Dim oTxtObj As Object
     Dim lLineIdx As Long
@@ -2220,6 +2214,7 @@ Private Function OutputTxtFile( _
         With oTxtObj
             .Type = 2
             .Charset = sCharSet
+            .LineSeparator = lLineSeparator
             .Open
             
             '配列を1行ずつオブジェクトに書き込む
@@ -2842,10 +2837,10 @@ Public Function ReadSettingFile( _
         Open sFilePath For Input As #1
         Do Until EOF(1)
             Dim vKeyValue As Variant
-            Dim sLine As String
-            Line Input #1, sLine
-            If InStr(sLine, sDELIMITER_INIT) Then
-                vKeyValue = Split(sLine, sDELIMITER_INIT)
+            Dim sLINE As String
+            Line Input #1, sLINE
+            If InStr(sLINE, sDELIMITER_INIT) Then
+                vKeyValue = Split(sLINE, sDELIMITER_INIT)
                 If UBound(vKeyValue) = 0 Then
                     dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
                 ElseIf UBound(vKeyValue) = 1 Then
@@ -2949,10 +2944,10 @@ Public Function WriteSettingFile( _
     Open sFilePath For Input As #1
     Do Until EOF(1)
         Dim vKeyValue As Variant
-        Dim sLine As String
-        Line Input #1, sLine
-        If InStr(sLine, sDELIMITER_INIT) Then
-            vKeyValue = Split(sLine, sDELIMITER_INIT)
+        Dim sLINE As String
+        Line Input #1, sLINE
+        If InStr(sLINE, sDELIMITER_INIT) Then
+            vKeyValue = Split(sLINE, sDELIMITER_INIT)
             If UBound(vKeyValue) = 0 Then
                 dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
             ElseIf UBound(vKeyValue) = 1 Then
