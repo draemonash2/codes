@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.54
+' my excel addin macros v2.55
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -45,6 +45,10 @@ Option Explicit
 ' =         ●設定変更●フォント色をトグルの色スポイト  「フォント色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         ●設定変更●背景色をトグルの色スポイト      「背景色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         オートフィル実行                            オートフィルを実行する
+' =         画面を上に移動                              画面を上に移動(スクロールロック動作)
+' =         画面を下に移動                              画面を下に移動(スクロールロック動作)
+' =         画面を左に移動                              画面を左に移動(スクロールロック動作)
+' =         画面を右に移動                              画面を右に移動(スクロールロック動作)
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
 ' =         ●設定変更●アクティブセルコメントのみ表示  アクティブセルコメント設定を切り替える
@@ -214,8 +218,13 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
 '   dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
     
-    dMacroShortcutKeys.Add "^%{RIGHT}", "インデントを上げる"
-    dMacroShortcutKeys.Add "^%{LEFT}", "インデントを下げる"
+    dMacroShortcutKeys.Add "^%{UP}", "画面を上に移動"
+    dMacroShortcutKeys.Add "^%{DOWN}", "画面を下に移動"
+    dMacroShortcutKeys.Add "^%{LEFT}", "画面を左に移動"
+    dMacroShortcutKeys.Add "^%{RIGHT}", "画面を右に移動"
+    
+    dMacroShortcutKeys.Add "^+>", "インデントを上げる"
+    dMacroShortcutKeys.Add "^+<", "インデントを下げる"
     
     dMacroShortcutKeys.Add "^+{F11}", "●設定変更●アクティブセルコメントのみ表示"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
@@ -1365,6 +1374,58 @@ Public Sub ●設定変更●背景色をトグルの色スポイト()
     
     'アドイン設定更新
     Call WriteSettingFile("lCLRTGLBG_CLR_RGB", lClrRgb)
+End Sub
+
+' =============================================================================
+' = 概要    画面を上に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を上に移動()
+    With ActiveWindow
+        If .ScrollRow > 1 Then
+            .ScrollRow = .ScrollRow - 1
+        End If
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を下に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を下に移動()
+    With ActiveWindow
+        .ScrollRow = .ScrollRow + 1
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を左に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を左に移動()
+    With ActiveWindow
+        If .ScrollColumn > 1 Then
+            .ScrollColumn = .ScrollColumn - 1
+        End If
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を右に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を右に移動()
+    With ActiveWindow
+        .ScrollColumn = .ScrollColumn + 1
+    End With
 End Sub
 
 ' =============================================================================
