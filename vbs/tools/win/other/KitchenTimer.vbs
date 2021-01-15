@@ -15,6 +15,7 @@ Option Explicit
 '	1.1.0	2019/09/26	複数起動対応
 '	1.1.1	2020/02/09	sleep化
 '	1.1.2	2020/08/21	秒/時間表示対応
+'	1.2.0	2021/01/14	タイトル出力機能追加
 '==============================================================================
 
 '==============================================================================
@@ -22,12 +23,22 @@ Option Explicit
 '==============================================================================
 Const sPROG_NAME = "キッチンタイマー"
 
+'*************************************************
+'* タイマー設定
+'*************************************************
 Dim dWaitMinites
 dWaitMinites = InputBox( "待ち時間(分)を入力してください", sPROG_NAME, 1 )
 If IsEmpty(dWaitMinites) = True Then
 	MsgBox "キャンセルしました", vbYes, sPROG_NAME
 	WScript.Quit
 ElseIf dWaitMinites = 0 Then
+	MsgBox "キャンセルしました", vbYes, sPROG_NAME
+	WScript.Quit
+End If
+
+Dim sOutputMsg
+sOutputMsg = InputBox( "タイトルを入力してください", sPROG_NAME, 1 )
+If IsEmpty(sOutputMsg) = True Then
 	MsgBox "キャンセルしました", vbYes, sPROG_NAME
 	WScript.Quit
 End If
@@ -55,6 +66,17 @@ ElseIf vAnswer <> vbOk Then
 	WScript.Quit
 End If
 
+'*************************************************
+'* 待ち処理
+'*************************************************
 WScript.sleep(dWaitMinites * 60 * 1000) 'x[min] * 60[s] * 1000[ms]
-MsgBox sPROG_NAME & vbNewLine & dWaitTime & sWaitTimeUnit & "が経過しました", vbYes, dWaitTime & sWaitTimeUnit & "経過"
+
+'*************************************************
+'* メッセージ出力
+'*************************************************
+If sOutputMsg = "" Then
+	MsgBox sPROG_NAME & vbNewLine & dWaitTime & sWaitTimeUnit & "が経過しました", vbYes, dWaitTime & sWaitTimeUnit & "経過"
+Else
+	MsgBox sPROG_NAME & vbNewLine & dWaitTime & sWaitTimeUnit & "が経過しました", vbYes, sOutputMsg
+End If
 

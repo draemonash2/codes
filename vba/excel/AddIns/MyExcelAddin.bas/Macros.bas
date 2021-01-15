@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.55
+' my excel addin macros v2.56
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1552,15 +1552,18 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub ハイパーリンクで飛ぶ()
+    Dim rTrgtCell As Range
     On Error Resume Next
-    ActiveCell.Hyperlinks(1).Follow NewWindow:=True
-    If Err.Number = 0 Then
-        'Do Nothing
-    Else
-        Debug.Print "[" & Now & "] Error " & _
-                    "[Macro] ハイパーリンクで飛ぶ " & _
-                    "[Error No." & Err.Number & "] " & Err.Description
-    End If
+    For Each rTrgtCell In Selection
+        rTrgtCell.Hyperlinks(1).Follow NewWindow:=True
+        If Err.Number = 0 Then
+            'Do Nothing
+        Else
+            Debug.Print "[" & Now & "] Error " & _
+                        "[Macro] ハイパーリンクで飛ぶ " & _
+                        "[Error No." & Err.Number & "] " & Err.Description
+        End If
+    Next
     On Error GoTo 0
 End Sub
 

@@ -94,6 +94,7 @@ DEFAULT_ENV_NAME	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Const DEFAULT_ENV_NAME
 DEFAULT_TARGET_GROUP	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Const DEFAULT_TARGET_GROUP = "User"   'System：すべてのユーザー 、User：現在のユーザー 、Volatile：現在のログオン 、Process：現在のプロセス$/;"	c
 DRIVE_TYPE_TABLE	.\_lib\FileSystem.vbs	/^    Dim DRIVE_TYPE_TABLE$/;"	v
 DeInit	.\_lib\SettingFileClass.vbs	/^    Private Sub DeInit()$/;"	f
+DebugPrintClct	.\_lib\Debug.vbs	/^Private Function DebugPrintClct( _$/;"	f
 Delete	.\_lib\SettingFileClass.vbs	/^    Public Function Delete( _$/;"	f
 DeleteAll	.\_lib\SettingFileClass.vbs	/^    Public Function DeleteAll( _$/;"	f
 DeleteEmptyFolder	.\_lib\FileSystem.vbs	/^Public Function DeleteEmptyFolder( _$/;"	f
@@ -496,6 +497,8 @@ dProgPerDiff	.\_lib\ProgressBarIE.vbs	/^        Dim dProgPerDiff$/;"	v
 dProgPerRem	.\_lib\ProgressBarIE.vbs	/^            Dim dProgPerRem$/;"	v
 dSecondNow	.\_lib\ProgressBarIE.vbs	/^        Dim dSecondNow$/;"	v
 dSecondOld	.\_lib\ProgressBarIE.vbs	/^        Dim dSecondOld$/;"	v
+dWaitMinites	.\tools\win\other\KitchenTimer.vbs	/^Dim dWaitMinites$/;"	v
+dWaitTime	.\tools\win\other\KitchenTimer.vbs	/^Dim dWaitTime$/;"	v
 fdDialog	.\_lib\FileSystem.vbs	/^    Dim fdDialog$/;"	v
 gbIsMeasuring	.\_lib\StopWatch.vbs	/^    Dim gbIsMeasuring$/;"	v
 gdElapsedTime	.\_lib\ProgressBarIE.vbs	/^    Dim gdElapsedTime$/;"	v
@@ -670,7 +673,6 @@ lTrgtFileListIdx	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lTrgtFileL
 lTrgtFileListNum	.\tools\itunes\ClearItunesTags.vbs	/^    Dim lTrgtFileListNum$/;"	v
 lTrgtFileListNum	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim lTrgtFileListNum$/;"	v
 lTrgtFileNameLen	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim lTrgtFileNameLen$/;"	v
-lWaitMinites	.\tools\win\other\KitchenTimer.vbs	/^Dim lWaitMinites$/;"	v
 msoFileDialogFilePicker	.\_lib\FileSystem.vbs	/^    Const msoFileDialogFilePicker = 3$/;"	c
 msoFileDialogFolderPicker	.\_lib\FileSystem.vbs	/^    Const msoFileDialogFolderPicker = 4$/;"	c
 oArgs	.\_lib\Windows.vbs	/^    Dim oArgs$/;"	v
@@ -832,7 +834,6 @@ objTxtFile	.\tools\svn\CpySvnRev.vbs	/^    Dim objTxtFile$/;"	v
 objTxtFile	.\tools\svn\CreateSvnRepositoryShortcut.vbs	/^Dim objTxtFile$/;"	v
 objTxtFile	.\tools\wimmerge\CompareWithWinmerge.vbs	/^        Dim objTxtFile$/;"	v
 objTxtFile	.\tools\win\clipboard\CpyPrgNo.vbs	/^    Dim objTxtFile$/;"	v
-objTxtFile	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim objTxtFile$/;"	v
 objUsrEnv	.\tools\win\sys_ope\AddEnvVariable.vbs	/^Dim objUsrEnv$/;"	v
 objVbsFile	.\_lib\FileSystem.vbs	/^    Dim objVbsFile$/;"	v
 objWMIService	.\_lib\IE.vbs	/^        Dim objWMIService$/;"	v
@@ -917,7 +918,6 @@ sBackUpDirName	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sBackUpDirName$/;"	v
 sBackUpDirName	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sBackUpDirName$/;"	v
 sBackUpDirPath	.\tools\itunes\ClearItunesTags.vbs	/^    Dim sBackUpDirPath$/;"	v
 sBackUpDirPath	.\tools\itunes\UpdateItunesLibTags.vbs	/^    Dim sBackUpDirPath$/;"	v
-sBakFilePath	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim sBakFilePath$/;"	v
 sBatFilePath	.\tools\win\file_ope\CreateRenameBat.vbs	/^    Dim sBatFilePath$/;"	v
 sBuf	.\_lib\FileSystem.vbs	/^        Dim sBuf$/;"	v
 sCMD_RDRCT_FILE_NAME	.\tools\svn\CpySvnRev.vbs	/^    Const sCMD_RDRCT_FILE_NAME = "svn_info.log"$/;"	c
@@ -971,6 +971,7 @@ sDateStr	.\tools\win\file_ope\RnmAndAddModDate.vbs	/^        Dim sDateStr$/;"	v
 sDateStr	.\tools\win\file_ope\RnmAndAddNowDate.vbs	/^    Dim sDateStr$/;"	v
 sDateStr	.\tools\win\file_ope\RnmAndAddOldDate.vbs	/^    Dim sDateStr$/;"	v
 sDateValue	.\tools\itunes\UpdateItunesLibTags.vbs	/^        Dim sDateValue$/;"	v
+sDebugMsg	.\_lib\Debug.vbs	/^    Dim sDebugMsg$/;"	v
 sDefaultPath	.\tools\ctags,gtags\CreateTagFiles.vbs	/^        Dim sDefaultPath$/;"	v
 sDefaultPath	.\tools\vim\OpenAllFilesWithVim.vbs	/^        Dim sDefaultPath$/;"	v
 sDefaultPath	.\tools\win\file_ope\CreateRenameBat.vbs	/^        Dim sDefaultPath$/;"	v
@@ -1315,11 +1316,12 @@ sTrgtPathsStr	.\tools\7zip\ZipPasswordFile.vbs	/^    Dim sTrgtPathsStr$/;"	v
 sTrgtTrackName	.\tools\itunes\UpdateItunesLibTags.vbs	/^            Dim sTrgtTrackName$/;"	v
 sTxtLine	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^    Dim sTxtLine$/;"	v
 sTxtLine	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^    Dim sTxtLine$/;"	v
+sWaitTimeUnit	.\tools\win\other\KitchenTimer.vbs	/^Dim sWaitTimeUnit$/;"	v
 strComputer	.\_lib\ProgressBarIE.vbs	/^        Dim strComputer$/;"	v
 strIEexe	.\_lib\ProgressBarIE.vbs	/^        Const strIEexe = "iexplore.exe" 'IEのプロセス名$/;"	c
 vAnswer	.\tools\win\file_ope\OutputProgramShortcutTargetPath.vbs	/^    Dim vAnswer$/;"	v
 vAnswer	.\tools\win\file_ope\ReplaceProgramShortcutTargetPath.vbs	/^    Dim vAnswer$/;"	v
-vAnswer	.\tools\win\other\KitchenTimer.vbs	/^	Dim vAnswer$/;"	v
+vAnswer	.\tools\win\other\KitchenTimer.vbs	/^Dim vAnswer$/;"	v
 vDataTypes	.\tools\$xev_simulator\DataType一覧生成ツール.vbs	/^        Dim vDataTypes$/;"	v
 vDataTypes	.\tools\$xev_simulator\DataType一覧生成ツール_v100.vbs	/^        Dim vDataTypes$/;"	v
 vDateRaw	.\tools\win\file_ope\CpyAndAddModDate.vbs	/^        Dim vDateRaw$/;"	v
@@ -1344,6 +1346,7 @@ vRamNames	.\tools\$xev_simulator\試験ログCSV整形ツール.vbs	/^        Dim vRamNam
 vRamNames	.\tools\$xev_simulator\試験ログCSV整形ツール_v100.vbs	/^        Dim vRamNames$/;"	v
 vTextAll	.\_lib\X-Finder.vbs	/^        Dim vTextAll$/;"	v
 vTextAll	.\_lib\X-Finder.vbs	/^    Dim vTextAll$/;"	v
+vValue	.\_lib\Debug.vbs	/^    Dim vValue$/;"	v
 xlExcel8	.\_lib\Excel.vbs	/^    Const xlExcel8 = 56$/;"	c
 xlMinimized	.\_lib\FileSystem.vbs	/^    Const xlMinimized = -4140$/;"	c
 xlOpenXMLWorkbookMacroEnabled	.\_lib\Excel.vbs	/^    Const xlOpenXMLWorkbookMacroEnabled = 52$/;"	c

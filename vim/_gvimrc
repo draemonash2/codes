@@ -96,18 +96,18 @@
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け（Windowsクリップボード用）
-	inoremap	<silent>			{			{}<LEFT>|										" 括弧とクォーテーションの自動補完
-	inoremap	<silent>			[			[]<LEFT>|										" 括弧とクォーテーションの自動補完
-	inoremap	<silent>			(			()<LEFT>|										" 括弧とクォーテーションの自動補完
-	inoremap	<silent>			"			""<LEFT>|										" 括弧とクォーテーションの自動補完
-	inoremap	<silent>			'			''<LEFT>|										" 括弧とクォーテーションの自動補完
-""	inoremap	<silent>			【			【】<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			「			「」<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			『			『』<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			“			“”<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			‘			‘’<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			（			（）<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
-""	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			{			{}<LEFT>|										" 括弧とクォーテーションの自動補完
+"	inoremap	<silent>			[			[]<LEFT>|										" 括弧とクォーテーションの自動補完
+"	inoremap	<silent>			(			()<LEFT>|										" 括弧とクォーテーションの自動補完
+"	inoremap	<silent>			"			""<LEFT>|										" 括弧とクォーテーションの自動補完
+"	inoremap	<silent>			'			''<LEFT>|										" 括弧とクォーテーションの自動補完
+"	inoremap	<silent>			【			【】<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			「			「」<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			『			『』<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			“			“”<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			‘			‘’<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			（			（）<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+"	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 
 "=== ヴィジュアルモード ===
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
@@ -211,7 +211,7 @@
 	set smartindent										" 新しい行を作ったときに高度な自動インデントを行う
 	set cinoptions+=:0									" Cインデントの設定
 	set whichwrap=b,s,h,l,<,>,[,]						" カーソルを行頭、行末で止まらないようにする
-	set tags+=tags;										" タグファイルのパス指定
+	set tags+=tags;										" タグファイルのパス指定(カレントディレクトリからさかのぼってtagsファイルを検索)
 	set nowrap											" 次のスクロールが可能。 zhで左へスクロール、zlで右へスクロール。 zHで左へ半分スクロール、zLで右へ半分スクロール
 	set isfname+=32										" スペースがファイル名に入っていても、gfコマンドで開ける
 	set list											" どの文字でタブや改行を表示するかを設定
