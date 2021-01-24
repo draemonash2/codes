@@ -12,8 +12,7 @@
 
   "initialPosition": "30,20",
   "initialCols": 200,
-  "initialRows": 60,
-
+  "initialRows": 55,
   // You can add more global application settings here.
   // To learn more about global settings, visit https://aka.ms/terminal-global-settings
 
@@ -33,6 +32,8 @@
       // Put settings here that you want to apply to all profiles.
       "fontSize": 10,
       "colorScheme": "Solarized Dark"
+      //"fontFace": "MS 明朝", // フォントはMS明朝
+      //"startingDirectory": "c:\\", // 起動時のディレクトリはC:\
     },
     "list": [
       {
