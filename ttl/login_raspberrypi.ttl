@@ -1,0 +1,3 @@
+;Raspberry Pi SSH リモートログイン用コマンド
+;connect 'raspberrypi.local /ssh /auth=publickey /user=pi /keyfile=C:/Users/draem/.ssh/id_rsa'
+connect 'raspberrypi.local /ssh /auth=password /user=pi /passwd=Endo4353'
