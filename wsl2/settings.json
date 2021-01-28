@@ -57,6 +57,7 @@
         "source": "Windows.Terminal.Wsl",
         "commandline": "wsl -d Ubuntu bash",
         "startingDirectory": "//wsl$/Ubuntu/home/draemon_ash3"
+        //"startingDirectory": "//wsl$/Ubuntu/mnt/c/Users/draem"
       },
       {
         "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",

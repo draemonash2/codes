@@ -148,9 +148,56 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			}
 			Return
 			
-	;かなキーをコンテキストメニュー表示へ
+	;右Altキーをコンテキストメニュー表示へ切り替える
 		RAlt::AppsKey
-			return
+;		RAlt::
+;			if bSwRAltToAppsKey = 
+;			{
+;				Send, {AppsKey}
+;			}
+;			else
+;			{
+;				if bSwRAltToAppsKey = 0
+;				{
+;					Send, {RAlt}
+;				}
+;				else
+;				{
+;					Send, {AppsKey}
+;				}
+;			}
+;			Return
+	;右Altキーをコンテキストメニュー表示へ切り替える設定を切り替え
+		;★TODO★要修正。RAltと他キーの同時押しができない…
+		MyRAltOn:
+			Send, {RAlt}
+			Return
+		MyRAltOff:
+			Send, {AppsKey}
+			Return
+		^+!F11::
+			if bSwRAltToAppsKey = 
+			{
+				MsgBox, 0x43000, 右AltキーAppsKey置き換え, 右AltキーAppsKey置き換えを解除します, 5
+				bSwRAltToAppsKey = 0
+				Hotkey, RAlt, MyRAltOn
+			}
+			else
+			{
+				if bSwRAltToAppsKey = 0
+				{
+					MsgBox, 0x43000, 右AltキーAppsKey置き換え, 右AltキーをAppsKeyに置き換えます, 5
+					bSwRAltToAppsKey = 1
+					Hotkey, RAlt, MyRAltOff
+				}
+				else
+				{
+					MsgBox, 0x43000, 右AltキーAppsKey置き換え, 右AltキーAppsKey置き換えを解除します, 5
+					bSwRAltToAppsKey = 0
+					Hotkey, RAlt, MyRAltOn
+				}
+			}
+			Return
 	;プリントスクリーン単押しを抑制
 		PrintScreen::return
 	;テスト用
@@ -159,10 +206,6 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Return
 		+Pause::
 			MsgBox, shiftpause
-			Return
-		+^!F11::
-			EnvGet, sVar, OneDrive
-			MsgBox %sVar%
 			Return
 		+^!i::
 			Send, ^c
