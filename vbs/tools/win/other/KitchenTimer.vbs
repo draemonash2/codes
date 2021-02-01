@@ -16,6 +16,7 @@ Option Explicit
 '	1.1.1	2020/02/09	sleep化
 '	1.1.2	2020/08/21	秒/時間表示対応
 '	1.2.0	2021/01/14	タイトル出力機能追加
+'	1.2.1	2021/01/30	デフォルトタイトル修正
 '==============================================================================
 
 '==============================================================================
@@ -37,7 +38,7 @@ ElseIf dWaitMinites = 0 Then
 End If
 
 Dim sOutputMsg
-sOutputMsg = InputBox( "タイトルを入力してください", sPROG_NAME, 1 )
+sOutputMsg = InputBox( "タイトルを入力してください", sPROG_NAME )
 If IsEmpty(sOutputMsg) = True Then
 	MsgBox "キャンセルしました", vbYes, sPROG_NAME
 	WScript.Quit

@@ -31,7 +31,7 @@
 	noremap		<silent>			H			0|												" カーソルを先頭に移動
 	noremap		<silent>			L			$|												" カーソルを末尾に移動
 "	noremap							/			/\v|											" very magic で検索
-"	noremap							/			/\V|											" very nomagic で検索
+	noremap							/			/\V|											" very nomagic で検索
 	noremap							ciy			ciw<c-r>0<esc>b|								" 単語コピー
 	noremap		<silent>			<tab>		a<tab><esc>|									" タブ挿入
 	noremap		<silent>			<space>		<nop>|											" スペースキー無効
