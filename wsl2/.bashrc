@@ -125,9 +125,13 @@ alias exp='explorer.exe .'						# open current directory with explorer.exe (WSL2
 alias br='sudo vim ~/.bashrc; source ~/.bashrc'
 alias vr='sudo vim ~/.vimrc'
 
+# cdコマンド拡張用
 function cdex() {
-	# cdがaliasでループするので\をつける
-	\cd "$@" && echo -n "[pwd] " && pwd && echo -n "[la]  " && ls -AF --color=auto
+	\cd "$@"			# cdがaliasでループするので\をつける
+	echo -n "[pwd] "
+	pwd
+	echo -n "[ls ] "
+	ls -AF --color=auto
 }
 
 alias ll='ls -lF --color=auto'

@@ -1428,3 +1428,13 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 "neosnippet設定
 	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
 
+" ==============================================================================
+" INSERT mode に入るときにカーソル形状を変える
+" [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
+" ==============================================================================
+let &t_ti .= "\e[2 q"	" [Vim 起動時]       非点滅ブロック
+let &t_SI .= "\e[6 q"	" [挿入モード時]     非点滅縦棒
+let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
+let &t_SR .= "\e[4 q"	" [置換モード時]     非点滅下線
+let &t_te .= "\e[0 q"	" [vim 終了時]       デフォルト
+
