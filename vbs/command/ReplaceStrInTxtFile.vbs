@@ -1,6 +1,7 @@
 Option Explicit
 
-' ReplaceStrInTxtFile.vbs <search_word> <replace_word> <target_file_path>
+'<usage>
+'  ReplaceStrInTxtFile.vbs <search_word> <replace_word> <target_file_path>
 
 '===============================================================================
 '= インクルード
@@ -21,7 +22,7 @@ if Wscript.Arguments.Count = 3 then
     sReplaceStr     = Wscript.Arguments(1)
     sTrgtFilePath   = Wscript.Arguments(2)
 else
-    wscript.echo "arguments error!"
+    WScript.Echo "[error] argment num = " & WScript.Arguments.Count
     wscript.quit
 end if
 

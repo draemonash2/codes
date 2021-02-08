@@ -19,6 +19,7 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'mbriggs/mark.vim'
 Plugin 'thinca/vim-qfreplace'
 Plugin 'anyakichi/vim-surround'
+Plugin 'nanotech/jellybeans.vim'
 
 call vundle#end()
 filetype plugin indent on

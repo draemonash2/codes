@@ -28,14 +28,13 @@
     // To learn more about profiles, visit https://aka.ms/terminal-profile-settings
     "profiles":
     {
-        "defaults":
-        {
-            // Put settings here that you want to apply to all profiles.
-            "fontSize": 10,
-            "colorScheme": "Solarized Dark"
-            //"fontFace": "MS 明朝", // フォントはMS明朝
-            //"startingDirectory": "c:\\", // 起動時のディレクトリはC:\
-        },
+      "defaults": {
+        // Put settings here that you want to apply to all profiles.
+        "fontSize": 10,
+        "colorScheme": "Tango Dark",
+        //"fontFace": "MS 明朝", // フォントはMS明朝
+        //"startingDirectory": "c:\\", // 起動時のディレクトリはC:\
+      },
         "list":
         [
             {
@@ -66,6 +65,12 @@
                 "hidden": false,
                 "name": "Azure Cloud Shell",
                 "source": "Windows.Terminal.Azure"
+            },
+            {
+                "guid": "{8d89a9a6-1eea-50a1-b236-d45513f08881}",
+                "hidden": false,
+                "name": "CentOS8",
+                "source": "Windows.Terminal.Wsl"
             }
         ]
     },
