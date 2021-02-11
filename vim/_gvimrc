@@ -249,9 +249,9 @@ endif
 " ==============================================================================
 " ファイルパス設定
 " ==============================================================================
-	let $CTAGS = expand( "$MYPATH_CTAGS" )
-	let $GTAGS = expand( "$MYPATH_GTAGS" )
-	let $GUIGREP = expand( "$MYPATH_TRESGREP" )
+	let $CTAGS = expand( "$MYEXEPATH_CTAGS" )
+	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
+	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
 	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
 
 " ==============================================================================

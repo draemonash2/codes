@@ -4,31 +4,58 @@ Call ExecRunas()
 
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
-With objWshShell.Environment("System")
-                                                                                                     ' +------+------+------+------------+--------------+
-                                                                                                     ' |  xf  |  ahk |  vim | codes(vbs) | updatecodes  |
-                                                                                                     ' +------+------+------+------------+--------------+
-    .Item("MYPATH_HIDEMARU")   = "C:\prg_exe\Hidemaru\Hidemaru.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_WINMERGE")   = "C:\prg_exe\WinMerge\WinMergeU.exe"                                 ' |  ÅZ  |  Å|  |  Å|  |     ÅZ     |      ÅZ      |
-    .Item("MYPATH_GVIM")       = "C:\prg_exe\Vim\gvim.exe"                                           ' |  ÅZ  |  ÅZ  |  Å|  |     ÅZ     |      Å|      |
-    .Item("MYPATH_TRESGREP")   = "C:\prg_exe\TresGrep\TresGrep.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_EVERYTHING") = "C:\prg_exe\Everything\Everything.exe"                              ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_DISKINFO3")  = "C:\prg_exe\diskinfo64\DiskInfo3.exe"                               ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_NEEVIEW")    = "C:\prg_exe\NeeView\NeeView.exe"                                    ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_MASSIGRA")   = "C:\prg_exe\MassiGra\MassiGra.exe"                                  ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_LINAME")     = "C:\prg_exe\LiName\LiName.exe"                                      ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_EXCEL")      = "C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE"   ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_XF")         = "C:\prg_exe\X-Finder\XF.exe"                                        ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_CCALC")      = "C:\prg_exe\cCalc\cCalc.exe"                                        ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_RAPTURE")    = "C:\prg_exe\Rapture\rapture.exe"                                    ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_ITHOUGHTS")  = "C:\prg_exe\iThoughts\iThoughts.exe"                                ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Item("MYPATH_CTAGS")      = "C:\prg_exe\Ctags\ctags.exe"                                        ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
-    .Item("MYPATH_GTAGS")      = "C:\prg_exe\Gtags\bin\gtags.exe"                                    ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
-    .Item("MYPATH_7Z")         = "C:\prg_exe\7-ZipPortable\App\7-Zip64\7z.exe"                       ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Å|      |
-                                                                                                     ' +------+------+------+------------+--------------+
-End With
+Dim dEnvVars
+Set dEnvVars = CreateObject("Scripting.Dictionary")
 
-Msgbox "ä¬ã´ïœêîÇê›íËÇµÇ‹ÇµÇΩ"
+'Å•Å•Å• ê›íËÇ±Ç±Ç©ÇÁ Å•Å•Å•
+Const lEXEC_MODE = 1            '1:í«â¡ 2:çÌèú
+Const sENV_TARGET = "System"    'System:ÉVÉXÉeÉÄä¬ã´ïœêî User:ÉÜÅ[ÉUä¬ã´ïœêî
+                                                                                                            ' +------+------+------+------------+--------------+
+                                                                                                            ' |  xf  |  ahk |  vim | codes(vbs) | updatecodes  |
+With dEnvVars                                                                                               ' +------+------+------+------------+--------------+
+    .Add "MYDIRPATH_CODES"          ,"C:\codes"                                                             ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_CODES_SAMPLE"   ,"C:\codes_sample"                                                      ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_GITHUB_IO"      ,"C:\github_io"                                                         ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_OTHER"          ,"C:\other"                                                             ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_PRG"            ,"C:\prg"                                                               ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_PRG_EXE"        ,"C:\prg_exe"                                                           ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYDIRPATH_PROGRAMS"       ,"C:\programs"                                                          ' |  Å|  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_HIDEMARU"       ,"%MYDIRPATH_PRG_EXE%\Hidemaru\Hidemaru.exe"                            ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_WINMERGE"       ,"%MYDIRPATH_PRG_EXE%\WinMerge\WinMergeU.exe"                           ' |  ÅZ  |  Å|  |  Å|  |     ÅZ     |      ÅZ      |
+    .Add "MYEXEPATH_GVIM"           ,"%MYDIRPATH_PRG_EXE%\Vim\gvim.exe"                                     ' |  ÅZ  |  ÅZ  |  Å|  |     ÅZ     |      Å|      |
+    .Add "MYEXEPATH_TRESGREP"       ,"%MYDIRPATH_PRG_EXE%\TresGrep\TresGrep.exe"                            ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_EVERYTHING"     ,"%MYDIRPATH_PRG_EXE%\Everything\Everything.exe"                        ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_DISKINFO3"      ,"%MYDIRPATH_PRG_EXE%\diskinfo64\DiskInfo3.exe"                         ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_NEEVIEW"        ,"%MYDIRPATH_PRG_EXE%\NeeView\NeeView.exe"                              ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_MASSIGRA"       ,"%MYDIRPATH_PRG_EXE%\MassiGra\MassiGra.exe"                            ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_LINAME"         ,"%MYDIRPATH_PRG_EXE%\LiName\LiName.exe"                                ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_EXCEL"          ,"C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE"      ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_XF"             ,"%MYDIRPATH_PRG_EXE%\X-Finder\XF.exe"                                  ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_CCALC"          ,"%MYDIRPATH_PRG_EXE%\cCalc\cCalc.exe"                                  ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_RAPTURE"        ,"%MYDIRPATH_PRG_EXE%\Rapture\rapture.exe"                              ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_ITHOUGHTS"      ,"%MYDIRPATH_PRG_EXE%\iThoughts\iThoughts.exe"                          ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_CTAGS"          ,"%MYDIRPATH_PRG_EXE%\Ctags\ctags.exe"                                  ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_GTAGS"          ,"%MYDIRPATH_PRG_EXE%\Gtags\bin\gtags.exe"                              ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_7Z"             ,"%MYDIRPATH_PRG_EXE%\7-ZipPortable\App\7-Zip64\7z.exe"                 ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Å|      |
+End With
+'Å£Å£Å£ ê›íËÇ±Ç±Ç‹Ç≈ Å£Å£Å£
+
+With objWshShell.Environment(sENV_TARGET)
+    Dim vKey
+    If lEXEC_MODE = 1 Then
+        For Each vKey In dEnvVars
+            .Item(vKey) = dEnvVars.Item(vKey)
+        Next
+        Msgbox "ä¬ã´ïœêîÇí«â¡ÇµÇ‹ÇµÇΩ"
+    ElseIf lEXEC_MODE = 2 Then
+        For Each vKey In dEnvVars
+            .Remove(vKey)
+        Next
+        Msgbox "ä¬ã´ïœêîÇçÌèúÇµÇ‹ÇµÇΩ"
+    Else
+        Msgbox "lEXEC_MODEÉGÉâÅ[ÅI"
+    End If
+End With
 
 ' ==================================================================
 ' = äTóv    ä«óùé“å†å¿Ç≈é¿çsÇ∑ÇÈ

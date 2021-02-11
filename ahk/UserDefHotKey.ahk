@@ -34,14 +34,14 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;#todo.itmz
 		^+!Up::
-			EnvGet, sExePath, MYPATH_ITHOUGHTS
+			EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			StartProgramAndActivate( sExePath, sFilePath )
 			Send, {F2}{esc}
 			return
 	;#temp.txt
 		^+!Down::
-			EnvGet, sExePath, MYPATH_GVIM
+			EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
@@ -85,21 +85,21 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;rapture.exe
 		^+!x::
-			EnvGet, sExePath, MYPATH_RAPTURE
+			EnvGet, sExePath, MYEXEPATH_RAPTURE
 			Run %sExePath%
 			return
 	;KitchenTimer.vbs
 		^+!k::
-			Run "C:\codes\vbs\tools\win\other\KitchenTimer.vbs"
+			Run "%MYDIRPATH_CODES%\vbs\tools\win\other\KitchenTimer.vbs"
 			return
 	;xf.exe
 		^+!z::
-			EnvGet, sExePath, MYPATH_XF
+			EnvGet, sExePath, MYEXEPATH_XF
 			Run %sExePath%
 			return
 	;cCalc.exe
 		^+!;::
-			EnvGet, sExePath, MYPATH_CCALC
+			EnvGet, sExePath, MYEXEPATH_CCALC
 			RunSuppressMultiStart( sExePath, "" )
 			return
 	
@@ -119,7 +119,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;UserDefHotKey.ahk
 		^+!F12::
-			EnvGet, sExePath, MYPATH_GVIM
+			EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%A_ScriptFullPath%"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
