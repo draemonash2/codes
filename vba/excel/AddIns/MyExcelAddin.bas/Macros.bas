@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.56
+' my excel addin macros v2.57
 
 ' =============================================================================
 ' =  <<É}ÉNÉçàÍóó>>
@@ -338,7 +338,11 @@ End Sub
 ' = èäëÆ    Macros.bas
 ' =============================================================================
 Public Sub ëIëîÕàÕì‡Ç≈íÜâõ()
-    Selection.HorizontalAlignment = xlCenterAcrossSelection
+    If Selection(1).HorizontalAlignment = xlCenterAcrossSelection Then
+        Selection.HorizontalAlignment = xlGeneral
+    Else
+        Selection.HorizontalAlignment = xlCenterAcrossSelection
+    End If
 End Sub
 
 ' =============================================================================
