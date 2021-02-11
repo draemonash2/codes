@@ -66,7 +66,7 @@ If bIsContinue = True Then
         Set objWshShell = WScript.CreateObject("WScript.Shell")
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         
-        sExePath = objWshShell.Environment("System").Item("MYPATH_WINMERGE")
+        sExePath = objWshShell.Environment("System").Item("MYEXEPATH_WINMERGE")
         If sExePath = "" then
             MsgBox "ŠÂ‹«•Ï”‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB" & vbNewLine & "ˆ—‚ğ’†’f‚µ‚Ü‚·B", vbYes, sPROG_NAME
             WScript.Quit
