@@ -225,8 +225,8 @@ Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 If bIsContinue = True Then
     Dim sExePath
-    sExePath = objWshShell.Environment("System").Item("MYEXEPATH_7Z")
-    If sExePath = "" then
+    sExePath = objWshShell.ExpandEnvironmentStrings("%MYEXEPATH_7Z%")
+    If InStr(sExePath, "%") > 0 then
         MsgBox "ŠÂ‹«•Ï”‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB" & vbNewLine & "ˆ—‚ğ’†’f‚µ‚Ü‚·B", vbYes, sPROG_NAME
         WScript.Quit
     End If

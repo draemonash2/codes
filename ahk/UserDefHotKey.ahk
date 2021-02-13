@@ -90,7 +90,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	;KitchenTimer.vbs
 		^+!k::
-			Run "%MYDIRPATH_CODES%\vbs\tools\win\other\KitchenTimer.vbs"
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\vbs\tools\win\other\KitchenTimer.vbs"
 			return
 	;xf.exe
 		^+!z::
