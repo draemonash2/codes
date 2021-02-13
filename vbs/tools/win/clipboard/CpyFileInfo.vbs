@@ -11,9 +11,9 @@ Const INCLUDE_DOUBLE_QUOTATION = False
 '####################################################################
 '### 事前処理
 '####################################################################
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" ) 'GetFileOrFolder()
-                                                   'GetFileInfo()
-                                                   'GetFolderInfo()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileOrFolder()
+                                                            'GetFileInfo()
+                                                            'GetFolderInfo()
 
 '####################################################################
 '### 本処理
@@ -132,6 +132,7 @@ End If
 '### インクルード関数
 '####################################################################
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

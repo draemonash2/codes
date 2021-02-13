@@ -3,10 +3,10 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
-Call Include( "C:\codes\vbs\_lib\X-Finder.vbs" )    'UpdateIniFile()
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileList()
-                                                    'GetFileOrFolder()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Log.vbs" )         'class LogMng
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\X-Finder.vbs" )    'UpdateIniFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )  'GetFileList()
+                                                             'GetFileOrFolder()
 
 '==========================================================
 '= 本処理
@@ -125,6 +125,7 @@ Set oLogMng = Nothing
 '= インクルード関数
 '==========================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

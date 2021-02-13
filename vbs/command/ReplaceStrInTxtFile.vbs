@@ -6,7 +6,7 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "C:\codes\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Collection.vbs" ) 'ReadTxtFileToCollection()
                                                             'WriteTxtFileFrCollection()
 
 '===============================================================================
@@ -53,6 +53,7 @@ end if
 '= インクルード関数
 '===============================================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

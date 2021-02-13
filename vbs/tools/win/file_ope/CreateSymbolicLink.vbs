@@ -11,9 +11,9 @@ Const OBJECT_SUFFIX = " - シンボリックリンク"
 '####################################################################
 '### 事前処理
 '####################################################################
-Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'ExecRunas()
-                                                    'ExecDosCmd()
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileOrFolder()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )    'ExecRunas()
+                                                            'ExecDosCmd()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileOrFolder()
 
 '####################################################################
 '### 本処理
@@ -99,6 +99,7 @@ MsgBox "シンボリックリンクを作成しました", vbYes, sPROG_NAME
 '### インクルード関数
 '####################################################################
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

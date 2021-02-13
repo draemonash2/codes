@@ -18,13 +18,13 @@ Dim objWshShell
 Dim sCurDir
 Set objWshShell = WScript.CreateObject( "WScript.Shell" )
 sCurDir = objWshShell.CurrentDirectory
-Call Include( "C:\codes\vbs\_lib\String.vbs" )          'GetDirPath()
-                                                        'GetFileName()
-Call Include( "C:\codes\vbs\_lib\StopWatch.vbs" )       'class StopWatch
-Call Include( "C:\codes\vbs\_lib\ProgressBarIE.vbs" )   'class ProgressBar
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )      'GetFileList2()
-Call Include( "C:\codes\vbs\_lib\iTunes.vbs" )          '★←インクルードいる？
-Call Include( "C:\codes\vbs\_lib\Array.vbs" )           '★←インクルードいる？
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )          'GetDirPath()
+                                                                 'GetFileName()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\StopWatch.vbs" )       'class StopWatch
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\ProgressBarIE.vbs" )   'class ProgressBar
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )      'GetFileList2()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\iTunes.vbs" )          '★←インクルードいる？
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Array.vbs" )           '★←インクルードいる？
 
 ' ******************************************
 ' * 事前処理                               *
@@ -248,6 +248,7 @@ End Function
 '= インクルード関数
 '==========================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

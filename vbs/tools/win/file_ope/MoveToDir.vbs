@@ -35,9 +35,9 @@ Option Explicit
 '==============================================================================
 '= インクルード
 '==============================================================================
-Call Include( "C:\codes\vbs\_lib\String.vbs" )          'GetDirPath()
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )      'CreateDirectry()
-                                                        'GetFileOrFolder()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )          'GetDirPath()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )      'CreateDirectry()
+                                                                 'GetFileOrFolder()
 
 '==============================================================================
 ' 本処理
@@ -78,6 +78,7 @@ Set objFSO = Nothing
 '= インクルード関数
 '==============================================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

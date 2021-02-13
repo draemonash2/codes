@@ -9,9 +9,9 @@
 '####################################################################
 '### 事前処理
 '####################################################################
-Call Include( "C:\codes\vbs\_lib\String.vbs" )      'ConvDate2String()
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileInfo()
-                                                    'GetFolderInfo()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )      'ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )  'GetFileInfo()
+                                                             'GetFolderInfo()
 
 '####################################################################
 '### 本処理
@@ -158,6 +158,7 @@ End If
 '### インクルード関数
 '####################################################################
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

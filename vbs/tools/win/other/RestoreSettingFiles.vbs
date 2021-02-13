@@ -28,10 +28,10 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileOrFolder()
-                                                    'DeleteEmptyFolder()
-Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'ExecRunas()
-Call Include( "C:\codes\vbs\_lib\Log.vbs" )         'class LogMng
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )  'GetFileOrFolder()
+                                                             'DeleteEmptyFolder()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )     'ExecRunas()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Log.vbs" )         'class LogMng
 
 '==========================================================
 '= 本処理
@@ -152,6 +152,7 @@ End Function
 '= インクルード関数
 '==========================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

@@ -12,7 +12,7 @@
 Dim cAcceptFileFormats
 Set cAcceptFileFormats = CreateObject("System.Collections.ArrayList")
 
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" ) 'GetNotExistPath()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetNotExistPath()
 
 '####################################################################
 '### 設定
@@ -252,6 +252,7 @@ Set objWshShell = Nothing
 '### インクルード関数
 '####################################################################
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

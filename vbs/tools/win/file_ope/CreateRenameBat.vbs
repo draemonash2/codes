@@ -9,7 +9,7 @@ Const OUTPUT_BAT_FILE_BASE_NAME = "rename"
 '####################################################################
 '### 事前処理
 '####################################################################
-Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'LenByte()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" ) 'LenByte()
 
 '####################################################################
 '### 本処理
@@ -119,6 +119,7 @@ End If
 '### インクルード関数
 '####################################################################
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

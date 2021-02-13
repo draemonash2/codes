@@ -16,7 +16,7 @@ Option Explicit
 
 Const INPUT_PATH_FILE_NAME = "_repository_path"
 
-Call Include( "C:\codes\vbs\_lib\String.vbs" ) 'ExtractTailWord()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" ) 'ExtractTailWord()
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -71,6 +71,7 @@ MsgBox "リポジトリへのショートカットを作成しました。"
 
 ' 外部プログラム インクルード関数
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

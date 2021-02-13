@@ -45,11 +45,11 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )          'GetFileList3()
-                                                            'GetFileNotExistPath()
-Call Include( "C:\codes\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
-                                                            'WriteTxtFileFrCollection()
-Call Include( "C:\codes\vbs\_lib\ProgressBarCscript.vbs" )  'Class ProgressBar
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )          'GetFileList3()
+                                                                     'GetFileNotExistPath()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Collection.vbs" )          'ReadTxtFileToCollection()
+                                                                     'WriteTxtFileFrCollection()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\ProgressBarCscript.vbs" )  'Class ProgressBar
 
 '===============================================================================
 ' 設定
@@ -238,6 +238,7 @@ End Function
 '= インクルード関数
 '===============================================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

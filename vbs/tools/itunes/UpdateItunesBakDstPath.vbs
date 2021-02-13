@@ -3,7 +3,7 @@ Option Explicit
 '==========================================================
 '= インクルード
 '==========================================================
-Call Include( "C:\codes\vbs\_lib\Windows.vbs" )     'RunasCheck()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )     'RunasCheck()
 
 '==========================================================
 '= 設定値
@@ -94,6 +94,7 @@ End If
 '= インクルード関数
 '==========================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close

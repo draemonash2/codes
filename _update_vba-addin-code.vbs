@@ -3,8 +3,8 @@ Const sADDIN_DIR_PATH = "C:\codes\vba\excel\AddIns"
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "C:\codes\vbs\_lib\FileSystem.vbs" )  'GetFileListCmdClct()
-Call Include( "C:\codes\vbs\_lib\Debug.vbs" )       'DebugPrintClct()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )  'GetFileListCmdClct()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Debug.vbs" )       'DebugPrintClct()
 
 '===============================================================================
 '= 本処理
@@ -71,6 +71,7 @@ Msgbox "更新完了！", vbOkOnly, WScript.ScriptName
 '= インクルード関数
 '===============================================================================
 Private Function Include( ByVal sOpenFile )
+    sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close
