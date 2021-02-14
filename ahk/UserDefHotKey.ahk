@@ -268,6 +268,30 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 				Send, {Right}
 			}
 			Return
+	
+	#IfWinActive ahk_exe PDFXCview.exe
+		;ハイライトを既定の書式設定に変更する
+		+^!F11::
+			Loop, 20
+			{
+				Sleep 200
+				Send, !{Enter}
+				Sleep 200
+				Send, !a
+				Sleep 200
+				Send, {Up}
+				Sleep 200
+				Send, {Enter}
+				Sleep 300
+				Send, {Tab}
+				Sleep 200
+				Send, {Enter}
+				Sleep 300
+				Send, {Down}
+			}
+			MsgBox 完了！
+			Return
+	#IfWinActive
 
 ;* ***************************************************************
 ;* Functions
