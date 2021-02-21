@@ -1,5 +1,5 @@
 // ŒŸõğŒ‚ğ•œŒ³
-$ini_file = getenv( "LOCALAPPDATA" ) + "\\Hidemaru" + "\\previous_search_option.ini";
+$ini_file = getenv( "TEMP" ) + "\\previous_search_option.ini";
 #search_option = getininum($ini_file, getenv("UserName"), "search_option");
 if (#search_option != 0) {
 	setsearch "", #search_option;
