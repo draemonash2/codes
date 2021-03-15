@@ -80,6 +80,7 @@
 	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap	<silent>			<c-j>		5jzz|											" カーソル移動＋画面移動（下）
 	nnoremap	<silent>			<c-k>		5kzz|											" カーソル移動＋画面移動（上）
+	nnoremap						<c-]>		g<c-]>|											" tagsジャンプの時に複数ある時は一覧表示
 	nnoremap				<expr>	gc			":Gc " . expand('<cword>')|						" Grep＠現在ファイル
 	nnoremap				<expr>	gp			":Gp " . expand('<cword>')|						" Grep＠上位階層「tags」格納ディレクトリ配下
 	nnoremap				<expr>	gt			":Gt"|											" Grep(対話型)＠ファイルパスなどを指定
