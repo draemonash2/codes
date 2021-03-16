@@ -116,7 +116,7 @@
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
-	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パスへ変換
+	vnoremap	<silent>			<F9>		:call CopyRelativePathFromCurrent()<cr>|		" 相対パスへ変換
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
@@ -253,16 +253,26 @@ endif
 	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
 	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
 	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
+	if has('unix')
+		let g:sSysPathDlmtr = '/'
+		let g:sSysPathPrefix = '/'
+	else
+		let g:sSysPathDlmtr = '\'
+		let g:sSysPathPrefix = ''
+	endif
+	let g:sProjectRootFileName = "tags"
 
 " ==============================================================================
 " 共通ユーザ定義関数
 " ==============================================================================
-	function! GetCurFilePath( sPathDlmtr )
-		return substitute( expand('%:p'), "/", a:sPathDlmtr, "g" )
+	function! GetCurFilePath()
+		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
+		return g:sSysPathPrefix . substitute( expand('%:p'), "/", g:sSysPathDlmtr, "g" )
 	endfunction
-	function! GetCurDirPath( sPathDlmtr )
+	function! GetCurDirPath()
 		let l:sCurDirPathTmp = expand("%:p")[ 0:( len( expand("%:p") ) - len( "/" . expand("%:t") ) - 1 ) ]
-		return substitute( l:sCurDirPathTmp, "/", a:sPathDlmtr, "g" )
+		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
+		return g:sSysPathPrefix . substitute( l:sCurDirPathTmp, "/", g:sSysPathDlmtr, "g" )
 	endfunction
 	function! GetCurFileName()
 		return expand( '%:t' )
@@ -289,27 +299,19 @@ endif
 	
 	" === ファイルパス検索（＋存在確認） ====
 	function! SrchStoreDirPathToTop( sTrgtDirPath, sSrchFileName )
-		if stridx( a:sTrgtDirPath, "\\" ) > 0
-			let l:sPathDlmtr = "\\"
-		elseif stridx( a:sTrgtDirPath, "/" ) > 0
-			let l:sPathDlmtr = "/"
-		else
-			return ""
-		endif
-		
 		" === tags 存在確認 ====
-		let l:asDirNames = split( a:sTrgtDirPath, l:sPathDlmtr )
+		let l:asDirNames = split( a:sTrgtDirPath, g:sSysPathDlmtr )
 		let l:sDirPath = ""
 		let l:bIsExist = 0
 		for l:iDirMaxCnt in range( len( l:asDirNames ) - 1, 1, -1 )
 			for l:iDirCnt in range( 0, l:iDirMaxCnt )
 				if l:iDirCnt == 0
-					let l:sDirPath = l:asDirNames[ l:iDirCnt ]
+					let l:sDirPath = g:sSysPathPrefix . l:asDirNames[ l:iDirCnt ]
 				else
-					let l:sDirPath = l:sDirPath . l:sPathDlmtr . l:asDirNames[ l:iDirCnt ]
+					let l:sDirPath = g:sSysPathPrefix . l:sDirPath . g:sSysPathDlmtr . l:asDirNames[ l:iDirCnt ]
 				endif
 			endfor
-			if filereadable( l:sDirPath . l:sPathDlmtr . a:sSrchFileName )
+			if filereadable( l:sDirPath . g:sSysPathDlmtr . a:sSrchFileName )
 				let l:bIsExist = 1
 				break
 			else
@@ -490,7 +492,7 @@ endif
 		endif
 		
 		"### 対象パス 取得 ###
-		let l:sRootPath = GetCurFilePath("\\")
+		let l:sRootPath = GetCurFilePath()
 		
 		"### Grep 実行 ###
 		execute "Grep " . g:sGrepOpt . " """ . g:sGrepWord . """ " . l:sRootPath
@@ -511,14 +513,13 @@ endif
 			
 		"### 対象パス 取得 ###
 		if g:sGrepPath == ""
-			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
 			if l:sRootPath == ""
-				let l:sRootPath = GetCurDirPath("\\")
+				let l:sRootPath = GetCurDirPath()
 			endif
 		else
-			let l:sRootPath = substitute( g:sGrepPath, "/", "\\", "g" )
+			let l:sRootPath = substitute( g:sGrepPath, "/", g:sSysPathDlmtr, "g" )
 		endif
-		echo l:sRootPath
 		
 		"### 拡張子 取得 ###
 		let l:asFileTypes = split( g:sGrepFileExt, "," )
@@ -553,23 +554,24 @@ endif
 		
 		"### 対象パス 取得 ###
 		"初期値判定
-		let l:sGrepPath = g:sGrepPath
-		if l:sGrepPath == ""
-			let l:sGrepPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
-			if l:sGrepPath == ""
-				let l:sGrepPath = GetCurDirPath("\\")
+		if g:sGrepPath == ""
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
+			if l:sRootPath == ""
+				let l:sRootPath = GetCurDirPath()
 			endif
+		else
+			let l:sRootPath = g:sGrepPath
 		endif
 		"パス入力
-		let l:sGrepPath = input("grep target path : ", l:sGrepPath)
-		if l:sGrepPath == ""
+		let l:sRootPath = input("grep target path : ", l:sRootPath)
+		if l:sRootPath == ""
 			echo "\n"
 			echo "  grep target path is not specified!"
 			echo "  this process is suspended!"
 			return
 		endif
-		let l:sGrepPath = substitute( l:sGrepPath, "/", "\\", "g" )
-		let g:sGrepPath = l:sGrepPath
+		let l:sRootPath = substitute( l:sRootPath, "/", g:sSysPathDlmtr, "g" )
+		let g:sGrepPath = l:sRootPath
 		
 		"### 拡張子 取得 ###
 		let l:sGrepFileExt = input("grep target file ext(ex. *.c,*.h) : ", g:sGrepFileExt)
@@ -595,24 +597,27 @@ endif
 		let g:sGrepOpt = l:sGrepOpt
 		
 		"### Grep 実行 ###
-		execute "Grep -r " . l:sGrepOpt . " " . l:sFileTypeOpt . " """. l:sGrepWord . """ " . l:sGrepPath . "/**"
+		execute "Grep -r " . l:sGrepOpt . " " . l:sFileTypeOpt . " """. l:sGrepWord . """ " . l:sRootPath . "/**"
 	endfunction
 
 " ==============================================================================
 " GUIのGrepソフトでGrepする
 " [参照] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
-	let g:sProjectRootFileName = "tags"
 	function! ExecuteGuiGrep()
-		let l:sGuiGrepSoftPath = substitute( $GUIGREP, "/", "\\", "g" )
-		let l:sRootDirPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), g:sProjectRootFileName )
-		if l:sRootDirPath == ""
-			let l:sRootDirPath = GetCurDirPath("\\")
+		if has('unix')
+			echo "[error] ExecuteGuiGrep() is windows only!"
+		else
+			let l:sGuiGrepSoftPath = substitute( $GUIGREP, "/", g:sSysPathDlmtr, "g" )
+			let l:sRootDirPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
+			if l:sRootDirPath == ""
+				let l:sRootDirPath = GetCurDirPath()
+			endif
+			let l:sSearchKeyword = expand('<cword>')
+		"	execute "!cmd.exe /c start /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+		"	execute "!cmd.exe /c start /b /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+			execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=""" . l:sSearchKeyword . """"
 		endif
-		let l:sSearchKeyword = ""
-	"	execute "!cmd.exe /c start /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-	"	execute "!cmd.exe /c start /b /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-		execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
 	endfunction
 
 " ==============================================================================
@@ -641,16 +646,23 @@ endif
 " ==============================================================================
 	function! UpdateTagFile()
 		" === 上位階層ディレクトリ tags 存在確認 ====
-		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
+		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
 		
 		" === tags ファイル更新 ====
 		if l:sDirPath == ""
 			echo "update tag file error!! tag file is missing ..."
 		else
-			execute "cd " . l:sDirPath
-			execute "!start " . $CTAGS . " -R"
-			execute "!start " . $GTAGS . " -v"
-			execute "redraw"
+			if has('unix')
+				execute "cd " . l:sDirPath
+				execute $CTAGS . " -R"
+				execute $GTAGS . " -v"
+				execute "redraw"
+			else
+				execute "cd " . l:sDirPath
+				execute "!start " . $CTAGS . " -R"
+				execute "!start " . $GTAGS . " -v"
+				execute "redraw"
+			endif
 			echo "update tag file!!  " . l:sDirPath
 		endif
 	endfunction
@@ -729,26 +741,27 @@ endif
 "		http://nanasi.jp/articles/vim/copypathim.html
 " ==============================================================================
 	let g:lCopy2UnnamedRegister = 1 " 1）無名レジスタ＋＊レジスタにコピー、それ以外)＊レジスタにコピー
-	let g:sPathDlmtr = "\\"
 	
 	function! CopyCurFilePath()
-		let l:sCurFilePath = GetCurFilePath( g:sPathDlmtr )
+		let l:sCurFilePath = GetCurFilePath()
 		call CopyString(l:sCurFilePath)
 		echo "copy file path      : " . l:sCurFilePath
 	endfunction
 	
 	function! CopyCurPrjRltvFilePath()
-		"最初はパス区切りを"/"で扱い、最終的にg:sPathDlmtrへ置換する
-		let l:sCurFilePath = GetCurFilePath( "/" )
-		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath("/"), g:sProjectRootFileName ) . "/"
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
+		let l:sCurFilePath = GetCurFilePath()
+		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName ) . g:sSysPathDlmtr
+		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
-		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sPathDlmtr, "g" )
+		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sSysPathDlmtr, "g" )
 		call CopyString(l:sCurPrjRltvFilePath)
 		echo "copy rltv file path : " . l:sCurPrjRltvFilePath
 	endfunction
 	
 	function! CopyCurDirPath()
-		let l:sCurDirPath = GetCurDirPath( g:sPathDlmtr )
+		let l:sCurDirPath = GetCurDirPath()
 		call CopyString(l:sCurDirPath)
 		echo "copy directory path : " . l:sCurDirPath
 	endfunction
@@ -801,23 +814,28 @@ endif
 
 " ==============================================================================
 " 選択したファイルパスを、現在のファイルパスからの相対パスへ置き換える。
+" [使い方例]
+"	現在絶対パス:	c:\test\aaa\bbb\test.txt
+"	選択絶対パス:	c:\test\ccc\test2.txt
+"	出力パス:		..\..\ccc\test2.txt
 " [注意事項]
 "   ・ヴィジュアルモードで実行すること！
-"      ex) vnoremap <silent> <F9> :call ReplaceRelativePath()<cr>
+"      ex) vnoremap <silent> <F9> :call CopyRelativePathFromCurrent()<cr>
 " ==============================================================================
-	function! ReplaceRelativePath()
+	let g:sOutPathDlmtr = '/'
+	function! CopyRelativePathFromCurrent()
 		"選択文字列 取得
 		let tmp = @@
 		silent normal gvy
 		let l:sDstPath = @@
-		let l:sSrcPath = GetCurFilePath( '/' )
+		let l:sSrcPath = GetCurFilePath()
 		
 		"選択文字列 削除
 		silent normal gv
 		silent normal d
 		
 		"相対パス取得
-		let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, '/' )
+		let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, g:sOutPathDlmtr )
 		
 		"選択文字列 出力
 		let @* = l:sRelativePath
@@ -827,7 +845,7 @@ endif
 	endfunction
 	
 	function! ConvRelativePath( sSrcPath, sDstPath, sDlmtr )
-		"パス置換("/"に統一)
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
 		let l:sSrcPath = substitute( a:sSrcPath, "\\", "/", "g" )
 		let l:sDstPath = substitute( a:sDstPath, "\\", "/", "g" )
 		"echom l:sSrcPath . "★" . l:sDstPath
@@ -851,13 +869,13 @@ endif
 		"echom l:sSrcPath . "★" . l:sDstPath
 		
 		"さかのぼりパス取得
-		let l:iDlmNum = (len(l:sSrcPath) - len(substitute( l:sSrcPath, "/", "", "g" )))
-		"echom l:iDlmNum
+		let l:iPathDepth = (len(l:sSrcPath) - len(substitute( l:sSrcPath, "/", "", "g" )))
+		"echom l:iPathDepth
 		let l:sRiseUpPath = ""
-		if l:iDlmNum == 0
+		if l:iPathDepth == 0
 			let l:sRiseUpPath = "./"
 		else
-			for l:iIdx in range(1,l:iDlmNum)
+			for l:iIdx in range(1,l:iPathDepth)
 				let l:sRiseUpPath = l:sRiseUpPath . "../"
 			endfor
 		endif
@@ -974,7 +992,7 @@ endif
 " ==============================================================================
 	command! Delme call DeleteCurFile()
 	function! DeleteCurFile()
-		execute "!del " . GetCurFilePath( "\\" )
+		execute "!del """ . GetCurFilePath() . """"
 	endfunction
 
 " ==============================================================================
