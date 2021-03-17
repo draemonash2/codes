@@ -1,5 +1,6 @@
 " =======================================
 " プラグイン設定(Vundle.vim)
+" :PluginInstall
 " [参考] https://qiita.com/tanabee/items/e2064c5ce59c85915940
 " =======================================
 set nocompatible
@@ -19,10 +20,18 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'mbriggs/mark.vim'
 Plugin 'thinca/vim-qfreplace'
 Plugin 'anyakichi/vim-surround'
-Plugin 'nanotech/jellybeans.vim'
+Plugin 'vim-scripts/jellybeans.vim'
+Plugin 'fuenor/qfixgrep'
 
 call vundle#end()
 filetype plugin indent on
+
+" =======================================
+" ローカルコピー
+" http://tateren.hateblo.jp/entry/2017/07/21/213020
+" =======================================
+source ~/.vim/osc52/osc52.vim
+vmap y y:call SendViaOSC52(getreg('"'))<cr>
 
 " =======================================
 " ファイルパス存在チェック
@@ -222,9 +231,9 @@ filetype plugin indent on
 "		参考URL）https://github.com/vim-jp/issues/issues/756
 "	- map 定義行にコメントは基本的に記載できないが、「|」を使えば可能。
 "		参考URL）https://vim-jp.org/vimdoc-ja/map.html
-"			マップコマンドでは '"' (ダブルクォート) も {lhs} や {rhs} の一部と見なされるた
-"			め、マップコマンドの後ろにコメントを置くことはできません。しかし、|" を使うこ
-"			とができます。これはコメント付きの空の新しいコマンドを開始するからです。
+"			マップコマンドでは '"' (ダブルクォート) も {lhs} や {rhs} の一部と見なされるため、
+"			マップコマンドの後ろにコメントを置くことはできません。しかし、|" を使うことができます。
+"			これはコメント付きの空の新しいコマンドを開始するからです。
 
 "=== モード共通 ===
 	noremap		<silent>			n			nzz|											" 検索結果を画面中央に
@@ -239,71 +248,74 @@ filetype plugin indent on
 	noremap		<silent>			H			0|												" カーソルを先頭に移動
 	noremap		<silent>			L			$|												" カーソルを末尾に移動
 "	noremap							/			/\v|											" very magic で検索
-"	noremap							/			/\V|											" very nomagic で検索
-	noremap							ciy			ciw<c-r>0<esc>b|								" 単語コピー
-	noremap		<silent>			<tab>		a<tab><esc>|									" タブ挿入
+	noremap							/			/\V|											" very nomagic で検索
+"	noremap		<silent>	<expr>	gp			'`[' . strpart(getregtype(), 0, 1) . '`]'|		" ペーストしたテキストを再選択できるようにする
+"	map								go			<Plug>(openbrowser-smart-search)|				"【open-browser】ブラウザで開く
 	noremap		<silent>			<space>		<nop>|											" スペースキー無効
-	noremap		<silent>			<esc><esc>	:nohlsearch<cr>|								" ハイライト解除
-	map			<silent>			<c-m>		oa<esc>x|										" インデントを維持して改行
+	noremap		<silent>			<c-j>		10jzz|											" カーソル移動＋画面移動（下）
+	noremap		<silent>			<c-k>		10kzz|											" カーソル移動＋画面移動（上）
 	noremap		<silent>			<c-h>		10zh10h|										" カーソル移動＋画面移動（左）
 	noremap		<silent>			<c-l>		10zl10l|										" カーソル移動＋画面移動（右）
-	noremap		<silent>			<c-tab>		<c-w>w|											" ウィンドウ切替（次へ）
-	noremap		<silent>			<c-s-tab>	<c-w>W|											" ウィンドウ切替（前へ）
-"	noremap		<silent>			<c-tab>		gt|												" タブ切替（次へ）
-"	noremap		<silent>			<c-s-tab>	gT|												" タブ切替（前へ）
-	noremap		<silent>			<c-s-up>	<c-w>+4|										" ウィンドウ幅を変える ↑:高さup
-	noremap		<silent>			<c-s-down>	<c-w>-3|										" ウィンドウ幅を変える ↓:高さdown
-	noremap		<silent>			<c-s-right> <c-w>>|											" ウィンドウ幅を変える →:幅up
-	noremap		<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える ←:幅down
-"	noremap		<silent>			<c-w>		:tabclose<cr>|									" タブを閉じる
-"	noremap		<silent>			<c-n>		:tabnew<cr>|									" 新規タブを開く
-	noremap		<silent>			<c-g>		:call ExecuteGuiGrep()<cr>|						" GUIのGrepソフト起動
-	noremap		<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
-	noremap		<silent>			<F2>		:TagbarToggle<cr>|								" タグリスト作成
-"	noremap		<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
-"	noremap		<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
-	noremap		<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
-	noremap		<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
-"	noremap		<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
-"	noremap		<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
-	noremap		<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
-	noremap		<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
-	noremap		<silent>			<F11>		:set expandtab<cr>:retab!<cr>|					" タブ⇒空白 変換
-	noremap		<silent>			<F12>		:set noexpandtab<cr>:retab!<cr>|				" 空白⇒タブ 変換
-	noremap		<silent>			<c-F1>		:call CopyCurFilePath()<cr>|					" 現在ファイルパスコピー
-	noremap		<silent>			<c-F2>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
-	noremap		<silent>			<c-F3>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
-	noremap		<silent>			<c-F4>		:call CopyCurFileExt()<cr>|						" 現在ファイル拡張子コピー
-	noremap		<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" 現在行番号コピー
-"	noremap		<silent>			<c-F5>		:call CopyFileExtAndLineNo()<cr>|				" 現在ファイル種別＆行番号コピー
-	noremap		<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
-	noremap		<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
-	noremap		<silent>			<s-F1>		:call CopyCurPrjRltvFilePath()<cr>|				" 現在相対ファイルパスコピー
-"	noremap		<silent>	<expr>	gp			'`[' . strpart(getregtype(), 0, 1) . '`]'|		" ペーストしたテキストを再選択できるようにする
-	map								go			<Plug>(openbrowser-smart-search)|				"【open-browser】ブラウザで開く
-"	map								<c-o>		:GtagsCursor<CR>|								"【gtags(※1)】
-	
+
 "=== ノーマルモード ===
 "	nnoremap	<silent>			<cr>		<nop>|
 	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
-	nnoremap	<silent>			<c-j>		5jzz|											" カーソル移動＋画面移動（下）
-	nnoremap	<silent>			<c-k>		5kzz|											" カーソル移動＋画面移動（上）
 	nnoremap				<expr>	gc			":Gc " . expand('<cword>')|						" Grep＠現在ファイル
 	nnoremap				<expr>	gp			":Gp " . expand('<cword>')|						" Grep＠上位階層「tags」格納ディレクトリ配下
 	nnoremap				<expr>	gt			":Gt"|											" Grep(対話型)＠ファイルパスなどを指定
-"	nnoremap						<c-d>		:Gtags <C-r><C-w><CR>|							"【gtags(※1)】
-	nnoremap						<c-e>		:Gtags -r <C-r><C-w><CR>|						"【gtags(※1)】
-"	nnoremap						gs			:Gtags -s <C-r><C-w><CR>|						"【gtags(※1)】
-"	nnoremap						gG			:Gtags -g <C-r><C-w><CR>|						"【gtags(※1)】
-"	nnoremap						,d			:<C-u>Gtags -f %<CR>|							"【gtags(※1)】
-	nnoremap						<c-t>		<C-o>|											"【gtags(※1)】
-																								"	 (※1) Gtags用キーバインド
-																								"			[参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
+	nnoremap						ciy			ciw<c-r>0<esc>b|								" 単語コピー
+	nnoremap	<silent>			<esc><esc>	:nohlsearch<cr>|								" ハイライト解除
+	nnoremap	<silent>			<tab>		a<tab><esc>|									" タブ挿入
+"	nnoremap						<c-d>		:Gtags <C-r><C-w><CR>|							"【gtags(*1)】
+	nnoremap						<c-e>		:Gtags -r <C-r><C-w><CR>|						"【gtags(*1)】
+"	nnoremap						gs			:Gtags -s <C-r><C-w><CR>|						"【gtags(*1)】
+"	nnoremap						gG			:Gtags -g <C-r><C-w><CR>|						"【gtags(*1)】
+"	nnoremap						,d			:<C-u>Gtags -f %<CR>|							"【gtags(*1)】
+	nnoremap						<c-t>		<C-o>|											"【gtags(*1)】
+	nnoremap	<silent>			<c-g>		:call ExecuteGuiGrep()<cr>|						" GUIのGrepソフト起動
+	nnoremap	<silent>			<c-m>		oa<esc>"_x|										" インデントを維持して改行
+	nnoremap	<silent>			<c-tab>		<c-w>w|											" ウィンドウ切替（次へ）
+	nnoremap	<silent>			<c-s-tab>	<c-w>W|											" ウィンドウ切替（前へ）
+"	nnoremap	<silent>			<c-tab>		gt|												" タブ切替（次へ）
+"	nnoremap	<silent>			<c-s-tab>	gT|												" タブ切替（前へ）
+	nnoremap	<silent>			<c-s-up>	<c-w>+4|										" ウィンドウ幅を変える ↑:高さup
+	nnoremap	<silent>			<c-s-down>	<c-w>-3|										" ウィンドウ幅を変える ↓:高さdown
+	nnoremap	<silent>			<c-s-right> <c-w>>|											" ウィンドウ幅を変える →:幅up
+	nnoremap	<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える ←:幅down
+	nnoremap						<c-]>		g<c-]>|											" tagsジャンプの時に複数ある時は一覧表示
+"	nnoremap	<silent>			<c-w>		:tabclose<cr>|									" タブを閉じる
+"	nnoremap	<silent>			<c-n>		:tabnew<cr>|									" 新規タブを開く
+"	nmap							<c-o>		:GtagsCursor<CR>|								"【gtags(※1)】
+	nnoremap	<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
+	nnoremap	<silent>			<F2>		:TagbarToggle<cr>|								" タグリスト作成
+"	nnoremap	<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
+"	nnoremap	<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
+	nnoremap	<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
+"	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
+"	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
+"	nnoremap	<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
+	nnoremap	<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
+	nnoremap	<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
+	nnoremap	<silent>			<F11>		:set expandtab<cr>:retab!<cr>|					" タブ⇒空白 変換
+	nnoremap	<silent>			<F12>		:set noexpandtab<cr>:retab!<cr>|				" 空白⇒タブ 変換
+	nnoremap	<silent>			<s-F1>		:call CopyCurPrjRltvFilePath()<cr>|				" 現在相対ファイルパスコピー
+	nnoremap	<silent>			<c-F1>		:call CopyCurFilePath()<cr>|					" 現在ファイルパスコピー
+	nnoremap	<silent>			<c-F2>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
+	nnoremap	<silent>			<c-F3>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
+	nnoremap	<silent>			<c-F4>		:call CopyCurFileExt()<cr>|						" 現在ファイル拡張子コピー
+	nnoremap	<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" 現在行番号コピー
+"	nnoremap	<silent>			<c-F5>		:call CopyFileExtAndLineNo()<cr>|				" 現在ファイル種別＆行番号コピー
+	nnoremap	<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
+	nnoremap	<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
 
 "=== 挿入モード ===
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
-	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け（Windowsクリップボード用）
+if has('unix')
+	imap		<silent>			<c-v>		<c-r>0|											" 貼り付け
+else
+	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け
+endif
 "	inoremap	<silent>			{			{}<LEFT>|										" 括弧とクォーテーションの自動補完
 "	inoremap	<silent>			[			[]<LEFT>|										" 括弧とクォーテーションの自動補完
 "	inoremap	<silent>			(			()<LEFT>|										" 括弧とクォーテーションの自動補完
@@ -320,14 +332,12 @@ filetype plugin indent on
 "=== ヴィジュアルモード ===
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
-	vnoremap	<silent>			<c-j>		5jzz|											" カーソル移動＋画面移動（下）
-	vnoremap	<silent>			<c-k>		5kzz|											" カーソル移動＋画面移動（上）
 	vnoremap	<silent>			<F3>		:s/\s*$//<cr>:nohlsearch<cr>|					" 末尾の空白を削除
 	vnoremap	<silent>			<F4>		:s/\\/\//g<cr>|									" ファイルパス区切り変換（\→/）
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
-	vnoremap	<silent>			<F9>		:call ReplaceRelativePath()<cr>|				" 相対パスへ変換
+	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
@@ -344,6 +354,13 @@ filetype plugin indent on
 	cnoremap						<c-a>		<Home>|											" カーソル移動 行頭(シェル同等)
 	cnoremap						<c-e>		<End>|											" カーソル移動 行末(シェル同等)
 	cnoremap						<c-d>		<Del>|											" 文字削除(シェル同等)
+if has('unix')
+	cmap							<c-v>		<c-r>0|											" 貼り付け
+else
+	cmap							<c-v>		<S-Insert>|										" 貼り付け
+endif
+
+" (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
 
 " **************************************************************************************************
 " *****										  基本設定										   *****
@@ -389,7 +406,11 @@ filetype plugin indent on
 "	set cursorcolumn									" カーソル列を目立たせる
 "	set cursorline										" カーソル行を目立たせる
 	set title											" タイトルを表示
+if has('unix')
+	set fileformat=unix									" 改行をUnixの形式に変更。
+else
 	set fileformat=dos									" 改行をWindowsの形式に変更。
+endif
 	set scrolloff=5										" カーソル周辺行数
 "	set swapfile										" スワップファイル(.swpファイル)を作成する
 "	set directory=$VIM/__swapfiles						" スワップファイル(.swpファイル)の出力先を指定
@@ -460,17 +481,27 @@ endif
 	let $CTAGS = expand( "$MYEXEPATH_CTAGS" )
 	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
 	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
-	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
+	let $MARKVIM = expand( "~/.vim/bundle/mark.vim/plugin/mark.vim" )
+	if has('unix')
+		let g:sSysPathDlmtr = '/'
+		let g:sSysPathPrefix = '/'
+	else
+		let g:sSysPathDlmtr = '\'
+		let g:sSysPathPrefix = ''
+	endif
+	let g:sProjectRootFileName = "tags"
 
 " ==============================================================================
 " 共通ユーザ定義関数
 " ==============================================================================
-	function! GetCurFilePath( sPathDlmtr )
-		return substitute( expand('%:p'), "/", a:sPathDlmtr, "g" )
+	function! GetCurFilePath()
+		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
+		return substitute( expand('%:p'), "/", g:sSysPathDlmtr, "g" )
 	endfunction
-	function! GetCurDirPath( sPathDlmtr )
+	function! GetCurDirPath()
 		let l:sCurDirPathTmp = expand("%:p")[ 0:( len( expand("%:p") ) - len( "/" . expand("%:t") ) - 1 ) ]
-		return substitute( l:sCurDirPathTmp, "/", a:sPathDlmtr, "g" )
+		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
+		return substitute( l:sCurDirPathTmp, "/", g:sSysPathDlmtr, "g" )
 	endfunction
 	function! GetCurFileName()
 		return expand( '%:t' )
@@ -497,16 +528,8 @@ endif
 	
 	" === ファイルパス検索（＋存在確認） ====
 	function! SrchStoreDirPathToTop( sTrgtDirPath, sSrchFileName )
-		if stridx( a:sTrgtDirPath, "\\" ) > 0
-			let l:sPathDlmtr = "\\"
-		elseif stridx( a:sTrgtDirPath, "/" ) > 0
-			let l:sPathDlmtr = "/"
-		else
-			return ""
-		endif
-		
 		" === tags 存在確認 ====
-		let l:asDirNames = split( a:sTrgtDirPath, l:sPathDlmtr )
+		let l:asDirNames = split( a:sTrgtDirPath, g:sSysPathDlmtr )
 		let l:sDirPath = ""
 		let l:bIsExist = 0
 		for l:iDirMaxCnt in range( len( l:asDirNames ) - 1, 1, -1 )
@@ -514,10 +537,11 @@ endif
 				if l:iDirCnt == 0
 					let l:sDirPath = l:asDirNames[ l:iDirCnt ]
 				else
-					let l:sDirPath = l:sDirPath . l:sPathDlmtr . l:asDirNames[ l:iDirCnt ]
+					let l:sDirPath = l:sDirPath . g:sSysPathDlmtr . l:asDirNames[ l:iDirCnt ]
 				endif
 			endfor
-			if filereadable( l:sDirPath . l:sPathDlmtr . a:sSrchFileName )
+			let l:sDirPath = g:sSysPathPrefix . l:sDirPath
+			if filereadable( l:sDirPath . g:sSysPathDlmtr . a:sSrchFileName )
 				let l:bIsExist = 1
 				break
 			else
@@ -636,8 +660,7 @@ endif
 	endif
 
 " ==============================================================================
-" grep,tagsのためカレントディレクトリを
-" ファイルと同じディレクトリに移動する
+" カレントディレクトリ変更（grep,tags用）
 " ==============================================================================
 	if exists('+autochdir')
 		"autochdirがある場合カレントディレクトリを移動
@@ -699,7 +722,7 @@ endif
 		endif
 		
 		"### 対象パス 取得 ###
-		let l:sRootPath = GetCurFilePath("\\")
+		let l:sRootPath = GetCurFilePath()
 		
 		"### Grep 実行 ###
 		execute "Grep " . g:sGrepOpt . " """ . g:sGrepWord . """ " . l:sRootPath
@@ -720,14 +743,13 @@ endif
 			
 		"### 対象パス 取得 ###
 		if g:sGrepPath == ""
-			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
 			if l:sRootPath == ""
-				let l:sRootPath = GetCurDirPath("\\")
+				let l:sRootPath = GetCurDirPath()
 			endif
 		else
-			let l:sRootPath = substitute( g:sGrepPath, "/", "\\", "g" )
+			let l:sRootPath = substitute( g:sGrepPath, "/", g:sSysPathDlmtr, "g" )
 		endif
-		echo l:sRootPath
 		
 		"### 拡張子 取得 ###
 		let l:asFileTypes = split( g:sGrepFileExt, "," )
@@ -762,23 +784,24 @@ endif
 		
 		"### 対象パス 取得 ###
 		"初期値判定
-		let l:sGrepPath = g:sGrepPath
-		if l:sGrepPath == ""
-			let l:sGrepPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
-			if l:sGrepPath == ""
-				let l:sGrepPath = GetCurDirPath("\\")
+		if g:sGrepPath == ""
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
+			if l:sRootPath == ""
+				let l:sRootPath = GetCurDirPath()
 			endif
+		else
+			let l:sRootPath = g:sGrepPath
 		endif
 		"パス入力
-		let l:sGrepPath = input("grep target path : ", l:sGrepPath)
-		if l:sGrepPath == ""
+		let l:sRootPath = input("grep target path : ", l:sRootPath)
+		if l:sRootPath == ""
 			echo "\n"
 			echo "  grep target path is not specified!"
 			echo "  this process is suspended!"
 			return
 		endif
-		let l:sGrepPath = substitute( l:sGrepPath, "/", "\\", "g" )
-		let g:sGrepPath = l:sGrepPath
+		let l:sRootPath = substitute( l:sRootPath, "/", g:sSysPathDlmtr, "g" )
+		let g:sGrepPath = l:sRootPath
 		
 		"### 拡張子 取得 ###
 		let l:sGrepFileExt = input("grep target file ext(ex. *.c,*.h) : ", g:sGrepFileExt)
@@ -804,24 +827,27 @@ endif
 		let g:sGrepOpt = l:sGrepOpt
 		
 		"### Grep 実行 ###
-		execute "Grep -r " . l:sGrepOpt . " " . l:sFileTypeOpt . " """. l:sGrepWord . """ " . l:sGrepPath . "/**"
+		execute "Grep -r " . l:sGrepOpt . " " . l:sFileTypeOpt . " """. l:sGrepWord . """ " . l:sRootPath . "/**"
 	endfunction
 
 " ==============================================================================
 " GUIのGrepソフトでGrepする
 " [参照] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
-	let g:sProjectRootFileName = "tags"
 	function! ExecuteGuiGrep()
-		let l:sGuiGrepSoftPath = substitute( $GUIGREP, "/", "\\", "g" )
-		let l:sRootDirPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), g:sProjectRootFileName )
-		if l:sRootDirPath == ""
-			let l:sRootDirPath = GetCurDirPath("\\")
+		if has('unix')
+			echo "[error] ExecuteGuiGrep() is windows only!"
+		else
+			let l:sGuiGrepSoftPath = substitute( $GUIGREP, "/", g:sSysPathDlmtr, "g" )
+			let l:sRootDirPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
+			if l:sRootDirPath == ""
+				let l:sRootDirPath = GetCurDirPath()
+			endif
+			let l:sSearchKeyword = expand('<cword>')
+		"	execute "!cmd.exe /c start /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+		"	execute "!cmd.exe /c start /b /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
+			execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=""" . l:sSearchKeyword . """"
 		endif
-		let l:sSearchKeyword = ""
-	"	execute "!cmd.exe /c start /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-	"	execute "!cmd.exe /c start /b /max " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
-		execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=" . l:sSearchKeyword
 	endfunction
 
 " ==============================================================================
@@ -848,18 +874,24 @@ endif
 " 上位階層にあるタグファイルを探して、更新。
 " 注意 : 事前にタグファイルを作成しておくこと。
 " ==============================================================================
+	command! Utf call UpdateTagFile()
 	function! UpdateTagFile()
 		" === 上位階層ディレクトリ tags 存在確認 ====
-		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath("\\"), "tags" )
+		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
 		
 		" === tags ファイル更新 ====
 		if l:sDirPath == ""
 			echo "update tag file error!! tag file is missing ..."
 		else
-			execute "cd " . l:sDirPath
-			execute "!start " . $CTAGS . " -R"
-			execute "!start " . $GTAGS . " -v"
-			execute "redraw"
+			if has('unix')
+				execute "cd " . l:sDirPath
+				execute "!ctags -R"
+			else
+				execute "cd " . l:sDirPath
+				execute "!start " . $CTAGS . " -R"
+				execute "!start " . $GTAGS . " -v"
+				execute "redraw"
+			endif
 			echo "update tag file!!  " . l:sDirPath
 		endif
 	endfunction
@@ -874,19 +906,34 @@ endif
 	function! UpdateFontSize()
 		if g:FontSizeLevel == 0
 			set guifont=MS_Gothic:h2:cSHIFTJIS
-		"	simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 1
 			set guifont=MS_Gothic:h8:cSHIFTJIS
-		"	simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 2
 			set guifont=MS_Gothic:h10:cSHIFTJIS
-		"	simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 3
 			set guifont=MS_Gothic:h13:cSHIFTJIS
-		"	simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 4
 			set guifont=MS_Gothic:h16:cSHIFTJIS
-		"	simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		else
 			echo "error!"
 		endif
@@ -938,136 +985,129 @@ endif
 "		http://nanasi.jp/articles/vim/copypathim.html
 " ==============================================================================
 	let g:lCopy2UnnamedRegister = 1 " 1）無名レジスタ＋＊レジスタにコピー、それ以外)＊レジスタにコピー
-	let g:sPathDlmtr = "\\"
 	
+	command! Cfp call CopyCurFilePath()
 	function! CopyCurFilePath()
-		let l:sCurFilePath = GetCurFilePath( g:sPathDlmtr )
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sCurFilePath " * register.
-			let @" = l:sCurFilePath " unnamed register.
-		else
-			let @* = l:sCurFilePath " * register.
-		endif
+		let l:sCurFilePath = GetCurFilePath()
+		call CopyString(l:sCurFilePath)
 		echo "copy file path      : " . l:sCurFilePath
 	endfunction
 	
+	command! Crp call CopyCurPrjRltvFilePath()
 	function! CopyCurPrjRltvFilePath()
-		"最初はパス区切りを"/"で扱い、最終的にg:sPathDlmtrへ置換する
-		let l:sCurFilePath = GetCurFilePath( "/" )
-		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath("/"), g:sProjectRootFileName ) . "/"
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
+		let l:sCurFilePath = GetCurFilePath()
+		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName ) . g:sSysPathDlmtr
+		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
-		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sPathDlmtr, "g" )
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sCurPrjRltvFilePath " * register.
-			let @" = l:sCurPrjRltvFilePath " unnamed register.
-		else
-			let @* = l:sCurPrjRltvFilePath " * register.
-		endif
+		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sSysPathDlmtr, "g" )
+		call CopyString(l:sCurPrjRltvFilePath)
 		echo "copy rltv file path : " . l:sCurPrjRltvFilePath
 	endfunction
 	
+	command! Cdp call CopyCurDirPath()
 	function! CopyCurDirPath()
-		let l:sCurDirPath = GetCurDirPath( g:sPathDlmtr )
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sCurDirPath " * register.
-			let @" = l:sCurDirPath " unnamed register.
-		else
-			let @* = l:sCurDirPath " * register.
-		endif
+		let l:sCurDirPath = GetCurDirPath()
+		call CopyString(l:sCurDirPath)
 		echo "copy directory path : " . l:sCurDirPath
 	endfunction
 	
+	command! Cfn call CopyCurFileName()
 	function! CopyCurFileName()
 		let l:sCurFileName = GetCurFileName()
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sCurFileName " * register.
-			let @" = l:sCurFileName " unnamed register.
-		else
-			let @* = l:sCurFileName " * register.
-		endif
+		call CopyString(l:sCurFileName)
 		echo "copy file name      : " . l:sCurFileName
 	endfunction
 	
+	command! Cfe call CopyCurFileExt()
 	function! CopyCurFileExt()
 		let l:sCurFileExt = GetCurFileExt()
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sCurFileExt " * register.
-			let @" = l:sCurFileExt " unnamed register.
-		else
-			let @* = l:sCurFileExt " * register.
-		endif
+		call CopyString(l:sCurFileExt)
 		echo "copy file extention : " . l:sCurFileExt
 	endfunction
 	
+	command! Cpn call CopyProgramNo()
 	function! CopyProgramNo()
 		let l:sGetLine = getline(1)
 		let l:sPrgNoTmp = l:sGetLine
 		let l:sPrgNoTmp = substitute( l:sPrgNoTmp, "^\/\\* ", "", "g" )
 		let l:sPrgNoTmp = substitute( l:sPrgNoTmp, " \\*\/$", "", "g" )
 		let l:sPrgNo = l:sPrgNoTmp
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sPrgNo " * register.
-			let @" = l:sPrgNo " unnamed register.
-		else
-			let @* = l:sPrgNo " * register.
-		endif
+		call CopyString(l:sPrgNo)
 		echo "copy program no     : " . l:sPrgNo
 	endfunction
 	
+	command! Cln call CopyFileLineNo()
 	function! CopyFileLineNo()
 		let l:sLineNo = g:sSelRowsRng
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sLineNo " * register.
-			let @" = l:sLineNo " unnamed register.
-		else
-			let @* = l:sLineNo " * register.
-		endif
+		call CopyString(l:sLineNo)
 		echo "copy line no        : " . l:sLineNo
 	endfunction
 	
+	command! Cel call CopyFileExtAndLineNo()
 	function! CopyFileExtAndLineNo()
 		let l:sCurFileName = GetCurFileType()
 		"let l:sLineNo = line(".")
 		let l:sLineNo = g:sSelRowsRng
 		let l:sFileLineNo = l:sCurFileName . "/" . l:sLineNo
-		if g:lCopy2UnnamedRegister == 1
-			let @* = l:sFileLineNo " * register.
-			let @" = l:sFileLineNo " unnamed register.
-		else
-			let @* = l:sFileLineNo " * register.
-		endif
+		call CopyString(l:sFileLineNo)
 		echo "copy file & line no : " . l:sFileLineNo
+	endfunction
+	
+	function! CopyString(sString)
+		if has('unix')
+			call SendViaOSC52(a:sString)
+		else
+			if g:lCopy2UnnamedRegister == 1
+				let @* = a:sString " * register.
+				let @" = a:sString " unnamed register.
+			else
+				let @* = a:sString " * register.
+			endif
+		endif
 	endfunction
 
 " ==============================================================================
 " 選択したファイルパスを、現在のファイルパスからの相対パスへ置き換える。
+" [使い方例]
+"	現在絶対パス:	c:\test\aaa\bbb\test.txt
+"	選択絶対パス:	c:\test\ccc\test2.txt
+"	出力パス:		..\..\ccc\test2.txt
 " [注意事項]
 "   ・ヴィジュアルモードで実行すること！
-"      ex) vnoremap <silent> <F9> :call ReplaceRelativePath()<cr>
+"      ex) vnoremap <silent> <F9> :call ReplaceRelativePathFromCurrent()<cr>
 " ==============================================================================
-	function! ReplaceRelativePath()
-		"選択文字列 取得
-		let tmp = @@
-		silent normal gvy
-		let l:sDstPath = @@
-		let l:sSrcPath = GetCurFilePath( '/' )
-		
-		"選択文字列 削除
-		silent normal gv
-		silent normal d
-		
-		"相対パス取得
-		let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, '/' )
-		
-		"選択文字列 出力
-		let @* = l:sRelativePath
-		silent normal p
-		
-		echo "replace relative path : success!"
+	let g:sOutPathDlmtr = '/'
+	command! Rrp call ReplaceRelativePathFromCurrent()
+	function! ReplaceRelativePathFromCurrent()
+		if has('unix')
+			echo "ReplaceRelativePathFromCurrent() is not supported on linux!"
+		else
+			"選択文字列 取得
+			let tmp = @@
+			silent normal gvy
+			let l:sDstPath = @@
+			let l:sSrcPath = GetCurFilePath()
+			echo l:sDstPath
+			
+			"選択文字列 削除
+			silent normal gv
+			silent normal d
+			
+			"相対パス取得
+			let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, g:sOutPathDlmtr )
+			
+			"選択文字列 出力
+			let @* = l:sRelativePath
+			silent normal p
+			
+			echo "replace relative path : success!"
+		endif
 	endfunction
 	
 	function! ConvRelativePath( sSrcPath, sDstPath, sDlmtr )
-		"パス置換("/"に統一)
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
 		let l:sSrcPath = substitute( a:sSrcPath, "\\", "/", "g" )
 		let l:sDstPath = substitute( a:sDstPath, "\\", "/", "g" )
 		"echom l:sSrcPath . "★" . l:sDstPath
@@ -1091,13 +1131,13 @@ endif
 		"echom l:sSrcPath . "★" . l:sDstPath
 		
 		"さかのぼりパス取得
-		let l:iDlmNum = (len(l:sSrcPath) - len(substitute( l:sSrcPath, "/", "", "g" )))
-		"echom l:iDlmNum
+		let l:iPathDepth = (len(l:sSrcPath) - len(substitute( l:sSrcPath, "/", "", "g" )))
+		"echom l:iPathDepth
 		let l:sRiseUpPath = ""
-		if l:iDlmNum == 0
+		if l:iPathDepth == 0
 			let l:sRiseUpPath = "./"
 		else
-			for l:iIdx in range(1,l:iDlmNum)
+			for l:iIdx in range(1,l:iPathDepth)
 				let l:sRiseUpPath = l:sRiseUpPath . "../"
 			endfor
 		endif
@@ -1214,7 +1254,11 @@ endif
 " ==============================================================================
 	command! Delme call DeleteCurFile()
 	function! DeleteCurFile()
-		execute "!del " . GetCurFilePath( "\\" )
+		if has('unix')
+			execute "!rm """ . GetCurFilePath() . """"
+		else
+			execute "!del """ . GetCurFilePath() . """"
+		endif
 	endfunction
 
 " ==============================================================================
@@ -1399,7 +1443,7 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " ★カラースキーマ設定の後に記述すること！★
 " [参照] http://nanasi.jp/articles/vim/mark_vim.html
 " ==============================================================================
-"	execute 'source ' . $MARKVIM	"★TODO★インストールmarkvim
+	execute 'source ' . $MARKVIM
 
 " ==============================================================================
 " winresizer.vim 設定
@@ -1411,6 +1455,8 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " qfixgrep 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
+	set runtimepath+=~/.vim/bundle/qfixgrep
+	let MyGrep_Commands = 1
 	let mygrepprg = 'grep'
 	let QFixWin_EnableMode = 1		" QuickFixウィンドウでもプレビューや絞り込みを有効化
 	let QFix_UseLocationList = 0	" QFixHowm/QFixGrepの結果表示にロケーションリストを使用する/しない
@@ -1426,7 +1472,9 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 	let g:nanomap_auto_open_close = 1
 	let g:nanomap_highlight_delay = 100
 
-"neosnippet設定
+" ==============================================================================
+" neosnippet設定
+" ==============================================================================
 	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
 
 " ==============================================================================

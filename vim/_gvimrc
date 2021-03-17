@@ -94,7 +94,11 @@
 "=== 挿入モード ===
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
-	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け（Windowsクリップボード用）
+if has('unix')
+	imap		<silent>			<c-v>		<c-r>0|											" 貼り付け
+else
+	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け
+endif
 "	inoremap	<silent>			{			{}<LEFT>|										" 括弧とクォーテーションの自動補完
 "	inoremap	<silent>			[			[]<LEFT>|										" 括弧とクォーテーションの自動補完
 "	inoremap	<silent>			(			()<LEFT>|										" 括弧とクォーテーションの自動補完
@@ -116,7 +120,7 @@
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
-	vnoremap	<silent>			<F9>		:call CopyRelativePathFromCurrent()<cr>|		" 相対パスへ変換
+	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
@@ -133,7 +137,11 @@
 	cnoremap						<c-a>		<Home>|											" カーソル移動 行頭(シェル同等)
 	cnoremap						<c-e>		<End>|											" カーソル移動 行末(シェル同等)
 	cnoremap						<c-d>		<Del>|											" 文字削除(シェル同等)
-	cmap							<c-v>		<S-Insert>|										" 貼り付け（Windowsクリップボード用）
+if has('unix')
+	cmap							<c-v>		<c-r>0|											" 貼り付け
+else
+	cmap							<c-v>		<S-Insert>|										" 貼り付け
+endif
 
 " (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
 
@@ -181,7 +189,11 @@
 "	set cursorcolumn									" カーソル列を目立たせる
 "	set cursorline										" カーソル行を目立たせる
 	set title											" タイトルを表示
+if has('unix')
+	set fileformat=unix									" 改行をUnixの形式に変更。
+else
 	set fileformat=dos									" 改行をWindowsの形式に変更。
+endif
 	set scrolloff=5										" カーソル周辺行数
 "	set swapfile										" スワップファイル(.swpファイル)を作成する
 "	set directory=$VIM/__swapfiles						" スワップファイル(.swpファイル)の出力先を指定
@@ -267,12 +279,12 @@ endif
 " ==============================================================================
 	function! GetCurFilePath()
 		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
-		return g:sSysPathPrefix . substitute( expand('%:p'), "/", g:sSysPathDlmtr, "g" )
+		return substitute( expand('%:p'), "/", g:sSysPathDlmtr, "g" )
 	endfunction
 	function! GetCurDirPath()
 		let l:sCurDirPathTmp = expand("%:p")[ 0:( len( expand("%:p") ) - len( "/" . expand("%:t") ) - 1 ) ]
 		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
-		return g:sSysPathPrefix . substitute( l:sCurDirPathTmp, "/", g:sSysPathDlmtr, "g" )
+		return substitute( l:sCurDirPathTmp, "/", g:sSysPathDlmtr, "g" )
 	endfunction
 	function! GetCurFileName()
 		return expand( '%:t' )
@@ -306,11 +318,12 @@ endif
 		for l:iDirMaxCnt in range( len( l:asDirNames ) - 1, 1, -1 )
 			for l:iDirCnt in range( 0, l:iDirMaxCnt )
 				if l:iDirCnt == 0
-					let l:sDirPath = g:sSysPathPrefix . l:asDirNames[ l:iDirCnt ]
+					let l:sDirPath = l:asDirNames[ l:iDirCnt ]
 				else
-					let l:sDirPath = g:sSysPathPrefix . l:sDirPath . g:sSysPathDlmtr . l:asDirNames[ l:iDirCnt ]
+					let l:sDirPath = l:sDirPath . g:sSysPathDlmtr . l:asDirNames[ l:iDirCnt ]
 				endif
 			endfor
+			let l:sDirPath = g:sSysPathPrefix . l:sDirPath
 			if filereadable( l:sDirPath . g:sSysPathDlmtr . a:sSrchFileName )
 				let l:bIsExist = 1
 				break
@@ -644,6 +657,7 @@ endif
 " 上位階層にあるタグファイルを探して、更新。
 " 注意 : 事前にタグファイルを作成しておくこと。
 " ==============================================================================
+	command! Utf call UpdateTagFile()
 	function! UpdateTagFile()
 		" === 上位階層ディレクトリ tags 存在確認 ====
 		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
@@ -654,9 +668,7 @@ endif
 		else
 			if has('unix')
 				execute "cd " . l:sDirPath
-				execute $CTAGS . " -R"
-				execute $GTAGS . " -v"
-				execute "redraw"
+				execute "!ctags -R"
 			else
 				execute "cd " . l:sDirPath
 				execute "!start " . $CTAGS . " -R"
@@ -677,19 +689,34 @@ endif
 	function! UpdateFontSize()
 		if g:FontSizeLevel == 0
 			set guifont=MS_Gothic:h2:cSHIFTJIS
-			simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 1
 			set guifont=MS_Gothic:h8:cSHIFTJIS
-			simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 2
 			set guifont=MS_Gothic:h10:cSHIFTJIS
-			simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 3
 			set guifont=MS_Gothic:h13:cSHIFTJIS
-			simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		elseif g:FontSizeLevel == 4
 			set guifont=MS_Gothic:h16:cSHIFTJIS
-			simalt ~x
+			if has('unix')
+			else
+				simalt ~x
+			endif
 		else
 			echo "error!"
 		endif
@@ -742,12 +769,14 @@ endif
 " ==============================================================================
 	let g:lCopy2UnnamedRegister = 1 " 1）無名レジスタ＋＊レジスタにコピー、それ以外)＊レジスタにコピー
 	
+	command! Cfp call CopyCurFilePath()
 	function! CopyCurFilePath()
 		let l:sCurFilePath = GetCurFilePath()
 		call CopyString(l:sCurFilePath)
 		echo "copy file path      : " . l:sCurFilePath
 	endfunction
 	
+	command! Crp call CopyCurPrjRltvFilePath()
 	function! CopyCurPrjRltvFilePath()
 		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
 		let l:sCurFilePath = GetCurFilePath()
@@ -760,24 +789,28 @@ endif
 		echo "copy rltv file path : " . l:sCurPrjRltvFilePath
 	endfunction
 	
+	command! Cdp call CopyCurDirPath()
 	function! CopyCurDirPath()
 		let l:sCurDirPath = GetCurDirPath()
 		call CopyString(l:sCurDirPath)
 		echo "copy directory path : " . l:sCurDirPath
 	endfunction
 	
+	command! Cfn call CopyCurFileName()
 	function! CopyCurFileName()
 		let l:sCurFileName = GetCurFileName()
 		call CopyString(l:sCurFileName)
 		echo "copy file name      : " . l:sCurFileName
 	endfunction
 	
+	command! Cfe call CopyCurFileExt()
 	function! CopyCurFileExt()
 		let l:sCurFileExt = GetCurFileExt()
 		call CopyString(l:sCurFileExt)
 		echo "copy file extention : " . l:sCurFileExt
 	endfunction
 	
+	command! Cpn call CopyProgramNo()
 	function! CopyProgramNo()
 		let l:sGetLine = getline(1)
 		let l:sPrgNoTmp = l:sGetLine
@@ -788,12 +821,14 @@ endif
 		echo "copy program no     : " . l:sPrgNo
 	endfunction
 	
+	command! Cln call CopyFileLineNo()
 	function! CopyFileLineNo()
 		let l:sLineNo = g:sSelRowsRng
 		call CopyString(l:sLineNo)
 		echo "copy line no        : " . l:sLineNo
 	endfunction
 	
+	command! Cel call CopyFileExtAndLineNo()
 	function! CopyFileExtAndLineNo()
 		let l:sCurFileName = GetCurFileType()
 		"let l:sLineNo = line(".")
@@ -804,11 +839,15 @@ endif
 	endfunction
 	
 	function! CopyString(sString)
-		if g:lCopy2UnnamedRegister == 1
-			let @* = a:sString " * register.
-			let @" = a:sString " unnamed register.
+		if has('unix')
+			call SendViaOSC52(a:sString)
 		else
-			let @* = a:sString " * register.
+			if g:lCopy2UnnamedRegister == 1
+				let @* = a:sString " * register.
+				let @" = a:sString " unnamed register.
+			else
+				let @* = a:sString " * register.
+			endif
 		endif
 	endfunction
 
@@ -820,28 +859,34 @@ endif
 "	出力パス:		..\..\ccc\test2.txt
 " [注意事項]
 "   ・ヴィジュアルモードで実行すること！
-"      ex) vnoremap <silent> <F9> :call CopyRelativePathFromCurrent()<cr>
+"      ex) vnoremap <silent> <F9> :call ReplaceRelativePathFromCurrent()<cr>
 " ==============================================================================
 	let g:sOutPathDlmtr = '/'
-	function! CopyRelativePathFromCurrent()
-		"選択文字列 取得
-		let tmp = @@
-		silent normal gvy
-		let l:sDstPath = @@
-		let l:sSrcPath = GetCurFilePath()
-		
-		"選択文字列 削除
-		silent normal gv
-		silent normal d
-		
-		"相対パス取得
-		let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, g:sOutPathDlmtr )
-		
-		"選択文字列 出力
-		let @* = l:sRelativePath
-		silent normal p
-		
-		echo "replace relative path : success!"
+	command! Rrp call ReplaceRelativePathFromCurrent()
+	function! ReplaceRelativePathFromCurrent()
+		if has('unix')
+			echo "ReplaceRelativePathFromCurrent() is not supported on linux!"
+		else
+			"選択文字列 取得
+			let tmp = @@
+			silent normal gvy
+			let l:sDstPath = @@
+			let l:sSrcPath = GetCurFilePath()
+			echo l:sDstPath
+			
+			"選択文字列 削除
+			silent normal gv
+			silent normal d
+			
+			"相対パス取得
+			let l:sRelativePath = ConvRelativePath( l:sSrcPath, l:sDstPath, g:sOutPathDlmtr )
+			
+			"選択文字列 出力
+			let @* = l:sRelativePath
+			silent normal p
+			
+			echo "replace relative path : success!"
+		endif
 	endfunction
 	
 	function! ConvRelativePath( sSrcPath, sDstPath, sDlmtr )
@@ -992,7 +1037,11 @@ endif
 " ==============================================================================
 	command! Delme call DeleteCurFile()
 	function! DeleteCurFile()
-		execute "!del """ . GetCurFilePath() . """"
+		if has('unix')
+			execute "!rm """ . GetCurFilePath() . """"
+		else
+			execute "!del """ . GetCurFilePath() . """"
+		endif
 	endfunction
 
 " ==============================================================================
@@ -1189,6 +1238,8 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " qfixgrep 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
+	set runtimepath+=~/.vim/bundle/qfixgrep
+	let MyGrep_Commands = 1
 	let mygrepprg = 'grep'
 	let QFixWin_EnableMode = 1		" QuickFixウィンドウでもプレビューや絞り込みを有効化
 	let QFix_UseLocationList = 0	" QFixHowm/QFixGrepの結果表示にロケーションリストを使用する/しない
@@ -1208,3 +1259,14 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " neosnippet設定
 " ==============================================================================
 	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
+
+" ==============================================================================
+" INSERT mode に入るときにカーソル形状を変える
+" [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
+" ==============================================================================
+let &t_ti .= "\e[2 q"	" [Vim 起動時]       非点滅ブロック
+let &t_SI .= "\e[6 q"	" [挿入モード時]     非点滅縦棒
+let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
+let &t_SR .= "\e[4 q"	" [置換モード時]     非点滅下線
+let &t_te .= "\e[0 q"	" [vim 終了時]       デフォルト
+

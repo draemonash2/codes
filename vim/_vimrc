@@ -1,4 +1,39 @@
 " =======================================
+" プラグイン設定(Vundle.vim)
+" :PluginInstall
+" [参考] https://qiita.com/tanabee/items/e2064c5ce59c85915940
+" =======================================
+"set nocompatible
+"filetype off
+"set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#begin()
+"
+"Plugin 'VundleVim/Vundle.vim'
+"
+"" 導入したいプラグインを以下に列挙
+"" Plugin '[Github Author]/[Github repo]' の形式で記入
+"Plugin 'roblillack/vim-bufferlist'
+"Plugin 'Align'
+"Plugin 'FavEx'
+"Plugin 'gtags.vim'
+"Plugin 'itchyny/lightline.vim'
+"Plugin 'mbriggs/mark.vim'
+"Plugin 'thinca/vim-qfreplace'
+"Plugin 'anyakichi/vim-surround'
+"Plugin 'vim-scripts/jellybeans.vim'
+"Plugin 'fuenor/qfixgrep'
+"
+"call vundle#end()
+"filetype plugin indent on
+
+" =======================================
+" ローカルコピー
+" http://tateren.hateblo.jp/entry/2017/07/21/213020
+" =======================================
+"source ~/.vim/osc52/osc52.vim
+"vmap y y:call SendViaOSC52(getreg('"'))<cr>
+
+" =======================================
 " ファイルパス存在チェック
 " <usage>
 "   call CheckPathExists( $CTAGS )
