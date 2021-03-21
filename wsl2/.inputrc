@@ -1,32 +1,60 @@
-set editing-mode emacs
-"\C-p": history-search-backward
-"\C-n": history-search-forward
-#"\C-,": backward-char
-#"\C-.": forward-char
-#"\C-<": backward-word
-#"\C->": forward-word
-#"\C-j": vi-movement-mode
-#"\s-h": beginning-of-line
-#"\s-l": end-of-line
-#"\C-x\C-r": re-read-init-file
-##set vi-ins-mode-string "+"
-##set vi-cmd-mode-string ":"
-##set vi-cmd-mode-string "\1\e[1;31m\2:\1\e[0m\2"
-#set vi-ins-mode-string \1\e[6 q\2
-#set vi-cmd-mode-string \1\e[2 q\2
-set show-mode-in-Prompt on
-set show-all-if-ambiguous on
-# Color files by types
-set colored-stats On
-# Append char to indicate type
-set visible-stats On
-# Mark symlinked directories
-set mark-symlinked-directories On
-# Color the common prefix
-set colored-completion-prefix On
-# Color the common prefix in menu-complete
-set menu-complete-display-prefix On
-
-# optionally:
-# switch to block cursor before executing a command
-#set keymap vi-insert
+$if bash
+	set editing-mode emacs
+#	set editing-mode vi
+	
+	set show-mode-in-prompt on
+	set show-all-if-ambiguous on
+	# Color files by types
+	set colored-stats On
+	# Append char to indicate type
+	set visible-stats On
+	# Mark symlinked directories
+	set mark-symlinked-directories On
+	# Color the common prefix
+	set colored-completion-prefix On
+	# Color the common prefix in menu-complete
+	set menu-complete-display-prefix On
+	"\C-x\C-r": re-read-init-file
+	
+	$if mode=emacs
+		"\C-p": history-search-backward
+		"\C-n": history-search-forward
+		"\C-l": forward-word
+		"\M-l": forward-word
+		"\M-h": backward-word
+		#"\C-,": backward-char
+		#"\C-.": forward-char
+		#"\C-<": backward-word
+		#"\C->": forward-word
+		
+	$endif
+	
+	$if mode=vi
+		set vi-ins-mode-string \1\e[6 q\2
+		set vi-cmd-mode-string \1\e[2 q\2
+		set keymap vi-command
+		"\C-p": history-search-backward
+		"\C-n": history-search-forward
+		"\e[A": history-search-backward
+		"\e[B": history-search-forward
+		"\C-l": forward-word
+		j:history-search-forward
+		k:history-search-backward
+		H: beginning-of-line
+		L: end-of-line
+		v: forward-char
+	#	v: vi-editing-mode
+		set keymap vi-insert
+		"\C-p": history-search-backward
+		"\C-n": history-search-forward
+		"\e[A": history-search-backward
+		"\e[B": history-search-forward
+		"\C-j": vi-movement-mode
+		
+		# optionally:
+		# switch to block cursor before executing a command
+		#set keymap vi-insert
+		#RETURN: "\e\n"
+	$endif
+	
+$endif
