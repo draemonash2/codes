@@ -257,6 +257,12 @@ if has('mouse')
 endif
 	set iminsert=0										" 挿入モードでのデフォルトのIME状態設定（IM オフ）
 	set imsearch=0										" 検索モードでのデフォルトのIME状態設定（IM オフ）
+"	keepjumps normal n
+"	keepjumps normal N
+"	keepjumps normal *
+"	keepjumps normal #
+"	keepjumps normal K
+"	keepjumps normal g#
 
 " ==============================================================================
 " ファイルパス設定
