@@ -43,7 +43,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -59,7 +59,8 @@ fi
 if [ "$color_prompt" = yes ]; then
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
 #   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PS1='\n\[\e[37;42m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\T \[\e[37;46m\] \w \[\e[00;36;49m\] \[\e[00m\]\$ '
+#   PS1='\n\[\e[37;42m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\T \[\e[37;46m\] \w \[\e[00;36;49m\] \[\e[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -122,8 +123,8 @@ alias he='export HOME=/home/draemon_ash3; cd ~; . .bashrc; pwd;'	# change Home d
 
 alias exp='explorer.exe .'						# open current directory with explorer.exe (WSL2 specific settings)
 
-alias br='sudo vim ~/.bashrc; source ~/.bashrc'
-alias vr='sudo vim ~/.vimrc'
+alias br='vim ~/.bashrc; source ~/.bashrc'
+alias vr='vim ~/.vimrc'
 
 # cdコマンド拡張用
 function cdex() {
@@ -134,7 +135,7 @@ function cdex() {
 	ls -AF --color=auto
 }
 
-alias ll='ls -lF --color=auto'
+alias ll='ls -lFA --color=auto'
 alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
 
@@ -148,4 +149,6 @@ alias ....='cd ../../..;'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
+
+alias sht='sudo shutdown -h now'
 
