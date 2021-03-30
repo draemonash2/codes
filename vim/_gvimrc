@@ -494,7 +494,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.c,*.h,*.cpp"
+	let g:sGrepFileExt = "*.c,*.h,*.cpp,*.vbs,*.bas,*.cls"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------

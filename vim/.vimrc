@@ -1,7 +1,11 @@
 " =======================================
 " プラグイン設定(Vundle.vim)
-" :PluginInstall
-" [参考] https://qiita.com/tanabee/items/e2064c5ce59c85915940
+" [使い方]
+"  1. 導入したいプラグインパスを以下に列挙
+"  2. 「:PluginInstall」を実行する
+" [参考]
+"  ・プラグイン https://qiita.com/tanabee/items/e2064c5ce59c85915940
+"  ・プラグインサイト https://vimawesome.com/
 " =======================================
 set nocompatible
 filetype off
@@ -10,8 +14,8 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 
-" 導入したいプラグインを以下に列挙
-" Plugin '[Github Author]/[Github repo]' の形式で記入
+" ▼▼▼インストールプラグインパスここから▼▼▼
+" ex. Plugin '[Github Author]/[Github repo]'
 Plugin 'roblillack/vim-bufferlist'
 Plugin 'Align'
 Plugin 'FavEx'
@@ -22,16 +26,27 @@ Plugin 'thinca/vim-qfreplace'
 Plugin 'anyakichi/vim-surround'
 Plugin 'vim-scripts/jellybeans.vim'
 Plugin 'fuenor/qfixgrep'
+" ▲▲▲インストールプラグインパスここまで▲▲▲
 
 call vundle#end()
 filetype plugin indent on
 
 " =======================================
-" ローカルコピー
-" http://tateren.hateblo.jp/entry/2017/07/21/213020
+" リモート越しのローカルコピー
+" <usage>
+"   1. ターミナルソフトの設定を行う(以下はRLogin時の手順)
+"     1-1. Server Edit Entryを開く
+"     1-2. [クリップボード]→[制御コードによるクリップボード操作]
+"     1-3. [OSC 52 によるクリップボードの書き込みを許可する]にチェック
+"   2. osc52.vimをpluguinに格納
+"   3. 格納先を以下のsource osc.vim
+" <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
 " =======================================
-source ~/.vim/osc52/osc52.vim
-vmap y y:call SendViaOSC52(getreg('"'))<cr>
+if has('unix')
+	source ~/.vim/osc52/osc52.vim
+	vmap y y:call SendViaOSC52(getreg('"'))<cr>
+	nmap yy Vy:call SendViaOSC52(getreg('"'))<cr>
+endif
 
 " =======================================
 " ファイルパス存在チェック
