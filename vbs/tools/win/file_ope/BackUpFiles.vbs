@@ -1,11 +1,12 @@
 Option Explicit
 
 'ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
-'同じファイル名のものが存在していたら、アルファベットを付与する。
+'同じファイル名のものが存在していたら、アルファベットを付与したバックアップファイルを作成する。
 '	ex. 211201a, 211202b, …
 '指定数分バックアップがたまったら、古いものから削除する。
 'バックアップ対象はファイルのみ。
-'TODO:フォルダ対応
+'第二引数にバックアップファイル数を指定できる。
+'★要修正★バックアップ最大数分、同じ日付のバックアップファイルで満たされると、新しいファイルが更新されていくため要注意。
 
 '===============================================================================
 '= インクルード
@@ -16,7 +17,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 '= 設定値
 '===============================================================================
-Const lMAX_BAK_FILE_NUM = 10
+Const lMAX_BAK_FILE_NUM_DEFAULT = 10
 Const sBAK_DIR_NAME = "_bak"
 Const sBAK_FILE_SUFFIX = "#b#"
 
@@ -25,10 +26,15 @@ Const sBAK_FILE_SUFFIX = "#b#"
 '===============================================================================
 Const sSCRIPT_NAME = "ファイルバックアップ"
 Dim sTrgtFilePath
-If WScript.Arguments.Count > 0 Then
+Dim lBakFileNumMax
+If WScript.Arguments.Count >= 2 Then
 	sTrgtFilePath = WScript.Arguments(0)
+	lBakFileNumMax = CLng(WScript.Arguments(1))
+ElseIf WScript.Arguments.Count = 1 Then
+	sTrgtFilePath = WScript.Arguments(0)
+	lBakFileNumMax = lMAX_BAK_FILE_NUM_DEFAULT
 Else
-	MsgBox "引数を指定してください。プログラムを中断します。"
+	WScript.Echo "引数を指定してください。プログラムを中断します。"
 	WScript.Quit
 End If
 
@@ -90,7 +96,7 @@ For Each sFilePath in cFileList
 Next
 
 'バックアップファイル削除
-If lBakFileNum > lMAX_BAK_FILE_NUM Then
+If lBakFileNum > lBakFileNumMax Then
 	objFSO.DeleteFile sDelFilePath, True
 End If
 

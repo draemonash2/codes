@@ -220,7 +220,7 @@ Public Function GetFileListCmdClct( _
     'Dir コマンド実行（出力結果を一時ファイルに格納）
     Dim sTmpFilePath
     Dim sExecCmd
-    sTmpFilePath = WScript.CreateObject( "WScript.Shell" ).CurrentDirectory & "\Dir.tmp"
+    sTmpFilePath = objFSO.GetSpecialFolder(2) & "\Dir.tmp"
     Dim sTrgtDirStr
     If sFileExtStr = "" Then
         sTrgtDirStr = """" & sTrgtDir & """"
