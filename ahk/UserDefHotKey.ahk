@@ -149,15 +149,16 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			}
 			Return
 			
-	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
-	#IfWinNotActive ahk_exe WindowsTerminal.exe
-		RAlt::
-			Send, {AppsKey}
-			return
-	#IfWinNotActive
-	
+	;無変換キー＋方向キーでPgUp,PgDn,Home,End
+		vk1Dsc07B::vk1Dsc07B
+		vk1Dsc07B & Right::Send {End}
+		vk1Dsc07B & Left::Send {Home}
+		vk1Dsc07B & Up::Send {PgUp}
+		vk1Dsc07B & Down::Send {PgDn}
+		
 	;プリントスクリーン単押しを抑制
 		PrintScreen::return
+		
 	;テスト用
 		^Pause::
 			MsgBox, ctrlpause
@@ -186,6 +187,13 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 
 ;***** Software local *****
+	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
+	#IfWinNotActive ahk_exe WindowsTerminal.exe
+		RAlt::
+			Send, {AppsKey}
+			return
+	#IfWinNotActive
+	
 	#IfWinActive ahk_exe gimp-2.8.exe
 		^Left::
 			Send, {Left}{Backspace}{Esc}
