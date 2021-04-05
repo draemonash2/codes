@@ -25,7 +25,15 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;		!）		Alt
 ;		#）		Windowsロゴキー
 
-;***** Global *****
+;***** キー置き換え *****
+	;無変換キー＋方向キーでPgUp,PgDn,Home,End
+		vk1Dsc07B::vk1Dsc07B
+		vk1Dsc07B & Right::MuhenkanSimultPush( "End" )
+		vk1Dsc07B & Left::MuhenkanSimultPush( "Home" )
+		vk1Dsc07B & Up::MuhenkanSimultPush( "PgUp" )
+		vk1Dsc07B & Down::MuhenkanSimultPush( "PgDn" )
+
+;***** ホットキー(Global) *****
 	;ホットキー配置表示
 		!^+F1::
 			sFilePath = "C:\other\ホットキー配置.vsdx"
@@ -149,13 +157,6 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			}
 			Return
 			
-	;無変換キー＋方向キーでPgUp,PgDn,Home,End
-		vk1Dsc07B::vk1Dsc07B
-		vk1Dsc07B & Right::Send {End}
-		vk1Dsc07B & Left::Send {Home}
-		vk1Dsc07B & Up::Send {PgUp}
-		vk1Dsc07B & Down::Send {PgDn}
-		
 	;プリントスクリーン単押しを抑制
 		PrintScreen::return
 		
@@ -186,7 +187,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Send, openload
 			return
 
-;***** Software local *****
+;***** ホットキー(Software local) *****
 	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
 	#IfWinNotActive ahk_exe WindowsTerminal.exe
 		RAlt::
@@ -444,6 +445,29 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		{
 			MsgBox sFilePath
 			MsgBox argument error!
+		}
+		return
+	}
+	
+	; 無変換キー同時押し実装
+	MuhenkanSimultPush( sSendKey )
+	{
+		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
+			Send !^+{%sSendKey%}
+		} else if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P")){
+			Send ^+{%sSendKey%}
+		} else if(GetKeyState("Shift","P") and GetKeyState("Alt","P")){
+			Send !+{%sSendKey%}
+		} else if(GetKeyState("Alt","P") and GetKeyState("Ctrl","P")){
+			Send !^{%sSendKey%}
+		} else if(GetKeyState("Alt","P")){
+			Send !{%sSendKey%}
+		} else if(GetKeyState("Ctrl","P")){
+			Send ^{%sSendKey%}
+		} else if(GetKeyState("Shift","P")){
+			Send +{%sSendKey%}
+		} else {
+			Send {%sSendKey%}
 		}
 		return
 	}
