@@ -65,7 +65,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	
 	;予算管理.xlsm
-		^+!End::
+		^+!\::
 			sFilePath = "%DOC_DIR_PATH%\210_【衣食住】家計\100_予算管理.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
@@ -86,8 +86,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			StartProgramAndActivate( "", sFilePath )
 			return
 	;用語集
-		^+!Ins::
-			sFilePath = "C:\github_io\klg_words\words.itmz"
+		^+!/::
+			sFilePath = "%DOC_DIR_PATH%\320_【自己啓発】勉強\words.itmz"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	
@@ -453,7 +453,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	MuhenkanSimultPush( sSendKey )
 	{
 		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
-			Send !^+{%sSendKey%}
+			MsgBox !^+{%sSendKey%}
 		} else if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P")){
 			Send ^+{%sSendKey%}
 		} else if(GetKeyState("Shift","P") and GetKeyState("Alt","P")){
