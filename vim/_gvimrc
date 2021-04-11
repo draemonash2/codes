@@ -113,6 +113,7 @@ endif
 "	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 
 "=== ヴィジュアルモード ===
+	vnoremap	<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ→空白変換後にコピー
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
 	vnoremap	<silent>			<F3>		:s/\s*$//<cr>:nohlsearch<cr>|					" 末尾の空白を削除
@@ -121,7 +122,7 @@ endif
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
-	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>|	" 行番号コピー
+	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>| " 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り
 "	vnoremap	<silent>			p			"0p|											" 上書きペースト(クリップボード上書きなし)
@@ -488,8 +489,8 @@ endif
 " ==============================================================================
 " Vim 内Grep の設定
 " [grep option]
-"   -i：大文字小文字を無視する
-"   -E：拡張正規表現で検索を行う
+"	-i：大文字小文字を無視する
+"	-E：拡張正規表現で検索を行う
 " [参照] https://eng-entrance.com/linux-command-grep#-i
 " ==============================================================================
 	let g:sGrepWord = ""
@@ -507,7 +508,7 @@ endif
 		if a:0 >= 1
 			let g:sGrepWord = a:000[(a:0 - 1)]	"引数の単語で検索
 		else
-			let g:sGrepWord = expand("<cword>")	"カーソル上の単語で検索
+			let g:sGrepWord = expand("<cword>") "カーソル上の単語で検索
 		endif
 		
 		"### 対象パス 取得 ###
@@ -527,7 +528,7 @@ endif
 		if a:0 >= 1
 			let g:sGrepWord = a:000[(a:0 - 1)]	"引数の単語で検索
 		else
-			let g:sGrepWord = expand("<cword>")	"カーソル上の単語で検索
+			let g:sGrepWord = expand("<cword>") "カーソル上の単語で検索
 		endif
 			
 		"### 対象パス 取得 ###
@@ -542,7 +543,7 @@ endif
 		
 		"### 拡張子 取得 ###
 		let l:asFileTypes = split( g:sGrepFileExt, "," )
-		let l:sFileTypeOpt  = ""
+		let l:sFileTypeOpt	= ""
 		for l:sFileType in l:asFileTypes
 			if l:sFileTypeOpt == ""
 				let l:sFileTypeOpt = "--include=" . l:sFileType
@@ -602,7 +603,7 @@ endif
 		endif
 		let g:sGrepFileExt = l:sGrepFileExt
 		let l:asFileTypes = split( l:sGrepFileExt, "," )
-		let l:sFileTypeOpt  = ""
+		let l:sFileTypeOpt	= ""
 		for l:sFileType in l:asFileTypes
 			if l:sFileTypeOpt == ""
 				let l:sFileTypeOpt = "--include=" . l:sFileType
@@ -864,8 +865,8 @@ endif
 "	選択絶対パス:	c:\test\ccc\test2.txt
 "	出力パス:		..\..\ccc\test2.txt
 " [注意事項]
-"   ・ヴィジュアルモードで実行すること！
-"      ex) vnoremap <silent> <F9> :call ReplaceRelativePathFromCurrent()<cr>
+"	・ヴィジュアルモードで実行すること！
+"	   ex) vnoremap <silent> <F9> :call ReplaceRelativePathFromCurrent()<cr>
 " ==============================================================================
 	let g:sOutPathDlmtr = '/'
 	command! Rrp call ReplaceRelativePathFromCurrent()
@@ -1169,8 +1170,8 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 "	let Tlist_Show_One_File = 1		" アクティブバッファのみタグ表示
 "	let Tlist_Use_Right_Window = 1	" 右ウィンドウ表示
 "	let Tlist_Exit_OnlyWindow = 1	" taglistのウインドウだけならVimを閉じる
-"	let Tlist_Display_Prototype = 0	" プロトタイプを非表示
-"	let Tlist_Display_Tag_Scope = 0	" タグスコープを非表示
+"	let Tlist_Display_Prototype = 0 " プロトタイプを非表示
+"	let Tlist_Display_Tag_Scope = 0 " タグスコープを非表示
 "	let Tlist_Auto_Open = 0			" 自動起動無効
 
 " ==============================================================================
@@ -1270,9 +1271,9 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " INSERT mode に入るときにカーソル形状を変える
 " [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
 " ==============================================================================
-let &t_ti .= "\e[2 q"	" [Vim 起動時]       非点滅ブロック
-let &t_SI .= "\e[6 q"	" [挿入モード時]     非点滅縦棒
+let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
+let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
 let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
-let &t_SR .= "\e[4 q"	" [置換モード時]     非点滅下線
-let &t_te .= "\e[0 q"	" [vim 終了時]       デフォルト
+let &t_SR .= "\e[4 q"	" [置換モード時]	 非点滅下線
+let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
 

@@ -36,7 +36,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;***** ホットキー(Global) *****
 	;ホットキー配置表示
 		!^+F1::
-			sFilePath = "C:\other\ホットキー配置.vsdx"
+			sFilePath = "C:\other\グローバルホットキー配置.vsdx"
+			StartProgramAndActivate( "", sFilePath )
+			return
+	;ホットキーフォルダ表示
+		!^+F12::
+			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\$Hotkey"
 			StartProgramAndActivate( "", sFilePath )
 			return
 	
@@ -90,7 +95,6 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			sFilePath = "%DOC_DIR_PATH%\320_【自己啓発】勉強\words.itmz"
 			StartProgramAndActivate( "", sFilePath )
 			return
-	
 	;rapture.exe
 		^+!x::
 			EnvGet, sExePath, MYEXEPATH_RAPTURE
@@ -111,9 +115,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			EnvGet, sExePath, MYEXEPATH_CCALC
 			RunSuppressMultiStart( sExePath, "" )
 			return
-	
 	;Bluetoothテザリング起動
-		^+!F10::
+		^+!b::
 			Run, control printers
 			Sleep 2000
 			Send, myp
@@ -127,7 +130,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Send, !{F4}
 			return
 	;UserDefHotKey.ahk
-		^+!F12::
+		^+!a::
 			EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%A_ScriptFullPath%"
 			StartProgramAndActivate( sExePath, sFilePath )
