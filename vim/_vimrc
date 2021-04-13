@@ -44,8 +44,8 @@
 " =======================================
 if has('unix')
 	source ~/.vim/osc52/osc52.vim
-	vmap y y:call SendViaOSC52(getreg('"'))<cr>
-	nmap yy Vy:call SendViaOSC52(getreg('"'))<cr>
+	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
+	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
 
 " =======================================

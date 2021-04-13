@@ -44,8 +44,8 @@ filetype plugin indent on
 " =======================================
 if has('unix')
 	source ~/.vim/osc52/osc52.vim
-	vmap y y:call SendViaOSC52(getreg('"'))<cr>
-	nmap yy Vy:call SendViaOSC52(getreg('"'))<cr>
+	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
+	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
 
 " =======================================
@@ -274,7 +274,6 @@ endif
 
 "=== ノーマルモード ===
 "	nnoremap	<silent>			<cr>		<nop>|
-	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap				<expr>	gc			":Gc " . expand('<cword>')|						" Grep＠現在ファイル
 	nnoremap				<expr>	gp			":Gp " . expand('<cword>')|						" Grep＠上位階層「tags」格納ディレクトリ配下
 	nnoremap				<expr>	gt			":Gt"|											" Grep(対話型)＠ファイルパスなどを指定
@@ -310,6 +309,7 @@ endif
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
 "	nnoremap	<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
 	nnoremap	<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
+	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap	<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
 	nnoremap	<silent>			<F11>		:set expandtab<cr>:retab!<cr>|					" タブ⇒空白 変換
 	nnoremap	<silent>			<F12>		:set noexpandtab<cr>:retab!<cr>|				" 空白⇒タブ 変換
@@ -829,7 +829,7 @@ endif
 		endif
 		let g:sGrepFileExt = l:sGrepFileExt
 		let l:asFileTypes = split( l:sGrepFileExt, "," )
-		let l:sFileTypeOpt  = ""
+		let l:sFileTypeOpt	= ""
 		for l:sFileType in l:asFileTypes
 			if l:sFileTypeOpt == ""
 				let l:sFileTypeOpt = "--include=" . l:sFileType

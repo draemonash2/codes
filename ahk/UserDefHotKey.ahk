@@ -456,7 +456,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	MuhenkanSimultPush( sSendKey )
 	{
 		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
-			MsgBox !^+{%sSendKey%}
+			Send !^+{%sSendKey%}
 		} else if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P")){
 			Send ^+{%sSendKey%}
 		} else if(GetKeyState("Shift","P") and GetKeyState("Alt","P")){
