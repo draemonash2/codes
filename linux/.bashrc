@@ -128,17 +128,20 @@ alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
 
-# cdコマンド拡張用
+alias ll='ls -lFA --color=auto'
+alias la='ls -AF --color=auto'
+alias l='ls -CF --color=auto'
+alias ff='find . -type f | grep '
+alias fd='find . -type d | grep '
+function gr() {
+	grep -nr "$@" .
+}
+
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
 	ls -lF --color=auto
 }
-
-alias ll='ls -lFA --color=auto'
-alias la='ls -AF --color=auto'
-alias l='ls -CF --color=auto'
-
 alias cd=cdex
 alias cdl='cd /home/draemon_ash3;'
 alias cdw='cd /mnt/c/users/draem;'
