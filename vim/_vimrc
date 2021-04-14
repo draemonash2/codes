@@ -43,7 +43,7 @@
 " <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
 " =======================================
 if has('unix')
-	source ~/.vim/osc52/osc52.vim
+	source ~/.vim/plugin/osc52.vim
 	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
 	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
@@ -128,7 +128,9 @@ endif
 " [参照] http://vimwiki.net/?tips%2F94
 " [参照] https://github.com/koron/vim-kaoriya/issues/9
 " =======================================
+if has('unix')
 	packadd! editexisting
+endif
 
 " =======================================
 " テキストファイルの自動改行抑止設定
@@ -159,6 +161,21 @@ endif
 					\	}
 	let g:lightline.separator = { 'left': '', 'right': '' }
 	let g:lightline.subseparator = { 'left': '', 'right': '|' }
+if has('unix')
+	"unix時は絶対パス(absolutepath)を表示する
+	let g:lightline.active = {
+					\		'left': [
+					\			[ 'mode', 'paste' ],
+					\			[ 'filename' ],
+					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified' ]
+					\		],
+					\		'right': [
+					\			[ 'rangediff' ],
+					\			[ 'lineinfo', 'percent' ],
+					\			[ 'fileformat', 'fileencoding', 'filetype' ]
+					\		]
+					\	}
+else
 	let g:lightline.active = {
 					\		'left': [
 					\			[ 'mode', 'paste' ],
@@ -171,6 +188,7 @@ endif
 					\			[ 'fileformat', 'fileencoding', 'filetype' ]
 					\		]
 					\	}
+endif
 	let g:lightline.component_function = {
 					\		'rangediff': 'GetSelRngDiff'
 					\	}

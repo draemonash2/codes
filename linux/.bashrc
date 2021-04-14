@@ -59,10 +59,10 @@ fi
 if [ "$color_prompt" = yes ]; then
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
 #   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-#   PS1='\n\[\e[37;42m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\T \[\e[37;46m\] \w \[\e[00;36;49m\] \[\e[00m\]\$ '
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
+	PS1='\n\[\e[37;42m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%s/%d %H:%M:%S} \[\e[37;46m\] \w \[\e[00;36;49m\] \[\e[00m\]\$ '
+#	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h->\t->\w \$ '
 fi
 unset color_prompt force_color_prompt
 
@@ -119,20 +119,20 @@ if ! shopt -oq posix; then
   fi
 fi
 
+#WSL2 specific settings
 alias he='export HOME=/home/draemon_ash3; cd ~; . .bashrc; pwd;'	# change Home directory alias for draemon_ash3
+alias exp='explorer.exe .'											# open current directory with explorer.exe
 
-alias exp='explorer.exe .'						# open current directory with explorer.exe (WSL2 specific settings)
-
-alias br='vim ~/.bashrc; source ~/.bashrc'
+alias br='vim ~/.bashrc; . ~/.bashrc'
 alias vr='vim ~/.vimrc'
+alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
+alias sr='vim ~/.screenrc'
 
 # cdコマンド拡張用
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
-	echo -n "[pwd] "
 	pwd
-	echo -n "[ls ] "
-	ls -AF --color=auto
+	ls -lF --color=auto
 }
 
 alias ll='ls -lFA --color=auto'
@@ -145,6 +145,7 @@ alias cdw='cd /mnt/c/users/draem;'
 alias ..='cd ..;'
 alias ...='cd ../..;'
 alias ....='cd ../../..;'
+alias .....='cd ../../../..;'
 
 alias cp='cp -i'
 alias mv='mv -i'

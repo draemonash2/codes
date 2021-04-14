@@ -7,29 +7,29 @@
 "  ・プラグイン https://qiita.com/tanabee/items/e2064c5ce59c85915940
 "  ・プラグインサイト https://vimawesome.com/
 " =======================================
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-Plugin 'VundleVim/Vundle.vim'
-
-" ▼▼▼インストールプラグインパスここから▼▼▼
-" ex. Plugin '[Github Author]/[Github repo]'
-Plugin 'roblillack/vim-bufferlist'
-Plugin 'Align'
-Plugin 'FavEx'
-Plugin 'gtags.vim'
-Plugin 'itchyny/lightline.vim'
-Plugin 'mbriggs/mark.vim'
-Plugin 'thinca/vim-qfreplace'
-Plugin 'anyakichi/vim-surround'
-Plugin 'vim-scripts/jellybeans.vim'
-Plugin 'fuenor/qfixgrep'
-" ▲▲▲インストールプラグインパスここまで▲▲▲
-
-call vundle#end()
-filetype plugin indent on
+"set nocompatible
+"filetype off
+"set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#begin()
+"
+"Plugin 'VundleVim/Vundle.vim'
+"
+"" ▼▼▼インストールプラグインパスここから▼▼▼
+"" ex. Plugin '[Github Author]/[Github repo]'
+"Plugin 'roblillack/vim-bufferlist'
+"Plugin 'Align'
+"Plugin 'FavEx'
+"Plugin 'gtags.vim'
+"Plugin 'itchyny/lightline.vim'
+"Plugin 'mbriggs/mark.vim'
+"Plugin 'thinca/vim-qfreplace'
+"Plugin 'anyakichi/vim-surround'
+"Plugin 'vim-scripts/jellybeans.vim'
+"Plugin 'fuenor/qfixgrep'
+"" ▲▲▲インストールプラグインパスここまで▲▲▲
+"
+"call vundle#end()
+"filetype plugin indent on
 
 " =======================================
 " リモート越しのローカルコピー
@@ -43,7 +43,7 @@ filetype plugin indent on
 " <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
 " =======================================
 if has('unix')
-	source ~/.vim/osc52/osc52.vim
+	source ~/.vim/plugin/osc52.vim
 	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
 	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
@@ -128,7 +128,9 @@ endif
 " [参照] http://vimwiki.net/?tips%2F94
 " [参照] https://github.com/koron/vim-kaoriya/issues/9
 " =======================================
+if has('unix')
 	packadd! editexisting
+endif
 
 " =======================================
 " テキストファイルの自動改行抑止設定
@@ -159,6 +161,21 @@ endif
 					\	}
 	let g:lightline.separator = { 'left': '', 'right': '' }
 	let g:lightline.subseparator = { 'left': '', 'right': '|' }
+if has('unix')
+	"unix時は絶対パス(absolutepath)を表示する
+	let g:lightline.active = {
+					\		'left': [
+					\			[ 'mode', 'paste' ],
+					\			[ 'filename' ],
+					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified' ]
+					\		],
+					\		'right': [
+					\			[ 'rangediff' ],
+					\			[ 'lineinfo', 'percent' ],
+					\			[ 'fileformat', 'fileencoding', 'filetype' ]
+					\		]
+					\	}
+else
 	let g:lightline.active = {
 					\		'left': [
 					\			[ 'mode', 'paste' ],
@@ -171,6 +188,7 @@ endif
 					\			[ 'fileformat', 'fileencoding', 'filetype' ]
 					\		]
 					\	}
+endif
 	let g:lightline.component_function = {
 					\		'rangediff': 'GetSelRngDiff'
 					\	}
@@ -346,6 +364,7 @@ endif
 
 "=== ヴィジュアルモード ===
 	vnoremap	<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ→空白変換後にコピー
+	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
 	vnoremap	<silent>			<F3>		:s/\s*$//<cr>:nohlsearch<cr>|					" 末尾の空白を削除
@@ -497,14 +516,15 @@ endif
 	let $CTAGS = expand( "$MYEXEPATH_CTAGS" )
 	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
 	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
-	let $MARKVIM = expand( "~/.vim/bundle/mark.vim/plugin/mark.vim" )
-	if has('unix')
-		let g:sSysPathDlmtr = '/'
-		let g:sSysPathPrefix = '/'
-	else
-		let g:sSysPathDlmtr = '\'
-		let g:sSysPathPrefix = ''
-	endif
+if has('unix')
+	let $MARKVIM = expand( "$HOME/.vim/plugin/mark.vim" )
+	let g:sSysPathDlmtr = '/'
+	let g:sSysPathPrefix = '/'
+else
+	let $MARKVIM = expand( "$VIM/_plugins_user/mark.vim/plugin/mark.vim" )
+	let g:sSysPathDlmtr = '\'
+	let g:sSysPathPrefix = ''
+endif
 	let g:sProjectRootFileName = "tags"
 
 " ==============================================================================
@@ -585,11 +605,10 @@ endif
 " ==============================================================================
 " window位置の保存と復帰
 " ==============================================================================
-	if has('unix')
-		let s:infofile = '$VIM/.vim/.vimpos'
-	else
-		let s:infofile = '$VIM/_vimpos'
-	endif
+if has('unix')
+	"do nothing
+else
+	let s:infofile = '$VIM/_vimpos'
 	
 	function! s:savewindowparam(filename)
 		redir => pos
@@ -619,6 +638,7 @@ endif
 		execute 'source '.s:infofile
 	endif
 	unlet s:infofile
+endif
 
 " ==============================================================================
 " 挿入モード時、ステータスラインの色を変更
@@ -721,7 +741,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.c,*.h,*.cpp"
+	let g:sGrepFileExt = "*.c,*.h,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
@@ -1384,8 +1404,8 @@ endif
 " 辞書ファイル登録
 " [参考] https://nanasi.jp/articles/howto/config/dictionary.html
 " ==============================================================================
-"autocmd FileType vb :set dictionary=$VIM/vbscript.dict<CR>
-autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
+"	autocmd FileType vb :set dictionary=$VIM/vbscript.dict<CR>
+	autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
@@ -1460,6 +1480,7 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " [参照] http://nanasi.jp/articles/vim/mark_vim.html
 " ==============================================================================
 	execute 'source ' . $MARKVIM
+	command! -nargs=? M execute 'source ' . $MARKVIM
 
 " ==============================================================================
 " winresizer.vim 設定
@@ -1471,12 +1492,16 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " qfixgrep 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
-	set runtimepath+=~/.vim/bundle/qfixgrep
+if has('unix')
+	let QFix_PreviewHeight = 25
+	let QFix_Height = 25
+else
+	let QFix_PreviewHeight = 12
+endif
 	let MyGrep_Commands = 1
 	let mygrepprg = 'grep'
 	let QFixWin_EnableMode = 1		" QuickFixウィンドウでもプレビューや絞り込みを有効化
 	let QFix_UseLocationList = 0	" QFixHowm/QFixGrepの結果表示にロケーションリストを使用する/しない
-	let QFix_PreviewHeight = 12
 "	set shellslash					" Windowsの場合は、shellslash を設定してやると、パスの表記が簡単になります。ex) let MyGrep_ExcludeReg = '/CVS/'
 	let MyGrep_ExcludeReg = '[~#]$\|\.bak$\|\.o$\|\.obj$\|\.exe$\|[/\\]tags$\|^tags$'
 "	let MyGrep_Encoding = 'cp932'	"cp932を扱えないGNU grepの場合
@@ -1497,9 +1522,10 @@ autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 " INSERT mode に入るときにカーソル形状を変える
 " [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
 " ==============================================================================
-let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
-let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
-let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
-let &t_SR .= "\e[4 q"	" [置換モード時]	 非点滅下線
-let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
+if has('unix')
+	let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
+	let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
+	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
+	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
+endif
 
