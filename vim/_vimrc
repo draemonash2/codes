@@ -129,6 +129,8 @@ endif
 " [参照] https://github.com/koron/vim-kaoriya/issues/9
 " =======================================
 if has('unix')
+	"do nothing
+else
 	packadd! editexisting
 endif
 
