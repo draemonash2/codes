@@ -17,7 +17,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 '= ê›íËíl
 '===============================================================================
-Const lMAX_BAK_FILE_NUM_DEFAULT = 10
+Const lMAX_BAK_FILE_NUM_DEFAULT = 50
 Const sBAK_DIR_NAME = "_bak"
 Const sBAK_FILE_SUFFIX = "#b#"
 
