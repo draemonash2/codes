@@ -32,23 +32,6 @@
 "filetype plugin indent on
 
 " =======================================
-" リモート越しのローカルコピー
-" <usage>
-"   1. ターミナルソフトの設定を行う(以下はRLogin時の手順)
-"     1-1. Server Edit Entryを開く
-"     1-2. [クリップボード]→[制御コードによるクリップボード操作]
-"     1-3. [OSC 52 によるクリップボードの書き込みを許可する]にチェック
-"   2. osc52.vimをpluguinに格納
-"   3. 格納先を以下のsource osc.vim
-" <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
-" =======================================
-if has('unix')
-	source ~/.vim/plugin/osc52.vim
-	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
-	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
-endif
-
-" =======================================
 " ファイルパス存在チェック
 " <usage>
 "   call CheckPathExists( $CTAGS )
@@ -64,7 +47,11 @@ endif
 " =======================================
 " ユーザー定義プラグインフォルダを runtimepath に追加
 " =======================================
+if has('unix')
+	let $USERPLUGINS = $HOME . '/.vim/_plugins_user'
+else
 	let $USERPLUGINS = $VIM . '/_plugins_user'
+endif
 	for s:path in split(glob( $USERPLUGINS . '/*'), '\n')
 		if s:path !~# '\~$' && isdirectory(s:path)
 			let &runtimepath = &runtimepath.','.s:path
@@ -74,7 +61,11 @@ endif
 " =======================================
 " ユーザー定義エクステンションを path に追加
 " =======================================
+if has('unix')
+	let $EXTENTION = $HOME . '/.vim/_extention'
+else
 	let $EXTENTION = $VIM . '/_extention'
+endif
 	for s:path in split(glob( $EXTENTION . '/*'), '\n')
 		if s:path !~# '\~$' && isdirectory(s:path)
 			let $PATH .= ';' . s:path
@@ -194,6 +185,21 @@ endif
 	let g:lightline.component_function = {
 					\		'rangediff': 'GetSelRngDiff'
 					\	}
+
+" =======================================
+" osc52 設定（リモート越しのローカルコピー）
+" <usage>
+"   1. ターミナルソフトの設定を行う(以下はRLogin時の手順)
+"     1-1. Server Edit Entryを開く
+"     1-2. [クリップボード]→[制御コードによるクリップボード操作]
+"     1-3. [OSC 52 によるクリップボードの書き込みを許可する]にチェック
+"   2. osc52.vimをプラグインフォルダに格納
+" <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
+" =======================================
+if has('unix')
+	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
+	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
+endif
 
 " ==============================================================================
 " ビジュアルモード文字数カウント
@@ -461,7 +467,11 @@ endif
 	set writebackup										" ファイルの上書きの前にバックアップを作る
 														" set writebackupを指定してもオプション 'backup' がオンでない限り、
 														" バックアップは上書きに成功した後に削除される。
+if has('unix')
+	set viminfo+=n$HOME/.vim/.viminfo					" VIMINFO ファイル出力先設定
+else
 	set viminfo+=n$VIM/_viminfo							" VIMINFO ファイル出力先設定
+endif
 	set hidden											" 編集結果非保存のバッファから、新しいバッファを開くときに警告を出さない
 	set history=50										" ヒストリの保存数
 	set textwidth=0										" 一行が長くなった場合の自動改行を抑止する
@@ -519,7 +529,7 @@ endif
 	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
 	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
 if has('unix')
-	let $MARKVIM = expand( "$HOME/.vim/plugin/mark.vim" )
+	let $MARKVIM = expand( "$HOME/.vim/_plugins_user/mark.vim/plugin/mark.vim" )
 	let g:sSysPathDlmtr = '/'
 	let g:sSysPathPrefix = '/'
 else
@@ -1406,8 +1416,22 @@ endif
 " 辞書ファイル登録
 " [参考] https://nanasi.jp/articles/howto/config/dictionary.html
 " ==============================================================================
-"	autocmd FileType vb :set dictionary=$VIM/vbscript.dict<CR>
+if has('unix')
+	autocmd FileType vb :set dictionary=$HOME/.vim/_dictionary/vbscript.dict
+else
 	autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
+endif
+
+" ==============================================================================
+" INSERT mode に入るときにカーソル形状を変える
+" [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
+" ==============================================================================
+if has('unix')
+	let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
+	let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
+	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
+	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
+endif
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
@@ -1518,16 +1542,14 @@ endif
 " ==============================================================================
 " neosnippet設定
 " ==============================================================================
+if has('unix')
+	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
+else
 	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
+endif
 
 " ==============================================================================
-" INSERT mode に入るときにカーソル形状を変える
-" [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
+" showmarks 設定
 " ==============================================================================
-if has('unix')
-	let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
-	let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
-	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
-	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
-endif
+	autocmd VimEnter * DoShowMarks!
 
