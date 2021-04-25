@@ -25,7 +25,6 @@ Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Lon
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
 #End If
-'GlobalALock
 Private Const GHND = &H42
 Private Const CF_TEXT = &H1
 Private Const CF_LINK = &HBF00
@@ -100,10 +99,10 @@ Public Function SetToClipboard( _
     End If
     SetToClipboard = bResult
 End Function
-    Private Function Test_SetToClipboard()
+    Private Sub Test_SetToClipboard()
         Dim bResult As Boolean
         bResult = SetToClipboard("cliptest" & vbNewLine & "test"): Debug.Print bResult
-    End Function
+    End Sub
 
 ' ==================================================================
 ' = 概要    クリップボードからテキストを取得（Win32Apiを使用）
@@ -174,9 +173,9 @@ Public Function GetFromClipboard( _
     End If
     GetFromClipboard = bResult
 End Function
-    Private Function Test_GetFromClipboard()
+    Private Sub Test_GetFromClipboard()
         Dim sStr As String
         Dim bResult As Boolean
         bResult = GetFromClipboard(sStr): Debug.Print bResult & ":" & sStr
-    End Function
+    End Sub
 
