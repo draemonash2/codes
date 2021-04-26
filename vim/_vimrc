@@ -197,6 +197,7 @@ endif
 " <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
 " =======================================
 if has('unix')
+	execute 'source '. expand( "$HOME/.vim/_plugins_user/osc52/plugin/osc52.vim" )
 	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
 	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
