@@ -382,6 +382,8 @@ endif
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
+	vnoremap	<silent>			<F11>		<esc>:set expandtab<cr>gv:retab!<cr>|			" タブ⇒空白 変換
+	vnoremap	<silent>			<F12>		<esc>:set noexpandtab<cr>gv:retab!<cr>|			" 空白⇒タブ 変換
 	vnoremap	<silent>			<c-F5>		:<bs><bs><bs><bs><bs>call CopyFileLineNo()<cr>| " 行番号コピー
 "	vnoremap	<silent>			d			"_d|											" 削除（切取りなし）
 "	vnoremap	<silent>			c			d|												" 切取り

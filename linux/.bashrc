@@ -153,6 +153,7 @@ alias .....='cd ../../../..;'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
+alias rmi='rm -i'
 
 alias sht='sudo shutdown -h now'
 
