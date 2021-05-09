@@ -1,3 +1,0 @@
-test
-mod at raspi
-mod ad hppc
