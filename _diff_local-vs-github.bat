@@ -3,4 +3,3 @@ echo githubからダウンロードして比較します。
 echo %MYDIRPATH_CODES%内の_localフォルダを比較します。
 "%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffLocalDirs.vbs" "%~dp0"
 
-::gittest
