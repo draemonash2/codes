@@ -133,6 +133,7 @@ alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
 alias ff='find . -type f | grep '
 alias fd='find . -type d | grep '
+alias diff='\diff --color'
 function gr() {
 	grep -nr "$@" .
 }
