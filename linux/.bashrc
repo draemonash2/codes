@@ -140,7 +140,7 @@ function gr() {
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
-	ls -lF --color=auto
+	ll
 }
 alias cd=cdex
 alias cdl='cd /home/draemon_ash3;'
