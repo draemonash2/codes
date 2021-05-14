@@ -260,6 +260,7 @@ End Function
 ' = 引数    lNamingRuleType Long    [in]    命名規則種別
 ' =                                           1(短縮モード)  : YYMMDD-HHMM
 ' =                                           2(短縮モード2) : YYMMDD
+' =                                           2(短縮モード3) : YYMMDDHHMM
 ' =                                           other          : YYYYMMDD-HHMMSS
 ' = 戻値                    String          変換後 日時文字列
 ' = 覚書    ・主に日時をファイル名やフォルダ名に使用する際に使用する。
@@ -287,6 +288,13 @@ Public Function ConvDate2String( _
                 Right(Year(sDateBfr), 2) & _
                 String(2 - Len(Month(sDateBfr)),  "0") & Month(sDateBfr)  & _
                 String(2 - Len(Day(sDateBfr)),    "0") & Day(sDateBfr)
+        Case 3  '短縮モード3
+            sDateAfr = _
+                Right(Year(sDateBfr), 2) & _
+                String(2 - Len(Month(sDateBfr)),  "0") & Month(sDateBfr)  & _
+                String(2 - Len(Day(sDateBfr)),    "0") & Day(sDateBfr)    & _
+                String(2 - Len(Hour(sDateBfr)),   "0") & Hour(sDateBfr)   & _
+                String(2 - Len(Minute(sDateBfr)), "0") & Minute(sDateBfr)
         Case Else
             sDateAfr = _
                 String(4 - Len(Year(sDateBfr)),   "0") & Year(sDateBfr)   & _
@@ -320,6 +328,10 @@ End Function
         Result = Result & vbNewLine & ConvDate2String("2001/1/1 21:23:45", 2)   ' 010101
         Result = Result & vbNewLine & ConvDate2String("1986/01/01 0:0:0", 2)    ' 860101
         Result = Result & vbNewLine & ConvDate2String("2001/12/31", 2)          ' 011231
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31 21:23:45", 3) ' 0112312123
+        Result = Result & vbNewLine & ConvDate2String("2001/1/1 21:23:45", 3)   ' 0101012123
+        Result = Result & vbNewLine & ConvDate2String("1986/01/01 0:0:0", 3)    ' 8601010000
+        Result = Result & vbNewLine & ConvDate2String("2001/12/31", 3)          ' 0112310000
         Result = Result & vbNewLine & ConvDate2String("01/12/31 21:23:45", 0)   ' 20011231-212345
         Result = Result & vbNewLine & ConvDate2String("96/12/31 21:23:45", 0)   ' 19960101-212345
         

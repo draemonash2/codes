@@ -4,12 +4,13 @@
 '####################################################################
 '### 設定
 '####################################################################
-Const ADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
-Const EVACUATE_ORG_FILE = True
-Const CHOOSE_FILE_AT_DIALOG_BOX = True
-Const SHORTCUT_FILE_SUFFIX = "#s#"
-Const ORIGINAL_FILE_PREFIX = "#o#"
-Const EDIT_FILE_PREFIX     = "#e#"
+Const lADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
+Const lDATE_STR_TYPE = 3
+Const bEVACUATE_ORG_FILE = True
+Const bCHOOSE_FILE_AT_DIALOG_BOX = True
+Const sSHORTCUT_FILE_SUFFIX = "s"
+Const sORIGINAL_FILE_PREFIX = "o"
+Const sEDIT_FILE_PREFIX     = "e"
 Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"
 
 '####################################################################
@@ -105,7 +106,7 @@ If bIsContinue = True Then
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
     
     Dim sDstParDirPath
-    If CHOOSE_FILE_AT_DIALOG_BOX = True Then
+    If bCHOOSE_FILE_AT_DIALOG_BOX = True Then
         'フォルダ選択ダイアログ表示＠BrowseForFolder(Shell.Application)
         '  →初期パスを指定できないため、使用しない
         'Dim objFolder
@@ -133,8 +134,8 @@ End If
 '*** 退避用フォルダ作成 ***
 If bIsContinue = True Then
     Dim sDstParEvaDirPath
-    If EVACUATE_ORG_FILE = True Then
-        sDstParEvaDirPath = sDstParDirPath & "\_" & ORIGINAL_FILE_PREFIX
+    If bEVACUATE_ORG_FILE = True Then
+        sDstParEvaDirPath = sDstParDirPath & "\_#" & sORIGINAL_FILE_PREFIX & "#"
         'フォルダ作成
         If objFSO.FolderExists( sDstParEvaDirPath ) = False Then
             objFSO.CreateFolder( sDstParEvaDirPath )
@@ -164,15 +165,15 @@ If bIsContinue = True Then
         '### ファイル ###
         If bFolderExists = False And bFileExists = True Then
             '追加文字列取得＆整形
-            If ADD_DATE_TYPE = 1 Then
-                sAddDate = ConvDate2String( Now(), 1 )
-            ElseIf ADD_DATE_TYPE = 2 Then
+            If lADD_DATE_TYPE = 1 Then
+                sAddDate = ConvDate2String( Now(), lDATE_STR_TYPE )
+            ElseIf lADD_DATE_TYPE = 2 Then
                 Dim objFile
                 Set objFile = objFSO.GetFile( sSelectedPath )
-                sAddDate = ConvDate2String( objFile.DateLastModified, 1 )
+                sAddDate = ConvDate2String( objFile.DateLastModified, lDATE_STR_TYPE )
                 Set objFile = Nothing
             Else
-                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
+                MsgBox "「lADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
                 MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
                 Exit For
             End If
@@ -183,9 +184,9 @@ If bIsContinue = True Then
             sSrcFileName = objFSO.GetFileName( sSelectedPath )
             sSrcFileBaseName = objFSO.GetBaseName( sSelectedPath )
             sSrcFileExt = objFSO.GetExtensionName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & EDIT_FILE_PREFIX     & sAddDate & "#." & sSrcFileExt
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & ORIGINAL_FILE_PREFIX & sAddDate & "#." & sSrcFileExt
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & SHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & "_#" & sEDIT_FILE_PREFIX     & sAddDate & "#." & sSrcFileExt
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & "_#" & sORIGINAL_FILE_PREFIX & sAddDate & "#." & sSrcFileExt
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & "_#" & sSHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
             
             'ファイルコピー
             objFSO.CopyFile sSelectedPath, sDstCpyFilePath, True
@@ -200,24 +201,24 @@ If bIsContinue = True Then
         '### フォルダ ###
         ElseIf bFolderExists = True And bFileExists = False Then
             '追加文字列取得＆整形
-            If ADD_DATE_TYPE = 1 Then
-                sAddDate = ConvDate2String( Now(), 1 )
-            ElseIf ADD_DATE_TYPE = 2 Then
+            If lADD_DATE_TYPE = 1 Then
+                sAddDate = ConvDate2String( Now(), lDATE_STR_TYPE )
+            ElseIf lADD_DATE_TYPE = 2 Then
                 Dim objFolder
                 Set objFolder = objFSO.GetFolder( sSelectedPath )
-                sAddDate = ConvDate2String( objFolder.DateLastModified, 1 )
+                sAddDate = ConvDate2String( objFolder.DateLastModified, lDATE_STR_TYPE )
                 Set objFolder = Nothing
             Else
-                MsgBox "「ADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
+                MsgBox "「lADD_DATE_TYPE」の指定が誤っています！", vbOKOnly, sPROG_NAME
                 MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
                 Exit For
             End If
             
             Dim sSrcDirName
             sSrcDirName = objFSO.GetFileName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & EDIT_FILE_PREFIX     & sAddDate & "#"
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & ORIGINAL_FILE_PREFIX & sAddDate & "#"
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & SHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & "_#" & sEDIT_FILE_PREFIX     & sAddDate & "#"
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & "_#" & sORIGINAL_FILE_PREFIX & sAddDate & "#"
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & "_#" & sSHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
             
             'フォルダコピー
             objFSO.CopyFolder sSelectedPath, sDstCpyFilePath, True
