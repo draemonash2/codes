@@ -238,6 +238,7 @@ If bIsContinue = True Then
         End If
     Next
     
+    '*** フォルダを開く ***
     CreateObject("Shell.Application").Explore sDstParDirPath
     
     Set objFSO = Nothing

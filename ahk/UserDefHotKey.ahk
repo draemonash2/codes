@@ -1,10 +1,12 @@
 ﻿	#NoEnv							; 通常、値が割り当てられていない変数名を参照しようとしたとき、システムの環境変数に同名の変数がないかを調べ、
 	
 									; もし存在すればその環境変数の値が参照される。スクリプト中に #NoEnv を記述することにより、この動作を無効化できる。
+;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
 ;	#Warn							; Enable warnings to assist with detecting common errors.
 	SendMode Input					; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 ;	SetWorkingDir %A_ScriptDir%		; スクリプトの作業ディレクトリを本スクリプトの格納ディレクトリに変更。
 	#SingleInstance force			; このスクリプトが再度呼び出されたらリロードして置き換え
+	#HotkeyModifierTimeout 100		; キーボードフックなしでホットキー中でSendコマンドを使用したときに修飾キーの状態を復元しなくなるタイムアウト時間を設定。
 
 	#Include %A_ScriptDir%\lib\IME.ahk
 
@@ -208,6 +210,16 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Sleep 200
 			Send, openload
 			return
+	;	^1::
+	;		MouseGetPos,x,y,hwnd,ctrl,3
+	;		MouseClick, left, 1209, 932
+	;		Sleep 100
+	;		MouseClick, left, 1127, 1184
+	;		Sleep 100
+	;		MouseClick, left, 2089, 302
+	;		Sleep 100
+	;		MouseMove, x, y
+	;		return
 
 ;***** ホットキー(Software local) *****
 	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
