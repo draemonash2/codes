@@ -193,11 +193,11 @@ endif
 "	set cursorcolumn									" カーソル列を目立たせる
 "	set cursorline										" カーソル行を目立たせる
 	set title											" タイトルを表示
-if has('unix')
-	set fileformat=unix									" 改行をUnixの形式に変更。
-else
-	set fileformat=dos									" 改行をWindowsの形式に変更。
-endif
+"if has('unix')
+"	set fileformat=unix									" 改行をUnixの形式に変更。
+"else
+"	set fileformat=dos									" 改行をWindowsの形式に変更。
+"endif
 	set scrolloff=5										" カーソル周辺行数
 "	set swapfile										" スワップファイル(.swpファイル)を作成する
 "	set directory=$VIM/__swapfiles						" スワップファイル(.swpファイル)の出力先を指定

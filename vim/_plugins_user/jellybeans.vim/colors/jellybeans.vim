@@ -24,11 +24,11 @@
 "
 " Copyright (c) 2009-2012 NanoTech
 "
-" Permission is hereby granted, free of charge, to any per‚Äê
-" son obtaining a copy of this software and associated doc‚Äê
-" umentation  files  (the ‚ÄúSoftware‚Äù), to deal in the Soft‚Äê
+" Permission is hereby granted, free of charge, to any perÅ]
+" son obtaining a copy of this software and associated docÅ]
+" umentation  files  (the ÅgSoftwareÅh), to deal in the SoftÅ]
 " ware without restriction,  including  without  limitation
-" the rights to use, copy, modify, merge, publish, distrib‚Äê
+" the rights to use, copy, modify, merge, publish, distribÅ]
 " ute, sublicense, and/or sell copies of the Software,  and
 " to permit persons to whom the Software is furnished to do
 " so, subject to the following conditions:
@@ -37,13 +37,13 @@
 " shall  be  included in all copies or substantial portions
 " of the Software.
 "
-" THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY
+" THE SOFTWARE IS PROVIDED ÅgAS ISÅh, WITHOUT WARRANTY OF ANY
 " KIND,  EXPRESS  OR  IMPLIED, INCLUDING BUT NOT LIMITED TO
-" THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICU‚Äê
+" THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICUÅ]
 " LAR  PURPOSE  AND  NONINFRINGEMENT. IN NO EVENT SHALL THE
 " AUTHORS OR COPYRIGHT HOLDERS BE  LIABLE  FOR  ANY  CLAIM,
-" DAMAGES  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CON‚Äê
-" TRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CON‚Äê
+" DAMAGES  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONÅ]
+" TRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONÅ]
 " NECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 " THE SOFTWARE.
 
@@ -314,7 +314,7 @@ if version >= 700
   call s:X("CursorLine","","1c1c1c","","",s:termBlack)
   call s:X("CursorColumn","","1c1c1c","","",s:termBlack)
   call s:X("MatchParen","ffffff","556779","bold","","DarkCyan")
-  "‚òÖcustom mod <top>
+  "Åöcustom mod <top>
   call s:X("TabLine","ffffff","404040","","",s:termBlack)
   call s:X("TabLineFill","9098a0","202020","","",s:termBlack)
   call s:X("TabLineSel","314200","9ad000","bold",s:termBlack,"White")
@@ -324,13 +324,13 @@ if version >= 700
 " call s:X("TabLine","ffffff","808080","","",s:termBlack)
 " call s:X("TabLineFill","9098a0","f0f0f0","","",s:termBlack)
 " call s:X("TabLineSel","f0f0f0","","bold",s:termBlack,"White")
-  "‚òÖcustom mod <end>
+  "Åöcustom mod <end>
 
   " Auto-completion
-  "‚òÖcustom mod <top>
+  "Åöcustom mod <top>
  "call s:X("Pmenu","ffffff","606060","","White",s:termBlack)
   call s:X("Pmenu","ffffff","4f6228","","White",s:termBlack)
-  "‚òÖcustom mod <end>
+  "Åöcustom mod <end>
   call s:X("PmenuSel","101010","eeeeee","",s:termBlack,"White")
 endif
 
@@ -339,15 +339,15 @@ call s:X("Cursor",g:jellybeans_background_color,"b0d0f0","","","")
 
 call s:X("LineNr","605958",g:jellybeans_background_color,"none",s:termBlack,"")
 call s:X("CursorLineNr","ccc5c4","","none","White","")
-call s:X("Comment","888888","","","Grey","")	"‚òÖcustom mod: del italic
+call s:X("Comment","888888","","","Grey","")	"Åöcustom mod: del italic
 call s:X("Todo","c7c7c7","","bold","White",s:termBlack)
 
-call s:X("StatusLine","000000","dddddd","","","White")	"‚òÖcustom mod: del italic
-call s:X("StatusLineNC","ffffff","403c41","","White","Black")	"‚òÖcustom mod: del italic
+call s:X("StatusLine","000000","dddddd","","","White")	"Åöcustom mod: del italic
+call s:X("StatusLineNC","ffffff","403c41","","White","Black")	"Åöcustom mod: del italic
 call s:X("VertSplit","777777","403c41","",s:termBlack,s:termBlack)
 call s:X("WildMenu","f0a0c0","302028","","Magenta","")
 
-call s:X("Folded","a0a8b0","384048","",s:termBlack,"")	"‚òÖcustom mod: del italic
+call s:X("Folded","a0a8b0","384048","",s:termBlack,"")	"Åöcustom mod: del italic
 call s:X("FoldColumn","535D66","1f1f1f","","",s:termBlack)
 call s:X("SignColumn","777777","333333","","",s:termBlack)
 call s:X("ColorColumn","","000000","","",s:termBlack)

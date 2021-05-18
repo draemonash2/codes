@@ -1,6 +1,6 @@
 "================================================================================
-"    Description: QFixGrep (æ—¥æœ¬èªGrepãƒ˜ãƒ«ãƒ‘ãƒ¼)
-"                 æœ¬ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã¯ã‚­ãƒ¼ãƒãƒƒãƒ—ç­‰ã®ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ã®ã¿è¨­å®šã—ã¦ã„ã‚‹
+"    Description: QFixGrep (“ú–{ŒêGrepƒwƒ‹ƒp[)
+"                 –{ƒvƒ‰ƒOƒCƒ“‚ÍƒL[ƒ}ƒbƒv“™‚Ìƒtƒƒ“ƒgƒGƒ“ƒh‚Ì‚İİ’è‚µ‚Ä‚¢‚é
 "                 grep     : qfixlist.vim
 "                 QuickFix : myqfix.vim
 "         Author: fuenor <fuenor@gmail.com>
@@ -10,23 +10,23 @@ let s:version = 300
 scriptencoding utf-8
 
 "  Install:
-"    ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¨qfixlist.vimã‚’ãƒ©ãƒ³ã‚¿ã‚¤ãƒ ãƒ‘ã‚¹ã®é€šã£ãŸå ´æ‰€ã¸ã‚³ãƒ”ãƒ¼ã—ã¦ãã ã•
-"    ã„ã€‚
-"    qfixlist.vimã¯autoloadå¯¾å¿œãªã®ã§autoloadãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ã‚‚ã‹ã¾ã„ã¾ã›ã‚“ã€‚
-"    ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼è¡¨ç¤ºã‚„çµã‚Šè¾¼ã¿æ¤œç´¢ç­‰ã«ã¯myqfix.vimã‚‚å¿…è¦ã§ã™ã€‚
+"    ‚±‚Ìƒtƒ@ƒCƒ‹‚Æqfixlist.vim‚ğƒ‰ƒ“ƒ^ƒCƒ€ƒpƒX‚Ì’Ê‚Á‚½êŠ‚ÖƒRƒs[‚µ‚Ä‚­‚¾‚³
+"    ‚¢B
+"    qfixlist.vim‚Íautoload‘Î‰‚È‚Ì‚ÅautoloadƒfƒBƒŒƒNƒgƒŠ‚Å‚à‚©‚Ü‚¢‚Ü‚¹‚ñB
+"    ƒvƒŒƒrƒ…[•\¦‚âi‚è‚İŒŸõ“™‚É‚Ímyqfix.vim‚à•K—v‚Å‚·B
 "
-"    * Windowsã®grep
-"      grep.exeãŒã‚ã‚‹å ´åˆã¯ mygrepprgã‚’è¨­å®šã—ã¦ãã ã•ã„ã€‚
+"    * Windows‚Ìgrep
+"      grep.exe‚ª‚ ‚éê‡‚Í mygrepprg‚ğİ’è‚µ‚Ä‚­‚¾‚³‚¢B
 "        let mygrepprg='c:/cygwin/bin/grep'
 "        let mygrepprg='grep'
 "
-"        ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯findstrãŒä½¿ç”¨ã•ã‚Œã¾ã™ãŒã€utf-8ç­‰ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯æ¤œç´¢ã§ãã¾
-"        ã›ã‚“ã—æ­£è¦è¡¨ç¾ã¯è²§å¼±ã§ã™ã€‚
-"        è©³ã—ãã¯ä»¥ä¸‹ã‚’å‚ç…§ã—ã¦ãã ã•ã„ã€‚
+"        ƒfƒtƒHƒ‹ƒg‚Å‚Ífindstr‚ªg—p‚³‚ê‚Ü‚·‚ªAutf-8“™‚Ìƒtƒ@ƒCƒ‹‚ÍŒŸõ‚Å‚«‚Ü
+"        ‚¹‚ñ‚µ³‹K•\Œ»‚Í•nã‚Å‚·B
+"        Ú‚µ‚­‚ÍˆÈ‰º‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B
 "        http://sites.google.com/site/fudist/Home/grep
 "
-"    å¥½ã¿ã®grepã‚³ãƒãƒ³ãƒ‰ã‚’ä½œæˆã—ãŸã„å ´åˆã¯ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦æ”¹å¤‰ã—ã¦ãã 
-"    ã•ã„ã€‚
+"    D‚İ‚ÌgrepƒRƒ}ƒ“ƒh‚ğì¬‚µ‚½‚¢ê‡‚Í‚±‚Ìƒtƒ@ƒCƒ‹‚ğƒRƒs[‚µ‚Ä‰ü•Ï‚µ‚Ä‚­‚¾
+"    ‚³‚¢B
 
 function! qfixgrep#init()
 endfunction
@@ -46,7 +46,7 @@ if v:version < 700
 endif
 let s:debug = exists('g:fudist') ? g:fudist : 0
 
-" let mygrepprg=findstr, let mygrepprg=grepã§åˆ‡ã‚Šæ›¿ãˆå¯èƒ½ã«
+" let mygrepprg=findstr, let mygrepprg=grep‚ÅØ‚è‘Ö‚¦‰Â”\‚É
 if !exists('g:grep') && exists('g:mygrepprg')
   let g:grep = g:mygrepprg
 endif
@@ -54,23 +54,23 @@ if !exists('g:findstr')
   let g:findstr = 'findstr'
 endif
 
-" ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã¸ã®ç™»éŒ²
+" ƒƒjƒ…[‚Ö‚Ì“o˜^
 if !exists('MyGrep_MenuBar')
   let MyGrep_MenuBar = 2 * has('gui_running')
 endif
 
-" ã‚­ãƒ¼ãƒãƒƒãƒ—ã‚’ä½¿ç”¨ã™ã‚‹
+" ƒL[ƒ}ƒbƒv‚ğg—p‚·‚é
 if !exists('g:MyGrep_Keymap')
   let g:MyGrep_Keymap = 1
 endif
-" ã‚­ãƒ¼ãƒãƒƒãƒ—ãƒªãƒ¼ãƒ€ãƒ¼
+" ƒL[ƒ}ƒbƒvƒŠ[ƒ_[
 if !exists('g:MyGrep_Key')
   let g:MyGrep_Key = 'g'
   if exists('g:QFixHowm_Key')
     let g:MyGrep_Key = g:QFixHowm_Key
   endif
 endif
-" ã‚­ãƒ¼ãƒãƒƒãƒ—ãƒªãƒ¼ãƒ€ãƒ¼(2ã‚¹ãƒˆãƒ­ãƒ¼ã‚¯)
+" ƒL[ƒ}ƒbƒvƒŠ[ƒ_[(2ƒXƒgƒ[ƒN)
 if !exists('g:MyGrep_KeyB')
   let g:MyGrep_KeyB = ','
   if exists('g:QFixHowm_KeyB')
@@ -78,23 +78,23 @@ if !exists('g:MyGrep_KeyB')
   endif
 endif
 
-" ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¿ãƒ¼ãƒ³
+" ƒfƒtƒHƒ‹ƒg‚Ìƒtƒ@ƒCƒ‹ƒpƒ^[ƒ“
 if !exists('g:MyGrep_FilePattern')
   let g:MyGrep_FilePattern = '*'
 endif
-" æ¤œç´¢æ™‚ã«ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®å˜èªã‚’æ‹¾ã†
+" ŒŸõ‚ÉƒJ[ƒ\ƒ‹ˆÊ’u‚Ì’PŒê‚ğE‚¤
 if !exists('g:MyGrep_DefaultSearchWord')
   let g:MyGrep_DefaultSearchWord = 0
 endif
-" æ¤œç´¢ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’åŸºç‚¹ã«ã™ã‚‹
+" ŒŸõƒfƒBƒŒƒNƒgƒŠ‚ÍƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğŠî“_‚É‚·‚é
 if !exists('g:MyGrep_CurrentDirMode')
   let g:MyGrep_CurrentDirMode = 1
 endif
-" æ¤œç´¢ã¯å¸¸ã«å†å¸°æ¤œç´¢
+" ŒŸõ‚Íí‚ÉÄ‹AŒŸõ
 if !exists('g:MyGrep_RecursiveMode')
   let g:MyGrep_RecursiveMode = 0
 endif
-" ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚½ãƒ¼ãƒˆãƒ‘ã‚¿ãƒ¼ãƒ³('', 'mtime', 'text', 'reverse')
+" ƒfƒtƒHƒ‹ƒgƒ\[ƒgƒpƒ^[ƒ“('', 'mtime', 'text', 'reverse')
 if !exists('g:MyGrep_Sort')
   let g:MyGrep_Sort = ''
 endif
@@ -200,7 +200,7 @@ if g:MyGrep_Keymap
 endif
 
 """"""""""""""""""""""""""""""
-" ãƒˆã‚°ãƒ«ã‚³ãƒãƒ³ãƒ‰
+" ƒgƒOƒ‹ƒRƒ}ƒ“ƒh
 """"""""""""""""""""""""""""""
 " command! -bang ToggleMultiEncodingGrep  call qfixlist#ToggleMultiEncodingGrep()
 " command! -bang ToggleGrepCurrentDirMode call <SID>ToggleGrepCurrentDirMode()
@@ -218,7 +218,7 @@ function! s:ToggleGrepRecursiveMode()
 endfunction
 
 """"""""""""""""""""""""""""""
-" ã‚­ãƒ¼ãƒãƒƒãƒ—/ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨
+" ƒL[ƒ}ƒbƒv/ƒƒjƒ…[—p
 """"""""""""""""""""""""""""""
 let s:prevResult = []
 function! s:QFixGrep(cmd, pattern, path, filepattern, fenc, ...)
@@ -239,7 +239,7 @@ function! s:QFixGrep(cmd, pattern, path, filepattern, fenc, ...)
   endif
 
   silent! exe 'chdir ' . prevPath
-  " FIXME : autochdirãŒæœ‰åŠ¹ã®å ´åˆ:pwdã¨getcwd()ãŒä¸€è‡´ã—ãªã„ã“ã¨ãŒã‚ã‚‹
+  " FIXME : autochdir‚ª—LŒø‚Ìê‡:pwd‚Ægetcwd()‚ªˆê’v‚µ‚È‚¢‚±‚Æ‚ª‚ ‚é
   if exists('+autochdir') && &autochdir
     let path = expand('%:p:h')
     let cwd = path
@@ -293,9 +293,9 @@ function! s:SetFileEncoding()
 endfunction
 
 """"""""""""""""""""""""""""""
-" ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚³ãƒãƒ³ãƒ‰
+" ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒRƒ}ƒ“ƒh
 """"""""""""""""""""""""""""""
-"â˜…custom mod <TOP>
+"šcustom mod <TOP>
 command! -nargs=* -bang BGrep       call <SID>BGrep(<q-args>, <bang>0, 0)
 command! -nargs=* -bang Vimgrep     call <SID>QFixCmdGrep('Vimgrep', <q-args>)
 command! -nargs=* -bang VGrep       call <SID>QFixCmdGrep('Vimgrep', <q-args>)
@@ -317,10 +317,10 @@ command! -nargs=* -bang FGrepadd    call <SID>QFixCmdGrep('FGrepadd',  <q-args>)
 command! -nargs=* -bang RGrepadd    call <SID>QFixCmdGrep('RGrepadd',  <q-args>)
 command! -nargs=* -bang REGrepadd   call <SID>QFixCmdGrep('RGrepadd',  <q-args>)
 command! -nargs=* -bang RFGrepadd   call <SID>QFixCmdGrep('RFGrepadd', <q-args>)
-"â˜…custom mod <END>
+"šcustom mod <END>
 
 """"""""""""""""""""""""""""""
-" ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³grepæœ¬ä½“
+" ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“grep–{‘Ì
 """"""""""""""""""""""""""""""
 function! s:QFixCmdGrep(cmd, arg)
   let opt = matchstr(a:arg, '^\(\s*[-/][^ ]\+\)\+')
@@ -339,7 +339,7 @@ function! s:QFixCmdGrep(cmd, arg)
   if pattern =~ '^".*"$'
     let pattern = substitute(pattern, '^"\|"$', '', 'g')
   endif
-  " \ã§ " ã‚’ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ï¼Ÿ
+  " \‚Å " ‚ğƒGƒXƒP[ƒvH
   if pattern =~ '^\\".*\\"$'
     let pattern = substitute(pattern, '^\\"\|\\"$', '"', 'g')
   endif
@@ -390,8 +390,8 @@ function! s:setenv(cmd)
 endfunction
 
 """"""""""""""""""""""""""""""
-" ãƒãƒƒãƒ•ã‚¡ã®ã¿grep
-" ç„¡åãƒãƒƒãƒ•ã‚¡ã¯æ¤œç´¢ã§ããªã„ã€‚
+" ƒoƒbƒtƒ@‚Ì‚İgrep
+" –³–¼ƒoƒbƒtƒ@‚ÍŒŸõ‚Å‚«‚È‚¢B
 """"""""""""""""""""""""""""""
 function! s:BGrep(word, mode, addflag)
   let pattern = a:word
@@ -443,7 +443,7 @@ function! s:BGrep(word, mode, addflag)
   endif
 endfunction
 
-" ãƒ­ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆä½¿ç”¨
+" ƒƒP[ƒVƒ‡ƒ“ƒŠƒXƒgg—p
 if !exists('g:QFix_UseLocationList')
   let g:QFix_UseLocationList = 1
 endif
