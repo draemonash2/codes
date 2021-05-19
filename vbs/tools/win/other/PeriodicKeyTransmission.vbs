@@ -17,21 +17,18 @@ Set oRes = CreateObject("WbemScripting.SWbemLocator").ConnectServer.ExecQuery( _
       & " CommandLine LIKE '%" & WScript.ScriptName & "%'" _
     )
 
-Dim vAnswer
 If oRes.Count > 1 Then
-    vAnswer = MsgBox("キー送信処理を停止します。" , vbYesNo + vbQuestion, sSCRIPT_NAME)
-    If vAnswer = vbYes Then
-        Dim lCnt
-        lCnt = 0
-        Dim oProc
-        For Each oProc In oRes
-            lCnt = lCnt + 1
-            If lCnt <> oRes.Count then
-                oProc.Terminate
-            End If
-        Next
-    End If
+    Dim lCnt
+    lCnt = 0
+    Dim oProc
+    For Each oProc In oRes
+        lCnt = lCnt + 1
+        If lCnt <> oRes.Count then
+            oProc.Terminate
+        End If
+    Next
 Else
+    Dim vAnswer
     vAnswer = MsgBox(CStr(lSLEEP_MS/1000) & "秒毎に" & sSEND_KEY &"を送信します。" , vbYesNo + vbQuestion, sSCRIPT_NAME)
     If vAnswer = vbYes Then
         Dim objWshShell
