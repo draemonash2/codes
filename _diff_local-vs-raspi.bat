@@ -4,9 +4,9 @@ echo リモートのファイルと比較します
 	set LOGINTRGT=raspberrypi.local
 
 echo ファイル取得
-	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get .vimrc %~dp0\" "exit"
-	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get .bashrc %~dp0\" "exit"
-	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get .inputrc %~dp0\" "exit"
+	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get ~/.vimrc %~dp0" "exit"
+	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get ~/.bashrc %~dp0" "exit"
+	start %MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe /console /command "option batch on" "open %USER%:%PW%@%LOGINTRGT%" "get ~/.inputrc %~dp0" "exit"
 	pause
 
 echo ファイルバックアップ

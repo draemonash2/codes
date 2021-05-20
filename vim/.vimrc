@@ -452,11 +452,7 @@ endif
 "	set cursorcolumn									" カーソル列を目立たせる
 "	set cursorline										" カーソル行を目立たせる
 	set title											" タイトルを表示
-"if has('unix')
-"	set fileformat=unix									" 改行をUnixの形式に変更。
-"else
 "	set fileformat=dos									" 改行をWindowsの形式に変更。
-"endif
 	set scrolloff=5										" カーソル周辺行数
 "	set swapfile										" スワップファイル(.swpファイル)を作成する
 "	set directory=$VIM/__swapfiles						" スワップファイル(.swpファイル)の出力先を指定
@@ -791,7 +787,7 @@ endif
 		else
 			let g:sGrepWord = expand("<cword>") "カーソル上の単語で検索
 		endif
-			
+		
 		"### 対象パス 取得 ###
 		if g:sGrepPath == ""
 			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
@@ -950,43 +946,32 @@ endif
 " ==============================================================================
 " フォントサイズ設定
 " ==============================================================================
-	let g:FontSizeLevel = 3
+	let g:FontSizeLevel = 2
 	let g:bIsBirdEyesMode = 0
 	
 	"フォントサイズ更新
 	function! UpdateFontSize()
-		if g:FontSizeLevel == 0
-			set guifont=MS_Gothic:h2:cSHIFTJIS
-			if has('unix')
-			else
-				simalt ~x
-			endif
-		elseif g:FontSizeLevel == 1
-			set guifont=MS_Gothic:h8:cSHIFTJIS
-			if has('unix')
-			else
-				simalt ~x
-			endif
-		elseif g:FontSizeLevel == 2
-			set guifont=MS_Gothic:h10:cSHIFTJIS
-			if has('unix')
-			else
-				simalt ~x
-			endif
-		elseif g:FontSizeLevel == 3
-			set guifont=MS_Gothic:h13:cSHIFTJIS
-			if has('unix')
-			else
-				simalt ~x
-			endif
-		elseif g:FontSizeLevel == 4
-			set guifont=MS_Gothic:h16:cSHIFTJIS
-			if has('unix')
-			else
-				simalt ~x
-			endif
+		if has('unix')
+			"do nothing
 		else
-			echo "error!"
+			if g:FontSizeLevel == 0
+				set guifont=MS_Gothic:h2:cSHIFTJIS
+				simalt ~x
+			elseif g:FontSizeLevel == 1
+				set guifont=MS_Gothic:h8:cSHIFTJIS
+				simalt ~x
+			elseif g:FontSizeLevel == 2
+				set guifont=MS_Gothic:h11:cSHIFTJIS
+				simalt ~x
+			elseif g:FontSizeLevel == 3
+				set guifont=MS_Gothic:h13:cSHIFTJIS
+				simalt ~x
+			elseif g:FontSizeLevel == 4
+				set guifont=MS_Gothic:h16:cSHIFTJIS
+				simalt ~x
+			else
+				echo "UpdateFontSize error!"
+			endif
 		endif
 	endfunction
 	call UpdateFontSize() "初回読み込み時のフォントサイズ
@@ -1399,6 +1384,33 @@ endif
 "		execute 'w'
 "	endfunction
 
+" ==============================================================================
+" 指定文字コードで再オープン
+" ==============================================================================
+	command! -nargs=1 Occ call s:ReOpenAtNewCharCode(<f-args>)
+	function! s:ReOpenAtNewCharCode(...)
+		if a:0 == 1
+			execute 'e ++enc=' . a:1
+		endif
+	endfunction
+
+" ==============================================================================
+" 文字コード/改行コード置換
+" ==============================================================================
+	command! -nargs=? Rcc call s:ReplaceCharCode(<f-args>)
+	function! s:ReplaceCharCode(...)
+		if a:0 == 1
+			execute 'set fenc=' . a:1
+		endif
+	endfunction
+	
+	command! -nargs=? Rnc call s:ReplaceNewlineCode(<f-args>)
+	function! s:ReplaceNewlineCode(...)
+		if a:0 == 1
+			execute 'set ff=' . a:1
+		endif
+	endfunction
+	
 " ==============================================================================
 " ウィンドウサイズトグル
 " [参考] https://qiita.com/grohiro/items/e3dbcc93510bc8c4c812

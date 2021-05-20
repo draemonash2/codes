@@ -143,6 +143,14 @@ function cdex() {
 	pwd
 	ll
 }
+function vimm() {
+	sOpenPath=""
+	for pathfile in ./$1*; do
+		sOpenPath=$pathfile
+	done
+	vim $sOpenPath
+}
+
 alias cd=cdex
 alias cdl='cd /home/draemon_ash3;'
 alias cdw='cd /mnt/c/users/draem;'
