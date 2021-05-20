@@ -11,6 +11,7 @@ Private Function DownloadFile( _
     Set objSrvHTTP = Wscript.CreateObject("Msxml2.ServerXMLHTTP")
     on error resume next
     Call objSrvHTTP.Open("GET", sDownloadUrl, False )
+    Call objSrvHTTP.setTimeouts(0, 0, 0, 0)
     if Err.Number <> 0 then
         Wscript.Echo Err.Description
         bResult = False
