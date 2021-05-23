@@ -531,7 +531,7 @@ endif
 		
 		"### 対象パス 取得 ###
 		if g:sGrepPath == ""
-			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
 			if l:sRootPath == ""
 				let l:sRootPath = GetCurDirPath()
 			endif
@@ -573,7 +573,7 @@ endif
 		"### 対象パス 取得 ###
 		"初期値判定
 		if g:sGrepPath == ""
-			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
 			if l:sRootPath == ""
 				let l:sRootPath = GetCurDirPath()
 			endif
@@ -665,7 +665,7 @@ endif
 	command! Utf call UpdateTagFile()
 	function! UpdateTagFile()
 		" === 上位階層ディレクトリ tags 存在確認 ====
-		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath(), "tags" )
+		let l:sDirPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
 		
 		" === tags ファイル更新 ====
 		if l:sDirPath == ""
@@ -688,31 +688,16 @@ endif
 " フォントサイズ設定
 " ==============================================================================
 	let g:FontSizeLevel = 2
-	let g:bIsBirdEyesMode = 0
+	let s:aiFontSizeList = [ 2, 8, 11, 13, 16 ] "要素番号0は俯瞰モード用
+	let s:bIsBirdEyesMode = 0
 	
 	"フォントサイズ更新
 	function! UpdateFontSize()
 		if has('unix')
 			"do nothing
 		else
-			if g:FontSizeLevel == 0
-				set guifont=MS_Gothic:h2:cSHIFTJIS
-				simalt ~x
-			elseif g:FontSizeLevel == 1
-				set guifont=MS_Gothic:h8:cSHIFTJIS
-				simalt ~x
-			elseif g:FontSizeLevel == 2
-				set guifont=MS_Gothic:h11:cSHIFTJIS
-				simalt ~x
-			elseif g:FontSizeLevel == 3
-				set guifont=MS_Gothic:h13:cSHIFTJIS
-				simalt ~x
-			elseif g:FontSizeLevel == 4
-				set guifont=MS_Gothic:h16:cSHIFTJIS
-				simalt ~x
-			else
-				echo "UpdateFontSize error!"
-			endif
+			execute "set guifont=MS_Gothic:h" . s:aiFontSizeList[g:FontSizeLevel] . ":cSHIFTJIS"
+			simalt ~x
 		endif
 	endfunction
 	call UpdateFontSize() "初回読み込み時のフォントサイズ
@@ -721,8 +706,9 @@ endif
 	" 以下のようにトグルする。
 	"	8 ⇒ 10 ⇒ 13 ⇒ 16 ⇒ 8 ⇒ 10 ⇒ 13 ...
 	function! SwitchFontSize()
-		let g:FontSizeLevel = g:FontSizeLevel + 1
-		if g:FontSizeLevel > 4
+		if g:FontSizeLevel < (len(s:aiFontSizeList) - 1)
+			let g:FontSizeLevel = g:FontSizeLevel + 1
+		else
 			let g:FontSizeLevel = 1
 		endif
 		let g:FontSizeLevelOld = g:FontSizeLevel
@@ -958,7 +944,7 @@ endif
 	endfunction
 
 " ==============================================================================
-" タブ機能無効化
+" ウィンドウタブ機能無効化
 " ==============================================================================
 	autocmd! BufNewFile,BufRead,BufEnter,BufNew,BufWinEnter * call AutoTabPageOnly()
 	let g:TabPageOnlyEnable = 1
@@ -975,7 +961,7 @@ endif
 	endfunction
 
 " ==============================================================================
-" タブ表示を変更する
+" ウィンドウタブ表示を変更する
 " [参考] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
 "	function! MakeTabLine()
