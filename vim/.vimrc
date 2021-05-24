@@ -100,18 +100,18 @@ endif
 " neocomplete.vim 用設定
 " [参照] https://github.com/Shougo/neocomplete.vim
 " =======================================
-	let g:neocomplete#enable_at_startup = 1 " 起動時に有効化
-	let g:neocomplete#enable_smart_case = 1 " Use smartcase.
-	let g:neocomplete#sources#syntax#min_keyword_length = 3
-	let g:neocomplete#max_list = 50 "キーワードの長さ、デフォルトで80
-	let g:neocomplete#max_keyword_width = 80
-	let g:neocomplete#enable_ignore_case = 1
-"	highlight Pmenu ctermbg=6
-"	highlight PmenuSel ctermbg=3
-"	highlight PMenuSbar ctermbg=0
-	highlight Pmenu ctermbg=71
-	highlight PmenuSel ctermbg=71
-	highlight PMenuSbar ctermbg=71
+"	let g:neocomplete#enable_at_startup = 1 " 起動時に有効化
+"	let g:neocomplete#enable_smart_case = 1 " Use smartcase.
+"	let g:neocomplete#sources#syntax#min_keyword_length = 3
+"	let g:neocomplete#max_list = 50 "キーワードの長さ、デフォルトで80
+"	let g:neocomplete#max_keyword_width = 80
+"	let g:neocomplete#enable_ignore_case = 1
+""	highlight Pmenu ctermbg=6
+""	highlight PmenuSel ctermbg=3
+""	highlight PMenuSbar ctermbg=0
+"	highlight Pmenu ctermbg=71
+"	highlight PmenuSel ctermbg=71
+"	highlight PMenuSbar ctermbg=71
 
 " =======================================
 " editexisting-ext.vim 用設定
@@ -520,6 +520,9 @@ if has('mouse')
 endif
 	set iminsert=0										" 挿入モードでのデフォルトのIME状態設定（IM オフ）
 	set imsearch=0										" 検索モードでのデフォルトのIME状態設定（IM オフ）
+if has('unix')
+	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
+endif
 
 " ==============================================================================
 " ファイルパス設定
@@ -1543,11 +1546,11 @@ endif
 " ==============================================================================
 " neosnippet設定
 " ==============================================================================
-if has('unix')
-	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
-else
-	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
-endif
+"if has('unix')
+"	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
+"else
+"	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
+"endif
 
 " ==============================================================================
 " showmarks 設定

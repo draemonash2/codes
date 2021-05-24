@@ -261,6 +261,9 @@ if has('mouse')
 endif
 	set iminsert=0										" 挿入モードでのデフォルトのIME状態設定（IM オフ）
 	set imsearch=0										" 検索モードでのデフォルトのIME状態設定（IM オフ）
+if has('unix')
+	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
+endif
 
 " ==============================================================================
 " ファイルパス設定
@@ -1284,11 +1287,11 @@ endif
 " ==============================================================================
 " neosnippet設定
 " ==============================================================================
-if has('unix')
-	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
-else
-	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
-endif
+"if has('unix')
+"	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
+"else
+"	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
+"endif
 
 " ==============================================================================
 " showmarks 設定
