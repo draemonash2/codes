@@ -307,11 +307,11 @@ endif
 	nnoremap						ciy			ciw<c-r>0<esc>b|								" 単語コピー
 	nnoremap	<silent>			<esc><esc>	:nohlsearch<cr>|								" ハイライト解除
 	nnoremap	<silent>			<tab>		a<tab><esc>|									" タブ挿入
-"	nnoremap						<c-d>		:Gtags <C-r><C-w><CR>|							"【gtags(*1)】
-	nnoremap						<c-e>		:Gtags -r <C-r><C-w><CR>|						"【gtags(*1)】
+"	nnoremap						<c-d>		:Gtags <C-r><C-w><CR>|							"【gtags(*1)】定義先ジャンプ
+	nnoremap						<c-e>		:Gtags -r <C-r><C-w><CR>|						"【gtags(*1)】呼出し元ジャンプ
 "	nnoremap						gs			:Gtags -s <C-r><C-w><CR>|						"【gtags(*1)】
-"	nnoremap						gG			:Gtags -g <C-r><C-w><CR>|						"【gtags(*1)】
-"	nnoremap						,d			:<C-u>Gtags -f %<CR>|							"【gtags(*1)】
+"	nnoremap						gG			:Gtags -g <C-r><C-w><CR>|						"【gtags(*1)】文字列Grep
+"	nnoremap						,d			:<C-u>Gtags -f %<CR>|							"【gtags(*1)】関数一覧表示
 	nnoremap						<c-t>		<C-o>|											"【gtags(*1)】
 	nnoremap	<silent>			<c-g>		:call ExecuteGuiGrep()<cr>|						" GUIのGrepソフト起動
 	nnoremap	<silent>			<c-m>		oa<esc>"_x|										" インデントを維持して改行

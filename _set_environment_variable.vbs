@@ -36,7 +36,8 @@ With dEnvVars                                                                   
     .Add "MYEXEPATH_ITHOUGHTS"      ,"%MYDIRPATH_PRG_EXE%\iThoughts\iThoughts.exe"                          ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_CTAGS"          ,"%MYDIRPATH_PRG_EXE%\Ctags\ctags.exe"                                  ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
     .Add "MYEXEPATH_GTAGS"          ,"%MYDIRPATH_PRG_EXE%\Gtags\bin\gtags.exe"                              ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
-    .Add "MYEXEPATH_7Z"             ,"%MYDIRPATH_PRG_EXE%\7-ZipPortable\App\7-Zip64\7z.exe"                 ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Å|      |
+    .Add "MYEXEPATH_7Z"             ,"%MYDIRPATH_PRG_EXE%\7-ZipPortable\App\7-Zip64\7z.exe"                 ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Åõ      |
+    .Add "MYEXEPATH_WINSCP"         ,"%MYDIRPATH_PRG_EXE%\WinSCP\WinSCP.exe"                                ' |  Å|  |  Å|  |  Å|  |     ÅZ     |      Å|      |
 End With
 'Å£Å£Å£ ê›íËÇ±Ç±Ç‹Ç≈ Å£Å£Å£
 

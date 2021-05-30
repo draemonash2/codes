@@ -166,5 +166,3 @@ alias rmi='rm -i'
 
 alias sht='sudo shutdown -h now'
 
-export TERM=xterm-256color
-
