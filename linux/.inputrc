@@ -17,7 +17,7 @@ $if bash
 	"\C-x\C-r": re-read-init-file
 	
 	$if mode=emacs
-		"\C-v": yank
+#		"\C-v": yank
 #		"\C-p": history-search-backward
 #		"\C-n": history-search-forward
 #		"\C-l": forward-word
