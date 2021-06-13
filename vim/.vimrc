@@ -755,7 +755,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.c,*.h,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
+	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
@@ -950,7 +950,7 @@ endif
 " フォントサイズ設定
 " ==============================================================================
 	let g:FontSizeLevel = 2
-	let s:aiFontSizeList = [ 2, 8, 11, 13, 16 ] "要素番号0は俯瞰モード用
+	let s:aiFontSizeList = [ 2, 8, 10, 11, 13, 16 ] "要素番号0は俯瞰モード用
 	let s:bIsBirdEyesMode = 0
 	
 	"フォントサイズ更新

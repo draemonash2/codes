@@ -48,5 +48,5 @@ For each vDirPath in oFolder.subfolders
     End If
 Next
 
-MsgBox "Š®—¹I", vbOkOnly, WScript.ScriptName
+'MsgBox "Š®—¹I", vbOkOnly, WScript.ScriptName
 

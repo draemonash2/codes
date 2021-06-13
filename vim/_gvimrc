@@ -496,7 +496,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.c,*.h,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
+	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
@@ -690,8 +690,8 @@ endif
 " ==============================================================================
 " フォントサイズ設定
 " ==============================================================================
-	let g:FontSizeLevel = 2
-	let s:aiFontSizeList = [ 2, 8, 11, 13, 16 ] "要素番号0は俯瞰モード用
+	let g:FontSizeLevel = 3
+	let s:aiFontSizeList = [ 2, 8, 10, 11, 13, 16 ] "要素番号0は俯瞰モード用
 	let s:bIsBirdEyesMode = 0
 	
 	"フォントサイズ更新
@@ -1177,6 +1177,20 @@ if has('unix')
 	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
 	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
 endif
+
+"call AlignIndent()
+	function! AlignIndent()
+		let l:startpos = getpos(".")
+		let l:curpos = l:startpos
+		let l:curpos[2] += 1 "列を右に移動
+		echo getpos(l:curpos)
+	"	echo getline(l:curpos)
+	"	let l:cCurChar = getline('.')[col('.')-1]
+	"	echo l:cCurChar
+	"	call feedkeys("l")
+	"	let l:cCurChar = getline('.')[col('.')-1]
+	"	echo l:cCurChar
+	endfunction
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****

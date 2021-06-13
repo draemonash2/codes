@@ -83,7 +83,7 @@ If vAnswer = vbYes Then
     objFSO.DeleteFile sDownloadTrgtDirPath & "\.inputrc_rmtorg"
 End If
 
-MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½I", vbYesNo, sOutputMsg
+'MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½I", vbYesNo, sOutputMsg
 
 '===============================================================================
 '= “à•”ŠÖ”

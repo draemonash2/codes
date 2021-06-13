@@ -161,28 +161,83 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 				}
 			}
 			Return
-			
-	;プリントスクリーン単押しを抑制
-		PrintScreen::return
+	
+	;Windowタイル切り替え
+		global iWinTileMode := 0
+		global iWinTileModeMax := 5
 		
-	;Teams一時退席抑止機能
-		+^!F11::
-			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
-			Loop
+		#LEFT::
+			if iWinTileMode >= iWinTileModeMax
 			{
-				Sleep, 3000
-				GetKeyState, sPressState, Esc, P
-				If sPressState = D
-				{
-					TrayTip, Teams一時退席抑止機能, Teamsの一時退席抑止を解除します。, 5, 17
-					Break
-				}
-				Else
-				{
-					Send, {vkF3sc029}
-				}
+				iWinTileMode := 0
+			}
+			else
+			{
+				iWinTileMode++
+			}
+			ApplyWinTileMode( iWinTileMode )
+			return
+		#RIGHT::
+			if iWinTileMode <= 0
+			{
+				iWinTileMode := iWinTileModeMax
+			}
+			else
+			{
+				iWinTileMode--
+			}
+			ApplyWinTileMode( iWinTileMode )
+			return
+		ApplyWinTileMode( iWinTileMode )
+		{
+			if iWinTileMode = 0
+			{
+				WinMove, A, , -2160	,-247	,2167	,2998	;サブ全体
+			}
+			else if iWinTileMode = 1
+			{
+				WinMove, A, , -2158	,1044	,2165	,1710	;サブ下
+			}
+			else if iWinTileMode = 2
+			{
+				WinMove, A, , -2158	,-242	,2165	,1293	;サブ上
+			}
+			else if iWinTileMode = 3
+			{
+				WinMove, A, , 132	,-8	,1796	,1096	;メイン全体
+			}
+			else if iWinTileMode = 4
+			{
+				WinMove, A, , 1053	,0	,858	,1087	;メイン右
+			}
+			else
+			{
+				WinMove, A, , 133	,0	,934	,1087	;メイン左
 			}
 			return
+		}
+	
+	;プリントスクリーン単押しを抑制
+		PrintScreen::return
+	
+;	;Teams一時退席抑止機能
+;		+^!F11::
+;			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
+;			Loop
+;			{
+;				Sleep, 3000
+;				GetKeyState, sPressState, Esc, P
+;				If sPressState = D
+;				{
+;					TrayTip, Teams一時退席抑止機能, Teamsの一時退席抑止を解除します。, 5, 17
+;					Break
+;				}
+;				Else
+;				{
+;					Send, {vkF3sc029}
+;				}
+;			}
+;			return
 	
 	;テスト用
 		^Pause::
