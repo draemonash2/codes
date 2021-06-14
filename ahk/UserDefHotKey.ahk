@@ -164,10 +164,9 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;Windowタイル切り替え
 		global iWinTileMode := 0
-		global iWinTileModeMax := 5
 		
 		#LEFT::
-			if iWinTileMode >= iWinTileModeMax
+			if iWinTileMode >= 5
 			{
 				iWinTileMode := 0
 			}
@@ -180,7 +179,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		#RIGHT::
 			if iWinTileMode <= 0
 			{
-				iWinTileMode := iWinTileModeMax
+				iWinTileMode := 5
 			}
 			else
 			{
