@@ -195,11 +195,11 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			}
 			else if iWinTileMode = 1
 			{
-				WinMove, A, , -2158	,1044	,2165	,1710	;サブ下
+				WinMove, A, , -2158	,-242	,2165	,1293	;サブ上
 			}
 			else if iWinTileMode = 2
 			{
-				WinMove, A, , -2158	,-242	,2165	,1293	;サブ上
+				WinMove, A, , -2158	,1044	,2165	,1710	;サブ下
 			}
 			else if iWinTileMode = 3
 			{
@@ -207,11 +207,11 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			}
 			else if iWinTileMode = 4
 			{
-				WinMove, A, , 1053	,0	,858	,1087	;メイン右
+				WinMove, A, , 133	,0	,934	,1087	;メイン左
 			}
 			else
 			{
-				WinMove, A, , 133	,0	,934	,1087	;メイン左
+				WinMove, A, , 1053	,0	,858	,1087	;メイン右
 			}
 			return
 		}
