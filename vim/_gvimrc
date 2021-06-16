@@ -368,7 +368,7 @@ else
 	function! s:savewindowparam(filename)
 		redir => pos
 		exec 'winpos'
-	
+		
 		redir end
 		let pos = matchstr(pos, 'x[-0-9 ]\+,\s*y[-0-9 ]\+$')
 		let file = expand(a:filename)
@@ -390,7 +390,7 @@ else
 	augroup end
 	
 	if filereadable(expand(s:infofile))
-		execute 'source '.s:infofile
+		execute 'source '. s:infofile
 	endif
 	unlet s:infofile
 endif
