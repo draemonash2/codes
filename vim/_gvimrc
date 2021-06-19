@@ -113,7 +113,7 @@ endif
 "	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 
 "=== ヴィジュアルモード ===
-	vnoremap	<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ→空白変換後にコピー
+	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ→空白変換後にコピー
 	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
@@ -122,6 +122,7 @@ endif
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
+	vnoremap	<silent>			<F8>		:s/\v^\@.*\$/$/g<cr>|							" コンソール先頭文字削除
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
 	vnoremap	<silent>			<F11>		<esc>:set expandtab<cr>gv:retab!<cr>|			" タブ⇒空白 変換
 	vnoremap	<silent>			<F12>		<esc>:set noexpandtab<cr>gv:retab!<cr>|			" 空白⇒タブ 変換
@@ -389,6 +390,11 @@ else
 		execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.s:infofile.'")'
 	augroup end
 	
+"	augroup loadwindowparam
+"		autocmd!
+"		execute 'autocmd loadwindowparam vimenter * source '. s:infofile
+"	augroup end
+	
 	if filereadable(expand(s:infofile))
 		execute 'source '. s:infofile
 	endif
@@ -496,7 +502,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.f,*.f90,*.F,*.vbs,*.bas,*.cls"
+	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.vbs,*.bas,*.cls"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
