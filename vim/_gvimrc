@@ -390,11 +390,6 @@ else
 		execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.s:infofile.'")'
 	augroup end
 	
-"	augroup loadwindowparam
-"		autocmd!
-"		execute 'autocmd loadwindowparam vimenter * source '. s:infofile
-"	augroup end
-	
 	if filereadable(expand(s:infofile))
 		execute 'source '. s:infofile
 	endif
@@ -1146,7 +1141,7 @@ endif
 			execute 'set ff=' . a:1
 		endif
 	endfunction
-	
+
 " ==============================================================================
 " ウィンドウサイズトグル
 " [参考] https://qiita.com/grohiro/items/e3dbcc93510bc8c4c812
@@ -1183,20 +1178,6 @@ if has('unix')
 	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
 	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
 endif
-
-"call AlignIndent()
-	function! AlignIndent()
-		let l:startpos = getpos(".")
-		let l:curpos = l:startpos
-		let l:curpos[2] += 1 "列を右に移動
-		echo getpos(l:curpos)
-	"	echo getline(l:curpos)
-	"	let l:cCurChar = getline('.')[col('.')-1]
-	"	echo l:cCurChar
-	"	call feedkeys("l")
-	"	let l:cCurChar = getline('.')[col('.')-1]
-	"	echo l:cCurChar
-	endfunction
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
@@ -1298,7 +1279,7 @@ endif
 "	let MyGrep_Encoding = 'cp932'	"cp932を扱えないGNU grepの場合
 									"Windowsでcp932を扱えないGNU grepを使用する場合、以下の様に設定します。
 	let QFix_CopenCmd = 'botright'	" Quickfixウィンドウを最も下側に表示
-
+	
 " More scrollbar-ish behavior
 	let g:nanomap_auto_realign = 1
 	let g:nanomap_auto_open_close = 1

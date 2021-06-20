@@ -56,8 +56,6 @@ If vAnswer = vbYes Then
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.inputrc"    & """ """ & sDownloadTrgtDirPath & "\.inputrc"  & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.bashrc"     & """ """ & sDownloadTrgtDirPath & "\.bashrc"   & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\.vimrc"        & """ """ & sDownloadTrgtDirPath & "\.vimrc"    & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\_vimrc"        & """ """ & sDownloadTrgtDirPath & "\.vimrc"    & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\_gvimrc"       & """ """ & sDownloadTrgtDirPath & "\.vimrc"    & """", 10, False
     vAnswer = MsgBox("比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg)
 Else
     MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sOutputMsg

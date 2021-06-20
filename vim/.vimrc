@@ -1400,7 +1400,7 @@ endif
 			execute 'set ff=' . a:1
 		endif
 	endfunction
-	
+
 " ==============================================================================
 " ウィンドウサイズトグル
 " [参考] https://qiita.com/grohiro/items/e3dbcc93510bc8c4c812
@@ -1538,7 +1538,7 @@ endif
 "	let MyGrep_Encoding = 'cp932'	"cp932を扱えないGNU grepの場合
 									"Windowsでcp932を扱えないGNU grepを使用する場合、以下の様に設定します。
 	let QFix_CopenCmd = 'botright'	" Quickfixウィンドウを最も下側に表示
-
+	
 " More scrollbar-ish behavior
 	let g:nanomap_auto_realign = 1
 	let g:nanomap_auto_open_close = 1
