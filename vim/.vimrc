@@ -623,7 +623,7 @@ endif
 if has('unix')
 	"do nothing
 else
-	let s:infofile = '$VIM/_vimpos'
+	let g:vimposfilepath = '$VIM/_vimpos'
 	
 	function! s:savewindowparam(filename)
 		redir => pos
@@ -646,13 +646,12 @@ else
 	
 	augroup savewindowparam
 		autocmd!
-		execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.s:infofile.'")'
+		execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.g:vimposfilepath.'")'
 	augroup end
 	
-	if filereadable(expand(s:infofile))
-		execute 'source '. s:infofile
+	if filereadable(expand(g:vimposfilepath))
+		execute 'source '. g:vimposfilepath
 	endif
-	unlet s:infofile
 endif
 
 " ==============================================================================
@@ -960,7 +959,7 @@ endif
 			"do nothing
 		else
 			execute "set guifont=MS_Gothic:h" . s:aiFontSizeList[g:FontSizeLevel] . ":cSHIFTJIS"
-			simalt ~x
+			execute 'source '. g:vimposfilepath
 		endif
 	endfunction
 	call UpdateFontSize() "初回読み込み時のフォントサイズ
@@ -1360,7 +1359,7 @@ endif
 "	
 "	if g:AutoRepNewLineCodeEnable == 1
 "		autocmd BufDelete *.c,*.h call AutoRepNewLineCode()
-"	"	execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.s:infofile.'")'
+"	"	execute 'autocmd savewindowparam vimleave * call s:savewindowparam("'.g:vimposfilepath.'")'
 "	"	execute 'autocmd! BufWinLeave ' . g:AutoRepNewLineCodeExt ' call AutoRepNewLineCode()'
 "	endif
 "	function! AutoRepNewLineCode()

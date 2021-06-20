@@ -588,7 +588,7 @@ End Function
 ' =               ・ファイル種別と拡張子は"/"で区切る
 ' =               ・フィルタが複数ある場合、","で区切る
 ' = 引数    sFilters    String      [in]    フィルタ
-' = 引数    fdDialog    FileDialog  [in]    ファイルダイアログ
+' = 引数    fdDialog    FileDialog  [out]   ファイルダイアログ
 ' = 戻値    なし
 ' = 覚書    sFilters が空文字の場合、フィルタをクリアする。
 ' = 依存    なし
