@@ -125,7 +125,7 @@ function gr() {
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
-	ll
+	ls -lFA --color=auto
 }
 function vimm() {
 	sOpenPath=""

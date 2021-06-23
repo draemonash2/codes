@@ -86,8 +86,9 @@
 	nnoremap	<silent>			<c-F2>		:call CopyCurFileName()<cr>|					" 現在ファイル名コピー
 	nnoremap	<silent>			<c-F3>		:call CopyCurDirPath()<cr>|						" 現在フォルダパスコピー
 	nnoremap	<silent>			<c-F4>		:call CopyCurFileExt()<cr>|						" 現在ファイル拡張子コピー
-	nnoremap	<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" 現在行番号コピー
+"	nnoremap	<silent>			<c-F5>		:call CopyFileLineNo()<cr>|						" 現在行番号コピー
 "	nnoremap	<silent>			<c-F5>		:call CopyFileExtAndLineNo()<cr>|				" 現在ファイル種別＆行番号コピー
+	nnoremap	<silent>			<c-F5>		:call CopyRltvFilePathAndLineNo()<cr>|			" 現在相対ファイルパス＆行番号コピー
 	nnoremap	<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
 	nnoremap	<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
 
@@ -754,7 +755,7 @@ endif
 	function! CopyCurFilePath()
 		let l:sCurFilePath = GetCurFilePath()
 		call CopyString(l:sCurFilePath)
-		echo "copy file path      : " . l:sCurFilePath
+		echo "copy file path        : " . l:sCurFilePath
 	endfunction
 	
 	command! Crp call CopyCurPrjRltvFilePath()
@@ -767,28 +768,28 @@ endif
 		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sSysPathDlmtr, "g" )
 		call CopyString(l:sCurPrjRltvFilePath)
-		echo "copy rltv file path : " . l:sCurPrjRltvFilePath
+		echo "copy rltv file path   : " . l:sCurPrjRltvFilePath
 	endfunction
 	
 	command! Cdp call CopyCurDirPath()
 	function! CopyCurDirPath()
 		let l:sCurDirPath = GetCurDirPath()
 		call CopyString(l:sCurDirPath)
-		echo "copy directory path : " . l:sCurDirPath
+		echo "copy directory path   : " . l:sCurDirPath
 	endfunction
 	
 	command! Cfn call CopyCurFileName()
 	function! CopyCurFileName()
 		let l:sCurFileName = GetCurFileName()
 		call CopyString(l:sCurFileName)
-		echo "copy file name      : " . l:sCurFileName
+		echo "copy file name        : " . l:sCurFileName
 	endfunction
 	
 	command! Cfe call CopyCurFileExt()
 	function! CopyCurFileExt()
 		let l:sCurFileExt = GetCurFileExt()
 		call CopyString(l:sCurFileExt)
-		echo "copy file extention : " . l:sCurFileExt
+		echo "copy file extention   : " . l:sCurFileExt
 	endfunction
 	
 	command! Cpn call CopyProgramNo()
@@ -799,14 +800,14 @@ endif
 		let l:sPrgNoTmp = substitute( l:sPrgNoTmp, " \\*\/$", "", "g" )
 		let l:sPrgNo = l:sPrgNoTmp
 		call CopyString(l:sPrgNo)
-		echo "copy program no     : " . l:sPrgNo
+		echo "copy program no       : " . l:sPrgNo
 	endfunction
 	
 	command! Cln call CopyFileLineNo()
 	function! CopyFileLineNo()
 		let l:sLineNo = g:sSelRowsRng
 		call CopyString(l:sLineNo)
-		echo "copy line no        : " . l:sLineNo
+		echo "copy line no          : " . l:sLineNo
 	endfunction
 	
 	command! Cel call CopyFileExtAndLineNo()
@@ -816,7 +817,23 @@ endif
 		let l:sLineNo = g:sSelRowsRng
 		let l:sFileLineNo = l:sCurFileName . "/" . l:sLineNo
 		call CopyString(l:sFileLineNo)
-		echo "copy file & line no : " . l:sFileLineNo
+		echo "copy fileext & line   : " . l:sFileLineNo
+	endfunction
+	
+	command! Cpl call CopyRltvFilePathAndLineNo()
+	function! CopyRltvFilePathAndLineNo()
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
+		let l:sCurFilePath = GetCurFilePath()
+		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName ) . g:sSysPathDlmtr
+		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
+		let l:sCurFileName = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
+		let l:sCurFileName = substitute( l:sCurFileName, "/", g:sSysPathDlmtr, "g" )
+		"let l:sLineNo = line(".")
+		let l:sLineNo = g:sSelRowsRng
+		let l:sFileLineNo = l:sCurFileName . ":" . l:sLineNo
+		call CopyString(l:sFileLineNo)
+		echo "copy rfilepath & line : " . l:sFileLineNo
 	endfunction
 	
 	function! CopyString(sString)
