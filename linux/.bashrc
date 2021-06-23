@@ -119,25 +119,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
-#WSL2 specific settings
-alias he='export HOME=/home/draemon_ash3; cd ~; . .bashrc; pwd;'	# change Home directory alias for draemon_ash3
-alias exp='explorer.exe .'											# open current directory with explorer.exe
-
-alias br='vim ~/.bashrc; . ~/.bashrc'
-alias vr='vim ~/.vimrc'
-alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
-alias sr='vim ~/.screenrc'
-
-alias ll='ls -lFA --color=auto'
-alias la='ls -AF --color=auto'
-alias l='ls -CF --color=auto'
-alias ff='find . -type f | grep '
-alias fd='find . -type d | grep '
-alias diff='\diff --color'
 function gr() {
 	grep -nr "$@" .
 }
-
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
@@ -151,18 +135,35 @@ function vimm() {
 	vim $sOpenPath
 }
 
-alias cd=cdex
-alias cdl='cd /home/draemon_ash3;'
-alias cdw='cd /mnt/c/users/draem;'
-alias ..='cd ..;'
-alias ...='cd ../..;'
-alias ....='cd ../../..;'
-alias .....='cd ../../../..;'
+alias ll='ls -lFA --color=auto'
+alias la='ls -AF --color=auto'
+alias l='ls -CF --color=auto'
+alias ff='find . -type f | grep '
+alias fd='find . -type d | grep '
+alias diff='\diff --color'
 
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 alias rmi='rm -i'
 
+alias cd=cdex
+alias ..='cd ..;'
+alias ...='cd ../..;'
+alias ....='cd ../../..;'
+alias .....='cd ../../../..;'
+
+alias br='vim ~/.bashrc; . ~/.bashrc'
+alias vr='vim ~/.vimrc'
+alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
+alias sr='vim ~/.screenrc'
+
+#########################################################
+# Environment dependent settings
+#########################################################
+alias cdl='cd /home/draemon_ash3;'
+alias cdw='cd /mnt/c/users/draem;'
+alias he='export HOME=/home/draemon_ash3; cd ~; . .bashrc; pwd;'	# change Home directory alias for draemon_ash3
+alias exp='explorer.exe .'											# open current directory with explorer.exe
 alias sht='sudo shutdown -h now'
 
