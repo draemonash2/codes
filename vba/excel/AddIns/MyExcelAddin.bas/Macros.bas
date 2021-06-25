@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.58
+' my excel addin macros v2.6
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1003,11 +1003,12 @@ End Sub
 Public Sub 検索文字の文字色を変更()
     Const sMACRO_NAME As String = "検索文字の文字色を変更"
     Const lSELECT_CLR_PALETTE As Boolean = True
+    Const lREGEXP_IGNORECASE As Boolean = False
     
-    '▼▼▼色設定▼▼▼
-    Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
     Dim cCLR_RGBS As Variant
     Set cCLR_RGBS = CreateObject("System.Collections.ArrayList")
+    '▼▼▼色設定▼▼▼
+    Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
     cCLR_RGBS.Add &HFF
     cCLR_RGBS.Add &HC6AC4B
     cCLR_RGBS.Add &H3C9376
@@ -1025,7 +1026,7 @@ Public Sub 検索文字の文字色を変更()
     lClrRgbInit = ReadSettingFile("lWORDCOLOR_CLR_RGB", lWORDCOLOR_CLR_RGB)
     
     '検索対象文字列選択
-    sSrchStr = InputBox("検索文字列を入力してください", sMACRO_NAME, sSrchStr)
+    sSrchStr = InputBox("検索文字列を正規表現で入力してください", sMACRO_NAME, sSrchStr)
     If StrPtr(sSrchStr) = 0 Then
         MsgBox "キャンセルが押されたため、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub
@@ -1091,23 +1092,31 @@ Public Sub 検索文字の文字色を変更()
     Set rTrgtRng = Application.Intersect(Selection, ActiveSheet.UsedRange)
     
     '検索文字列色変更
+    Dim oRegExp
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    oRegExp.Pattern = sSrchStr
+    oRegExp.IgnoreCase = lREGEXP_IGNORECASE
+    oRegExp.Global = True
+    Dim oMatchResult
     Dim oCell As Range
     For Each oCell In rTrgtRng
-        Dim sTrgtStr As String
-        sTrgtStr = oCell.Value
-        Dim lStartIdx As Long
-        lStartIdx = 1
-        Do While True '無限ループ
-            Dim lIdx As Long
-            lIdx = InStr(lStartIdx, sTrgtStr, sSrchStr)
-            If lIdx = 0 Then
-                Exit Do
-            Else
-                lStartIdx = lIdx + Len(sSrchStr)
-                oCell.Characters(Start:=lIdx, Length:=Len(sSrchStr)).Font.Color = lClrRgbSelected
-            End If
-        Loop
+        If oCell.Value <> "" Then
+            Dim sTargetStr
+            sTargetStr = oCell.Value
+            Set oMatchResult = oRegExp.Execute(sTargetStr)
+            Dim lMatchIdx As Long
+            For lMatchIdx = 0 To oMatchResult.Count - 1
+                Dim lCharPos As Long
+                lCharPos = oMatchResult(lMatchIdx).FirstIndex + 1
+                oCell.Characters( _
+                    Start:=lCharPos, _
+                    Length:=oMatchResult(lMatchIdx).Length _
+                ).Font.Color = lClrRgbSelected
+            Next lMatchIdx
+        End If
     Next
+    Set oMatchResult = Nothing
+    Set oRegExp = Nothing
     
     MsgBox "完了！", vbOKOnly, sMACRO_NAME
 End Sub

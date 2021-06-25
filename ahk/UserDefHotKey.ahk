@@ -16,6 +16,16 @@
 DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 
 ;* ***************************************************************
+;* Timer
+;* ***************************************************************
+	SetTimer ClearWinTileMode, 5000
+		Return
+	ClearWinTileMode:
+		;TrayTip, タイマーClearWinTileMode実行, iWinTileModeクリア, 1, 17
+		iWinTileMode := 5
+		Return
+
+;* ***************************************************************
 ;* Keys
 ;* ***************************************************************
 ;[参考URL]
@@ -295,13 +305,13 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		;Scroll left.
 			+WheelUp::
 			SetScrollLockState, On
-			SendInput {Left}
+			SendInput {Left 3}
 			SetScrollLockState, Off
 			Return
 		;Scroll right.
 			+WheelDown::
 			SetScrollLockState, On
-			SendInput {Right}
+			SendInput {Right 3}
 			SetScrollLockState, Off
 			Return
 		;Move prev sheet.
