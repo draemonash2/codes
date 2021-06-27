@@ -201,27 +201,27 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		{
 			if iWinTileMode = 0
 			{
-				WinMove, A, , -2160	,-247	,2167	,2998	;サブ全体
+				WinMove, A, , -2160, -247, 2167, 2998	;サブ全体
 			}
 			else if iWinTileMode = 1
 			{
-				WinMove, A, , -2158	,-242	,2165	,1293	;サブ上
+				WinMove, A, , -2158, -242, 2165, 1293	;サブ上
 			}
 			else if iWinTileMode = 2
 			{
-				WinMove, A, , -2158	,1044	,2165	,1710	;サブ下
+				WinMove, A, , -2158, 1044, 2165, 1710	;サブ下
 			}
 			else if iWinTileMode = 3
 			{
-				WinMove, A, , 132	,-8	,1796	,1096	;メイン全体
+				WinMove, A, , 132, -8, 1796, 1096		;メイン全体
 			}
 			else if iWinTileMode = 4
 			{
-				WinMove, A, , 133	,0	,934	,1087	;メイン左
+				WinMove, A, , 133, 0, 934, 1087			;メイン左
 			}
 			else
 			{
-				WinMove, A, , 1053	,0	,858	,1087	;メイン右
+				WinMove, A, , 1053, 0, 858, 1087		;メイン右
 			}
 			return
 		}
