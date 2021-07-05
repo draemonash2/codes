@@ -3,7 +3,9 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" ) 'DownloadFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )        'DownloadFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )     'ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'CreateDirectry()
 
 '===============================================================================
 '= 本処理
@@ -30,14 +32,21 @@ Dim sOutputMsg
 sOutputMsg = WScript.ScriptName
 
 '=== 事前処理 ===
+Dim sDownloadTrgtDirPathRaw
 Dim sDownloadTrgtDirPath
 Dim sScpProgramPath
 Dim sDiffProgramPath
 Dim sCodesDirPath
-sDownloadTrgtDirPath = objWshShell.SpecialFolders("Desktop")
+sDownloadTrgtDirPathRaw = objWshShell.SpecialFolders("Desktop")
 sScpProgramPath = GetEnvVariable("MYEXEPATH_WINSCP")
 sDiffProgramPath = GetEnvVariable("MYEXEPATH_WINMERGE")
 sCodesDirPath = GetEnvVariable("MYDIRPATH_CODES")
+
+'バックアップフォルダ作成
+Dim sDateSuffix
+sDateSuffix = ConvDate2String(Now(),1)
+sDownloadTrgtDirPath = sDownloadTrgtDirPathRaw & "\" & sDateSuffix & "\" & sLoginServerName
+Call CreateDirectry( sDownloadTrgtDirPath )
 
 Dim vAnswer
 vAnswer = MsgBox("ファイルを受信します。ダウンロードを開始しますか？", vbYesNo, sOutputMsg)
@@ -72,13 +81,8 @@ End If
 
 vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
-    '=== ファイル削除 ===
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.vimrc"
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.vimrc_rmtorg"
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.bashrc"
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.bashrc_rmtorg"
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.inputrc"
-    objFSO.DeleteFile sDownloadTrgtDirPath & "\.inputrc_rmtorg"
+    '=== フォルダ削除 ===
+    objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & sDateSuffix, True
 End If
 
 'MsgBox "処理が完了しました！", vbYesNo, sOutputMsg

@@ -260,7 +260,7 @@ End Function
 ' = 引数    lNamingRuleType Long    [in]    命名規則種別
 ' =                                           1(短縮モード)  : YYMMDD-HHMM
 ' =                                           2(短縮モード2) : YYMMDD
-' =                                           2(短縮モード3) : YYMMDDHHMM
+' =                                           3(短縮モード3) : YYMMDDHHMM
 ' =                                           other          : YYYYMMDD-HHMMSS
 ' = 戻値                    String          変換後 日時文字列
 ' = 覚書    ・主に日時をファイル名やフォルダ名に使用する際に使用する。

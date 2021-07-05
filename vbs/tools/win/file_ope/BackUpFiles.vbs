@@ -14,6 +14,7 @@ Option Explicit
 '===============================================================================
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )     'ConvDate2String()
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct()
+                                                            'CreateDirectry()
                                                             'GetFileInfo()
 
 '===============================================================================
