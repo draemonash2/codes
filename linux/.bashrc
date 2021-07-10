@@ -161,9 +161,7 @@ alias sr='vim ~/.screenrc'
 #########################################################
 # Environment dependent settings
 #########################################################
-alias cdl='cd /home/draemon_ash3;'
-alias cdw='cd /mnt/c/users/draem;'
-alias he='export HOME=/home/draemon_ash3; cd ~; . .bashrc; pwd;'	# change Home directory alias for draemon_ash3
-alias exp='explorer.exe .'											# open current directory with explorer.exe
+alias cdw='cd /mnt/c/;'
+alias exp='explorer.exe .'		# open current directory with explorer.exe
 alias sht='sudo shutdown -h now'
 
