@@ -36,9 +36,7 @@
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{2c4de342-38b7-51cf-b940-2309a097f518}",
-    "initialCols": 200,
-    "initialPosition": "30,20",
-    "initialRows": 55,
+    "launchMode": "maximized",
     "profiles": 
     {
         "defaults": 
@@ -52,13 +50,15 @@
                 "commandline": "powershell.exe",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
-                "name": "Windows PowerShell"
+                "name": "Windows PowerShell",
+                "startingDirectory": "C:\\"
             },
             {
                 "commandline": "cmd.exe",
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
-                "name": "\u30b3\u30de\u30f3\u30c9 \u30d7\u30ed\u30f3\u30d7\u30c8"
+                "name": "\u30b3\u30de\u30f3\u30c9 \u30d7\u30ed\u30f3\u30d7\u30c8",
+                "startingDirectory": "C:\\"
             },
             {
                 "commandline": "wsl -d Ubuntu bash",
@@ -66,19 +66,21 @@
                 "hidden": false,
                 "name": "Ubuntu",
                 "source": "Windows.Terminal.Wsl",
-                "startingDirectory": "//wsl$/Ubuntu/home/draemon_ash3"
+                "startingDirectory": "C:\\"
             },
             {
                 "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
                 "hidden": false,
                 "name": "Azure Cloud Shell",
-                "source": "Windows.Terminal.Azure"
+                "source": "Windows.Terminal.Azure",
+                "startingDirectory": "C:\\"
             },
             {
                 "guid": "{8d89a9a6-1eea-50a1-b236-d45513f08881}",
                 "hidden": false,
                 "name": "CentOS8",
-                "source": "Windows.Terminal.Wsl"
+                "source": "Windows.Terminal.Wsl",
+                "startingDirectory": "C:\\"
             }
         ]
     },
