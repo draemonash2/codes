@@ -329,8 +329,9 @@ endif
 "	nmap							<c-o>		:GtagsCursor<CR>|								"【gtags(※1)】
 	nnoremap	<silent>			<F1>		:call BufferList()<cr>|							" バッファリスト作成
 	nnoremap	<silent>			<F2>		:TagbarToggle<cr>|								" タグリスト作成
-"	nnoremap	<silent>			<F3>		a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
-"	nnoremap	<silent>			<F4>		a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
+"	nnoremap	<silent>			<F3>														" <F3>はペーストモード切替に割り当て
+"	nnoremap	<silent>						a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
+"	nnoremap	<silent>						a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
 	nnoremap	<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
 "	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
@@ -355,7 +356,7 @@ endif
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 if has('unix')
-	imap		<silent>			<c-v>		<c-r>0|											" 貼り付け
+	imap		<silent>			<c-v>		<F3><c-r>0<F3>|									" 貼り付け
 else
 	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け
 endif
@@ -382,7 +383,7 @@ endif
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
-	vnoremap	<silent>			<F8>		:s/\v^\@.*\$/$/g<cr>|							" コンソール先頭文字削除
+	vnoremap	<silent>			<F8>		:s/\v^.*endo.*\$/$/g<cr>|						" コンソール先頭文字削除
 	vnoremap	<silent>			<F9>		:call ReplaceRelativePathFromCurrent()<cr>|		" 相対パスへ変換
 	vnoremap	<silent>			<F11>		<esc>:set expandtab<cr>gv:retab!<cr>|			" タブ⇒空白 変換
 	vnoremap	<silent>			<F12>		<esc>:set noexpandtab<cr>gv:retab!<cr>|			" 空白⇒タブ 変換
@@ -485,6 +486,7 @@ endif
 	set wildmenu										" コマンドライン補完するときに強化されたものを使う
 	set timeout timeoutlen=3000 ttimeoutlen=100			" キーコードやマッピングされたキー列が完了するのを待つ時間(ミリ秒)
 	set clipboard+=unnamed								" クリップボードを共有
+	set pastetoggle=<F3>								" <F3>でペーストモード切替え
 	set nrformats-=octal								" <C-a>,<C-x> 実行にて 8 進数を無効にする。
 	set nrformats-=alpha								" <C-a>,<C-x> 実行にて アルファベットを無効にする。
 "	set browsedir=buffer								" ファイル保存ダイアログの初期ディレクトリをバッファファイル位置に設定
@@ -1451,6 +1453,63 @@ if has('unix')
 	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
 	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
 endif
+
+" ==============================================================================
+" "{"と","と"}"区切りの選択文字列に対してインデント整形する
+" ==============================================================================
+	command! -range Aibr call AutoIndentCurlyBrace()
+	function! AutoIndentCurlyBrace()
+		"選択文字列取得
+		silent normal gvd
+		let l:inputstr = @*
+		
+		"文字列整形
+		let l:outputstr = ""
+		let l:tablevel = 0
+		let l:idx = 0
+		while l:idx < strlen(l:inputstr)
+			if l:inputstr[l:idx] =~ "{"
+				let l:tablevel = l:tablevel + 1
+				let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
+				"空白文字以外の文字まで進める
+				let l:idx = l:idx + 1
+				while l:inputstr[l:idx] =~ " "
+					let l:idx = l:idx + 1
+				endwhile
+			elseif l:inputstr[l:idx] =~ ","
+				" ","の先に"}"があるか確認する
+				let l:tmpidx = l:idx + 1
+				while l:inputstr[l:tmpidx] =~ " "
+					let l:tmpidx = l:tmpidx + 1
+				endwhile
+				" ","の先に"}"がある場合は改行しない
+				if l:inputstr[l:tmpidx] =~ "}"
+					let l:outputstr = l:outputstr . l:inputstr[l:idx]
+				else
+					let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
+				endif
+				"空白文字以外の文字まで進める
+				let l:idx = l:idx + 1
+				while l:inputstr[l:idx] =~ " "
+					let l:idx = l:idx + 1
+				endwhile
+			elseif l:inputstr[l:idx] =~ "}"
+				let l:tablevel = l:tablevel - 1
+				let l:outputstr = l:outputstr . "\n" . repeat("\t", l:tablevel) . l:inputstr[l:idx]
+				"空白文字以外の文字まで進める
+				let l:idx = l:idx + 1
+				while l:inputstr[l:idx] =~ " "
+					let l:idx = l:idx + 1
+				endwhile
+			else
+				let l:outputstr = l:outputstr . l:inputstr[l:idx]
+				let l:idx = l:idx + 1
+			endif
+		endwhile
+		"貼り付け
+		let @* = l:outputstr
+		silent normal p
+	endfunction
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
