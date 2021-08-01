@@ -55,13 +55,16 @@ If vAnswer = vbYes Then
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.vimrc "     & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.bashrc "    & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.inputrc "   & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
+    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.gdbinit "   & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
     
     '=== ファイルバックアップ ===
     objFSO.CopyFile sDownloadTrgtDirPath & "\.vimrc",   sDownloadTrgtDirPath & "\.vimrc_rmtorg"
     objFSO.CopyFile sDownloadTrgtDirPath & "\.bashrc",  sDownloadTrgtDirPath & "\.bashrc_rmtorg"
     objFSO.CopyFile sDownloadTrgtDirPath & "\.inputrc", sDownloadTrgtDirPath & "\.inputrc_rmtorg"
+    objFSO.CopyFile sDownloadTrgtDirPath & "\.gdbinit", sDownloadTrgtDirPath & "\.gdbinit_rmtorg"
     
     '=== フォルダ比較 ===
+    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.gdbinit"    & """ """ & sDownloadTrgtDirPath & "\.gdbinit"  & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.inputrc"    & """ """ & sDownloadTrgtDirPath & "\.inputrc"  & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.bashrc"     & """ """ & sDownloadTrgtDirPath & "\.bashrc"   & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\.vimrc"        & """ """ & sDownloadTrgtDirPath & "\.vimrc"    & """", 10, False
@@ -77,6 +80,7 @@ If vAnswer = vbYes Then
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.vimrc" & """ ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.bashrc" & """ ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.inputrc" & """ ""exit""", 0, True
+    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.gdbinit" & """ ""exit""", 0, True
 End If
 
 vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sOutputMsg)

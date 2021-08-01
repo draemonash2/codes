@@ -356,7 +356,7 @@ endif
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 if has('unix')
-	imap		<silent>			<c-v>		<F3><c-r>0<F3>|									" 貼り付け
+	imap		<silent>			<c-v>		<c-r>0|											" 貼り付け
 else
 	imap		<silent>			<c-v>		<S-Insert>|										" 貼り付け
 endif
