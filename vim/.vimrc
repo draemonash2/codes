@@ -1457,8 +1457,8 @@ endif
 " ==============================================================================
 " "{"と","と"}"区切りの選択文字列に対してインデント整形する
 " ==============================================================================
-	command! -range Aibr call AutoIndentCurlyBrace()
-	function! AutoIndentCurlyBrace()
+	command! -range Aibr call AutoIndentBrackets()
+	function! AutoIndentBrackets()
 		"選択文字列取得
 		silent normal gvd
 		let l:inputstr = @*
@@ -1468,7 +1468,7 @@ endif
 		let l:tablevel = 0
 		let l:idx = 0
 		while l:idx < strlen(l:inputstr)
-			if l:inputstr[l:idx] =~ "{"
+			if l:inputstr[l:idx] =~ "{" || l:inputstr[l:idx] =~ "(" || l:inputstr[l:idx] =~ "[" || l:inputstr[l:idx] =~ "<"
 				let l:tablevel = l:tablevel + 1
 				let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
 				"空白文字以外の文字まで進める
@@ -1493,7 +1493,7 @@ endif
 				while l:inputstr[l:idx] =~ " "
 					let l:idx = l:idx + 1
 				endwhile
-			elseif l:inputstr[l:idx] =~ "}"
+			elseif l:inputstr[l:idx] =~ "}" || l:inputstr[l:idx] =~ ")" || l:inputstr[l:idx] =~ "]" || l:inputstr[l:idx] =~ ">"
 				let l:tablevel = l:tablevel - 1
 				let l:outputstr = l:outputstr . "\n" . repeat("\t", l:tablevel) . l:inputstr[l:idx]
 				"空白文字以外の文字まで進める
