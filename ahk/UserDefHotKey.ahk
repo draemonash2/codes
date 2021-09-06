@@ -200,29 +200,29 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		ApplyWinTileMode( iWinTileMode )
 		{
 			;%s/[x]: /WinMove, A, , /g| %s/\v\t[ywh]: /, /g
-			if iWinTileMode = 0
+			if iWinTileMode = 0			;サブ全体
 			{
-				WinMove, A, , -2159, -2242, 2161, 3000	;サブ全体
+				WinMove, A, , -2162, -1899, 2165, 3002
 			}
-			else if iWinTileMode = 1
+			else if iWinTileMode = 1	;サブ上
 			{
-				WinMove, A, , -2159, -2242, 2161, 1512	;サブ上
+				WinMove, A, , -2162, -1899, 2165, 1523
 			}
-			else if iWinTileMode = 2
+			else if iWinTileMode = 2	;サブ下
 			{
-				WinMove, A, , -2159, -738, 2161, 1496	;サブ下
+				WinMove, A, , -2162, -382, 2165, 1480
 			}
-			else if iWinTileMode = 3
+			else if iWinTileMode = 3	;メイン全体
 			{
-				WinMove, A, , 132, -8, 1796, 1096		;メイン全体
+				WinMove, A, , 131, 0, 1797, 1096
 			}
-			else if iWinTileMode = 4
+			else if iWinTileMode = 4	;メイン左
 			{
-				WinMove, A, , 133, 0, 934, 1087			;メイン左
+				WinMove, A, , 133, 0, 934, 1087
 			}
-			else
+			else						;メイン右
 			{
-				WinMove, A, , 1053, 0, 858, 1087		;メイン右
+				WinMove, A, , 1053, 0, 858, 1087
 			}
 			return
 		}
