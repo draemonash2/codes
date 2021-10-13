@@ -160,7 +160,7 @@ if has('unix')
 					\		'left': [
 					\			[ 'mode', 'paste' ],
 					\			[ 'filename' ],
-					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified' ]
+					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified', 'anzu' ]
 					\		],
 					\		'right': [
 					\			[ 'rangediff' ],
@@ -173,7 +173,7 @@ else
 					\		'left': [
 					\			[ 'mode', 'paste' ],
 					\			[ 'filename' ],
-					\			[ 'bufnum', 'readonly', 'modified' ]
+					\			[ 'bufnum', 'readonly', 'modified', 'anzu' ]
 					\		],
 					\		'right': [
 					\			[ 'rangediff' ],
@@ -183,7 +183,8 @@ else
 					\	}
 endif
 	let g:lightline.component_function = {
-					\		'rangediff': 'GetSelRngDiff'
+					\		'rangediff': 'GetSelRngDiff',
+					\		'anzu': 'anzu#search_status'
 					\	}
 
 " =======================================
@@ -278,12 +279,6 @@ endif
 "			これはコメント付きの空の新しいコマンドを開始するからです。
 
 "=== モード共通 ===
-	noremap		<silent>			n			nzz|											" 検索結果を画面中央に
-	noremap		<silent>			N			Nzz|											" 検索結果を画面中央に
-	noremap		<silent>			*			*Nzz|											" 検索結果を画面中央に
-	noremap		<silent>			#			#nzz|											" 検索結果を画面中央に
-	noremap		<silent>			K			g*zz|											" 検索結果を画面中央に
-	noremap		<silent>			g#			g#zz|											" 検索結果を画面中央に
 	noremap		<silent>			x			"_x|											" 1文字削除（切り取りなし）
 "	nnoremap	<silent>			dd			"_dd|											" 行削除（切取りなし）
 "	nnoremap	<silent>			cc			dd|												" 行切取り
@@ -351,6 +346,13 @@ endif
 	nnoremap	<silent>			<c-F5>		:call CopyRltvFilePathAndLineNo()<cr>|			" 現在相対ファイルパス＆行番号コピー
 	nnoremap	<silent>			<c-F8>		:call SwitchBirdEyesViewMode()<cr>|				" 俯瞰モード
 	nnoremap	<silent>			<c-s-F5>	:call UpdateTagFile()<cr>|						" タグファイル更新
+	nmap		<silent>			n			<Plug>(anzu-n)zz|								" 検索結果を画面中央に
+	nmap		<silent>			N			<Plug>(anzu-N)zz|								" 検索結果を画面中央に
+	nmap		<silent>			*			<Plug>(anzu-star)zz|							" 検索結果を画面中央に
+	nmap		<silent>			#			<Plug>(anzu-sharp)zz|							" 検索結果を画面中央に
+	nmap		<silent>			K			g*zz|											" 検索結果を画面中央に
+	nmap		<silent>			g#			g#zz|											" 検索結果を画面中央に
+	nmap		<silent>			<Esc><Esc>	<Plug>(anzu-clear-search-status):noh<cr>|		" 検索結果を画面中央に
 
 "=== 挿入モード ===
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
@@ -1467,43 +1469,42 @@ endif
 		let l:outputstr = ""
 		let l:tablevel = 0
 		let l:idx = 0
+		let l:isStrMode = 0
 		while l:idx < strlen(l:inputstr)
+			"文字列モードの場合
+			if l:isStrMode == 1
+				if l:inputstr[l:idx] =~ "\""
+					let l:isStrMode = 0
+				endif
+				let l:outputstr = l:outputstr . l:inputstr[l:idx]
+			"文字列モードでない場合
+			else
 			if l:inputstr[l:idx] =~ "{" || l:inputstr[l:idx] =~ "(" || l:inputstr[l:idx] =~ "[" || l:inputstr[l:idx] =~ "<"
 				let l:tablevel = l:tablevel + 1
 				let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
-				"空白文字以外の文字まで進める
-				let l:idx = l:idx + 1
-				while l:inputstr[l:idx] =~ " "
-					let l:idx = l:idx + 1
-				endwhile
-			elseif l:inputstr[l:idx] =~ ","
-				" ","の先に"}"があるか確認する
-				let l:tmpidx = l:idx + 1
-				while l:inputstr[l:tmpidx] =~ " "
-					let l:tmpidx = l:tmpidx + 1
-				endwhile
-				" ","の先に"}"がある場合は改行しない
-				if l:inputstr[l:tmpidx] =~ "}"
-					let l:outputstr = l:outputstr . l:inputstr[l:idx]
-				else
+					let l:skipchar = 1
+				elseif l:inputstr[l:idx] =~ "," || l:inputstr[l:idx] =~ ";"
 					let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
-				endif
-				"空白文字以外の文字まで進める
-				let l:idx = l:idx + 1
-				while l:inputstr[l:idx] =~ " "
-					let l:idx = l:idx + 1
-				endwhile
+					let l:skipchar = 1
 			elseif l:inputstr[l:idx] =~ "}" || l:inputstr[l:idx] =~ ")" || l:inputstr[l:idx] =~ "]" || l:inputstr[l:idx] =~ ">"
 				let l:tablevel = l:tablevel - 1
 				let l:outputstr = l:outputstr . "\n" . repeat("\t", l:tablevel) . l:inputstr[l:idx]
-				"空白文字以外の文字まで進める
+					let l:skipchar = 1
+				elseif l:inputstr[l:idx] =~ "\""
+					let l:isStrMode = 1
+					let l:outputstr = l:outputstr . l:inputstr[l:idx]
+				else
+					let l:outputstr = l:outputstr . l:inputstr[l:idx]
+				endif
+			endif
+			
 				let l:idx = l:idx + 1
+			"空白文字以外の文字まで進める
+			if l:skipchar == 1
 				while l:inputstr[l:idx] =~ " "
 					let l:idx = l:idx + 1
 				endwhile
-			else
-				let l:outputstr = l:outputstr . l:inputstr[l:idx]
-				let l:idx = l:idx + 1
+				let l:skipchar = 0
 			endif
 		endwhile
 		"貼り付け

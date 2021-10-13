@@ -69,7 +69,7 @@ Call CreateDirectry( sBakDirPath )
 '未存在ファイルパス判定
 Dim lAlphaIdx
 lAlphaIdx = 97 'asciiコードのa
-Dim sBakFilePathLatest  '既存のバックアップファイル
+Dim sBakFilePathLatest  '既存の最新バックアップファイル
 Dim sBakFilePathNew     '新規で作成するバックアップファイル
 sBakFilePathLatest = ""
 Do While objFSO.FileExists( sBakFilePath )
@@ -86,7 +86,7 @@ Dim bRet
 bRet = GetFileInfo( sBakFilePathLatest, 11, vDateLastModifiedLatestBk)
 bRet = GetFileInfo( sTrgtFilePath, 11, vDateLastModifiedTrgt)
 
-'バックアップファイル未存在 or 更新されている場合
+'既存のバックアップファイル未存在 or 更新されている場合
 If ( sBakFilePathLatest = "" ) Or _
    ( ( sBakFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
     'ファイルバックアップ

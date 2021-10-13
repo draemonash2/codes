@@ -160,7 +160,7 @@ if has('unix')
 					\		'left': [
 					\			[ 'mode', 'paste' ],
 					\			[ 'filename' ],
-					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified' ]
+					\			[ 'absolutepath', 'bufnum', 'readonly', 'modified', 'anzu' ]
 					\		],
 					\		'right': [
 					\			[ 'rangediff' ],
@@ -173,7 +173,7 @@ else
 					\		'left': [
 					\			[ 'mode', 'paste' ],
 					\			[ 'filename' ],
-					\			[ 'bufnum', 'readonly', 'modified' ]
+					\			[ 'bufnum', 'readonly', 'modified', 'anzu' ]
 					\		],
 					\		'right': [
 					\			[ 'rangediff' ],
@@ -183,7 +183,8 @@ else
 					\	}
 endif
 	let g:lightline.component_function = {
-					\		'rangediff': 'GetSelRngDiff'
+					\		'rangediff': 'GetSelRngDiff',
+					\		'anzu': 'anzu#search_status'
 					\	}
 
 " =======================================
