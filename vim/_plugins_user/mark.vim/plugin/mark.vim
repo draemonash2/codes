@@ -123,24 +123,24 @@ set cpo&vim
 
 "š custom mod <TOP>
 if !hasmapto('<Plug>MarkSet', 'n')
-  nmap <unique> <silent> mm <Plug>MarkSet
+  nmap <unique> <silent> <space><space> <Plug>MarkSet
 endif
 if !hasmapto('<Plug>MarkSet', 'v')
-  vmap <unique> <silent> mm <Plug>MarkSet
+  vmap <unique> <silent> <space><space> <Plug>MarkSet
 endif
 if !hasmapto('<Plug>MarkRegex', 'n')
-  nmap <unique> <silent> mr <Plug>MarkRegex
+  nmap <unique> <silent> <space>r <Plug>MarkRegex
 endif
 if !hasmapto('<Plug>MarkRegex', 'v')
-  vmap <unique> <silent> mr <Plug>MarkRegex
+  vmap <unique> <silent> <space>r <Plug>MarkRegex
 endif
 if !hasmapto('<Plug>MarkClear', 'n')
-  nmap <unique> <silent> mn <Plug>MarkClear
+  nmap <unique> <silent> <space>n <Plug>MarkClear
 endif
 "š custom mod <END>
 "š custom add <TOP>
 if !hasmapto('<Plug>MarkAllClear', 'n')
-  nmap <unique> <silent> mc <Plug>MarkAllClear
+  nmap <unique> <silent> <space>c <Plug>MarkAllClear
 endif
 "š custom add <END>
 
