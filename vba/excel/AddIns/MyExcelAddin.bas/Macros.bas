@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.6
+' my excel addin macros v2.7
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -60,6 +60,7 @@ Option Explicit
 ' =         アクティブセルコメントのみ表示して左移動    左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         Excel数式整形化実施                         Excel数式整形化実施
 ' =         Excel数式整形化解除                         Excel数式整形化解除
+' =         セルコメントの書式設定を一括変更            セルコメントの書式設定を一括変更
 ' =
 ' =     ・オブジェクト操作
 ' =         最前面へ移動                                最前面へ移動する
@@ -1961,6 +1962,38 @@ Public Sub Excel数式整形化解除()
     For Each rSelectRange In Selection
         rSelectRange.Formula = ConvFormuraIndentation(rSelectRange.Formula, False)
     Next
+End Sub
+
+' =============================================================================
+' = 概要    現在シートの全セルコメントオブジェクトを
+' =         「セルに合わせて移動やサイズ変更をする」に一括設定する
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub セルコメントの書式設定を一括変更()
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    With ActiveSheet
+        Dim lLastRow As Long
+        Dim lLastClm As Long
+        Dim lRowIdx As Long
+        Dim lClmIdx As Long
+        lLastRow = .Cells(.Rows.Count, 1).End(xlUp).Row
+        lLastClm = .Cells(1, .Columns.Count).End(xlToLeft).Column
+        For lRowIdx = 1 To lLastRow
+            For lClmIdx = 1 To lLastClm
+                If .Cells(lRowIdx, lClmIdx).Comment Is Nothing Then
+                    'Do Nothing
+                Else
+                    'MsgBox .Cells(lRowIdx, lClmIdx).Value
+                    .Cells(lRowIdx, lClmIdx).Comment.Shape.Placement = xlMoveAndSize
+                End If
+            Next lClmIdx
+        Next lRowIdx
+    End With
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
 End Sub
 
 ' =============================================================================
