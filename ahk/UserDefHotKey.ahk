@@ -250,12 +250,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;			return
 	
 	;テスト用
-		^Pause::
-			MsgBox, ctrlpause
-			Return
-		+Pause::
-			MsgBox, shiftpause
-			Return
+;		^Pause::
+;			MsgBox, ctrlpause
+;			Return
+;		+Pause::
+;			MsgBox, shiftpause
+;			Return
 		+^!i::
 			Send, ^c
 			Sleep 200
