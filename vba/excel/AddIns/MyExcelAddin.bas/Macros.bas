@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.7
+' my excel addin macros v2.8
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -478,24 +478,31 @@ End Sub
 ' = 概要    シート選択ウィンドウを表示する
 ' = 覚書    ・環境によってはシートがアクティブ化されないことがあるが、
 ' =           なぜか事前にMsgBoxすれば対処できる。
+' =         ・bUseMyUserForm = Trueにより、自作ユーザフォームのシート
+' =           選択ウィンドウを表示できる｡
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub シート選択ウィンドウを表示()
-    Dim bMsgBoxShow As Boolean
-    bMsgBoxShow = ReadSettingFile("bSHTSELWIN_MSGBOX_SHOW", bSHTSELWIN_MSGBOX_SHOW)
-    If bMsgBoxShow = True Then
-        MsgBox "シート選択ウィンドウを表示します", vbOKOnly, "シート選択ウィンドウ表示"
+    Const bUseMyUserForm As Boolean = True
+    If bUseMyUserForm = True Then
+        SelectActivationSheet.Show
     Else
-        'Do Nothing
+        Dim bMsgBoxShow As Boolean
+        bMsgBoxShow = ReadSettingFile("bSHTSELWIN_MSGBOX_SHOW", bSHTSELWIN_MSGBOX_SHOW)
+        If bMsgBoxShow = True Then
+            MsgBox "シート選択ウィンドウを表示します", vbOKOnly, "シート選択ウィンドウ表示"
+        Else
+            'Do Nothing
+        End If
+
+        Application.ScreenUpdating = False
+        With CommandBars.Add(Temporary:=True)
+            .Controls.Add(ID:=957).Execute
+            .Delete
+        End With
+        Application.ScreenUpdating = True
     End If
-    
-    Application.ScreenUpdating = False
-    With CommandBars.Add(Temporary:=True)
-        .Controls.Add(ID:=957).Execute
-        .Delete
-    End With
-    Application.ScreenUpdating = True
 End Sub
 
 ' ==================================================================
