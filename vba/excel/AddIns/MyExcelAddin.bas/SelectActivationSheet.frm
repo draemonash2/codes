@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} SelectActivationSheet 
    Caption         =   "シート選択ウィンドウ"
-   ClientHeight    =   9165
+   ClientHeight    =   2730
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   4560
@@ -15,14 +15,19 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-' select activation sheet macro v1.0
+' select activation sheet macro v1.1
+
+'▼▼▼設定 ここから▼▼▼
+Const lFORM_HEIGHT_MERGIN As Long = 30
+Const lFONT_SIZE As Long = 10
+Const sFONT_NAME As String = "ＭＳ ゴシック"
+'▲▲▲設定 ここから▲▲▲
 
 Const sMACRO_NAME As String = "シート選択ウィンドウ表示"
 
-Const lKEY_ENTER As Long = 13
-Const lKEY_ESC As Long = 27
-
 Private Sub SheetNamesListBox_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
+    Const lKEY_ENTER As Long = 13
+    Const lKEY_ESC As Long = 27
     If KeyAscii = lKEY_ENTER Then
         'シートアクティブ化
         Dim sSheetName As String
@@ -45,8 +50,15 @@ Private Sub SheetNamesListBox_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 End Sub
 
 Private Sub UserForm_Initialize()
+    Me.Height = Application.Height - lFORM_HEIGHT_MERGIN
+    
     'リストボックス表示
     With SheetNamesListBox
+        Debug.Print Me.Height
+        .Height = Me.Height - 70
+        .Font.Size = lFONT_SIZE
+        .Font = sFONT_NAME
+        
         Dim lCurSheetIdx As Long
         Dim lSheetIdx As Long
         lSheetIdx = 0

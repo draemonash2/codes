@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.8
+' my excel addin macros v2.9
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -23,6 +23,7 @@ Option Explicit
 ' =         シート選択ウィンドウを表示                  シート選択ウィンドウを表示する
 ' =         先頭シートへジャンプ                        アクティブブックの先頭シートへ移動する
 ' =         末尾シートへジャンプ                        アクティブブックの末尾シートへ移動する
+' =         シート再計算時間計測                        シート毎に再計算にかかる時間を計測する
 ' =
 ' =     ・セル操作
 ' =         ファイルエクスポート                        選択範囲をファイルとしてエクスポートする。
@@ -227,6 +228,8 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^%{PGDN}", "シート選択ウィンドウを表示"
     dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
     dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
+    
+'   dMacroShortcutKeys.Add "", "シート再計算時間計測"
     
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
@@ -1665,6 +1668,53 @@ Public Sub 末尾シートへジャンプ()
             End If
         Next
     End With
+    Application.ScreenUpdating = True
+End Sub
+
+' ==================================================================
+' = 概要    シート毎に再計算にかかる時間を計測する
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Public Sub シート再計算時間計測()
+    Const lLOOP_NUM As Long = 10
+    
+    Application.ScreenUpdating = False
+    
+    Dim previonsCalculationcMode As Variant
+    previonsCalculationcMode = Application.Calculation
+    Application.Calculation = xlCalculationManual
+    
+    ' 入力値が1未満の場合は終了する
+    If Not (lLOOP_NUM > 0) Then
+        Exit Sub
+    End If
+    
+    ' ### ベンチマーク開始 ###
+    ' ヘッダー(シート名の一覧)を出力
+    Dim shTrgtSheet As Worksheet
+    For Each shTrgtSheet In ActiveWorkbook.Worksheets
+        Debug.Print shTrgtSheet.Name & vbTab;
+    Next
+    Debug.Print
+    
+    Dim lLoopIdx As Long
+    For lLoopIdx = 1 To lLOOP_NUM
+        ' シートごとに再計算&処理時間を出力
+        Dim vStartTime As Variant
+        Dim vFinishTime As Variant
+        For Each shTrgtSheet In Worksheets
+            shTrgtSheet.Cells.Dirty
+            vStartTime = Timer
+            shTrgtSheet.Calculate
+            vFinishTime = Timer
+            Debug.Print Format(vFinishTime - vStartTime, "0.0000") & vbTab;
+        Next
+        Debug.Print
+    Next
+    
+    Application.Calculation = previonsCalculationcMode
     Application.ScreenUpdating = True
 End Sub
 
