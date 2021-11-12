@@ -19,6 +19,7 @@ Option Explicit
 
 '▼▼▼設定 ここから▼▼▼
 Const lFORM_HEIGHT_MERGIN As Long = 30
+Const lFORM_HEIGHT_MAX As Long = 1200
 Const lFONT_SIZE As Long = 10
 Const sFONT_NAME As String = "ＭＳ ゴシック"
 '▲▲▲設定 ここから▲▲▲
@@ -50,11 +51,16 @@ Private Sub SheetNamesListBox_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
 End Sub
 
 Private Sub UserForm_Initialize()
-    Me.Height = Application.Height - lFORM_HEIGHT_MERGIN
+    'フォームの高さ設定
+    Dim lFormHeight As Long
+    lFormHeight = Application.Height - lFORM_HEIGHT_MERGIN
+    If lFormHeight > lFORM_HEIGHT_MAX Then
+        lFormHeight = lFORM_HEIGHT_MAX
+    End If
+    Me.Height = lFormHeight
     
     'リストボックス表示
     With SheetNamesListBox
-        Debug.Print Me.Height
         .Height = Me.Height - 70
         .Font.Size = lFONT_SIZE
         .Font = sFONT_NAME
