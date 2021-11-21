@@ -28,13 +28,13 @@ Const sBAK_FILE_SUFFIX = "#b#"
 '= 本処理
 '===============================================================================
 Const sSCRIPT_NAME = "ファイルバックアップ"
-Dim sTrgtFilePath
+Dim sBakSrcFilePath
 Dim lBakFileNumMax
 If WScript.Arguments.Count >= 2 Then
-    sTrgtFilePath = WScript.Arguments(0)
+    sBakSrcFilePath = WScript.Arguments(0)
     lBakFileNumMax = CLng(WScript.Arguments(1))
 ElseIf WScript.Arguments.Count = 1 Then
-    sTrgtFilePath = WScript.Arguments(0)
+    sBakSrcFilePath = WScript.Arguments(0)
     lBakFileNumMax = lMAX_BAK_FILE_NUM_DEFAULT
 Else
     WScript.Echo "引数を指定してください。プログラムを中断します。"
@@ -45,58 +45,88 @@ Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 '対象ファイル情報取得
-Dim sTrgtFileParDirPath
-Dim sTrgtFileBaseName
-Dim sTrgtFileExt
+Dim sBakSrcParDirPath
+Dim sBakSrcFileBaseName
+Dim sBakSrcFileExt
 Dim sDateSuffix
-sTrgtFileParDirPath = objFSO.GetParentFolderName( sTrgtFilePath )
-sTrgtFileBaseName = objFSO.GetBaseName( sTrgtFilePath )
-sTrgtFileExt = objFSO.GetExtensionName( sTrgtFilePath )
+sBakSrcParDirPath = objFSO.GetParentFolderName( sBakSrcFilePath )
+sBakSrcFileBaseName = objFSO.GetBaseName( sBakSrcFilePath )
+sBakSrcFileExt = objFSO.GetExtensionName( sBakSrcFilePath )
 sDateSuffix = ConvDate2String(Now(),2)
 
 'バックアップファイル情報作成
-Dim sBakDirPath
-Dim sBakFilePathBase
-Dim sBakFilePath
-sBakDirPath = sTrgtFileParDirPath & "\" & sBAK_DIR_NAME
-sBakFilePathBase = sBakDirPath & "\" & sTrgtFileBaseName & "_" & sBAK_FILE_SUFFIX
-sBakFilePath = sBakFilePathBase & sDateSuffix & "." & sTrgtFileExt
+Dim sBakDstDirPath
+Dim sBakDstPathBase
+sBakDstDirPath = sBakSrcParDirPath & "\" & sBAK_DIR_NAME
+sBakDstPathBase = sBakDstDirPath & "\" & sBakSrcFileBaseName & "_" & sBAK_FILE_SUFFIX
 
 'バックアップフォルダ作成
-Call CreateDirectry( sBakDirPath )
+Call CreateDirectry( sBakDstDirPath )
 
 '*** ファイルバックアップ ***
-'未存在ファイルパス判定
-Dim lAlphaIdx
-lAlphaIdx = 97 'asciiコードのa
-Dim sBakFilePathLatest  '既存の最新バックアップファイル
-Dim sBakFilePathNew     '新規で作成するバックアップファイル
-sBakFilePathLatest = ""
-Do While objFSO.FileExists( sBakFilePath )
-    sBakFilePathLatest = sBakFilePath
-    sBakFilePath = sBakFilePathBase & sDateSuffix & Chr(lAlphaIdx) & "." & sTrgtFileExt
-    lAlphaIdx = lAlphaIdx + 1
+'既存の最新ファイル探索
+Dim cFileList
+Set cFileList = CreateObject("System.Collections.ArrayList")
+Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
+Dim sBakDstFilePathLatest  '既存の最新バックアップファイル
+sBakDstFilePathLatest = ""
+Dim vFilePath
+For Each vFilePath In cFileList
+    If InStr(vFilePath, sBakDstPathBase) > 0 Then
+        sBakDstFilePathLatest = vFilePath
+    End If
+Next
+Set cFileList = Nothing
+
+'バックアップファイル名確定
+''既存のバックアップファイルが存在し、同じ日付のバックアップファイルが存在する場合
+'If sBakDstFilePathLatest <> "" And _
+'   InStr(sBakDstFilePathLatest, sBakDstPathBase & sDateSuffix) > 0 Then
+'    Dim sTailChar
+'    sTailChar = Right( objFSO.GetBaseName( sBakDstFilePathLatest ), 1)
+'    Dim lBakDstAlphaIdx
+'    If Asc(sTailChar) >= Asc("a") And Asc(sTailChar) < Asc("z") Then
+'        lBakDstAlphaIdx = Asc(sTailChar) + 1
+'    ElseIf Asc(sTailChar) <= Asc("z") Then
+'        lBakDstAlphaIdx = Asc("a")
+'    ElseIf Asc(sTailChar) >= Asc("0") And Asc(sTailChar) <= Asc("9") Then
+'        lBakDstAlphaIdx = Asc("a")
+'    Else
+'        WScript.Echo "不正なバックアップファイルが見つかりました。"
+'        WScript.Echo "  " & sBakDstFilePathLatest
+'        WScript.Echo "プログラムを中断します。"
+'        WScript.Quit
+'    End If
+'    sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx) & "." & sBakSrcFileExt
+'Else
+'    sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
+'End If
+Dim sBakDstFilePath
+sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
+Dim lBakDstAlphaIdx
+lBakDstAlphaIdx = Asc("a")
+Do While objFSO.FileExists( sBakDstFilePath )
+    sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx) & "." & sBakSrcFileExt
+    lBakDstAlphaIdx = lBakDstAlphaIdx + 1
 Loop
-sBakFilePathNew = sBakFilePath
 
 '更新日時取得
 Dim vDateLastModifiedLatestBk
 Dim vDateLastModifiedTrgt
 Dim bRet
-bRet = GetFileInfo( sBakFilePathLatest, 11, vDateLastModifiedLatestBk)
-bRet = GetFileInfo( sTrgtFilePath, 11, vDateLastModifiedTrgt)
+bRet = GetFileInfo( sBakDstFilePathLatest, 11, vDateLastModifiedLatestBk)
+bRet = GetFileInfo( sBakSrcFilePath, 11, vDateLastModifiedTrgt)
 
 '既存のバックアップファイル未存在 or 更新されている場合
-If ( sBakFilePathLatest = "" ) Or _
-   ( ( sBakFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
+If ( sBakDstFilePathLatest = "" ) Or _
+   ( ( sBakDstFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
     'ファイルバックアップ
-    objFSO.CopyFile sTrgtFilePath, sBakFilePathNew
+    objFSO.CopyFile sBakSrcFilePath, sBakDstFilePath
     
     '*** 古いファイル削除 ***
     'ファイルリスト取得
-    Dim cFileList
     Set cFileList = CreateObject("System.Collections.ArrayList")
-    Call GetFileListCmdClct( sBakDirPath, cFileList, 1, "*")
+    Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
     
     'バックアップファイル数取得
     Dim lBakFileNum
@@ -105,12 +135,12 @@ If ( sBakFilePathLatest = "" ) Or _
     sDelFilePath = ""
     Dim sFilePath
     For Each sFilePath in cFileList
-        If ( (InStr(sFilePath, sBakFilePathBase) > 0) And _
-             (objFSO.GetExtensionName(sFilePath) = sTrgtFileExt) ) Then
-             If lBakFileNum = 0 Then
-                sDelFilePath = sFilePath
-             End If
-             lBakFileNum = lBakFileNum + 1
+        If ( (InStr(sFilePath, sBakDstPathBase) > 0) And _
+             (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
+            If lBakFileNum = 0 Then
+               sDelFilePath = sFilePath
+            End If
+            lBakFileNum = lBakFileNum + 1
         End If
     Next
     
@@ -118,8 +148,10 @@ If ( sBakFilePathLatest = "" ) Or _
     If lBakFileNum > lBakFileNumMax Then
         objFSO.DeleteFile sDelFilePath, True
     End If
+    'WScript.Echo "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
 Else
     '前回バックアップ時から更新されていない場合、バックアップしない
+    'WScript.Echo "[Skip]    " & sBakSrcFilePath
 End If
 
 'MsgBox "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
