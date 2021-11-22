@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' my excel addin functions v1.11
+' my excel addin functions v1.12
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -18,8 +18,10 @@ Option Explicit
 ' =    GetFilePart          指定されたファイルパスから指定された一部を抽出する｡
 ' =
 ' =    GetStrikeExist       取り消し線の有無を判定する。
-' =    GetFontColor         フォントカラーを返却する。
-' =    GetInteriorColor     背景色を返却する。
+' =    GetFontColor         フォントカラーを返却する。(色指定版)
+' =    GetInteriorColor     背景色を返却する。(色指定版)
+' =    GetFontColorAll      フォントカラーを返却する。(全色指定版)
+' =    GetInteriorColorAll  背景色を返却する。(全色指定版)
 ' =
 ' =    BitAndVal            ビットＡＮＤ演算を行う。（数値）
 ' =    BitAndStrHex         ビットＡＮＤ演算を行う。（文字列１６進数）
@@ -614,38 +616,21 @@ End Function
     End Sub
 
 ' ==================================================================
-' = 概要    フォントカラーを返却する
+' = 概要    フォントカラーを返却する(色指定版)
 ' = 引数    rTrgtRange  Range     [in]  セル
 ' = 引数    sColorType  String    [in]  色種別（R or G or B）
-' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）(省略可)
 ' = 戻値                Variant         フォント色
 ' = 覚書    なし
-' = 依存    Funcs.bas/ConvRgb2X()
+' = 依存    Funcs.bas/GetColor()
 ' = 所属    Funcs.bas
 ' ==================================================================
 Public Function GetFontColor( _
     ByRef rTrgtCell As Range, _
     ByVal sColorType As String, _
-    ByVal bIsHex As Boolean _
+    Optional ByVal bIsHex As Boolean _
 ) As Variant
-    Dim lColorRGB As Long
-    Dim lColorX As Long
-    
-    If rTrgtCell.Count > 1 Then
-        GetFontColor = CVErr(xlErrRef)
-    Else
-        lColorRGB = rTrgtCell.Font.Color
-        lColorX = ConvRgb2X(lColorRGB, sColorType)
-        If lColorX > 255 Then
-            GetFontColor = CVErr(xlErrValue)
-        Else
-            If bIsHex = True Then
-                GetFontColor = UCase(String(2 - Len(Hex(lColorX)), "0") & Hex(lColorX))
-            Else
-                GetFontColor = lColorX
-            End If
-        End If
-    End If
+    GetFontColor = GetColor(rTrgtCell, sColorType, 1, bIsHex)
 End Function
     Private Sub Test_GetFontColor()
         Dim oTrgtCellsPos01 As Range
@@ -684,13 +669,60 @@ End Function
         Debug.Print GetFontColor(oTrgtCellsPos01, "aa", False) 'エラー 2015
         Debug.Print GetFontColor(oTrgtCellsNeg01, "r", False)  'エラー 2023
         Debug.Print GetFontColor(oTrgtCellsNeg02, "r", False)  'エラー 2023
+        Debug.Print GetFontColor(oTrgtCellsPos01, "r")         '16
         Debug.Print "*** test finished! ***"
         
         oTrgtCellsPos01.Font.Color = lColorBefore
     End Sub
 
 ' ==================================================================
-' = 概要    背景色を返却する
+' = 概要    フォントカラーを返却する(全色指定版)
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）(省略可)
+' = 戻値                Variant         フォント色
+' = 覚書    なし
+' = 依存    Funcs.bas/GetColor()
+' = 所属    Funcs.bas
+' ==================================================================
+Public Function GetFontColorAll( _
+    ByRef rTrgtCell As Range, _
+    Optional ByVal bIsHex As Boolean = False _
+) As Variant
+    GetFontColorAll = GetColorAll(rTrgtCell, 1, bIsHex)
+End Function
+    Private Sub Test_GetFontColorAll()
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorBefore As Long
+        lColorBefore = oTrgtCellsPos01.Font.Color
+        
+        Debug.Print "*** test start! ***"
+        oTrgtCellsPos01.Font.Color = RGB(0, 0, 0)
+        Debug.Print GetFontColorAll(oTrgtCellsPos01, False)  '0,0,0
+        oTrgtCellsPos01.Font.Color = RGB(100, 100, 100)
+        Debug.Print GetFontColorAll(oTrgtCellsPos01, False)  '100,100,100
+        oTrgtCellsPos01.Font.Color = RGB(255, 255, 255)
+        Debug.Print GetFontColorAll(oTrgtCellsPos01, False)  '255,255,255
+        oTrgtCellsPos01.Font.Color = RGB(16, 100, 152)
+        Debug.Print GetFontColorAll(oTrgtCellsPos01, False)  '16,100,152
+        Debug.Print GetFontColorAll(oTrgtCellsPos01, True)   '10,64,98
+        Debug.Print GetFontColorAll(oTrgtCellsNeg01, False)  'エラー 2023
+        Debug.Print GetFontColorAll(oTrgtCellsNeg02, False)  'エラー 2023
+        Debug.Print GetFontColorAll(oTrgtCellsPos01)         '16,100,152
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Font.Color = lColorBefore
+    End Sub
+
+' ==================================================================
+' = 概要    背景色を返却する(色指定版)
 ' = 引数    rTrgtRange  Range     [in]  セル
 ' = 引数    sColorType  String    [in]  色種別（R or G or B）
 ' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
@@ -704,24 +736,7 @@ Public Function GetInteriorColor( _
     ByVal sColorType As String, _
     ByVal bIsHex As Boolean _
 ) As Variant
-    Dim lColorRGB As Long
-    Dim lColorX As Long
-    
-    If rTrgtCell.Count > 1 Then
-        GetInteriorColor = CVErr(xlErrRef)
-    Else
-        lColorRGB = rTrgtCell.Interior.Color
-        lColorX = ConvRgb2X(lColorRGB, sColorType)
-        If lColorX > 255 Then
-            GetInteriorColor = CVErr(xlErrValue)
-        Else
-            If bIsHex = True Then
-                GetInteriorColor = UCase(String(2 - Len(Hex(lColorX)), "0") & Hex(lColorX))
-            Else
-                GetInteriorColor = lColorX
-            End If
-        End If
-    End If
+    GetInteriorColor = GetColor(rTrgtCell, sColorType, 2, bIsHex)
 End Function
     Private Sub Test_GetInteriorColor()
         Dim oTrgtCellsPos01 As Range
@@ -760,6 +775,52 @@ End Function
         Debug.Print GetInteriorColor(oTrgtCellsPos01, "aa", False) 'エラー 2015
         Debug.Print GetInteriorColor(oTrgtCellsNeg01, "r", False)  'エラー 2023
         Debug.Print GetInteriorColor(oTrgtCellsNeg02, "r", False)  'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Interior.Color = lColorBefore
+    End Sub
+
+' ==================================================================
+' = 概要    背景色を返却する(全色指定版)
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 戻値                Variant         背景色
+' = 覚書    なし
+' = 依存    Funcs.bas/GetColorAll()
+' = 所属    Funcs.bas
+' ==================================================================
+Public Function GetInteriorColorAll( _
+    ByRef rTrgtCell As Range, _
+    Optional ByVal bIsHex As Boolean = False _
+) As Variant
+    GetInteriorColorAll = GetColorAll(rTrgtCell, 2, bIsHex)
+End Function
+    Private Sub Test_GetInteriorColorAll()
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorBefore As Long
+        lColorBefore = oTrgtCellsPos01.Interior.Color
+        
+        Debug.Print "*** test start! ***"
+        oTrgtCellsPos01.Interior.Color = RGB(0, 0, 0)
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01, False)  '0,0,0
+        oTrgtCellsPos01.Interior.Color = RGB(100, 100, 100)
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01, False)  '100,100,100
+        oTrgtCellsPos01.Interior.Color = RGB(255, 255, 255)
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01, False)  '255,255,255
+        oTrgtCellsPos01.Interior.Color = RGB(16, 100, 152)
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01, False)  '16,100,152
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01, True)   '10,64,98
+        Debug.Print GetInteriorColorAll(oTrgtCellsNeg01, False)  'エラー 2023
+        Debug.Print GetInteriorColorAll(oTrgtCellsNeg02, False)  'エラー 2023
+        Debug.Print GetInteriorColorAll(oTrgtCellsPos01)         '16,100,152
         Debug.Print "*** test finished! ***"
         
         oTrgtCellsPos01.Interior.Color = lColorBefore
@@ -2726,6 +2787,216 @@ End Function
     '   Debug.Print BitShiftAriStrBin("1000101A", 1, LEFT_SHIFT, 10, True, True)        'プログラム停止
     '   Debug.Print BitShiftAriStrBin("10001011", 1, LEFT_SHIFT, -1, True, True)        'プログラム停止
         Debug.Print "*** test finished! ***"
+    End Sub
+
+' ==================================================================
+' = 概要    フォント色/背景色を返却する(色指定版)
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    sColorType  String    [in]  色種別（R or G or B）
+' = 引数    sColorKind  Long      [in]  色種別（1:Font、2:Interior）
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 戻値                Variant         背景色
+' = 覚書    なし
+' = 依存    Funcs.bas/ConvRgb2X()
+' = 所属    Funcs.bas
+' ==================================================================
+Private Function GetColor( _
+    ByRef rTrgtCell As Range, _
+    ByVal sColorType As String, _
+    ByVal lColorKind As Long, _
+    ByVal bIsHex As Boolean _
+) As Variant
+    Dim lColorRGB As Long
+    Dim lColorX As Long
+    
+    If rTrgtCell.Count > 1 Then
+        GetColor = CVErr(xlErrRef)
+    Else
+        If lColorKind = 1 Then
+            lColorRGB = rTrgtCell.Font.Color
+        ElseIf lColorKind = 2 Then
+            lColorRGB = rTrgtCell.Interior.Color
+        Else
+            GetColor = CVErr(xlErrValue)
+        End If
+        lColorX = ConvRgb2X(lColorRGB, sColorType)
+        If lColorX > 255 Then
+            GetColor = CVErr(xlErrValue)
+        Else
+            If bIsHex = True Then
+                GetColor = UCase(String(2 - Len(Hex(lColorX)), "0") & Hex(lColorX))
+            Else
+                GetColor = lColorX
+            End If
+        End If
+    End If
+End Function
+    Private Sub Test_GetColor()
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorIBefore As Long
+        Dim lColorFBefore As Long
+        lColorIBefore = oTrgtCellsPos01.Interior.Color
+        lColorFBefore = oTrgtCellsPos01.Font.Color
+        
+        Debug.Print "*** test start! ***"
+        Debug.Print "# Font Color"
+        oTrgtCellsPos01.Font.Color = RGB(0, 0, 0)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 1, False)  '0
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 1, False)  '0
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 1, False)  '0
+        oTrgtCellsPos01.Font.Color = RGB(100, 100, 100)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 1, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 1, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 1, False)  '100
+        oTrgtCellsPos01.Font.Color = RGB(255, 255, 255)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 1, False)  '255
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 1, False)  '255
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 1, False)  '255
+        oTrgtCellsPos01.Font.Color = RGB(16, 100, 152)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 1, False)  '16
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 1, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 1, False)  '152
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 1, True)   '10
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 1, True)   '64
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 1, True)   '98
+        Debug.Print GetColor(oTrgtCellsPos01, "", 1, False)   'エラー 2015
+        Debug.Print GetColor(oTrgtCellsPos01, "aa", 1, False) 'エラー 2015
+        Debug.Print GetColor(oTrgtCellsNeg01, "r", 1, False)  'エラー 2023
+        Debug.Print GetColor(oTrgtCellsNeg02, "r", 1, False)  'エラー 2023
+        
+        Debug.Print "# Interior Color"
+        oTrgtCellsPos01.Interior.Color = RGB(0, 0, 0)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 2, False)  '0
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 2, False)  '0
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 2, False)  '0
+        oTrgtCellsPos01.Interior.Color = RGB(100, 100, 100)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 2, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 2, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 2, False)  '100
+        oTrgtCellsPos01.Interior.Color = RGB(255, 255, 255)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 2, False)  '255
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 2, False)  '255
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 2, False)  '255
+        oTrgtCellsPos01.Interior.Color = RGB(16, 100, 152)
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 2, False)  '16
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 2, False)  '100
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 2, False)  '152
+        Debug.Print GetColor(oTrgtCellsPos01, "r", 2, True)   '10
+        Debug.Print GetColor(oTrgtCellsPos01, "g", 2, True)   '64
+        Debug.Print GetColor(oTrgtCellsPos01, "b", 2, True)   '98
+        Debug.Print GetColor(oTrgtCellsPos01, "", 2, False)   'エラー 2015
+        Debug.Print GetColor(oTrgtCellsPos01, "aa", 2, False) 'エラー 2015
+        Debug.Print GetColor(oTrgtCellsNeg01, "r", 2, False)  'エラー 2023
+        Debug.Print GetColor(oTrgtCellsNeg02, "r", 2, False)  'エラー 2023
+        
+        Debug.Print GetColor(oTrgtCellsNeg02, "r", 3, False)  'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Interior.Color = lColorIBefore
+        oTrgtCellsPos01.Interior.Color = lColorFBefore
+    End Sub
+
+' ==================================================================
+' = 概要    フォント色/背景色を返却する(全色指定版)
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 引数    lColorKind  Long      [in]  色種別(1:Font、2:Interior)
+' = 引数    bIsHex      Boolean   [in]  基数（0:Decimal、1:Hex）
+' = 戻値                Variant         背景色
+' = 覚書    なし
+' = 依存    Funcs.bas/ConvRgb2X()
+' = 所属    Funcs.bas
+' ==================================================================
+Private Function GetColorAll( _
+    ByRef rTrgtCell As Range, _
+    ByVal lColorKind As Long, _
+    ByVal bIsHex As Boolean _
+) As Variant
+    Dim lColorRGB As Long
+    Dim lColorR As Long
+    Dim lColorG As Long
+    Dim lColorB As Long
+    
+    If rTrgtCell.Count > 1 Then
+        GetColorAll = CVErr(xlErrRef)
+    Else
+        If lColorKind = 1 Then
+            lColorRGB = rTrgtCell.Font.Color
+        ElseIf lColorKind = 2 Then
+            lColorRGB = rTrgtCell.Interior.Color
+        Else
+            GetColorAll = CVErr(xlErrValue)
+        End If
+        lColorR = ConvRgb2X(lColorRGB, "R")
+        lColorG = ConvRgb2X(lColorRGB, "G")
+        lColorB = ConvRgb2X(lColorRGB, "B")
+        If lColorR > 255 Or lColorG > 255 Or lColorB > 255 Then
+            GetColorAll = CVErr(xlErrValue)
+        Else
+            If bIsHex = True Then
+                GetColorAll = UCase(String(2 - Len(Hex(lColorR)), "0") & Hex(lColorR)) & _
+                        "," & UCase(String(2 - Len(Hex(lColorG)), "0") & Hex(lColorG)) & _
+                        "," & UCase(String(2 - Len(Hex(lColorB)), "0") & Hex(lColorB))
+            Else
+                GetColorAll = lColorR & "," & lColorG & "," & lColorB
+            End If
+        End If
+    End If
+End Function
+    Private Sub Test_GetColorAll()
+        Dim oTrgtCellsPos01 As Range
+        Dim oTrgtCellsNeg01 As Range
+        Dim oTrgtCellsNeg02 As Range
+        With ThisWorkbook.Sheets(1)
+            Set oTrgtCellsPos01 = .Cells(1, 1)
+            Set oTrgtCellsNeg01 = .Range(.Cells(1, 1), .Cells(1, 2))
+            Set oTrgtCellsNeg02 = .Range(.Cells(1, 1), .Cells(4, 1))
+        End With
+        
+        Dim lColorIBefore As Long
+        Dim lColorFBefore As Long
+        lColorIBefore = oTrgtCellsPos01.Interior.Color
+        lColorFBefore = oTrgtCellsPos01.Font.Color
+        
+        Debug.Print "*** test start! ***"
+        Debug.Print "# Font Color"
+        oTrgtCellsPos01.Font.Color = RGB(0, 0, 0)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 1, False)   '0,0,0
+        oTrgtCellsPos01.Font.Color = RGB(100, 100, 100)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 1, False)  '100,100,100
+        oTrgtCellsPos01.Font.Color = RGB(255, 255, 255)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 1, False)  '255,255,255
+        oTrgtCellsPos01.Font.Color = RGB(16, 100, 152)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 1, False)  '16,100,152
+        Debug.Print GetColorAll(oTrgtCellsPos01, 1, True)   '10,64,98
+        Debug.Print GetColorAll(oTrgtCellsNeg01, 1, False)  'エラー 2023
+        Debug.Print GetColorAll(oTrgtCellsNeg02, 1, False)  'エラー 2023
+        
+        Debug.Print "# Interior Color"
+        oTrgtCellsPos01.Interior.Color = RGB(0, 0, 0)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 2, False)  '0,0,0
+        oTrgtCellsPos01.Interior.Color = RGB(100, 100, 100)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 2, False)  '100,100,100
+        oTrgtCellsPos01.Interior.Color = RGB(255, 255, 255)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 2, False)  '255,255,255
+        oTrgtCellsPos01.Interior.Color = RGB(16, 100, 152)
+        Debug.Print GetColorAll(oTrgtCellsPos01, 2, False)  '16,100,152
+        Debug.Print GetColorAll(oTrgtCellsPos01, 2, True)   '10,64,98
+        Debug.Print GetColorAll(oTrgtCellsNeg01, 2, False)  'エラー 2023
+        Debug.Print GetColorAll(oTrgtCellsNeg02, 2, False)  'エラー 2023
+        
+        Debug.Print GetColorAll(oTrgtCellsNeg02, 3, True)   'エラー 2023
+        Debug.Print "*** test finished! ***"
+        
+        oTrgtCellsPos01.Interior.Color = lColorIBefore
+        oTrgtCellsPos01.Interior.Color = lColorFBefore
     End Sub
 
 ' ==================================================================
