@@ -1,13 +1,27 @@
 Option Explicit
 
-'ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
-'同じファイル名のものが存在していたら、アルファベットを付与したバックアップファイルを作成する。
-'   ex. 211201a, 211202b, …
-'指定数分バックアップがたまったら、古いものから削除する。
-'バックアップ対象はファイルのみ。
-'第二引数にバックアップファイル数を指定できる。
-'前回バックアップ時から更新されていない場合、バックアップしない。
-'★要修正★バックアップ最大数分、同じ日付のバックアップファイルで満たされると、新しいファイルが更新されていくため要注意。
+'<<概要>>
+'  指定したファイルをバックアップする。
+'  
+'<<使用方法>>
+'  BackUpFiles.vbs <filepath> [<backupnum>]
+'  
+'<<仕様>>
+'  ・ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
+'  ・同じファイル名のものが存在していたら、アルファベットを付与したバックアップファイルを作成する。
+'     ex. 211201a, 211202b, …
+'  ・第二引数に指定されたバックアップ数分ファイルがたまったら、古いものから削除する。
+'  ・前回バックアップ時から更新されていない場合、バックアップしない。
+'  
+'<<注意事項>>
+'  ・バックアップ対象はファイルのみ。
+'  ・以下を全て満たす場合、新しいファイルが更新されていくため要注意。
+'      - バックアップファイルの接尾辞が"z"となっているファイルがある (ex. file_#b#211122z.txt)
+'  ・以下の理由で最新/最古バックアップファイル判定に更新日時を用いない。あくまで
+'    バックアップした日を示すファイル名で判断する。
+'      誤って古いバックアップファイルを更新してしまった場合、ファイル名上は
+'      日付が古いのに更新日時が新しいファイルができてしまう。
+'      更新日時をもとに判定すると、上記のファイルが削除されず、残ってしまうため。
 
 '===============================================================================
 '= インクルード
@@ -74,41 +88,21 @@ Dim cFileList
 Set cFileList = CreateObject("System.Collections.ArrayList")
 Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
 
-'既存の最新/最古ファイル探索
-Dim lBakFileNum
-Dim sBakDstFilePathOldest
+'既存の最新ファイル探索
 Dim sBakDstFilePathLatest  '既存の最新バックアップファイル
-lBakFileNum = 0
-sBakDstFilePathOldest = ""
 sBakDstFilePathLatest = ""
-Dim vDateNewest
-Dim vDateOldest
-vDateOldest = Now()
 Dim sFilePath
-For Each sFilePath in cFileList
-    If ( (InStr(sFilePath, sBakDstPathBase) > 0) And _
-         (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
-        Msgbox sFilePath
-        Dim vDate
-        Call GetFileInfo( sFilePath, 11, vDate)
-        If vDate > vDateNewest Then
-            vDateNewest = vDate
-            sBakDstFilePathLatest = sFilePath
-        End If
-        If vDate < vDateOldest Then
-            vDateOldest = vDate
-            sBakDstFilePathOldest = sFilePath
-        End If
-        lBakFileNum = lBakFileNum + 1
+For Each sFilePath In cFileList
+    If ( ( InStr(sFilePath, sBakDstPathBase) > 0 ) And _
+       (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
+        sBakDstFilePathLatest = sFilePath
     End If
 Next
-MsgBox "Old:" & sBakDstFilePathOldest & vbNewLine & _
-       "New:" & sBakDstFilePathLatest
-WScript.Quit
+Set cFileList = Nothing
 
 'バックアップファイル名確定
-'既存のバックアップファイルが存在し、同じ日付のバックアップファイルが存在する場合
 Dim sBakDstFilePath
+'既存のバックアップファイルが存在し、同じ日付のバックアップファイルが存在する場合
 If sBakDstFilePathLatest <> "" And _
    InStr(sBakDstFilePathLatest, sBakDstPathBase & sDateSuffix) > 0 Then
     Dim sTailChar
@@ -116,8 +110,8 @@ If sBakDstFilePathLatest <> "" And _
     Dim lBakDstAlphaIdx
     If Asc(sTailChar) >= Asc("a") And Asc(sTailChar) < Asc("z") Then
         lBakDstAlphaIdx = Asc(sTailChar) + 1
-    ElseIf Asc(sTailChar) <= Asc("z") Then
-        lBakDstAlphaIdx = Asc("a")
+    ElseIf Asc(sTailChar) = Asc("z") Then
+        lBakDstAlphaIdx = Asc(sTailChar)
     ElseIf Asc(sTailChar) >= Asc("0") And Asc(sTailChar) <= Asc("9") Then
         lBakDstAlphaIdx = Asc("a")
     Else
@@ -130,6 +124,8 @@ If sBakDstFilePathLatest <> "" And _
 Else
     sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
 End If
+'WScript.Echo sBakDstFilePath & " : " & sBakDstFilePathLatest
+'WScript.Quit
 
 '更新日時取得
 Dim vDateLastModifiedLatestBk
@@ -144,18 +140,41 @@ If ( sBakDstFilePathLatest = "" ) Or _
     'ファイルバックアップ
     objFSO.CopyFile sBakSrcFilePath, sBakDstFilePath, True
     
-    'バックアップファイル削除
-    If lBakFileNum > lBakFileNumMax Then
-        objFSO.DeleteFile sBakDstFilePathOldest, True
-    End If
-    
     'WScript.Echo "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
 Else
-    '前回バックアップ時から更新されていない場合、バックアップしない
+    '前回バックアップ時から更新されていない場合、バックアップせず処理を中断する
     'WScript.Echo "[Skip]    " & sBakSrcFilePath
+    WScript.Quit
 End If
 
-'MsgBox "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
+'************************
+'*** 古いファイル削除 ***
+'************************
+'ファイルリスト取得
+Set cFileList = CreateObject("System.Collections.ArrayList")
+Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
+
+'バックアップファイル数取得＋既存の最古ファイル探索
+Dim lBakFileNum
+Dim sDelFilePath
+lBakFileNum = 0
+sDelFilePath = ""
+For Each sFilePath in cFileList
+    If ( (InStr(sFilePath, sBakDstPathBase) > 0) And _
+         (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
+        If lBakFileNum = 0 Then
+           sDelFilePath = sFilePath
+        End If
+        lBakFileNum = lBakFileNum + 1
+    End If
+Next
+
+'バックアップファイル削除
+If lBakFileNum > lBakFileNumMax Then
+    objFSO.DeleteFile sDelFilePath, True
+End If
+
+'WScript.Echo "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
 
 '===============================================================================
 '= インクルード関数
