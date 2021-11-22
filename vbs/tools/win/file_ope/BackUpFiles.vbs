@@ -58,6 +58,10 @@ End If
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
+'スクリプトを起動した exe ファイル名(CSCRIPT.EXE/WSCRIPT.EXE)を取得
+Dim sExecPrg
+sExecPrg = split(WSCript.FullName, "\")(UBound(split(WSCript.FullName, "\")))
+
 '****************
 '*** 事前準備 ***
 '****************
@@ -140,10 +144,14 @@ If ( sBakDstFilePathLatest = "" ) Or _
     'ファイルバックアップ
     objFSO.CopyFile sBakSrcFilePath, sBakDstFilePath, True
     
-    'WScript.Echo "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
+    If UCase(sExecPrg) = "CSCRIPT.EXE" Then
+        WScript.Echo "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
+    End If
 Else
     '前回バックアップ時から更新されていない場合、バックアップせず処理を中断する
-    'WScript.Echo "[Skip]    " & sBakSrcFilePath
+    If UCase(sExecPrg) = "CSCRIPT.EXE" Then
+        WScript.Echo "[Skip]    " & sBakSrcFilePath
+    End If
     WScript.Quit
 End If
 
