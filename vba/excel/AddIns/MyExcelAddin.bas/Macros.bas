@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.9
+' my excel addin macros v2.10
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -62,6 +62,7 @@ Option Explicit
 ' =         Excel数式整形化実施                         Excel数式整形化実施
 ' =         Excel数式整形化解除                         Excel数式整形化解除
 ' =         セルコメントの書式設定を一括変更            セルコメントの書式設定を一括変更
+' =         Diff色付け                                  選択範囲のDiff形式のフォント色に変更する。(旧:赤、新:緑)
 ' =
 ' =     ・オブジェクト操作
 ' =         最前面へ移動                                最前面へ移動する
@@ -2051,6 +2052,37 @@ Public Sub セルコメントの書式設定を一括変更()
     End With
     Application.Calculation = xlCalculationAutomatic
     Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要    選択範囲のDiff形式のフォント色に変更する。(旧:赤、新:緑)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub Diff色付け()
+    Dim rCell As Range
+    For Each rCell In Selection
+        Dim oRegExp As Object
+        Set oRegExp = CreateObject("VBScript.RegExp")
+        Dim sTargetStr As String
+        sTargetStr = rCell.Value
+        oRegExp.IgnoreCase = True
+        oRegExp.Global = True
+        Dim oMatchResult As Object
+        
+        oRegExp.Pattern = "^>"
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        If oMatchResult.Count > 0 Then
+            rCell.Font.Color = RGB(0, 176, 80)
+        End If
+        
+        oRegExp.Pattern = "^<"
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        If oMatchResult.Count > 0 Then
+            rCell.Font.Color = RGB(255, 0, 0)
+        End If
+    Next
 End Sub
 
 ' =============================================================================
