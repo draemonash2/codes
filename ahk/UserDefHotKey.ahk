@@ -289,9 +289,9 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;***** ホットキー(Software local) *****
 	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
 	#IfWinNotActive ahk_exe WindowsTerminal.exe
-		RAlt::
-			Send, {AppsKey}
-			return
+	;	RAlt::
+	;		Send, {AppsKey}
+	;		return
 	#IfWinNotActive
 	
 	#IfWinActive ahk_exe gimp-2.8.exe
