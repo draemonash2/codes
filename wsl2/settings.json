@@ -1,42 +1,108 @@
 {
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    // Add custom actions and keybindings to this array.
-    // To unbind a key combination from your defaults.json, set the command to "unbound".
-    // To learn more about actions and keybindings, visit https://aka.ms/terminal-keybindings
     "actions": 
     [
-        // Copy and paste are bound to Ctrl+Shift+C and Ctrl+Shift+V in your defaults.json.
-        // These two lines additionally bind them to Ctrl+C and Ctrl+V.
-        // To learn more about selection, visit https://aka.ms/terminal-selection
-        //      { "command": {"action": "copy", "singleLine": false }, "keys": "ctrl+c" },
-        //      { "command": "paste", "keys": "ctrl+v" },
-        // Press Ctrl+Shift+F to open the search box
+        {
+            "command": 
+            {
+                "action": "quakeMode"
+            },
+            "keys": "win+@"
+        },
+        /*{
+          "keys": "win+`",
+          "command": {
+            "action": "globalSummon",
+            "name": "_quake",
+            "dropdownDuration": 200,
+            "toggleVisibility": true,
+            "monitor": "toMouse",
+            "desktop": "toCurrent"
+          }
+        },*/
+        {
+            "command": 
+            {
+                "action": "openSettings",
+                "target": "defaultsFile"
+            },
+            "keys": "ctrl+shift+o"
+        },
         {
             "command": "find",
             "keys": "ctrl+shift+f"
         },
         {
-            "command": "openSettings",
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u001bb"
+            },
+            "keys": "ctrl+shift+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0002"
+            },
+            "keys": "ctrl+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "openSettings"
+            },
+            "keys": "ctrl+alt+o"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0001"
+            },
+            "keys": "ctrl+alt+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0005"
+            },
+            "keys": "ctrl+alt+period"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0006"
+            },
+            "keys": "ctrl+period"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u001bf"
+            },
+            "keys": "ctrl+shift+period"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0017"
+            },
+            "keys": "ctrl+shift+h"
+        },
+        {
+            "command": 
+            {
+                "action": "openSettings",
+                "target": "settingsUI"
+            },
             "keys": "alt+o"
         },
-      {
-        "command": {
-          "action": "openSettings",
-          "target": "settingsUI"
-        },
-        "keys": "ctrl+alt+o"
-      },
-      {
-        "command": {
-          "action": "sendInput",
-          "input": "\\033[D"
-        },
-        "keys": "ctrl+,"
-      },
-      // Press Alt+Shift+D to open a new pane.
-        // - "split": "auto" makes this pane open in the direction that provides the most surface area.
-        // - "splitMode": "duplicate" makes the new pane use the focused pane's profile.
-        // To learn more about panes, visit https://aka.ms/terminal-panes
         {
             "command": 
             {
@@ -45,6 +111,34 @@
                 "splitMode": "duplicate"
             },
             "keys": "alt+shift+d"
+        },
+        {
+            "command": "paste",
+            "keys": "ctrl+v"
+        },
+        {
+            "command": "paste",
+            "keys": "alt+v"
+        },
+        {
+            "command": 
+            {
+                "action": "copy",
+                "singleLine": false
+            },
+            "keys": "ctrl+c"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+v"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+c"
+        },
+        {
+            "command": "unbound",
+            "keys": "win+sc(41)"
         }
     ],
     "copyFormatting": "none",
@@ -56,7 +150,10 @@
         "defaults": 
         {
             "colorScheme": "Tango Dark",
-            "fontSize": 10
+            "font": 
+            {
+                "size": 10
+            }
         },
         "list": 
         [
@@ -307,5 +404,6 @@
             "white": "#C0C0C0",
             "yellow": "#808000"
         }
-    ]
+    ],
+    "useAcrylicInTabRow": true
 }
