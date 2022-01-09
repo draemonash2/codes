@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.10
+' my excel addin macros v2.11
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -21,6 +21,7 @@ Option Explicit
 ' =         シート表示非表示を切り替え                  シート表示/非表示を切り替える
 ' =         シート並べ替え作業用シートを作成            シート並べ替え作業用シート作成
 ' =         シート選択ウィンドウを表示                  シート選択ウィンドウを表示する
+' =         シート名一括変更                            シート名を一括変更する
 ' =         先頭シートへジャンプ                        アクティブブックの先頭シートへ移動する
 ' =         末尾シートへジャンプ                        アクティブブックの末尾シートへ移動する
 ' =         シート再計算時間計測                        シート毎に再計算にかかる時間を計測する
@@ -507,6 +508,36 @@ Public Sub シート選択ウィンドウを表示()
         End With
         Application.ScreenUpdating = True
     End If
+End Sub
+
+' =============================================================================
+' = 概要    シート名を一括変更する
+' = 覚書    ・★要改造：2行目以降、2列目に旧シート名、3列目に新シート名を指定する。
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub シート名一括変更()
+    Const lOLD_SHTNAME_CLM As Long = 2
+    Const lNEW_SHTNAME_CLM As Long = 3
+    Const lSTART_ROW As Long = 2
+    Application.ScreenUpdating = False
+    With ActiveSheet
+        Dim lStrtRow As Long
+        Dim lLastRow As Long
+        lStrtRow = lSTART_ROW
+        lLastRow = .Cells(.Rows.Count, lOLD_SHTNAME_CLM).End(xlUp).Row
+        Dim lRowIdx As Long
+        For lRowIdx = lStrtRow To lLastRow
+            Dim sShtNameOld As String
+            Dim sShtNameNew As String
+            sShtNameOld = .Cells(lRowIdx, lOLD_SHTNAME_CLM).Value
+            sShtNameNew = .Cells(lRowIdx, lNEW_SHTNAME_CLM).Value
+            If sShtNameOld <> sShtNameNew Then
+                ActiveWorkbook.Sheets(sShtNameOld).Name = sShtNameNew
+            End If
+        Next
+    End With
+    Application.ScreenUpdating = True
 End Sub
 
 ' ==================================================================
