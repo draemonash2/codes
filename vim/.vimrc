@@ -192,7 +192,7 @@ endif
 " <usage>
 "   1. ターミナルソフトの設定を行う(以下はRLogin時の手順)
 "     1-1. Server Edit Entryを開く
-"     1-2. [クリップボード]→[制御コードによるクリップボード操作]
+"	  1-2. [クリップボード]->[制御コードによるクリップボード操作]
 "     1-3. [OSC 52 によるクリップボードの書き込みを許可する]にチェック
 "   2. osc52.vimをプラグインフォルダに格納
 " <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
@@ -216,6 +216,8 @@ endif
 	let s:lDiffClm = 0
 	let s:lDiffRow = 0
 	let g:sSelRowsRng = ""
+	let g:lVStrtRow = 0
+	let g:lVLastRow = 0
 	
 	function! s:CalcSelRngStrNum()
 		let l:sCurMode = mode()
@@ -224,10 +226,14 @@ endif
 			let l:lCurClm = virtcol('.')
 			let s:lDiffClm = abs( l:lCurClm - s:lStrtClm ) + 1
 			let s:lDiffRow = abs( l:lCurRow - s:lStrtRow ) + 1
-			if s:lStrtRow > l:lCurRow
-				let g:sSelRowsRng = l:lCurRow . "-" . s:lStrtRow
-			else
+			if l:lCurRow > s:lStrtRow
 				let g:sSelRowsRng = s:lStrtRow . "-" . l:lCurRow
+				let g:lVStrtRow = s:lStrtRow
+				let g:lVLastRow = l:lCurRow
+			else
+				let g:sSelRowsRng = l:lCurRow . "-" . s:lStrtRow
+				let g:lVStrtRow = l:lCurRow
+				let g:lVLastRow = s:lStrtRow
 			endif
 		elseif l:sCurMode ==# "n"
 			let l:lCurClm = virtcol( [line('.'), col('.') - 1, 0] ) + 1
@@ -314,10 +320,10 @@ endif
 	nnoremap	<silent>			<c-s-tab>	<c-w>W|											" ウィンドウ切替（前へ）
 "	nnoremap	<silent>			<c-tab>		gt|												" タブ切替（次へ）
 "	nnoremap	<silent>			<c-s-tab>	gT|												" タブ切替（前へ）
-	nnoremap	<silent>			<c-s-up>	<c-w>+4|										" ウィンドウ幅を変える ↑:高さup
-	nnoremap	<silent>			<c-s-down>	<c-w>-3|										" ウィンドウ幅を変える ↓:高さdown
-	nnoremap	<silent>			<c-s-right> <c-w>>|											" ウィンドウ幅を変える →:幅up
-	nnoremap	<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える ←:幅down
+	nnoremap	<silent>			<c-s-up>	<c-w>+4|										" ウィンドウ幅を変える 上:高さup
+	nnoremap	<silent>			<c-s-down>	<c-w>-3|										" ウィンドウ幅を変える 下:高さdown
+	nnoremap	<silent>			<c-s-right> <c-w>>|											" ウィンドウ幅を変える 右:幅up
+	nnoremap	<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える 左:幅down
 	nnoremap	<silent>			<space>h	<c-w>h|											" ウィンドウフォーカス移動(左)
 	nnoremap	<silent>			<space>j	<c-w>j|											" ウィンドウフォーカス移動(下)
 	nnoremap	<silent>			<space>k	<c-w>k|											" ウィンドウフォーカス移動(上)
@@ -380,12 +386,13 @@ endif
 "	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 
 "=== ヴィジュアルモード ===
-	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ→空白変換後にコピー
+	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ->空白変換後にコピー
+	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>:call CopyLineWithLineNo()<cr>u|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
 	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
 	vnoremap	<silent>			<F3>		:s/\s*$//<cr>:nohlsearch<cr>|					" 末尾の空白を削除
-	vnoremap	<silent>			<F4>		:s/\\/\//g<cr>|									" ファイルパス区切り変換（\→/）
+	vnoremap	<silent>			<F4>		:s/\\/\//g<cr>|									" ファイルパス区切り変換（\->/）
 	vnoremap	<silent>			<F5>		:s/\v_(.)/\u\1/g<cr>|							" スネークケース⇒キャメルケース変換
 	vnoremap	<silent>			<F6>		:s/\v([A-Z])/_\L\1/g<cr>|						" キャメルケース⇒スネークケース変換
 	vnoremap	<silent>			<F7>		:s/\v^(\w+).*/\1/g<cr>|							" 行頭文字列のみ抽出
@@ -673,7 +680,7 @@ endif
 			autocmd!
 			autocmd InsertEnter * call s:StatusLine('Enter')
 			autocmd InsertLeave * call s:StatusLine('Leave')
-		augroup END
+		augroup end
 	endif
 	
 	let s:slhlcmd = ''
@@ -1103,6 +1110,23 @@ endif
 		echo "copy rfilepath & line : " . l:sFileLineNo
 	endfunction
 	
+"	command! Cll call CopyLineWithLineNo()
+	function! CopyLineWithLineNo()
+		let l:lMaxDigit = strlen(string(g:lVLastRow))
+		let l:sCopyStr = ""
+		for l:lCurRow in range( g:lVStrtRow, g:lVLastRow, 1 )
+			let l:sAddStr = printf(" %". l:lMaxDigit ."d %s", l:lCurRow, getline(l:lCurRow))
+			if l:sCopyStr == ""
+				let l:sCopyStr = l:sCopyStr . l:sAddStr
+			else
+				let l:sCopyStr = l:sCopyStr . "\n" . l:sAddStr
+			endif
+		endfor
+		redraw
+		call CopyString(l:sCopyStr)
+		"echo "copy line with lineno"
+	endfunction
+	
 	function! CopyString(sString)
 		if has('unix')
 			call SendViaOSC52(a:sString)
@@ -1364,7 +1388,7 @@ endif
 	"	redir END
 	endfunction
 	
-"	"↓BufDelete の実行タイミング調査用コード
+"	"BufDelete の実行タイミング調査用コード
 "	autocmd BufDelete * call TestFunc()
 "	function! TestFunc()
 "		redir! >> C:\Users\draem_000\Desktop\test2\redir.txt
@@ -1483,16 +1507,16 @@ endif
 				let l:outputstr = l:outputstr . l:inputstr[l:idx]
 			"文字列モードでない場合
 			else
-			if l:inputstr[l:idx] =~ "{" || l:inputstr[l:idx] =~ "(" || l:inputstr[l:idx] =~ "[" || l:inputstr[l:idx] =~ "<"
-				let l:tablevel = l:tablevel + 1
-				let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
+				if l:inputstr[l:idx] =~ "{" || l:inputstr[l:idx] =~ "(" || l:inputstr[l:idx] =~ "[" || l:inputstr[l:idx] =~ "<"
+					let l:tablevel = l:tablevel + 1
+					let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
 					let l:skipchar = 1
 				elseif l:inputstr[l:idx] =~ "," || l:inputstr[l:idx] =~ ";"
 					let l:outputstr = l:outputstr . l:inputstr[l:idx] . "\n" . repeat("\t", l:tablevel)
 					let l:skipchar = 1
-			elseif l:inputstr[l:idx] =~ "}" || l:inputstr[l:idx] =~ ")" || l:inputstr[l:idx] =~ "]" || l:inputstr[l:idx] =~ ">"
-				let l:tablevel = l:tablevel - 1
-				let l:outputstr = l:outputstr . "\n" . repeat("\t", l:tablevel) . l:inputstr[l:idx]
+				elseif l:inputstr[l:idx] =~ "}" || l:inputstr[l:idx] =~ ")" || l:inputstr[l:idx] =~ "]" || l:inputstr[l:idx] =~ ">"
+					let l:tablevel = l:tablevel - 1
+					let l:outputstr = l:outputstr . "\n" . repeat("\t", l:tablevel) . l:inputstr[l:idx]
 					let l:skipchar = 1
 				elseif l:inputstr[l:idx] =~ "\""
 					let l:isStrMode = 1
@@ -1502,7 +1526,7 @@ endif
 				endif
 			endif
 			
-				let l:idx = l:idx + 1
+			let l:idx = l:idx + 1
 			"空白文字以外の文字まで進める
 			if l:skipchar == 1
 				while l:inputstr[l:idx] =~ " "

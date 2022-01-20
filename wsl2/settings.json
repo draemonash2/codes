@@ -5,24 +5,6 @@
         {
             "command": 
             {
-                "action": "quakeMode"
-            },
-            "keys": "win+@"
-        },
-        /*{
-          "keys": "win+`",
-          "command": {
-            "action": "globalSummon",
-            "name": "_quake",
-            "dropdownDuration": 200,
-            "toggleVisibility": true,
-            "monitor": "toMouse",
-            "desktop": "toCurrent"
-          }
-        },*/
-        {
-            "command": 
-            {
                 "action": "openSettings",
                 "target": "defaultsFile"
             },
@@ -35,18 +17,17 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u001bb"
+                "action": "quakeMode"
             },
-            "keys": "ctrl+shift+comma"
+            "keys": "win+@"
         },
         {
             "command": 
             {
                 "action": "sendInput",
-                "input": "\u0002"
+                "input": "\u001bb"
             },
-            "keys": "ctrl+comma"
+            "keys": "ctrl+shift+comma"
         },
         {
             "command": 
@@ -62,6 +43,14 @@
                 "input": "\u0001"
             },
             "keys": "ctrl+alt+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0002"
+            },
+            "keys": "ctrl+comma"
         },
         {
             "command": 
@@ -114,11 +103,11 @@
         },
         {
             "command": "paste",
-            "keys": "ctrl+v"
+            "keys": "alt+v"
         },
         {
             "command": "paste",
-            "keys": "alt+v"
+            "keys": "ctrl+shift+v"
         },
         {
             "command": 
@@ -126,19 +115,19 @@
                 "action": "copy",
                 "singleLine": false
             },
-            "keys": "ctrl+c"
-        },
-        {
-            "command": "unbound",
-            "keys": "ctrl+shift+v"
-        },
-        {
-            "command": "unbound",
             "keys": "ctrl+shift+c"
         },
         {
             "command": "unbound",
             "keys": "win+sc(41)"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+c"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+v"
         }
     ],
     "copyFormatting": "none",
