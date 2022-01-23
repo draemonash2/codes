@@ -851,7 +851,7 @@ endif
 		for l:lCurRow in range( g:lVStrtRow, g:lVLastRow, 1 )
 			let l:sAddStr = printf(" %". l:lMaxDigit ."d %s", l:lCurRow, getline(l:lCurRow))
 			if l:sCopyStr == ""
-				let l:sCopyStr = l:sCopyStr . l:sAddStr
+				let l:sCopyStr = l:sAddStr
 			else
 				let l:sCopyStr = l:sCopyStr . "\n" . l:sAddStr
 			endif

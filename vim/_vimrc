@@ -211,6 +211,7 @@ endif
 " ==============================================================================
 	set updatetime=100 "CursorHold の閾値[ms]
 	autocmd CursorMoved,CursorHold * call s:CalcSelRngStrNum()
+"	autocmd ModeChanged *:[vV\x16]* * call s:CalcSelRngStrNum()
 	let s:lStrtClm = 0
 	let s:lStrtRow = 0
 	let s:lDiffClm = 0
