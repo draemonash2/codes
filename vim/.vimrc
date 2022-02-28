@@ -721,7 +721,7 @@ endif
 			autocmd!
 			autocmd ColorScheme		  * call ZenkakuSpace()
 			autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
-		augroup END
+		augroup end
 		call ZenkakuSpace()
 	endif
 
@@ -753,6 +753,15 @@ endif
 		highlight Cursor	guifg=NONE guibg=Yellow
 		highlight CursorIM	guifg=NONE guibg=Green
 	endif
+
+" ==============================================================================
+" コメント中の特定の単語を強調表示する
+" ==============================================================================
+	augroup HilightsForce
+		autocmd!
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
+		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White
+	augroup END
 
 " ==============================================================================
 " 関数名の色付け設定
@@ -1117,7 +1126,7 @@ endif
 		for l:lCurRow in range( g:lVStrtRow, g:lVLastRow, 1 )
 			let l:sAddStr = printf(" %". l:lMaxDigit ."d %s", l:lCurRow, getline(l:lCurRow))
 			if l:sCopyStr == ""
-				let l:sCopyStr = l:sCopyStr . l:sAddStr
+				let l:sCopyStr = l:sAddStr
 			else
 				let l:sCopyStr = l:sCopyStr . "\n" . l:sAddStr
 			endif

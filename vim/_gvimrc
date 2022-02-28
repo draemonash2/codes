@@ -489,6 +489,15 @@ endif
 	endif
 
 " ==============================================================================
+" コメント中の特定の単語を強調表示する
+" ==============================================================================
+	augroup HilightsForce
+		autocmd!
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
+		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White
+	augroup END
+
+" ==============================================================================
 " 関数名の色付け設定
 " [参照] http://ogawa.s18.xrea.com/tdiary/20070523.html
 " ==============================================================================

@@ -173,59 +173,32 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Return
 	
 	;Windowタイル切り替え
-		global iWinTileMode := 0
+		global giWinTileMode := 0
 		
 		#LEFT::
-			if iWinTileMode >= 5
+		;	FileRead, giWinTileMode, C:\Users\draem\OneDrive\デスクトップ\test.txt
+			if giWinTileMode >= 5
 			{
-				iWinTileMode := 0
+				giWinTileMode := 0
 			}
 			else
 			{
-				iWinTileMode++
+				giWinTileMode++
 			}
-			ApplyWinTileMode( iWinTileMode )
+			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
 		#RIGHT::
-			if iWinTileMode <= 0
+		;	FileRead, giWinTileMode, C:\Users\draem\OneDrive\デスクトップ\test.txt
+			if giWinTileMode <= 0
 			{
-				iWinTileMode := 5
+				giWinTileMode := 5
 			}
 			else
 			{
-				iWinTileMode--
+				giWinTileMode--
 			}
-			ApplyWinTileMode( iWinTileMode )
+			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
-		ApplyWinTileMode( iWinTileMode )
-		{
-			;%s/[x]: /WinMove, A, , /g| %s/\v\t[ywh]: /, /g
-			if iWinTileMode = 0			;サブ全体
-			{
-				WinMove, A, , -2162, -1899, 2165, 3002
-			}
-			else if iWinTileMode = 1	;サブ上
-			{
-				WinMove, A, , -2162, -1899, 2165, 1523
-			}
-			else if iWinTileMode = 2	;サブ下
-			{
-				WinMove, A, , -2162, -382, 2165, 1480
-			}
-			else if iWinTileMode = 3	;メイン全体
-			{
-				WinMove, A, , 131, 0, 1797, 1096
-			}
-			else if iWinTileMode = 4	;メイン左
-			{
-				WinMove, A, , 133, 0, 934, 1087
-			}
-			else						;メイン右
-			{
-				WinMove, A, , 1053, 0, 858, 1087
-			}
-			return
-		}
 	
 	;プリントスクリーン単押しを抑制
 		PrintScreen::return
@@ -289,9 +262,9 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;***** ホットキー(Software local) *****
 	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
 	#IfWinNotActive ahk_exe WindowsTerminal.exe
-	;	RAlt::
-	;		Send, {AppsKey}
-	;		return
+		RAlt::
+			Send, {AppsKey}
+			return
 	#IfWinNotActive
 	
 	#IfWinActive ahk_exe gimp-2.8.exe
@@ -571,3 +544,89 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		return
 	}
 	
+	; ウィンドウサイズ切り替え
+	ApplyWinTileMode( iWinTileMode, iWinYOffset )
+	{
+		SysGet, MonMain, MonitorWorkArea, 1
+	;	MsgBox, Left:%MonMainLeft%`nRight:%MonMainRight%`nTop:%MonMainTop%`nBottom:%MonMainBottom%
+		mainy:=MonMainTop
+		if MonMainLeft<MonMainRight
+		{
+			mainx:=MonMainLeft
+			mainwidth:= % MonMainRight - MonMainLeft
+		}
+		else
+		{
+			mainx:= % MonMainRight
+			mainwidth:= % MonMainLeft - MonMainRight
+		}
+		mainheight:= % MonMainBottom-MonMainTop
+	;	MsgBox, %mainx%`n%mainy%`n%mainwidth%`n%mainheight%
+		
+		SysGet, MonSub, MonitorWorkArea, 2
+	;	MsgBox, Left:%MonSubLeft%`nRight:%MonSubRight%`nTop:%MonSubTop%`nBottom:%MonSubBottom%
+		winyoffset:=% iWinYOffset
+		suby:=MonSubTop
+		if MonSubLeft<MonSubRight
+		{
+			subx:=MonSubLeft
+			subwidth:= % MonSubRight - MonSubLeft
+		}
+		else
+		{
+			subx:= % MonSubRight
+			subwidth:= % MonSubLeft - MonSubRight
+		}
+		subheight:= % MonSubBottom-MonSubTop
+	;	MsgBox, %subx%`n%suby%`n%subwidth%`n%subheight%`n%winyoffset%
+		winywhole:= % suby+(subheight*winyoffset)
+		winheightwhole:= % subheight * (1 - winyoffset )
+	;	MsgBox, %winywhole%`n%winheightwhole%
+		
+		if iWinTileMode = 0			;サブ全体
+		{
+			winx:=subx
+			winwidth:=subwidth
+			winy:=winywhole 
+			winheight:=winheightwhole 
+		}
+		else if iWinTileMode = 1	;サブ上
+		{
+			winx:=subx
+			winwidth:=subwidth
+			winy:=winywhole
+			winheight:= % winheightwhole//2
+		}
+		else if iWinTileMode = 2	;サブ下
+		{
+			winx:=subx
+			winwidth:=subwidth
+			winy:= % winywhole + winheightwhole//2
+			winheight:=% winheightwhole//2
+		}
+		else if iWinTileMode = 3	;メイン全体
+		{
+			winx:=mainx
+			winy:=mainy
+			winwidth:=mainwidth
+			winheight:=mainheight
+		}
+		else if iWinTileMode = 4	;メイン左
+		{
+			winx:=mainx
+			winy:=mainy
+			winwidth:=% mainwidth//2
+			winheight:=mainheight
+		}
+		else						;メイン右
+		{
+			winx:=% mainx + mainwidth//2
+			winy:=mainy
+			winwidth:=% mainwidth//2
+			winheight:=mainheight
+		}
+	;	MsgBox, %iWinTileMode%`n%winx%`n%winy%`n%winwidth%`n%winheight%
+		WinMove, A, , winx, winy, winwidth, winheight
+		return
+	}
+
