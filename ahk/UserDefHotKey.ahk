@@ -18,12 +18,12 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;* ***************************************************************
 ;* Timer
 ;* ***************************************************************
-	SetTimer ClearWinTileMode, 5000
-		Return
-	ClearWinTileMode:
-		;TrayTip, タイマーClearWinTileMode実行, iWinTileModeクリア, 1, 17
-		iWinTileMode := 5
-		Return
+;	SetTimer ClearWinTileMode, 5000
+;		Return
+;	ClearWinTileMode:
+;		;TrayTip, タイマーClearWinTileMode実行, iWinTileModeクリア, 1, 17
+;		iWinTileMode := 5
+;		Return
 
 ;* ***************************************************************
 ;* Keys
@@ -174,29 +174,14 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;Windowタイル切り替え
 		global giWinTileMode := 0
+		global giWinTileModeMin
 		
 		#LEFT::
-		;	FileRead, giWinTileMode, C:\Users\draem\OneDrive\デスクトップ\test.txt
-			if giWinTileMode >= 5
-			{
-				giWinTileMode := 0
-			}
-			else
-			{
-				giWinTileMode++
-			}
+			IncrementWinTileMode()
 			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
 		#RIGHT::
-		;	FileRead, giWinTileMode, C:\Users\draem\OneDrive\デスクトップ\test.txt
-			if giWinTileMode <= 0
-			{
-				giWinTileMode := 5
-			}
-			else
-			{
-				giWinTileMode--
-			}
+			DecrementWinTileMode()
 			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
 	
@@ -544,6 +529,44 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		return
 	}
 	
+	;Windowタイル切り替え
+	GetWinTileModeMin()
+	{
+		SysGet, iMonitorNum, MonitorCount
+		if iMonitorNum = 2
+		{
+			giWinTileModeMin := 0
+		}
+		else
+		{
+			giWinTileModeMin := 3
+		}
+		return iWinTileModeMin
+	}
+	IncrementWinTileMode()
+	{
+		GetWinTileModeMin()
+		if giWinTileMode >= 5
+		{
+			giWinTileMode := giWinTileModeMin
+		}
+		else
+		{
+			giWinTileMode++
+		}
+	}
+	DecrementWinTileMode()
+	{
+		GetWinTileModeMin()
+		if giWinTileMode <= giWinTileModeMin
+		{
+			giWinTileMode := 5
+		}
+		else
+		{
+			giWinTileMode--
+		}
+	}
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode( iWinTileMode, iWinYOffset )
 	{
