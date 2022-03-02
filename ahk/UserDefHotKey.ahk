@@ -569,7 +569,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	}
 	GetMonitorPosInfo(MonitorNum, ByRef X, ByRef Y, ByRef Width, ByRef Height )
 	{
-		SysGet, Mon, MonitorWorkArea, 1
+		SysGet, Mon, MonitorWorkArea, %MonitorNum%
 	;	MsgBox, Left:%MonLeft%`nRight:%MonRight%`nTop:%MonTop%`nBottom:%MonBottom%
 		Y:=MonTop
 		if MonLeft<MonRight
@@ -583,18 +583,19 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Width:= % MonLeft - MonRight + 1
 		}
 		Height:= % MonBottom - MonTop + 1
-	;	MsgBox, %X%`n%Y%`n%Width%`n%Height%
+	;	MsgBox, %MonitorNum%`n%X%`n%Y%`n%Width%`n%Height%
 	}
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode( iWinTileMode, iWinYOffset )
 	{
 		GetMonitorPosInfo(1, mainx, mainy, mainwidth, mainheight )
 		GetMonitorPosInfo(2, subx, suby, subwidth, subheight )
+	;	MsgBox, 1`n%mainx%`n%mainy%`n%mainwidth%`n%mainheight%
+	;	MsgBox, 2`n%subx%`n%suby%`n%subwidth%`n%subheight%
 		
-		winywhole:= % suby+(subheight*winyoffset)
-		winheightwhole:= % subheight * (1 - winyoffset )
-	;	MsgBox, %winywhole%`n%winheightwhole%
-		
+		winywhole:= % suby+(subheight*iWinYOffset)
+		winheightwhole:= % subheight * (1 - iWinYOffset )
+	;	MsgBox, %iWinTileMode%`n%winywhole%`n%winheightwhole%
 		if iWinTileMode = 0			;サブ全体
 		{
 			winx:=subx
