@@ -1307,7 +1307,7 @@ Public Function GetFileDetailInfo( _
         'Do Nothing
     Else
         GetFileDetailInfo = False
-        sErrorDetail = "File is not exist!"
+        sErrorDetail = "File does not exist!"
         Exit Function
     End If
     
@@ -1323,7 +1323,7 @@ Public Function GetFileDetailInfo( _
     
     If objFile Is Nothing Then
         GetFileDetailInfo = False
-        sErrorDetail = "File is not exist!"
+        sErrorDetail = "File does not exist!"
         Exit Function
     Else
         'Do Nothing
@@ -1372,6 +1372,88 @@ Public Function SetFileDetailInfo( _
 )
     'Do Nothing
 End Function
+
+' ==================================================================
+' = 概要    ファイル更新日付設定
+' = 引数    sTrgtPath           String      [in]    ファイルパス
+' = 引数    sModifyDate         String      [in]    更新日付(ex. 2022/01/01 16:40:50)
+' = 引数    sErrorDetail        String      [out]   設定結果エラー詳細(※1)
+' = 戻値                        Boolean             設定結果
+' = 覚書    (※1) エラー詳細は以下の種類がある。
+' =                   Success!             : 取得成功
+' =                   File is not exist!   : ファイルが見つからない
+' =                   Invalid date!        : 更新日付が不正
+' = 依存    なし
+' = 所属    FileSystem.vbs
+' ==================================================================
+Public Function SetFileModifyDate( _
+    ByVal sTrgtPath, _
+    ByVal sModifyDate, _
+    ByRef sErrorDetail _
+)
+    SetFileModifyDate = True
+    sErrorDetail = "Success!"
+    
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FileExists(sTrgtPath) Then
+        'Do Nothing
+    Else
+        SetFileModifyDate = False
+        sErrorDetail = "File does not exist!"
+        Exit Function
+    End If
+    
+    If IsDate(sModifyDate) Then
+        Dim sTrgtFolderPath
+        Dim sTrgtFileName
+        sTrgtFolderPath = Mid(sTrgtPath, 1, InStrRev(sTrgtPath, "\") - 1)
+        sTrgtFileName = Mid(sTrgtPath, InStrRev(sTrgtPath, "\") + 1, Len(sTrgtPath))
+        
+        Dim objFolder
+        Set objFolder = CreateObject("Shell.Application").Namespace(sTrgtFolderPath & "\")
+        Dim objFile
+        Set objFile = objFolder.ParseName(sTrgtFileName)
+        objFile.ModifyDate = sModifyDate
+    Else
+        SetFileModifyDate = False
+        sErrorDetail = sModifyDate & " is invalid date!"
+        Exit Function
+    End If
+End Function
+'   Call Test_SetFileModifyDate()
+    Private Sub Test_SetFileModifyDate()
+        Dim sBuf
+        Dim bRet
+        Dim sErrorDetail
+        Dim vModifyDate
+        Dim vModifyDateOld
+        sBuf = ""
+        Dim sTrgtPath
+        sTrgtPath = "C:\codes\vbs\_lib\_include_sample.vbs"
+        bRet = GetFileInfo( sTrgtPath, 11, vModifyDateOld)
+        sBuf = sBuf & vbNewLine & sTrgtPath
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16:40:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 0:0:0", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 0:0:1", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16:40", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "22/01/01", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/13/01 16:40:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/32 16:40:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 25:40:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16:60:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16:40:60", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        
+        sTrgtPath = "C:\codes\vbs\_lib\dummy.vbs"
+        sBuf = sBuf & vbNewLine & sTrgtPath
+        bRet = SetFileModifyDate(sTrgtPath, "2022/01/01 16:40:50", sErrorDetail): Call GetFileInfo( sTrgtPath, 11, vModifyDate) : sBuf = sBuf & vbNewLine & bRet & "  " & vModifyDate & " " & sErrorDetail
+        
+        MsgBox sBuf
+        
+        bRet = SetFileModifyDate(sTrgtPath, vModifyDateOld, sErrorDetail)
+    End Sub
 
 ' ==================================================================
 ' = 概要    ファイル詳細情報のインデックス取得
