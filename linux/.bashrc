@@ -140,7 +140,10 @@ alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
 alias ff='find . -type f | grep '
 alias fd='find . -type d | grep '
-alias diff='\diff --color'
+(diff --help | grep -- "--color") &> /dev/null
+if [ $? -eq 0 ]; then
+	alias diff='\diff --color'
+fi
 
 alias cp='cp -i'
 alias mv='mv -i'

@@ -174,7 +174,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	
 	;Windowタイル切り替え
 		global giWinTileMode := 0
-		global giWinTileModeMin
+		global giWinTileModeMin := 0
 		
 		#LEFT::
 			IncrementWinTileMode()
@@ -558,7 +558,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	DecrementWinTileMode()
 	{
 		GetWinTileModeMin()
-		if giWinTileMode <= giWinTileModeMin
+		if giWinTileMode <= %giWinTileModeMin%
 		{
 			giWinTileMode := 5
 		}
@@ -567,41 +567,30 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			giWinTileMode--
 		}
 	}
+	GetMonitorPosInfo(MonitorNum, ByRef X, ByRef Y, ByRef Width, ByRef Height )
+	{
+		SysGet, Mon, MonitorWorkArea, 1
+	;	MsgBox, Left:%MonLeft%`nRight:%MonRight%`nTop:%MonTop%`nBottom:%MonBottom%
+		Y:=MonTop
+		if MonLeft<MonRight
+		{
+			X:=MonLeft
+			Width:= % MonRight - MonLeft + 1
+		}
+		else
+		{
+			X:=% MonRight
+			Width:= % MonLeft - MonRight + 1
+		}
+		Height:= % MonBottom - MonTop + 1
+	;	MsgBox, %X%`n%Y%`n%Width%`n%Height%
+	}
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode( iWinTileMode, iWinYOffset )
 	{
-		SysGet, MonMain, MonitorWorkArea, 1
-	;	MsgBox, Left:%MonMainLeft%`nRight:%MonMainRight%`nTop:%MonMainTop%`nBottom:%MonMainBottom%
-		mainy:=MonMainTop
-		if MonMainLeft<MonMainRight
-		{
-			mainx:=MonMainLeft
-			mainwidth:= % MonMainRight - MonMainLeft
-		}
-		else
-		{
-			mainx:= % MonMainRight
-			mainwidth:= % MonMainLeft - MonMainRight
-		}
-		mainheight:= % MonMainBottom-MonMainTop
-	;	MsgBox, %mainx%`n%mainy%`n%mainwidth%`n%mainheight%
+		GetMonitorPosInfo(1, mainx, mainy, mainwidth, mainheight )
+		GetMonitorPosInfo(2, subx, suby, subwidth, subheight )
 		
-		SysGet, MonSub, MonitorWorkArea, 2
-	;	MsgBox, Left:%MonSubLeft%`nRight:%MonSubRight%`nTop:%MonSubTop%`nBottom:%MonSubBottom%
-		winyoffset:=% iWinYOffset
-		suby:=MonSubTop
-		if MonSubLeft<MonSubRight
-		{
-			subx:=MonSubLeft
-			subwidth:= % MonSubRight - MonSubLeft
-		}
-		else
-		{
-			subx:= % MonSubRight
-			subwidth:= % MonSubLeft - MonSubRight
-		}
-		subheight:= % MonSubBottom-MonSubTop
-	;	MsgBox, %subx%`n%suby%`n%subwidth%`n%subheight%`n%winyoffset%
 		winywhole:= % suby+(subheight*winyoffset)
 		winheightwhole:= % subheight * (1 - winyoffset )
 	;	MsgBox, %winywhole%`n%winheightwhole%
@@ -618,14 +607,14 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			winx:=subx
 			winwidth:=subwidth
 			winy:=winywhole
-			winheight:= % winheightwhole//2
+			winheight:= % winheightwhole // 2
 		}
 		else if iWinTileMode = 2	;サブ下
 		{
 			winx:=subx
 			winwidth:=subwidth
-			winy:= % winywhole + winheightwhole//2
-			winheight:=% winheightwhole//2
+			winy:= % winywhole + winheightwhole // 2
+			winheight:=% winheightwhole // 2
 		}
 		else if iWinTileMode = 3	;メイン全体
 		{
@@ -638,15 +627,20 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		{
 			winx:=mainx
 			winy:=mainy
-			winwidth:=% mainwidth//2
+			winwidth:=% mainwidth // 2
+			winheight:=mainheight
+		}
+		else if iWinTileMode = 5	;メイン右
+		{
+			winx:=% mainx + mainwidth // 2
+			winy:=mainy
+			winwidth:=% mainwidth // 2
 			winheight:=mainheight
 		}
 		else						;メイン右
 		{
-			winx:=% mainx + mainwidth//2
-			winy:=mainy
-			winwidth:=% mainwidth//2
-			winheight:=mainheight
+			MsgBox, "[error] invalid iWinTileMode."
+			return
 		}
 	;	MsgBox, %iWinTileMode%`n%winx%`n%winy%`n%winwidth%`n%winheight%
 		WinMove, A, , winx, winy, winwidth, winheight
