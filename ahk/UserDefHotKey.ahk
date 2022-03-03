@@ -176,11 +176,11 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		global giWinTileMode := 0
 		global giWinTileModeMin := 0
 		
-		#LEFT::
+		!#LEFT::
 			IncrementWinTileMode()
 			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
-		#RIGHT::
+		!#RIGHT::
 			DecrementWinTileMode()
 			ApplyWinTileMode( giWinTileMode, 2/7 )
 			return
