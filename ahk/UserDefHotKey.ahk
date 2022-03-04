@@ -533,52 +533,45 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	GetWinTileModeMin()
 	{
 		SysGet, iMonitorNum, MonitorCount
-		if iMonitorNum = 2
-		{
+		if (iMonitorNum = 2) {
 			giWinTileModeMin := 0
-		}
-		else
-		{
+		} else {
 			giWinTileModeMin := 3
 		}
-		return iWinTileModeMin
+	;	MsgBox, iMonitorNum: %iMonitorNum%`ngiWinTileModeMin: %giWinTileModeMin%
+		return giWinTileModeMin
 	}
 	IncrementWinTileMode()
 	{
 		GetWinTileModeMin()
-		if giWinTileMode >= 5
-		{
+		if ( giWinTileMode >= 5 ) {
 			giWinTileMode := giWinTileModeMin
-		}
-		else
-		{
+		} else if ( giWinTileMode < giWinTileModeMin ) {
+			giWinTileMode:=giWinTileModeMin
+		} else {
 			giWinTileMode++
 		}
 	}
 	DecrementWinTileMode()
 	{
 		GetWinTileModeMin()
-		if giWinTileMode <= %giWinTileModeMin%
-		{
+		if ( giWinTileMode <= %giWinTileModeMin% ) {
 			giWinTileMode := 5
-		}
-		else
-		{
+		} else {
 			giWinTileMode--
 		}
 	}
-	GetMonitorPosInfo(MonitorNum, ByRef X, ByRef Y, ByRef Width, ByRef Height )
+	GetMonitorPosInfo( MonitorNum, ByRef X, ByRef Y, ByRef Width, ByRef Height )
 	{
 		SysGet, Mon, MonitorWorkArea, %MonitorNum%
 	;	MsgBox, Left:%MonLeft%`nRight:%MonRight%`nTop:%MonTop%`nBottom:%MonBottom%
+	;	SysGet, MonName, MonitorName, %MonitorNum%
+	;	MsgBox, MonName:%MonName%
 		Y:=MonTop
-		if MonLeft<MonRight
-		{
+		if ( MonLeft < MonRight ) {
 			X:=MonLeft
 			Width:= % MonRight - MonLeft + 1
-		}
-		else
-		{
+		} else {
 			X:=% MonRight
 			Width:= % MonLeft - MonRight + 1
 		}
@@ -588,62 +581,49 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode( iWinTileMode, iWinYOffset )
 	{
+		iWIN_TILE_MODE_OFFSET := 8
 		GetMonitorPosInfo(1, mainx, mainy, mainwidth, mainheight )
 		GetMonitorPosInfo(2, subx, suby, subwidth, subheight )
-	;	MsgBox, 1`n%mainx%`n%mainy%`n%mainwidth%`n%mainheight%
-	;	MsgBox, 2`n%subx%`n%suby%`n%subwidth%`n%subheight%
+	;	MsgBox, mainx: %mainx%`nmainy: %mainy%`nmainwidth: %mainwidth%`nmainheight: %mainheight%`nsubx: %subx%`nsuby: %suby%`nsubwidth: %subwidth%`nsubheight: %subheight%
 		
 		winywhole:= % suby+(subheight*iWinYOffset)
 		winheightwhole:= % subheight * (1 - iWinYOffset )
-	;	MsgBox, %iWinTileMode%`n%winywhole%`n%winheightwhole%
-		if iWinTileMode = 0			;サブ全体
-		{
+	;	MsgBox, iWinTileMode: %iWinTileMode%`nwinywhole: %winywhole%`nwinheightwhole: %winheightwhole%
+		if ( iWinTileMode = 0 ) {			;サブ全体
 			winx:=subx
 			winwidth:=subwidth
 			winy:=winywhole 
 			winheight:=winheightwhole 
-		}
-		else if iWinTileMode = 1	;サブ上
-		{
+		} else if ( iWinTileMode = 1 ) {	;サブ上
 			winx:=subx
 			winwidth:=subwidth
 			winy:=winywhole
 			winheight:= % winheightwhole // 2
-		}
-		else if iWinTileMode = 2	;サブ下
-		{
+		} else if ( iWinTileMode = 2 ) {	;サブ下
 			winx:=subx
 			winwidth:=subwidth
 			winy:= % winywhole + winheightwhole // 2
 			winheight:=% winheightwhole // 2
-		}
-		else if iWinTileMode = 3	;メイン全体
-		{
+		} else if ( iWinTileMode = 3 ) {	;メイン全体
 			winx:=mainx
 			winy:=mainy
 			winwidth:=mainwidth
 			winheight:=mainheight
-		}
-		else if iWinTileMode = 4	;メイン左
-		{
-			winx:=mainx
+		} else if ( iWinTileMode = 4 ) {	;メイン左
+			winx:=% mainx - iWIN_TILE_MODE_OFFSET
 			winy:=mainy
-			winwidth:=% mainwidth // 2
-			winheight:=mainheight
-		}
-		else if iWinTileMode = 5	;メイン右
-		{
-			winx:=% mainx + mainwidth // 2
+			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+		} else if ( iWinTileMode = 5 ) {	;メイン右
+			winx:=% mainx + mainwidth // 2 - iWIN_TILE_MODE_OFFSET
 			winy:=mainy
-			winwidth:=% mainwidth // 2
-			winheight:=mainheight
-		}
-		else						;メイン右
-		{
+			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+		} else {							;メイン右
 			MsgBox, "[error] invalid iWinTileMode."
 			return
 		}
-	;	MsgBox, %iWinTileMode%`n%winx%`n%winy%`n%winwidth%`n%winheight%
+	;	MsgBox, iWinTileMode: %iWinTileMode%`nwinx: %winx%`nwiny: %winy%`nwinwidth: %winwidth%`nwinheight: %winheight%
 		WinMove, A, , winx, winy, winwidth, winheight
 		return
 	}
