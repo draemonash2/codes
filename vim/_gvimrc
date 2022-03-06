@@ -455,7 +455,7 @@ endif
 			autocmd!
 			autocmd ColorScheme		  * call ZenkakuSpace()
 			autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
-		augroup END
+		augroup end
 		call ZenkakuSpace()
 	endif
 
@@ -490,11 +490,12 @@ endif
 
 " ==============================================================================
 " コメント中の特定の単語を強調表示する
+" [ハイライト実行例] TODO: NOTE: INFO: XXX: TEMP: FIXME: todo: note: info: xxx: temp: fixme:
 " ==============================================================================
 	augroup HilightsForce
 		autocmd!
 		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
-		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White
+		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
 
 " ==============================================================================

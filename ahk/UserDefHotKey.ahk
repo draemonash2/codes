@@ -148,8 +148,17 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
 	
+	;Github.io
+		^+!1::
+			Run https://draemonash2.github.io/
+			return
+		^+!2::
+			Run https://draemonash2.github.io/sft_linux/linux.html
+			return
+	
 	;Window最前面化
 		Pause::
+			;HP製PCでは「Pause」は「Fn＋Shift」。
 			WinSet, AlwaysOnTop, TOGGLE, A
 			WinGetTitle, sActiveWinTitle, A
 			if bEnableAlwaysOnTop = 

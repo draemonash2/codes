@@ -211,6 +211,7 @@ endif
 " ==============================================================================
 	set updatetime=100 "CursorHold の閾値[ms]
 	autocmd CursorMoved,CursorHold * call s:CalcSelRngStrNum()
+"	autocmd ModeChanged *:[vV\x16]* * call s:CalcSelRngStrNum()
 	let s:lStrtClm = 0
 	let s:lStrtRow = 0
 	let s:lDiffClm = 0
@@ -756,11 +757,12 @@ endif
 
 " ==============================================================================
 " コメント中の特定の単語を強調表示する
+" [ハイライト実行例] TODO: NOTE: INFO: XXX: TEMP: FIXME: todo: note: info: xxx: temp: fixme:
 " ==============================================================================
 	augroup HilightsForce
 		autocmd!
 		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
-		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White
+		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
 
 " ==============================================================================
