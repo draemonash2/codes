@@ -7,6 +7,7 @@
 Const lADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
 Const lDATE_STR_TYPE = 3
 Const bEVACUATE_ORG_FILE = True
+Const bCHOOSE_DOWNLOAD_DIR_PATH = False
 Const bCHOOSE_FILE_AT_DIALOG_BOX = True
 Const sSHORTCUT_FILE_SUFFIX = "s"
 Const sORIGINAL_FILE_PREFIX = "o"
@@ -106,17 +107,21 @@ If bIsContinue = True Then
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
     
     Dim sDstParDirPath
-    If bCHOOSE_FILE_AT_DIALOG_BOX = True Then
-        'フォルダ選択ダイアログ表示＠BrowseForFolder(Shell.Application)
-        '  →初期パスを指定できないため、使用しない
-        'Dim objFolder
-        'Set objFolder = CreateObject("Shell.Application").BrowseForFolder(0, "出力先フォルダを選択してください", &H200, "c:\")
-        'sDstParDirPath = objFolder
-        
-        'フォルダ選択ダイアログ表示＠FileDialog(Excel.Application)
-        sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath, "" )
+    If bCHOOSE_DOWNLOAD_DIR_PATH = True Then
+        If bCHOOSE_FILE_AT_DIALOG_BOX = True Then
+            'フォルダ選択ダイアログ表示＠BrowseForFolder(Shell.Application)
+            '  →初期パスを指定できないため、使用しない
+            'Dim objFolder
+            'Set objFolder = CreateObject("Shell.Application").BrowseForFolder(0, "出力先フォルダを選択してください", &H200, "c:\")
+            'sDstParDirPath = objFolder
+            
+            'フォルダ選択ダイアログ表示＠FileDialog(Excel.Application)
+            sDstParDirPath = ShowFolderSelectDialog( sIniDstParDirPath, "" )
+        Else
+            sDstParDirPath = InputBox( "フォルダを選択してください", sPROG_NAME, sIniDstParDirPath )
+        End If
     Else
-        sDstParDirPath = InputBox( "フォルダを選択してください", sPROG_NAME, sIniDstParDirPath )
+        sDstParDirPath = objWshShell.SpecialFolders("Desktop")
     End If
     
     Call clSetting.WriteItemToFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sDstParDirPath)

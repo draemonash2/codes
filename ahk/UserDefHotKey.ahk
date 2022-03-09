@@ -127,19 +127,23 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			EnvGet, sExePath, MYEXEPATH_CCALC
 			RunSuppressMultiStart( sExePath, "" )
 			return
-	;Bluetoothテザリング起動
-		^+!b::
-			Run, control printers
-			Sleep 2000
-			Send, myp
-			Sleep 300
-			Send, {AppsKey}
-			Sleep 200
-			Send, c
-			Sleep 200
-			Send, a
-			Sleep 5000
-			Send, !{F4}
+	;Wifi接続
+		^+!w::
+		;Bluetoothテザリング起動
+		;	Run, control printers
+		;	Sleep 2000
+		;	Send, myp
+		;	Sleep 300
+		;	Send, {AppsKey}
+		;	Sleep 200
+		;	Send, c
+		;	Sleep 200
+		;	Send, a
+		;	Sleep 5000
+		;	Send, !{F4}
+		;Wifiテザリング
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"
 			return
 	;UserDefHotKey.ahk
 		^+!a::
