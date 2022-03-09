@@ -217,8 +217,6 @@ endif
 	let s:lDiffClm = 0
 	let s:lDiffRow = 0
 	let g:sSelRowsRng = ""
-	let g:lVStrtRow = 0
-	let g:lVLastRow = 0
 	
 	function! s:CalcSelRngStrNum()
 		let l:sCurMode = mode()
@@ -229,12 +227,8 @@ endif
 			let s:lDiffRow = abs( l:lCurRow - s:lStrtRow ) + 1
 			if l:lCurRow > s:lStrtRow
 				let g:sSelRowsRng = s:lStrtRow . "-" . l:lCurRow
-				let g:lVStrtRow = s:lStrtRow
-				let g:lVLastRow = l:lCurRow
 			else
 				let g:sSelRowsRng = l:lCurRow . "-" . s:lStrtRow
-				let g:lVStrtRow = l:lCurRow
-				let g:lVLastRow = s:lStrtRow
 			endif
 		elseif l:sCurMode ==# "n"
 			let l:lCurClm = virtcol( [line('.'), col('.') - 1, 0] ) + 1

@@ -217,8 +217,6 @@ endif
 	let s:lDiffClm = 0
 	let s:lDiffRow = 0
 	let g:sSelRowsRng = ""
-	let g:lVStrtRow = 0
-	let g:lVLastRow = 0
 	
 	function! s:CalcSelRngStrNum()
 		let l:sCurMode = mode()
@@ -229,12 +227,8 @@ endif
 			let s:lDiffRow = abs( l:lCurRow - s:lStrtRow ) + 1
 			if l:lCurRow > s:lStrtRow
 				let g:sSelRowsRng = s:lStrtRow . "-" . l:lCurRow
-				let g:lVStrtRow = s:lStrtRow
-				let g:lVLastRow = l:lCurRow
 			else
 				let g:sSelRowsRng = l:lCurRow . "-" . s:lStrtRow
-				let g:lVStrtRow = l:lCurRow
-				let g:lVLastRow = s:lStrtRow
 			endif
 		elseif l:sCurMode ==# "n"
 			let l:lCurClm = virtcol( [line('.'), col('.') - 1, 0] ) + 1
@@ -388,7 +382,7 @@ endif
 
 "=== ヴィジュアルモード ===
 	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ->空白変換後にコピー
-	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>:call CopyLineWithLineNo()<cr>u|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
+	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>gv:call CopyLineWithLineNo()<cr>|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
 	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
@@ -1123,9 +1117,20 @@ endif
 	
 "	command! Cll call CopyLineWithLineNo()
 	function! CopyLineWithLineNo()
-		let l:lMaxDigit = strlen(string(g:lVLastRow))
+		normal gv
+		let l:lRow1 = line(".")
+		normal o
+		let l:lRow2 = line(".")
+		if l:lRow1 < l:lRow2
+			let l:lStartRow = l:lRow1
+			let l:lEndRow = l:lRow2
+		else
+			let l:lStartRow = l:lRow2
+			let l:lEndRow = l:lRow1
+		endif
+		let l:lMaxDigit = strlen(string(l:lEndRow))
 		let l:sCopyStr = ""
-		for l:lCurRow in range( g:lVStrtRow, g:lVLastRow, 1 )
+		for l:lCurRow in range( l:lStartRow, l:lEndRow, 1 )
 			let l:sAddStr = printf(" %". l:lMaxDigit ."d %s", l:lCurRow, getline(l:lCurRow))
 			if l:sCopyStr == ""
 				let l:sCopyStr = l:sAddStr
@@ -1133,8 +1138,10 @@ endif
 				let l:sCopyStr = l:sCopyStr . "\n" . l:sAddStr
 			endif
 		endfor
+	"	echom l:lStartRow . " " . l:lEndRow
 		redraw
 		call CopyString(l:sCopyStr)
+		exec "normal \<esc>"
 		"echo "copy line with lineno"
 	endfunction
 	
