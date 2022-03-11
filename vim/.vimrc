@@ -382,7 +382,7 @@ endif
 
 "=== ヴィジュアルモード ===
 	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ->空白変換後にコピー
-	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>gv:call CopyLineWithLineNo()<cr>|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
+	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>gv:call CopyLineWithLineNo()<cr>u|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
 	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト

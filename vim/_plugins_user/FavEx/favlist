@@ -6,10 +6,11 @@
 "! q : close favex window
 "! :he favex for detailed help
 " Files (do not delete this line)
-$Vim/_vimrc
-$Vim/_gvimrc
-$Vim/_plugins_user/mark.vim/plugin/mark.vim
-$Vim/_plugins_user/bufferlist.vim/plugin/bufferlist.vim
-$Vim/_plugins_user/jellybeans.vim/colors/jellybeans.vim
-$Vim/_plugins_user/FavEx/favlist
+$VIM/_vimrc
+$VIM/_gvimrc
+$HOME/.vimrc
+$VIM/_plugins_user/mark.vim/plugin/mark.vim
+$VIM/_plugins_user/bufferlist.vim/plugin/bufferlist.vim
+$VIM/_plugins_user/jellybeans.vim/colors/jellybeans.vim
+$VIM/_plugins_user/FavEx/favlist
 " Directories (do not delete this line)

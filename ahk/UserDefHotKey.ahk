@@ -594,13 +594,13 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode( iWinTileMode, iWinYOffset )
 	{
-		iWIN_TILE_MODE_OFFSET := 8
+		iWIN_TILE_MODE_OFFSET := 0
 		GetMonitorPosInfo(1, mainx, mainy, mainwidth, mainheight )
 		GetMonitorPosInfo(2, subx, suby, subwidth, subheight )
 	;	MsgBox, mainx: %mainx%`nmainy: %mainy%`nmainwidth: %mainwidth%`nmainheight: %mainheight%`nsubx: %subx%`nsuby: %suby%`nsubwidth: %subwidth%`nsubheight: %subheight%
 		
-		winywhole:= % suby+(subheight*iWinYOffset)
-		winheightwhole:= % subheight * (1 - iWinYOffset )
+		winywhole:= % suby + ( subheight * iWinYOffset )
+		winheightwhole:= % subheight * ( 1 - iWinYOffset )
 	;	MsgBox, iWinTileMode: %iWinTileMode%`nwinywhole: %winywhole%`nwinheightwhole: %winheightwhole%
 		if ( iWinTileMode = 0 ) {			;サブ全体
 			winx:=subx
