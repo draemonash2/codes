@@ -1,0 +1,8 @@
+@echo off
+set tm=%time: =0%
+set dt=%date:/=%
+set BACKUP_SCRIPT="%MYDIRPATH_CODES%\vbs\tools\win\file_ope\BackUpFiles.vbs"
+set BACKUP_LOG="%USERPROFILE%\Desktop\backup_executed_at_%dt:~2,6%-%tm:~0,2%%tm:~3,2%%tm:~6,2%.log"
+set BACKUP_FILENUM=60
+
+	cscript /nologo %BACKUP_SCRIPT% "C:\github_io\otr_other\³‹K•\Œ»‚Ü‚Æ‚ß.xlsx" %BACKUP_FILENUM% >> %BACKUP_LOG%
