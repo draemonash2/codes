@@ -157,7 +157,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Run https://draemonash2.github.io/
 			return
 		^+!2::
-			Run https://draemonash2.github.io/sft_linux/linux.html
+			Run https://draemonash2.github.io/linux_sft/linux.html
 			return
 	
 	;Window最前面化
