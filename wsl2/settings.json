@@ -5,14 +5,17 @@
         {
             "command": 
             {
-                "action": "openSettings",
-                "target": "defaultsFile"
+                "action": "sendInput",
+                "input": "\u001bb"
             },
-            "keys": "ctrl+shift+o"
+            "keys": "ctrl+shift+comma"
         },
         {
-            "command": "find",
-            "keys": "ctrl+shift+f"
+            "command": 
+            {
+                "action": "openSettings",
+                "target": "defaultsFile"
+            }
         },
         {
             "command": 
@@ -22,12 +25,23 @@
             "keys": "win+@"
         },
         {
+            "command": "find",
+            "keys": "ctrl+shift+f"
+        },
+        {
             "command": 
             {
                 "action": "sendInput",
-                "input": "\u001bb"
+                "input": "\u0001"
             },
-            "keys": "ctrl+shift+comma"
+            "keys": "ctrl+alt+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "openSettings"
+            },
+            "keys": "alt+shift+o"
         },
         {
             "command": 
@@ -40,17 +54,10 @@
         {
             "command": 
             {
-                "action": "openSettings"
+                "action": "splitPane",
+                "split": "vertical"
             },
-            "keys": "ctrl+alt+o"
-        },
-        {
-            "command": 
-            {
-                "action": "sendInput",
-                "input": "\u0001"
-            },
-            "keys": "ctrl+alt+comma"
+            "keys": "alt+shift+v"
         },
         {
             "command": 
@@ -90,7 +97,7 @@
                 "action": "openSettings",
                 "target": "settingsUI"
             },
-            "keys": "alt+o"
+            "keys": "ctrl+alt+o"
         },
         {
             "command": 
@@ -110,6 +117,14 @@
             "keys": "ctrl+shift+v"
         },
         {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "horizontal"
+            },
+            "keys": "alt+shift+h"
+        },
+        {
             "command": "unbound",
             "keys": "win+sc(41)"
         },
@@ -122,12 +137,91 @@
             "keys": "ctrl+v"
         },
         {
+            "command": "unbound",
+            "keys": "ctrl+shift+c"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+insert"
+        },
+        {
+            "command": "unbound",
+            "keys": "shift+insert"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+minus"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+numpad_minus"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+numpad_plus"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+plus"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+k"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+j"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+l"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+h"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+o"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+o"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+w"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+plus"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+shift+minus"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+alt+w"
+        },
+        {
+            "command": "unbound",
+            "keys": "ctrl+0"
+        },
+        {
             "command": 
             {
                 "action": "copy",
                 "singleLine": false
+            }
+        },
+        {
+            "command": 
+            {
+                "action": "adjustFontSize",
+                "delta": 1
             },
-            "keys": "ctrl+shift+c"
+            "keys": "alt+shift+plus"
         },
         {
             "command": 
@@ -149,7 +243,7 @@
                 "action": "moveFocus",
                 "direction": "right"
             },
-            "keys": "alt+l"
+            "keys": "alt+right"
         },
         {
             "command": 
@@ -157,15 +251,7 @@
                 "action": "moveFocus",
                 "direction": "right"
             },
-            "keys": "alt+right"
-        },
-        {
-            "command": 
-            {
-                "action": "moveFocus",
-                "direction": "left"
-            },
-            "keys": "alt+h"
+            "keys": "ctrl+alt+l"
         },
         {
             "command": 
@@ -179,9 +265,9 @@
             "command": 
             {
                 "action": "moveFocus",
-                "direction": "down"
+                "direction": "left"
             },
-            "keys": "alt+j"
+            "keys": "ctrl+alt+h"
         },
         {
             "command": 
@@ -195,9 +281,9 @@
             "command": 
             {
                 "action": "moveFocus",
-                "direction": "up"
+                "direction": "down"
             },
-            "keys": "alt+k"
+            "keys": "ctrl+alt+j"
         },
         {
             "command": 
@@ -206,6 +292,30 @@
                 "direction": "up"
             },
             "keys": "alt+up"
+        },
+        {
+            "command": 
+            {
+                "action": "moveFocus",
+                "direction": "up"
+            },
+            "keys": "ctrl+alt+k"
+        },
+        {
+            "command": 
+            {
+                "action": "adjustFontSize",
+                "delta": -1
+            },
+            "keys": "alt+shift+minus"
+        },
+        {
+            "command": "resetFontSize",
+            "keys": "alt+shift+0"
+        },
+        {
+            "command": "closePane",
+            "keys": "alt+shift+w"
         }
     ],
     "copyFormatting": "none",

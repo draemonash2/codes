@@ -122,6 +122,10 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			EnvGet, sExePath, MYEXEPATH_XF
 			Run %sExePath%
 			return
+	;Windows Terminal
+		^+!t::
+			Run %comspec% /c wt -d C:\
+			return
 	;cCalc.exe
 		^+!;::
 			EnvGet, sExePath, MYEXEPATH_CCALC

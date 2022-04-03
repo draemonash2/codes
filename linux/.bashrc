@@ -136,6 +136,7 @@ function vimm() {
 }
 
 alias ll='ls -lFA --color=auto'
+alias lln='ls -lFAv1 --color=auto'
 alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
 alias ff='find . -type f | grep '
@@ -167,4 +168,18 @@ alias sr='vim ~/.screenrc'
 alias cdw='cd /mnt/c/;'
 alias exp='explorer.exe .'		# open current directory with explorer.exe
 alias sht='sudo shutdown -h now'
+
+function swap()
+{
+	SUFFIX=swaptmp
+	if [ $# -ge 2 ]; then
+		FILE1=$1
+		FILE2=$2
+		\mv ./$1 ./$2.${SUFFIX}
+		\mv ./$2 ./$1
+		\mv ./$2.${SUFFIX} ./$2
+	else
+		echo "[error] Specify two or more arguments."
+	fi
+}
 
