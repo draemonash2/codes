@@ -62,10 +62,10 @@
 	nnoremap	<silent>			<space>j	<c-w>j|											" ウィンドウフォーカス移動(下)
 	nnoremap	<silent>			<space>k	<c-w>k|											" ウィンドウフォーカス移動(上)
 	nnoremap	<silent>			<space>l	<c-w>l|											" ウィンドウフォーカス移動(右)
-	nnoremap	<silent>			<a-h>		<c-w>h|											" ウィンドウフォーカス移動(左)
-	nnoremap	<silent>			<a-j>		<c-w>j|											" ウィンドウフォーカス移動(下)
-	nnoremap	<silent>			<a-k>		<c-w>k|											" ウィンドウフォーカス移動(上)
-	nnoremap	<silent>			<a-l>		<c-w>l|											" ウィンドウフォーカス移動(右)
+	nnoremap	<silent>			<M-h>		<c-w>h|											" ウィンドウフォーカス移動(左)
+	nnoremap	<silent>			<M-j>		<c-w>j|											" ウィンドウフォーカス移動(下)
+	nnoremap	<silent>			<M-k>		<c-w>k|											" ウィンドウフォーカス移動(上)
+	nnoremap	<silent>			<M-l>		<c-w>l|											" ウィンドウフォーカス移動(右)
 	nnoremap						<c-]>		g<c-]>|											" tagsジャンプの時に複数ある時は一覧表示
 "	nnoremap	<silent>			<c-w>		:tabclose<cr>|									" タブを閉じる
 "	nnoremap	<silent>			<c-n>		:tabnew<cr>|									" 新規タブを開く
