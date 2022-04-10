@@ -1,22 +1,8 @@
 {
+    "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
     "actions": 
     [
-        {
-            "command": 
-            {
-                "action": "sendInput",
-                "input": "\u001bb"
-            },
-            "keys": "ctrl+shift+comma"
-        },
-        {
-            "command": 
-            {
-                "action": "openSettings",
-                "target": "defaultsFile"
-            }
-        },
         {
             "command": 
             {
@@ -31,17 +17,17 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u0001"
-            },
-            "keys": "ctrl+alt+comma"
+                "action": "openSettings",
+                "target": "defaultsFile"
+            }
         },
         {
             "command": 
             {
-                "action": "openSettings"
+                "action": "sendInput",
+                "input": "\u001bb"
             },
-            "keys": "alt+shift+o"
+            "keys": "ctrl+shift+comma"
         },
         {
             "command": 
@@ -54,18 +40,25 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "vertical"
+                "action": "openSettings"
             },
-            "keys": "alt+shift+v"
+            "keys": "alt+shift+o"
         },
         {
             "command": 
             {
                 "action": "sendInput",
-                "input": "\u0005"
+                "input": "\u0001"
             },
-            "keys": "ctrl+alt+period"
+            "keys": "ctrl+alt+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "right"
+            },
+            "keys": "alt+shift+v"
         },
         {
             "command": 
@@ -74,6 +67,14 @@
                 "input": "\u0006"
             },
             "keys": "ctrl+period"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0005"
+            },
+            "keys": "ctrl+alt+period"
         },
         {
             "command": 
@@ -120,9 +121,16 @@
             "command": 
             {
                 "action": "splitPane",
-                "split": "horizontal"
+                "split": "down"
             },
             "keys": "alt+shift+h"
+        },
+        {
+            "command": 
+            {
+                "action": "copy",
+                "singleLine": false
+            }
         },
         {
             "command": "unbound",
@@ -211,9 +219,9 @@
         {
             "command": 
             {
-                "action": "copy",
-                "singleLine": false
-            }
+                "action": "nextTab"
+            },
+            "keys": "ctrl+tab"
         },
         {
             "command": 
@@ -226,32 +234,9 @@
         {
             "command": 
             {
-                "action": "nextTab"
-            },
-            "keys": "ctrl+tab"
-        },
-        {
-            "command": 
-            {
                 "action": "prevTab"
             },
             "keys": "ctrl+shift+tab"
-        },
-        {
-            "command": 
-            {
-                "action": "moveFocus",
-                "direction": "right"
-            },
-            "keys": "alt+right"
-        },
-        {
-            "command": 
-            {
-                "action": "moveFocus",
-                "direction": "right"
-            },
-            "keys": "ctrl+alt+l"
         },
         {
             "command": 
@@ -268,6 +253,22 @@
                 "direction": "left"
             },
             "keys": "ctrl+alt+h"
+        },
+        {
+            "command": 
+            {
+                "action": "moveFocus",
+                "direction": "right"
+            },
+            "keys": "alt+right"
+        },
+        {
+            "command": 
+            {
+                "action": "moveFocus",
+                "direction": "right"
+            },
+            "keys": "ctrl+alt+l"
         },
         {
             "command": 
@@ -335,14 +336,12 @@
         "list": 
         [
             {
-                "commandline": "powershell.exe",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
                 "name": "Windows PowerShell",
                 "startingDirectory": "C:\\"
             },
             {
-                "commandline": "cmd.exe",
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
                 "name": "\u30b3\u30de\u30f3\u30c9 \u30d7\u30ed\u30f3\u30d7\u30c8",
@@ -369,6 +368,12 @@
                 "name": "CentOS8",
                 "source": "Windows.Terminal.Wsl",
                 "startingDirectory": "C:\\"
+            },
+            {
+                "guid": "{be110f34-c752-5cfc-b814-0833d588e235}",
+                "hidden": false,
+                "name": "Developer Command Prompt for VS 2019",
+                "source": "Windows.Terminal.VisualStudio"
             }
         ]
     },
