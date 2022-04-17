@@ -11,7 +11,7 @@ typedef struct DATA_STRUCT
 	double e;
 } T_DATA_STRUCT;
 
-void parseStr(
+void splitStr(
 	std::string& text,
 	std::string& delimiter,
 	std::vector<std::string>& words,
@@ -42,7 +42,7 @@ void parseStr(
 	std::cout << std::endl;
 }
 
-void createStr(
+void joinStr(
 	DATA_STRUCT& data
 )
 {
@@ -68,6 +68,6 @@ int main()
 	std::cout << text << std::endl;
 	std::cout << std::endl;
 	
-	parseStr(text, delimiter, words, data);
-	createStr(data);
+	splitStr(text, delimiter, words, data);
+	joinStr(data);
 }

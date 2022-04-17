@@ -1,4 +1,4 @@
 #!/bin/bash
 TRGT=${1:-"cliant"}
-g++ $TRGT.cpp -o $TRGT.out && ./$TRGT.out
+g++ $TRGT.cpp -g -o $TRGT.out && ./$TRGT.out
 
