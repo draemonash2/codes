@@ -1432,6 +1432,16 @@ endif
 	let g:nanomap_highlight_delay = 100
 
 " ==============================================================================
+" ctrlp 設定
+" [参照] https://github.com/ctrlpvim/ctrlp.vim
+" ==============================================================================
+	let g:ctrlp_map = '<c-p>'
+	let g:ctrlp_cmd = 'CtrlP'
+	let g:ctrlp_working_path_mode = 'ra'
+"	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'tags']
+	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
+
+" ==============================================================================
 " neosnippet設定
 " ==============================================================================
 "if has('unix')
