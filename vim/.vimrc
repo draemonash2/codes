@@ -539,6 +539,7 @@ endif
 if has('unix')
 	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
 endif
+	set shell=bash										" :terminalのデフォルトシェルをbashにする
 
 " ==============================================================================
 " ファイルパス設定
