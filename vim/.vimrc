@@ -1444,26 +1444,39 @@ endif
 "	endfunction
 
 " ==============================================================================
-" 指定文字コードで再オープン
+" 文字コード/改行コード 再オープン
+" Usage
+"   :Reoenc [euc-jp|shift_jis|utf-8|..]
+"   :Reoff [dos|mac|unix]
 " ==============================================================================
-	command! -nargs=1 Occ call s:ReOpenAtNewCharCode(<f-args>)
+	command! -nargs=1 Reoenc call s:ReOpenAtNewCharCode(<f-args>)
 	function! s:ReOpenAtNewCharCode(...)
 		if a:0 == 1
 			execute 'e ++enc=' . a:1
 		endif
 	endfunction
+	
+	command! -nargs=1 Reoff call s:ReOpenAtNewLineCode(<f-args>)
+	function! s:ReOpenAtNewLineCode(...)
+		if a:0 == 1
+			execute 'e ++ff=' . a:1
+		endif
+	endfunction
 
 " ==============================================================================
 " 文字コード/改行コード置換
+" Usage
+"   :Repenc [euc-jp|shift_jis|utf-8|..]
+"   :Repff [dos|mac|unix]
 " ==============================================================================
-	command! -nargs=? Rcc call s:ReplaceCharCode(<f-args>)
+	command! -nargs=? Repenc call s:ReplaceCharCode(<f-args>)
 	function! s:ReplaceCharCode(...)
 		if a:0 == 1
 			execute 'set fenc=' . a:1
 		endif
 	endfunction
 	
-	command! -nargs=? Rnc call s:ReplaceNewlineCode(<f-args>)
+	command! -nargs=? Repff call s:ReplaceNewlineCode(<f-args>)
 	function! s:ReplaceNewlineCode(...)
 		if a:0 == 1
 			execute 'set ff=' . a:1
