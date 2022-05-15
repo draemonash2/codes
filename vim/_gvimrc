@@ -160,6 +160,10 @@ else
 	cmap							<c-v>		<S-Insert>|										" 貼り付け
 endif
 
+"=== ターミナルウィンドウ ===
+	tnoremap						<c-i>		<c-j>N|											" Terminal-Normalモード切替え
+	tnoremap						<esc><esc>	<c-j>:q!<cr>|									" Terminalモード終了
+
 " (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
 
 " **************************************************************************************************
@@ -278,7 +282,12 @@ endif
 if has('unix')
 	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
 endif
-	set shell=bash										" :terminalのデフォルトシェルをbashにする
+	set shell=bash										" ターミナルウィンドウ(:terminal)のデフォルトシェルをbashにする
+if has('unix')
+	set termkey=<c-j>									" ターミナルウィンドウのターミナルキー変更
+else
+	set termwinkey=<c-j>								" ターミナルウィンドウのターミナルキー変更
+endif
 
 " ==============================================================================
 " ファイルパス設定
@@ -1338,6 +1347,13 @@ endif
 		map <NUL> <C-Space>
 		map! <NUL> <C-Space>
 	endif
+
+" ==============================================================================
+" ターミナル起動
+" ==============================================================================
+	command! -nargs=? Tc terminal ++curwin
+	command! -nargs=? Tv vert terminal
+	command! -nargs=? Th bo terminal
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
