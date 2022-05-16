@@ -323,6 +323,10 @@ endif
 	nnoremap	<silent>			<space>j	<c-w>j|											" ウィンドウフォーカス移動(下)
 	nnoremap	<silent>			<space>k	<c-w>k|											" ウィンドウフォーカス移動(上)
 	nnoremap	<silent>			<space>l	<c-w>l|											" ウィンドウフォーカス移動(右)
+	nnoremap	<silent>			<c-n><c-h>	<c-w>h|											" ウィンドウフォーカス移動(左)
+	nnoremap	<silent>			<c-n><c-j>	<c-w>j|											" ウィンドウフォーカス移動(下)
+	nnoremap	<silent>			<c-n><c-k>	<c-w>k|											" ウィンドウフォーカス移動(上)
+	nnoremap	<silent>			<c-n><c-l>	<c-w>l|											" ウィンドウフォーカス移動(右)
 	nnoremap	<silent>			<M-h>		<c-w>h|											" ウィンドウフォーカス移動(左)
 	nnoremap	<silent>			<M-j>		<c-w>j|											" ウィンドウフォーカス移動(下)
 	nnoremap	<silent>			<M-k>		<c-w>k|											" ウィンドウフォーカス移動(上)
@@ -422,8 +426,13 @@ else
 endif
 
 "=== ターミナルウィンドウ ===
-	tnoremap						<c-i>		<c-j>N|											" Terminal-Normalモード切替え
-	tnoremap						<esc><esc>	<c-j>:q!<cr>|									" Terminalモード終了
+	tnoremap						<c-n><c-h>	<c-n>h|											" ウィンドウフォーカス移動(左)
+	tnoremap						<c-n><c-j>	<c-n>j|											" ウィンドウフォーカス移動(下)
+	tnoremap						<c-n><c-k>	<c-n>k|											" ウィンドウフォーカス移動(上)
+	tnoremap						<c-n><c-l>	<c-n>l|											" ウィンドウフォーカス移動(右)
+	tnoremap						<c-i>		<c-n>N|											" Terminal-Normalモード切替え
+"	tnoremap						<c-j>		<c-n>:q!<cr>|									" Terminalモード終了
+	tnoremap						<esc><esc>	<c-n>:q!<cr>|									" Terminalモード終了
 
 " (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
 
@@ -544,11 +553,11 @@ if has('unix')
 	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
 endif
 	set shell=bash										" ターミナルウィンドウ(:terminal)のデフォルトシェルをbashにする
-if has('unix')
-	set termkey=<c-j>									" ターミナルウィンドウのターミナルキー変更
-else
-	set termwinkey=<c-j>								" ターミナルウィンドウのターミナルキー変更
-endif
+try
+	set termkey=<c-n>									" ターミナルウィンドウのターミナルキー変更
+catch
+	set termwinkey=<c-n>								" ターミナルウィンドウのターミナルキー変更
+endtry
 
 " ==============================================================================
 " ファイルパス設定
