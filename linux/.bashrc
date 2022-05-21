@@ -161,6 +161,7 @@ alias br='vim ~/.bashrc; . ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
+alias tmc='vim ~/.tmux.conf'
 
 #########################################################
 # Environment dependent settings
