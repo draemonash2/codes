@@ -191,6 +191,10 @@ alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
 
+export OSC52DIR='~/.vim/_plugins_user/osc52/plugin'
+alias oscreptt="\cp -f ${OSC52DIR}/osc52.vim{.teraterm,} && ll ${OSC52DIR}"
+alias oscreporg="\cp -f ${OSC52DIR}/osc52.vim{.org,} && ll ${OSC52DIR}"
+
 #########################################################
 # Environment dependent settings
 #########################################################
