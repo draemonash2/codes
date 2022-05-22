@@ -134,6 +134,27 @@ function vimm() {
 	done
 	vim $sOpenPath
 }
+function swap() {
+	SUFFIX=swaptmp
+	if [ $# -ge 2 ]; then
+		FILE1=$1
+		FILE2=$2
+		\mv ./$1 ./$2.${SUFFIX}
+		\mv ./$2 ./$1
+		\mv ./$2.${SUFFIX} ./$2
+	else
+		echo "[error] Specify two or more arguments."
+	fi
+}
+function tma() {
+	if [ -z "$TMUX" ]; then
+		if [ -n "${1}" ]; then
+			tmux attach-session -t ${1} || tmux new-session -s ${1}
+		else
+			tmux attach-session || tmux new-session
+		fi
+	fi
+}
 
 alias ll='ls -lFA --color=auto'
 alias lln='ls -lFAv1 --color=auto'
@@ -163,6 +184,8 @@ alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
 alias tmc='vim ~/.tmux.conf'
 
+alias tml='tmux list-sessions'
+
 #########################################################
 # Environment dependent settings
 #########################################################
@@ -170,17 +193,4 @@ alias cdw='cd /mnt/c/;'
 alias exp='explorer.exe .'		# open current directory with explorer.exe
 alias sht='sudo shutdown -h now'
 
-function swap()
-{
-	SUFFIX=swaptmp
-	if [ $# -ge 2 ]; then
-		FILE1=$1
-		FILE2=$2
-		\mv ./$1 ./$2.${SUFFIX}
-		\mv ./$2 ./$1
-		\mv ./$2.${SUFFIX} ./$2
-	else
-		echo "[error] Specify two or more arguments."
-	fi
-}
 
