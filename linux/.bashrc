@@ -155,6 +155,11 @@ function tma() {
 		fi
 	fi
 }
+function tmk() {
+	if [ -n "${1}" ]; then
+		tmux kill-session -t ${1}
+	fi
+}
 
 alias ll='ls -lFA --color=auto'
 alias lln='ls -lFAv1 --color=auto'
