@@ -67,11 +67,11 @@ If vAnswer = vbYes Then
     objFSO.CopyFile sDownloadTrgtDirPath & "\.tmux.conf", sDownloadTrgtDirPath & "\.tmux.conf_rmtorg"
     
     '=== フォルダ比較 ===
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.gdbinit"    & """ """ & sDownloadTrgtDirPath & "\.gdbinit"   & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.inputrc"    & """ """ & sDownloadTrgtDirPath & "\.inputrc"   & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.bashrc"     & """ """ & sDownloadTrgtDirPath & "\.bashrc"    & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.tmux.conf"  & """ """ & sDownloadTrgtDirPath & "\.tmux.conf" & """", 10, False
     objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\.vimrc"        & """ """ & sDownloadTrgtDirPath & "\.vimrc"     & """", 10, False
+    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.bashrc"     & """ """ & sDownloadTrgtDirPath & "\.bashrc"    & """", 10, False
+    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.inputrc"    & """ """ & sDownloadTrgtDirPath & "\.inputrc"   & """", 10, False
+    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.gdbinit"    & """ """ & sDownloadTrgtDirPath & "\.gdbinit"   & """", 10, False
+    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.tmux.conf"  & """ """ & sDownloadTrgtDirPath & "\.tmux.conf" & """", 10, False
     On Error Goto 0
     vAnswer = MsgBox("比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg)
 Else
@@ -87,6 +87,7 @@ If vAnswer = vbYes Then
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.bashrc" & """ ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.inputrc" & """ ""exit""", 0, True
     objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.gdbinit" & """ ""exit""", 0, True
+    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.tmux.conf" & """ ""exit""", 0, True
     On Error Goto 0
 End If
 
