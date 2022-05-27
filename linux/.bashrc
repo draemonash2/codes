@@ -191,9 +191,14 @@ alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
 
-export OSC52DIR='~/.vim/_plugins_user/osc52/plugin'
-alias oscreptt="\cp -f ${OSC52DIR}/osc52.vim{.teraterm,} && ll ${OSC52DIR}"
-alias oscreporg="\cp -f ${OSC52DIR}/osc52.vim{.org,} && ll ${OSC52DIR}"
+OSC52DIR="${HOME}/.vim/_plugins_user/osc52/plugin"
+#echo ${TERMAPP}
+if [ "${TERMAPP}" = "teraterm" ]; then
+	\cp -f ${OSC52DIR}/osc52.vim{.teraterm,}
+else
+	\cp -f ${OSC52DIR}/osc52.vim{.org,}
+fi
+#ll ${OSC52DIR}
 
 #########################################################
 # Environment dependent settings
@@ -201,5 +206,4 @@ alias oscreporg="\cp -f ${OSC52DIR}/osc52.vim{.org,} && ll ${OSC52DIR}"
 alias cdw='cd /mnt/c/;'
 alias exp='explorer.exe .'		# open current directory with explorer.exe
 alias sht='sudo shutdown -h now'
-
 

@@ -1,6 +1,6 @@
-;Raspberry Pi SSH リモートログイン用コマンド
-;connect 'raspberrypi.local /ssh /auth=publickey /user=pi /keyfile=C:/Users/draem/.ssh/id_rsa'
 connect 'localhost:50023 /ssh /auth=password /user=draemon_ash3 /passwd=Endo4353'
 wait "$"
-sendln "oscreptt"
+sendln "export TERMAPP='teraterm'"
+wait "$"
+sendln ". ~/.bashrc"
 
