@@ -143,7 +143,16 @@ function swap() {
 		\mv ./$2 ./$1
 		\mv ./$2.${SUFFIX} ./$2
 	else
-		echo "[error] Specify two or more arguments."
+		echo "[error] specify two or more arguments."
+	fi
+}
+function bak() {
+	if [ $# -ge 1 ]; then
+		TRGTFILE=${1}
+		NOWSUFFIX=`date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}'`
+		\cp -f ${TRGTFILE} ${TRGTFILE}.${NOWSUFFIX}
+	else
+		echo "[error] specify one or more arguments."
 	fi
 }
 function tma() {
@@ -190,6 +199,7 @@ alias sr='vim ~/.screenrc'
 alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
+alias tmatemp='tma temp'
 
 OSC52DIR="${HOME}/.vim/_plugins_user/osc52/plugin"
 #echo ${TERMAPP}
