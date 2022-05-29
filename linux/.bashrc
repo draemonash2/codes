@@ -150,7 +150,7 @@ function bak() {
 	if [ $# -ge 1 ]; then
 		TRGTFILE=${1}
 		NOWSUFFIX=`date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}'`
-		\cp -f ${TRGTFILE} ${TRGTFILE}.${NOWSUFFIX}
+		\cp -f ${TRGTFILE} ${TRGTFILE}.bak${NOWSUFFIX}
 	else
 		echo "[error] specify one or more arguments."
 	fi
