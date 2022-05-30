@@ -366,18 +366,6 @@ endif
 	nmap		<silent>			K			g*zz|											" 検索結果を画面中央に
 	nmap		<silent>			g#			g#zz|											" 検索結果を画面中央に
 	nmap		<silent>			<Esc><Esc>	<Plug>(anzu-clear-search-status):noh<cr>|		" 検索結果を画面中央に
-	command! -nargs=? Bl call BufferList()
-	command! -nargs=? Tb TagbarToggle
-	command! -nargs=? Tp call TogglePasteMode()
-	function! TogglePasteMode()
-		let l:result = execute('set paste?')
-		"echo l:result
-		if l:result =~ '.*nopaste.*'
-			set paste
-		else
-			set nopaste
-		endif
-	endfunction
 
 "=== 挿入モード ===
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
