@@ -1779,6 +1779,8 @@ endif
 	let g:ctrlp_working_path_mode = 'ra'
 "	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'tags']
 	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
+	
+	command! -nargs=? Cpa CtrlP '/mnt/c/codes_sample'
 
 " ==============================================================================
 " neosnippet設定
