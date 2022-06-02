@@ -120,7 +120,7 @@ if ! shopt -oq posix; then
 fi
 
 function gr() {
-	grep -nr "$@" .
+	grep -nrI "$@" --exclude='tags' .
 }
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
