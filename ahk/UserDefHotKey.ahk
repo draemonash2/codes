@@ -262,42 +262,24 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	;		return
 
 ;***** ホットキー(Software local) *****
-	;右Altキーをコンテキストメニュー表示に変更(WindowsTerminal以外)
 	#IfWinNotActive ahk_exe WindowsTerminal.exe
-		RAlt::
-			Send, {AppsKey}
-			return
+		;右Altキーをコンテキストメニュー表示に変更
+			RAlt::
+				Send, {AppsKey}
+				return
 	#IfWinNotActive
-	
-	#IfWinActive ahk_exe gimp-2.8.exe
-		^Left::
-			Send, {Left}{Backspace}{Esc}
-			return
-	#IfWinActive
 	
 	#IfWinActive ahk_exe EXCEL.EXE
 		;F1ヘルプ無効化
 			F1::return
-		;Scroll left.
-			+WheelUp::
-			SetScrollLockState, On
-			SendInput {Left 3}
-			SetScrollLockState, Off
-			Return
-		;Scroll right.
-			+WheelDown::
-			SetScrollLockState, On
-			SendInput {Right 3}
-			SetScrollLockState, Off
-			Return
 		;Move prev sheet.
-			^+WheelUp::
-			SendInput ^{PgUp}
-			Return
+			^!WheelUp::
+				SendInput ^{PgUp}
+				Return
 		;Move next sheet.
-			^+WheelDown::
-			SendInput ^{PgDn}
-			Return
+			^!WheelDown::
+				SendInput ^{PgDn}
+				Return
 	#IfWinActive
 	
 	#IfWinActive ahk_exe iThoughts.exe
@@ -317,11 +299,22 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			return
 	#IfWinActive
 	
-	#IfWinActive AHK_Exe kinza.exe
+	#IfWinActive ahk_exe kinza.exe
 		;The Great Suspender 用
 			F8::^+s
 			F9::^+u
 			return
+	#IfWinActive
+	
+	#IfWinActive ahk_exe chrome.exe
+		;Next tab.
+			^WheelUp::
+			SendInput ^+{Tab}
+			Return
+		;Previous tab.
+			^WheelDown::
+			SendInput ^{Tab}
+			Return
 	#IfWinActive
 	
 	#IfWinActive ahk_class MPC-BE

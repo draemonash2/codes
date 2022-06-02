@@ -268,9 +268,9 @@ endif
 	set list											" どの文字でタブや改行を表示するかを設定
 	set listchars=tab:^\ ,eol:$							"	参考：set listchars=tab:>-,extends:<,trail:-,eol:<
 	set nowrapscan										" 検索時にファイルの最後まで行ったら最初に戻らない
-	set smartcase										" 大文字小文字の両方が含まれている場合は大文字小文字を区別
 	set incsearch										" インクリメンタルサーチ
 	set hlsearch										" 検索文字の強調表示
+	set smartcase										" 大文字小文字の両方が含まれている場合は大文字小文字を区別
 	set noignorecase									" 検索の時に大文字小文字を区別する
 	set iskeyword=a-z,A-Z,48-57,_						" w,bの移動で認識する文字
 	set grepprg=internal								" vimgrep をデフォルトのgrepとする場合internal
@@ -290,7 +290,9 @@ endif
 if has('unix')
 	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
 endif
+if has('unix')
 	set shell=bash										" ターミナルウィンドウ(:terminal)のデフォルトシェルをbashにする
+endif
 "try
 "	set termkey=<c-n>									" ターミナルウィンドウのターミナルキー変更
 "catch
@@ -403,7 +405,7 @@ else
 		exec 'winpos'
 		
 		redir end
-		let pos = matchstr(pos, 'x[-0-9 ]\+,\s*y[-0-9 ]\+$')
+		let pos = matchstr(pos, '\cx[-0-9 ]\+,\s*y[-0-9 ]\+$')
 		let file = expand(a:filename)
 		let str = []
 		let cmd = 'winpos '.substitute(pos, '[^-0-9 ]', '', 'g')
