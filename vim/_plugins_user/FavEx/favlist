@@ -6,6 +6,7 @@
 "! q : close favex window
 "! :he favex for detailed help
 " Files (do not delete this line)
+$HOME/Dropbox/100_Documents/#temp.txt
 $VIM/_vimrc
 $VIM/_gvimrc
 $HOME/.vimrc
