@@ -430,6 +430,19 @@ else
 endif
 
 " ==============================================================================
+" カーソル位置記憶
+" 参考: https://qiita.com/yahihi/items/4112ab38b2cc80c91b16
+" 備考: うまく動かない場合は、~/.viminfoのオーナーを変更する。
+"         (e.g. sudo chown <user>:<group> ~/.viminfo)
+" ==============================================================================
+if has('unix')
+	augroup vimrcEx
+		au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
+		\ exe "normal g`\"" | endif
+	augroup END
+endif
+
+" ==============================================================================
 " 挿入モード時、ステータスラインの色を変更
 " ==============================================================================
 	let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
