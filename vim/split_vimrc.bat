@@ -1,3 +1,0 @@
-::TODO: —vŽÀ‘•
-::findstr /N "_gvimrc" < .vimrc_
-::pause
