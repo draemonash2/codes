@@ -1504,8 +1504,8 @@ endif
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
 if has('unix')
-	let QFix_PreviewHeight = 25
-	let QFix_Height = 25
+	let QFix_PreviewHeight = 15
+	let QFix_Height = 15
 else
 	let QFix_PreviewHeight = 12
 endif

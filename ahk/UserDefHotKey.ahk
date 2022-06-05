@@ -207,24 +207,26 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	;プリントスクリーン単押しを抑制
 		PrintScreen::return
 	
-;	;Teams一時退席抑止機能
-;		+^!F11::
-;			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
-;			Loop
-;			{
-;				Sleep, 3000
-;				GetKeyState, sPressState, Esc, P
-;				If sPressState = D
-;				{
-;					TrayTip, Teams一時退席抑止機能, Teamsの一時退席抑止を解除します。, 5, 17
-;					Break
-;				}
-;				Else
-;				{
-;					Send, {vkF3sc029}
-;				}
-;			}
-;			return
+	;Teams一時退席抑止機能
+	/*
+		+^!F11::
+			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
+			Loop
+			{
+				Sleep, 3000
+				GetKeyState, sPressState, Esc, P
+				If sPressState = D
+				{
+					TrayTip, Teams一時退席抑止機能, Teamsの一時退席抑止を解除します。, 5, 17
+					Break
+				}
+				Else
+				{
+					Send, {vkF3sc029}
+				}
+			}
+			return
+	*/
 	
 	;テスト用
 ;		^Pause::
