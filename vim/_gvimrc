@@ -54,10 +54,10 @@
 	nnoremap	<silent>			<c-s-tab>	<c-w>W|											" ウィンドウ切替（前へ）
 "	nnoremap	<silent>			<c-tab>		gt|												" タブ切替（次へ）
 "	nnoremap	<silent>			<c-s-tab>	gT|												" タブ切替（前へ）
-	nnoremap	<silent>			<c-s-up>	<c-w>+4|										" ウィンドウ幅を変える 上:高さup
-	nnoremap	<silent>			<c-s-down>	<c-w>-3|										" ウィンドウ幅を変える 下:高さdown
-	nnoremap	<silent>			<c-s-right> <c-w>>|											" ウィンドウ幅を変える 右:幅up
-	nnoremap	<silent>			<c-s-left>	<c-w><|											" ウィンドウ幅を変える 左:幅down
+	nnoremap	<silent>			<c-w><c-k>	5<c-w>+|										" ウィンドウ幅を変える 上:高さup
+	nnoremap	<silent>			<c-w><c-j>	5<c-w>-|										" ウィンドウ幅を変える 下:高さdown
+	nnoremap	<silent>			<c-w><c-h>	5<c-w>>|										" ウィンドウ幅を変える 右:幅up
+	nnoremap	<silent>			<c-w><c-l>	5<c-w><|										" ウィンドウ幅を変える 左:幅down
 	nnoremap	<silent>			<space>h	<c-w>h|											" ウィンドウフォーカス移動(左)
 	nnoremap	<silent>			<space>j	<c-w>j|											" ウィンドウフォーカス移動(下)
 	nnoremap	<silent>			<space>k	<c-w>k|											" ウィンドウフォーカス移動(上)

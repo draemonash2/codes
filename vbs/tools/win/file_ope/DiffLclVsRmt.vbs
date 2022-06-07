@@ -42,36 +42,39 @@ sScpProgramPath = GetEnvVariable("MYEXEPATH_WINSCP")
 sDiffProgramPath = GetEnvVariable("MYEXEPATH_WINMERGE")
 sCodesDirPath = GetEnvVariable("MYDIRPATH_CODES")
 
+Dim cTrgtFileNames
+Dim cTrgtDirNames
+Set cTrgtFileNames = CreateObject("System.Collections.ArrayList")
+Set cTrgtDirNames = CreateObject("System.Collections.ArrayList")
+cTrgtDirNames.Add "vim"   : cTrgtFileNames.Add ".vimrc"
+cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".bashrc"
+cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".inputrc"
+cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".gdbinit"
+cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".tmux.conf"
+
 'バックアップフォルダ作成
 Dim sDateSuffix
 sDateSuffix = ConvDate2String(Now(),1)
-sDownloadTrgtDirPath = sDownloadTrgtDirPathRaw & "\" & sDateSuffix & "\" & sLoginServerName
+sDownloadTrgtDirPath = sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix & "\" & sLoginServerName
 Call CreateDirectry( sDownloadTrgtDirPath )
 
 Dim vAnswer
+Dim iIdx
 vAnswer = MsgBox("ファイルを受信します。ダウンロードを開始しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
     On Error Resume Next 'リモートにファイルが存在しなくても無視する
     '=== ファイル受信(Remote → Local) ===
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.vimrc "     & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.bashrc "    & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.inputrc "   & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.gdbinit "   & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/.tmux.conf " & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
-    
+    For iIdx = 0 To cTrgtFileNames.Count - 1
+        objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & cTrgtFileNames(iIdx) & " " & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
+    Next
     '=== ファイルバックアップ ===
-    objFSO.CopyFile sDownloadTrgtDirPath & "\.vimrc",     sDownloadTrgtDirPath & "\.vimrc_rmtorg"
-    objFSO.CopyFile sDownloadTrgtDirPath & "\.bashrc",    sDownloadTrgtDirPath & "\.bashrc_rmtorg"
-    objFSO.CopyFile sDownloadTrgtDirPath & "\.inputrc",   sDownloadTrgtDirPath & "\.inputrc_rmtorg"
-    objFSO.CopyFile sDownloadTrgtDirPath & "\.gdbinit",   sDownloadTrgtDirPath & "\.gdbinit_rmtorg"
-    objFSO.CopyFile sDownloadTrgtDirPath & "\.tmux.conf", sDownloadTrgtDirPath & "\.tmux.conf_rmtorg"
-    
+    For iIdx = 0 To cTrgtFileNames.Count - 1
+        objFSO.CopyFile sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx), sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & "_rmtorg"
+    Next
     '=== フォルダ比較 ===
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\vim\.vimrc"        & """ """ & sDownloadTrgtDirPath & "\.vimrc"     & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.bashrc"     & """ """ & sDownloadTrgtDirPath & "\.bashrc"    & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.inputrc"    & """ """ & sDownloadTrgtDirPath & "\.inputrc"   & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.gdbinit"    & """ """ & sDownloadTrgtDirPath & "\.gdbinit"   & """", 10, False
-    objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\linux\.tmux.conf"  & """ """ & sDownloadTrgtDirPath & "\.tmux.conf" & """", 10, False
+    For iIdx = 0 To cTrgtFileNames.Count - 1
+        objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx) & """ """ & sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """", 10, False
+    Next
     On Error Goto 0
     vAnswer = MsgBox("比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg)
 Else
@@ -83,11 +86,9 @@ vAnswer = MsgBox("編集したファイルを送信しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
     '=== ファイル送信(Local → Remote) ===
     On Error Resume Next 'ローカルにファイルが存在しなくても無視する
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.vimrc" & """ ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.bashrc" & """ ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.inputrc" & """ ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.gdbinit" & """ ""exit""", 0, True
-    objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\.tmux.conf" & """ ""exit""", 0, True
+    For iIdx = 0 To cTrgtFileNames.Count - 1
+        objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """ ""exit""", 0, True
+    Next
     On Error Goto 0
 End If
 

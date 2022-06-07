@@ -3,7 +3,8 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" ) 'DownloadFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )    'DownloadFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" ) 'ConvDate2String()
 
 '===============================================================================
 '= 本処理
@@ -30,12 +31,16 @@ sOutputMsg = WScript.ScriptName & " 「" & sLocalObjName & "」"
 '=== 事前処理 ===
 Dim sDownloadTrgtDirPath
 Dim sDownloadTrgtFilePath
-Dim sDiffSrcDirPath
+Dim sDiffSrcOrgDirPath
+Dim sDiffSrcNewDirPath
 Dim sUnzipProgramPath
 Dim sDiffProgramPath
+Dim sDateSuffix
+sDateSuffix = ConvDate2String(Now(),1)
 sDownloadTrgtDirPath = objWshShell.SpecialFolders("Desktop")
 sDownloadTrgtFilePath = sDownloadTrgtDirPath & "\" & sLocalObjName & ".zip"
-sDiffSrcDirPath = sDownloadTrgtDirPath & "\" & sLocalObjName
+sDiffSrcOrgDirPath = sDownloadTrgtDirPath & "\" & sLocalObjName
+sDiffSrcNewDirPath = sDownloadTrgtDirPath & "\" & sLocalObjName & "_" & sDateSuffix
 sUnzipProgramPath = objWshShell.ExpandEnvironmentStrings("%MYEXEPATH_7Z%")
 If InStr(sUnzipProgramPath, "%") > 0 then
     MsgBox "環境変数「MYEXEPATH_7Z」が設定されていません。" & vbNewLine & "処理を中断します。", vbExclamation, sOutputMsg
@@ -59,15 +64,16 @@ Call DownloadFile(sDownloadUrl, sDownloadTrgtFilePath)
 
 '=== 解凍 ===
 objWshShell.Run """" & sUnzipProgramPath & """ x -o""" & sDownloadTrgtDirPath & """ """ & sDownloadTrgtFilePath & """", 0, True
+objFSO.MoveFolder sDiffSrcOrgDirPath, sDiffSrcNewDirPath
 
 '=== フォルダ比較 ===
-objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcDirPath & """ """ & sDiffTrgtDirPath & """", 10, True
+objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcNewDirPath & """ """ & sDiffTrgtDirPath & """", 10, True
 
-'=== フォルダ削除 ===
+'=== ZIP、フォルダ削除 ===
+objFSO.DeleteFile sDownloadTrgtFilePath, True
 vAnswer = MsgBox("ダウンロードフォルダを削除しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
-    objFSO.DeleteFile sDownloadTrgtFilePath, True
-    objFSO.DeleteFolder sDiffSrcDirPath, True
+    objFSO.DeleteFolder sDiffSrcNewDirPath, True
 End If
 
 MsgBox "処理が完了しました！", vbYesNo, sOutputMsg
