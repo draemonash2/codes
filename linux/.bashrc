@@ -201,15 +201,6 @@ alias tmc='vim ~/.tmux.conf'
 alias tml='tmux list-sessions'
 alias tmatemp='tma temp'
 
-OSC52DIR="${HOME}/.vim/_plugins_user/osc52/plugin"
-#echo ${TERMAPP}
-if [ "${TERMAPP}" = "teraterm" ]; then
-	\cp -f ${OSC52DIR}/osc52.vim{.teraterm,}
-else
-	\cp -f ${OSC52DIR}/osc52.vim{.org,}
-fi
-#ll ${OSC52DIR}
-
 #########################################################
 # Environment dependent settings
 #########################################################
