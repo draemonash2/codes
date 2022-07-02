@@ -8,7 +8,7 @@
 '####################################################################
 '### 本処理
 '####################################################################
-Const sPROG_NAME = "ショートカットファイルの指示先フォルダに移動"
+Const sPROG_NAME = "リンクファイルの指示先フォルダに移動"
 
 Dim bIsContinue
 bIsContinue = True
@@ -41,7 +41,7 @@ If bIsContinue = True Then
         'Do Nothing
     End If
     If objFSO.GetExtensionName( sFilePath ) <> "lnk" Then
-        MsgBox "ショートカットファイルを選択してください" & vbNewLine & sFilePath, vbYes, sPROG_NAME
+        MsgBox "リンクファイルを選択してください" & vbNewLine & sFilePath, vbYes, sPROG_NAME
         MsgBox "処理を中断します", vbYes, sPROG_NAME
         bIsContinue = False
     Else
