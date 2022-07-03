@@ -44,6 +44,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		vk1Dsc07B & Left::MuhenkanSimultPush( "Home" )
 		vk1Dsc07B & Up::MuhenkanSimultPush( "PgUp" )
 		vk1Dsc07B & Down::MuhenkanSimultPush( "PgDn" )
+		Insert::Return
 
 ;***** ホットキー(Global) *****
 	;ホットキー配置表示
