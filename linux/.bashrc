@@ -120,7 +120,7 @@ if ! shopt -oq posix; then
 fi
 
 function gr() {
-	grep -nrI "$@" --exclude='tags' .
+	grep -nrI "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
@@ -133,6 +133,27 @@ function vimm() {
 		sOpenPath=$pathfile
 	done
 	vim $sOpenPath
+}
+function vimdiffdir() {
+	if [ $# -ge 2 ]; then
+		DIR1=${1}
+		DIR2=${2}
+		echo '***** diff -rq *****'
+		diff -rq ${DIR1} ${DIR2}
+		echo ''
+		echo '***** vimdiff (only files with differences) *****'
+		DIFFLIST=(`diff -rq ${DIR1} ${DIR2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
+		for DIFFLINE in "${DIFFLIST[@]}"
+		do
+			FILE1=${DIFFLINE%:::::*}
+			FILE2=${DIFFLINE#*:::::}
+			echo "==> ${FILE1} vs ${FILE2} <=="
+			vimdiff ${FILE1} ${FILE2}
+		done
+	else
+		echo "[error] specify two arguments."
+		echo "  usage : vimdiffdir <file1> <file2>"
+	fi
 }
 function swap() {
 	SUFFIX=swaptmp
@@ -200,6 +221,8 @@ alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
 alias tmatemp='tma temp'
+
+alias gitlo="git log --oneline --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
 
 #########################################################
 # Environment dependent settings

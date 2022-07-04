@@ -532,7 +532,7 @@ endif
 	set incsearch										" インクリメンタルサーチ
 	set hlsearch										" 検索文字の強調表示
 	set smartcase										" 大文字小文字の両方が含まれている場合は大文字小文字を区別
-	set noignorecase									" 検索の時に大文字小文字を区別する
+	set ignorecase										" 検索の時に大文字小文字を区別しない
 	set iskeyword=a-z,A-Z,48-57,_						" w,bの移動で認識する文字
 	set grepprg=internal								" vimgrep をデフォルトのgrepとする場合internal
 "	set shortmess+=I									" スプラッシュ(起動時のメッセージ)を表示しない
