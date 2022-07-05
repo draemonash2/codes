@@ -1,2 +1,2 @@
-C:\Windows\System32\wsl.exe ./split_vimrc.sh
+_split_text_file.vbs ..\.vimrc キーバインド設定 ..\_vimrc ..\_gvimrc
 pause
