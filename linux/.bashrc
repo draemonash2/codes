@@ -168,12 +168,33 @@ function swap() {
 	fi
 }
 function bak() {
-	if [ $# -ge 1 ]; then
-		TRGTFILE=${1}
-		NOWSUFFIX=`date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}'`
-		\cp -f ${TRGTFILE} ${TRGTFILE}.bak${NOWSUFFIX}
+	MODE=1 # 1:Alphabet other:Time
+	DELIMITER=_bak
+	if [ $# -eq 1 ]; then
+		INFILE=${1}
+		if [ ! -e ${INFILE} ]; then
+			return
+		fi
+		if [ ${MODE} -eq 1 ]; then
+			NOWSUFFIX=$(date '+%s' | awk '{print strftime("%y%m%d", $1)}')
+			IDXA=$(printf "%d" \'a)
+			IDXZ=$(printf "%d" \'z)
+			for ((i = ${IDXA}; i <= ${IDXZ}; i++)) {
+				CHAR=$(printf "\x$(printf "%x" ${i})")
+				OUTFILE=${INFILE}${DELIMITER}${NOWSUFFIX}${CHAR}
+				#echo ${OUTFILE}
+				if [ ! -e ${OUTFILE} ]; then
+					\cp -rf ${INFILE} ${OUTFILE}
+					break
+				fi
+			}
+		else
+			NOWSUFFIX=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
+			\cp -f ${INFILE} ${INFILE}${DELIMITER}${NOWSUFFIX}
+		fi
 	else
-		echo "[error] specify one or more arguments."
+		echo "[error] specify one arguments."
+		echo "  usage : bak <file>"
 	fi
 }
 function tma() {
