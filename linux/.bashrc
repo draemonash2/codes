@@ -157,14 +157,15 @@ function vimdiffdir() {
 }
 function swap() {
 	SUFFIX=swaptmp
-	if [ $# -ge 2 ]; then
+	if [ $# -eq 2 ]; then
 		FILE1=$1
 		FILE2=$2
 		\mv ./$1 ./$2.${SUFFIX}
 		\mv ./$2 ./$1
 		\mv ./$2.${SUFFIX} ./$2
 	else
-		echo "[error] specify two or more arguments."
+		echo "[error] specify two arguments."
+		echo "  usage : swap <file/dir1> <file/dir2>"
 	fi
 }
 function bak() {
@@ -194,7 +195,7 @@ function bak() {
 		fi
 	else
 		echo "[error] specify one arguments."
-		echo "  usage : bak <file>"
+		echo "  usage : bak <file/dir>"
 	fi
 }
 function tma() {
