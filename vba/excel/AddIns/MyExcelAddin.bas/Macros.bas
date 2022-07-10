@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.11
+' my excel addin macros v2.12
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -22,6 +22,7 @@ Option Explicit
 ' =         シート並べ替え作業用シートを作成            シート並べ替え作業用シート作成
 ' =         シート選択ウィンドウを表示                  シート選択ウィンドウを表示する
 ' =         シート名一括変更                            シート名を一括変更する
+' =         シート追加カスタム                          シートを追加する（カスタム設定版）
 ' =         先頭シートへジャンプ                        アクティブブックの先頭シートへ移動する
 ' =         末尾シートへジャンプ                        アクティブブックの末尾シートへ移動する
 ' =         シート再計算時間計測                        シート毎に再計算にかかる時間を計測する
@@ -226,6 +227,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "選択シート切り出し"
 '   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
 '   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
+    dMacroShortcutKeys.Add "+{F11}", "シート追加カスタム"
     dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
     dMacroShortcutKeys.Add "^%{PGDN}", "シート選択ウィンドウを表示"
     dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
@@ -537,6 +539,23 @@ Public Sub シート名一括変更()
             End If
         Next
     End With
+    Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要    シートを追加する（カスタム設定版）
+' = 覚書    ・シート追加時、以下を実施する
+' =           - アウトライン時に集計行を上、集計列を左に設定する
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub シート追加カスタム()
+    'MsgBox "カスタム設定版シート追加"
+    Application.ScreenUpdating = False
+    Dim shAddSht As Worksheet
+    Set shAddSht = ActiveWorkbook.Sheets.Add()
+    shAddSht.Outline.SummaryRow = xlAbove
+    shAddSht.Outline.SummaryColumn = xlLeft
     Application.ScreenUpdating = True
 End Sub
 

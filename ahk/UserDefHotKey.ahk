@@ -21,8 +21,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 ;	SetTimer ClearWinTileMode, 5000
 ;		Return
 ;	ClearWinTileMode:
-;		;TrayTip, タイマーClearWinTileMode実行, iWinTileModeクリア, 1, 17
-;		iWinTileMode := 5
+;		;TrayTip, タイマーClearWinTileMode実行, giWinTileModeクリア, 1, 17
+;		giWinTileMode := 5
 ;		Return
 
 ;* ***************************************************************
@@ -559,7 +559,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	IncrementWinTileMode()
 	{
 		GetWinTileModeMin()
-		if ( giWinTileMode >= 5 ) {
+		if ( giWinTileMode >= 3 ) {
 			giWinTileMode := giWinTileModeMin
 		} else if ( giWinTileMode < giWinTileModeMin ) {
 			giWinTileMode:=giWinTileModeMin
@@ -571,7 +571,7 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	{
 		GetWinTileModeMin()
 		if ( giWinTileMode <= %giWinTileModeMin% ) {
-			giWinTileMode := 5
+			giWinTileMode := 3
 		} else {
 			giWinTileMode--
 		}
@@ -607,8 +607,8 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		if ( iWinTileMode = 0 ) {			;サブ全体
 			winx:=subx
 			winwidth:=subwidth
-			winy:=winywhole 
-			winheight:=winheightwhole 
+			winy:=winywhole
+			winheight:=winheightwhole
 		} else if ( iWinTileMode = 1 ) {	;サブ上
 			winx:=subx
 			winwidth:=subwidth
@@ -624,16 +624,16 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			winy:=mainy
 			winwidth:=mainwidth
 			winheight:=mainheight
-		} else if ( iWinTileMode = 4 ) {	;メイン左
-			winx:=% mainx - iWIN_TILE_MODE_OFFSET
-			winy:=mainy
-			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
-			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
-		} else if ( iWinTileMode = 5 ) {	;メイン右
-			winx:=% mainx + mainwidth // 2 - iWIN_TILE_MODE_OFFSET
-			winy:=mainy
-			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
-			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+	;	} else if ( iWinTileMode = 4 ) {	;メイン左
+	;		winx:=% mainx - iWIN_TILE_MODE_OFFSET
+	;		winy:=mainy
+	;		winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+	;		winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+	;	} else if ( iWinTileMode = 5 ) {	;メイン右
+	;		winx:=% mainx + mainwidth // 2 - iWIN_TILE_MODE_OFFSET
+	;		winy:=mainy
+	;		winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+	;		winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
 		} else {							;メイン右
 			MsgBox, "[error] invalid iWinTileMode."
 			return
