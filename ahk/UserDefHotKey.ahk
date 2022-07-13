@@ -14,16 +14,25 @@
 ;* Settings
 ;* ***************************************************************
 DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
+global iWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
+global iWIN_TILE_MODE_MAX := 3
+global iWIN_Y_OFFSET := 2/7
+global iWIN_TILE_MODE_OFFSET := 0
+
+;* ***************************************************************
+;* Define variables
+;* ***************************************************************
+global giWinTileMode := 0
 
 ;* ***************************************************************
 ;* Timer
 ;* ***************************************************************
-;	SetTimer ClearWinTileMode, 5000
-;		Return
-;	ClearWinTileMode:
-;		;TrayTip, タイマーClearWinTileMode実行, giWinTileModeクリア, 1, 17
-;		giWinTileMode := 5
-;		Return
+	SetTimer ClearWinTileMode, %iWIN_TILE_MODE_CLEAR_INTERVAL%
+		Return
+	ClearWinTileMode:
+		giWinTileMode := iWIN_TILE_MODE_MAX
+	;	TrayTip, タイマーClearWinTileMode実行, giWinTileMode = %giWinTileMode%, 1, 17
+		Return
 
 ;* ***************************************************************
 ;* Keys
@@ -193,16 +202,13 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			Return
 	
 	;Windowタイル切り替え
-		global giWinTileMode := 0
-		global giWinTileModeMin := 0
-		
 		!#LEFT::
 			IncrementWinTileMode()
-			ApplyWinTileMode( giWinTileMode, 2/7 )
+			ApplyWinTileMode()
 			return
 		!#RIGHT::
 			DecrementWinTileMode()
-			ApplyWinTileMode( giWinTileMode, 2/7 )
+			ApplyWinTileMode()
 			return
 	
 	;プリントスクリーン単押しを抑制
@@ -281,9 +287,17 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 			^!WheelUp::
 				SendInput ^{PgUp}
 				Return
-		;Move next sheet.
-			^!WheelDown::
-				SendInput ^{PgDn}
+		;IME ON状態でShift+Space(行選択)が効かない対策
+			+Space::
+				if (IME_GET() == 1) {
+					IME_SET(0)
+					Sleep 50
+					SendInput +{Space}
+					Sleep 50
+					IME_SET(1)
+				} else {
+					SendInput +{Space}
+				}
 				Return
 	#IfWinActive
 	
@@ -405,52 +419,6 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 		return
 	}
 	
-	; ★
-	WinSizeChange( size, maxwinx, maxwiny )
-	{
-		if size = up
-		{
-			WinGetActiveStats, A, WinWidth, WinHeight, WinX, WinY
-			if ( WinX = maxwinx && WinY = maxwiny )
-			{
-				WinMaximize
-			}
-			else
-			{
-				WinMaximize
-			}
-		}
-		else if size = down
-		{
-			WinGetActiveStats, A, WinWidth, WinHeight, WinX, WinY
-			if ( WinX = maxwinx && WinY = maxwiny )
-			{
-				WinRestore
-			}
-			else
-			{
-				WinMinimize
-			}
-		}
-		else if size = max
-		{
-			WinMaximize
-		}
-		else if size = restore
-		{
-			WinRestore
-		}
-		else if size = min
-		{
-			WinMinimize
-		}
-		else
-		{
-			MsgBox "[error] please select up / down / max / restore / min."
-		}
-		return
-	}
-	
 	; 起動＆アクティベート処理
 	; 
 	; 既定のショートカットキーとの干渉によりプログラム起動後に
@@ -549,32 +517,32 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	{
 		SysGet, iMonitorNum, MonitorCount
 		if (iMonitorNum = 2) {
-			giWinTileModeMin := 0
+			iWinTileModeMin := 0
 		} else {
-			giWinTileModeMin := 3
+			iWinTileModeMin := 3
 		}
-	;	MsgBox, iMonitorNum: %iMonitorNum%`ngiWinTileModeMin: %giWinTileModeMin%
-		return giWinTileModeMin
+	;	MsgBox, iMonitorNum: %iMonitorNum%`ngiWinTileModeMin: %iWinTileModeMin%
+		return iWinTileModeMin
 	}
 	IncrementWinTileMode()
 	{
-		GetWinTileModeMin()
-		if ( giWinTileMode >= 3 ) {
-			giWinTileMode := giWinTileModeMin
-		} else if ( giWinTileMode < giWinTileModeMin ) {
-			giWinTileMode:=giWinTileModeMin
+		iWinTileModeMin := GetWinTileModeMin()
+		if ( giWinTileMode >= iWIN_TILE_MODE_MAX ) {
+			giWinTileMode := iWinTileModeMin
 		} else {
 			giWinTileMode++
 		}
+	;	MsgBox, giWinTileMode: %giWinTileMode%`n iWIN_TILE_MODE_MAX: %iWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
 	}
 	DecrementWinTileMode()
 	{
-		GetWinTileModeMin()
-		if ( giWinTileMode <= %giWinTileModeMin% ) {
-			giWinTileMode := 3
+		iWinTileModeMin := GetWinTileModeMin()
+		if ( giWinTileMode <= iWinTileModeMin ) {
+			giWinTileMode := iWIN_TILE_MODE_MAX
 		} else {
 			giWinTileMode--
 		}
+	;	MsgBox, giWinTileMode: %giWinTileMode%`n iWIN_TILE_MODE_MAX: %iWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
 	}
 	GetMonitorPosInfo( MonitorNum, ByRef X, ByRef Y, ByRef Width, ByRef Height )
 	{
@@ -594,51 +562,50 @@ DOC_DIR_PATH = C:\Users\%A_Username%\Dropbox\100_Documents
 	;	MsgBox, %MonitorNum%`n%X%`n%Y%`n%Width%`n%Height%
 	}
 	; ウィンドウサイズ切り替え
-	ApplyWinTileMode( iWinTileMode, iWinYOffset )
+	ApplyWinTileMode()
 	{
-		iWIN_TILE_MODE_OFFSET := 0
 		GetMonitorPosInfo(1, mainx, mainy, mainwidth, mainheight )
 		GetMonitorPosInfo(2, subx, suby, subwidth, subheight )
 	;	MsgBox, mainx: %mainx%`nmainy: %mainy%`nmainwidth: %mainwidth%`nmainheight: %mainheight%`nsubx: %subx%`nsuby: %suby%`nsubwidth: %subwidth%`nsubheight: %subheight%
 		
-		winywhole:= % suby + ( subheight * iWinYOffset )
-		winheightwhole:= % subheight * ( 1 - iWinYOffset )
-	;	MsgBox, iWinTileMode: %iWinTileMode%`nwinywhole: %winywhole%`nwinheightwhole: %winheightwhole%
-		if ( iWinTileMode = 0 ) {			;サブ全体
+		winywhole:= % suby + ( subheight * iWIN_Y_OFFSET )
+		winheightwhole:= % subheight * ( 1 - iWIN_Y_OFFSET )
+	;	MsgBox, giWinTileMode: %giWinTileMode%`nwinywhole: %winywhole%`nwinheightwhole: %winheightwhole%
+		if ( giWinTileMode = 0 ) {			;サブ全体
 			winx:=subx
 			winwidth:=subwidth
 			winy:=winywhole
 			winheight:=winheightwhole
-		} else if ( iWinTileMode = 1 ) {	;サブ上
+		} else if ( giWinTileMode = 1 ) {	;サブ上
 			winx:=subx
 			winwidth:=subwidth
 			winy:=winywhole
 			winheight:= % winheightwhole // 2
-		} else if ( iWinTileMode = 2 ) {	;サブ下
+		} else if ( giWinTileMode = 2 ) {	;サブ下
 			winx:=subx
 			winwidth:=subwidth
 			winy:= % winywhole + winheightwhole // 2
 			winheight:=% winheightwhole // 2
-		} else if ( iWinTileMode = 3 ) {	;メイン全体
+		} else if ( giWinTileMode = 3 ) {	;メイン全体
 			winx:=mainx
 			winy:=mainy
 			winwidth:=mainwidth
 			winheight:=mainheight
-	;	} else if ( iWinTileMode = 4 ) {	;メイン左
-	;		winx:=% mainx - iWIN_TILE_MODE_OFFSET
-	;		winy:=mainy
-	;		winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
-	;		winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
-	;	} else if ( iWinTileMode = 5 ) {	;メイン右
-	;		winx:=% mainx + mainwidth // 2 - iWIN_TILE_MODE_OFFSET
-	;		winy:=mainy
-	;		winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
-	;		winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
-		} else {							;メイン右
-			MsgBox, "[error] invalid iWinTileMode."
+		} else if ( giWinTileMode = 4 ) {	;メイン左
+			winx:=% mainx - iWIN_TILE_MODE_OFFSET
+			winy:=mainy
+			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+		} else if ( giWinTileMode = 5 ) {	;メイン右
+			winx:=% mainx + mainwidth // 2 - iWIN_TILE_MODE_OFFSET
+			winy:=mainy
+			winwidth:=% mainwidth // 2 + iWIN_TILE_MODE_OFFSET
+			winheight:=% mainheight + iWIN_TILE_MODE_OFFSET
+		} else {
+			MsgBox, [error] invalid giWinTileMode.`n %giWinTileMode%
 			return
 		}
-	;	MsgBox, iWinTileMode: %iWinTileMode%`nwinx: %winx%`nwiny: %winy%`nwinwidth: %winwidth%`nwinheight: %winheight%
+	;	MsgBox, giWinTileMode: %giWinTileMode%`nwinx: %winx%`nwiny: %winy%`nwinwidth: %winwidth%`nwinheight: %winheight%
 		WinMove, A, , winx, winy, winwidth, winheight
 		return
 	}
