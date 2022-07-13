@@ -283,10 +283,10 @@ global giWinTileMode := 0
 	#IfWinActive ahk_exe EXCEL.EXE
 		;F1ヘルプ無効化
 			F1::return
-		;Move prev sheet.
-			^!WheelUp::
-				SendInput ^{PgUp}
-				Return
+	;	;Move prev sheet.
+	;		^!WheelUp::
+	;			SendInput ^{PgUp}
+	;			Return
 		;IME ON状態でShift+Space(行選択)が効かない対策
 			+Space::
 				if (IME_GET() == 1) {
@@ -318,22 +318,15 @@ global giWinTileMode := 0
 			return
 	#IfWinActive
 	
-	#IfWinActive ahk_exe kinza.exe
-		;The Great Suspender 用
-			F8::^+s
-			F9::^+u
-			return
-	#IfWinActive
-	
 	#IfWinActive ahk_exe chrome.exe
-		;Next tab.
-			^WheelUp::
-			SendInput ^+{Tab}
-			Return
-		;Previous tab.
-			^WheelDown::
-			SendInput ^{Tab}
-			Return
+	;	;Next tab.
+	;		^WheelUp::
+	;		SendInput ^+{Tab}
+	;		Return
+	;	;Previous tab.
+	;		^WheelDown::
+	;		SendInput ^{Tab}
+	;		Return
 	#IfWinActive
 	
 	#IfWinActive ahk_class MPC-BE

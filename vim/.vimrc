@@ -804,7 +804,7 @@ endif
 " ==============================================================================
 "	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*[^\*])@=/
 	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*)@=/
-	autocmd FileType ruby,c,cpp hi CFunction guifg=orange
+	autocmd FileType ruby,c,cpp hi CFunction guifg=orange ctermfg=216
 
 " ==============================================================================
 " Vim 内Grep の設定
