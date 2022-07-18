@@ -63,10 +63,16 @@ Next
 Dim lLineIdx
 lLineIdx = 0
 For Each vLine In vFile
-    If lLineIdx < lSplitLineIdx - 1 Then
-        adoOut1Strm.WriteText vLine, 1
+    Dim lContainLF
+    If lLineIdx < UBound(vFile) Then
+        lContainLF = 1 '改行を含めて文字列書出し
     Else
-        adoOut2Strm.WriteText vLine, 1
+        lContainLF = 0 '改行を含めずに文字列書出し
+    End If
+    If lLineIdx < lSplitLineIdx - 1 Then
+        adoOut1Strm.WriteText vLine, lContainLF
+    Else
+        adoOut2Strm.WriteText vLine, lContainLF
     End If
     lLineIdx = lLineIdx + 1
 Next
@@ -74,6 +80,10 @@ Next
 adoInStrm.Close
 Call SaveNoBomFile(adoOut1Strm, sOutFilePath1)
 Call SaveNoBomFile(adoOut2Strm, sOutFilePath2)
+'adoOut1Strm.SaveToFile sOutFilePath1, 2
+'adoOut1Strm.Close
+'adoOut2Strm.SaveToFile sOutFilePath2, 2
+'adoOut2Strm.Close
 
 Private Function SetOpenFileInfo( ByRef adoStrm )
     With adoStrm

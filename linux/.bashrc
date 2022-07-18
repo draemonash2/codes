@@ -127,28 +127,25 @@ function cdex() {
 	pwd
 	ls -lFA --color=auto
 }
-function vimm() {
-	sOpenPath=""
-	for pathfile in ./$1*; do
-		sOpenPath=$pathfile
-	done
-	vim $sOpenPath
+function vimall() {
+	list=`find . -type f`
+	vim $list
 }
 function vimdiffdir() {
 	if [ $# -ge 2 ]; then
-		DIR1=${1}
-		DIR2=${2}
+		dir1=${1}
+		dir2=${2}
 		echo '***** diff -rq *****'
-		diff -rq ${DIR1} ${DIR2}
+		diff -rq ${dir1} ${dir2}
 		echo ''
 		echo '***** vimdiff (only files with differences) *****'
-		DIFFLIST=(`diff -rq ${DIR1} ${DIR2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
-		for DIFFLINE in "${DIFFLIST[@]}"
+		difflist=(`diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
+		for diffline in "${difflist[@]}"
 		do
-			FILE1=${DIFFLINE%:::::*}
-			FILE2=${DIFFLINE#*:::::}
-			echo "==> ${FILE1} vs ${FILE2} <=="
-			vimdiff ${FILE1} ${FILE2}
+			file1=${diffline%:::::*}
+			file2=${diffline#*:::::}
+			echo "==> ${file1} vs ${file2} <=="
+			vimdiff ${file1} ${file2}
 		done
 	else
 		echo "[error] specify two arguments."
@@ -156,42 +153,42 @@ function vimdiffdir() {
 	fi
 }
 function swap() {
-	SUFFIX=swaptmp
+	suffix=swaptmp
 	if [ $# -eq 2 ]; then
-		FILE1=$1
-		FILE2=$2
-		\mv ./$1 ./$2.${SUFFIX}
-		\mv ./$2 ./$1
-		\mv ./$2.${SUFFIX} ./$2
+		file1=$1
+		file2=$2
+		\mv ./${file1} ./${file2}.${suffix}
+		\mv ./${file2} ./${file1}
+		\mv ./${file2}.${suffix} ./${file2}
 	else
 		echo "[error] specify two arguments."
 		echo "  usage : swap <file/dir1> <file/dir2>"
 	fi
 }
 function bak() {
-	MODE=1 # 1:Alphabet other:Time
-	DELIMITER=_bak
+	mode=1 # 1:Alphabet other:Time
+	delimiter=_bak
 	if [ $# -eq 1 ]; then
-		INFILE=${1}
-		if [ ! -e ${INFILE} ]; then
+		infile=${1}
+		if [ ! -e ${infile} ]; then
 			return
 		fi
-		if [ ${MODE} -eq 1 ]; then
-			NOWSUFFIX=$(date '+%s' | awk '{print strftime("%y%m%d", $1)}')
-			IDXA=$(printf "%d" \'a)
-			IDXZ=$(printf "%d" \'z)
-			for ((i = ${IDXA}; i <= ${IDXZ}; i++)) {
-				CHAR=$(printf "\x$(printf "%x" ${i})")
-				OUTFILE=${INFILE}${DELIMITER}${NOWSUFFIX}${CHAR}
-				#echo ${OUTFILE}
-				if [ ! -e ${OUTFILE} ]; then
-					\cp -rf ${INFILE} ${OUTFILE}
+		if [ ${mode} -eq 1 ]; then
+			nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d", $1)}')
+			idxa=$(printf "%d" \'a)
+			idxz=$(printf "%d" \'z)
+			for ((i = ${idxa}; i <= ${idxz}; i++)) {
+				char=$(printf "\x$(printf "%x" ${i})")
+				outfile=${infile}${delimiter}${nowsuffix}${char}
+				#echo ${outfile}
+				if [ ! -e ${outfile} ]; then
+					\cp -rf ${infile} ${outfile}
 					break
 				fi
 			}
 		else
-			NOWSUFFIX=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
-			\cp -f ${INFILE} ${INFILE}${DELIMITER}${NOWSUFFIX}
+			nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
+			\cp -f ${INFILE} ${INFILE}${delimiter}${nowsuffix}
 		fi
 	else
 		echo "[error] specify one arguments."
