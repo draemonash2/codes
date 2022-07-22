@@ -1,5 +1,4 @@
 ﻿	#NoEnv							; 通常、値が割り当てられていない変数名を参照しようとしたとき、システムの環境変数に同名の変数がないかを調べ、
-	
 									; もし存在すればその環境変数の値が参照される。スクリプト中に #NoEnv を記述することにより、この動作を無効化できる。
 ;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
 ;	#Warn							; Enable warnings to assist with detecting common errors.
@@ -36,23 +35,23 @@ global giWinTileMode := 0
 
 ;* ***************************************************************
 ;* Keys
+;*  [参考URL]
+;*		https://sites.google.com/site/autohotkeyjp/reference/KeyList
+;*			無変換）vk1Dsc07B
+;*			変換）	vk1Csc079
+;*			^）		Control
+;*			+）		Shift
+;*			!）		Alt
+;*			#）		Windowsロゴキー
 ;* ***************************************************************
-;[参考URL]
-;	https://sites.google.com/site/autohotkeyjp/reference/KeyList
-;		無変換）vk1Dsc07B
-;		変換）	vk1Csc079
-;		^）		Control
-;		+）		Shift
-;		!）		Alt
-;		#）		Windowsロゴキー
 
 ;***** キー置き換え *****
 	;無変換キー＋方向キーでPgUp,PgDn,Home,End
-		vk1Dsc07B::vk1Dsc07B
-		vk1Dsc07B & Right::MuhenkanSimultPush( "End" )
-		vk1Dsc07B & Left::MuhenkanSimultPush( "Home" )
-		vk1Dsc07B & Up::MuhenkanSimultPush( "PgUp" )
-		vk1Dsc07B & Down::MuhenkanSimultPush( "PgDn" )
+		vk1Dsc07B::		vk1Dsc07B
+		vk1Dsc07B & Right::	MuhenkanSimultPush( "End" )
+		vk1Dsc07B & Left::	MuhenkanSimultPush( "Home" )
+		vk1Dsc07B & Up::	MuhenkanSimultPush( "PgUp" )
+		vk1Dsc07B & Down::	MuhenkanSimultPush( "PgDn" )
 		Insert::Return
 
 ;***** ホットキー(Global) *****
@@ -243,23 +242,7 @@ global giWinTileMode := 0
 ;			MsgBox, shiftpause
 ;			Return
 		+^!i::
-			Send, ^c
-			Sleep 200
-			Send, ^e
-			Sleep 200
-			Send, ^v
-			Sleep 200
-			Send, {Left 3}
-			Sleep 200
-			Send, {Backspace 2}
-			Sleep 200
-			Send, {Space}
-			Sleep 200
-			Send, {End}
-			Sleep 200
-			Send, {Space}
-			Sleep 200
-			Send, openload
+			StartProgramAndActivate( "", "%DOC_DIR_PATH%\#temp.xlsm" )
 			return
 	;	^1::
 	;		MouseGetPos,x,y,hwnd,ctrl,3
@@ -274,67 +257,52 @@ global giWinTileMode := 0
 
 ;***** ホットキー(Software local) *****
 	#IfWinNotActive ahk_exe WindowsTerminal.exe
-		;右Altキーをコンテキストメニュー表示に変更
-			RAlt::
-				Send, {AppsKey}
-				return
+		RAlt::Send, {AppsKey}	;右Altキーをコンテキストメニュー表示に変更
 	#IfWinNotActive
 	
 	#IfWinActive ahk_exe EXCEL.EXE
-		;F1ヘルプ無効化
-			F1::return
-	;	;Move prev sheet.
-	;		^!WheelUp::
-	;			SendInput ^{PgUp}
-	;			Return
-		;IME ON状態でShift+Space(行選択)が効かない対策
-			+Space::
-				if (IME_GET() == 1) {
-					IME_SET(0)
-					Sleep 50
-					SendInput +{Space}
-					Sleep 50
-					IME_SET(1)
-				} else {
-					SendInput +{Space}
-				}
-				Return
+		F1::return	;F1ヘルプ無効化
+		+Space::	;IME ON状態でShift+Space(行選択)が効かない対策
+			if (IME_GET() == 1) {
+				IME_SET(0)
+				Sleep 50
+				SendInput +{Space}
+				Sleep 50
+				IME_SET(1)
+			} else {
+				SendInput +{Space}
+			}
+			Return
 	#IfWinActive
 	
 	#IfWinActive ahk_exe iThoughts.exe
-		;F1ヘルプ無効化
-			F1::return
+		F1::return	;F1ヘルプ無効化
 	#IfWinActive
 	
 	#IfWinActive ahk_exe Rapture.exe
-		;Escで終了
-			Esc::!F4
-			return
+		Esc::!F4	;Escで終了
 	#IfWinActive
 	
 	#IfWinActive ahk_exe vimrun.exe
-		;Escで終了
-			Esc::!F4
-			return
+		Esc::!F4	;Escで終了
+	#IfWinActive
+	
+	#IfWinActive ahk_exe XF.exe
+		^WheelUp::SendInput ^+{Tab}  ;Next tab.
+		^WheelDown::SendInput ^{Tab} ;Previous tab.
 	#IfWinActive
 	
 	#IfWinActive ahk_exe chrome.exe
-	;	;Next tab.
-	;		^WheelUp::
-	;		SendInput ^+{Tab}
-	;		Return
-	;	;Previous tab.
-	;		^WheelDown::
-	;		SendInput ^{Tab}
-	;		Return
+		^WheelUp::SendInput ^+{Tab}  ;Next tab.
+		^WheelDown::SendInput ^{Tab} ;Previous tab.
 	#IfWinActive
 	
 	#IfWinActive ahk_class MPC-BE
-			]::Send, {Space}
-			return
+		]::Send, {Space}
 	#IfWinActive
 	
-	;Kindle 自動ページ送り
+	;#IfWinActive ahk_exe Kindle.exe
+		;Kindle 自動ページ送り
 		bIsAutoPageFeed=0
 		^+!9::
 			If (bIsAutoPageFeed=0)
@@ -356,6 +324,7 @@ global giWinTileMode := 0
 				Send, {Right}
 			}
 			Return
+	;#IfWinActive
 	
 	#IfWinActive ahk_exe PDFXCview.exe
 		;ハイライトを既定の書式設定に変更する
@@ -441,10 +410,7 @@ global giWinTileMode := 0
 			StringReplace, sExeName, sExeName, ", , All
 			
 			;*** for debug ***
-			;MsgBox %sExePath%
-			;MsgBox %sExeName%
-			;MsgBox %sFilePath%
-			;MsgBox %sFileName%
+			;MsgBox sExePath=%sExePath%`nsExeName=%sExeName%`nsFilePath=%sFilePath%`nsFileName=%sFileName%
 			
 			;*** start program ***
 			SetTitleMatchMode, 2 ;中間一致
