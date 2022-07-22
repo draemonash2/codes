@@ -370,6 +370,7 @@ endif
 "=== 挿入モード ===
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
+	imap					<expr>	<TAB>		neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"|	" 【neosnippet】次の展開へ
 if has('unix')
 	imap		<silent>			<c-v>		<c-r>0|											" 貼り付け
 else
@@ -391,7 +392,7 @@ endif
 "=== ヴィジュアルモード ===
 	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ->空白変換後にコピー
 	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>gv:call CopyLineWithLineNo()<cr>u|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
-	vnoremap	<silent>			p			"0p<cr>											" ヤンクせずに貼り付け
+"	vnoremap	<silent>			p			"0p<cr>											" ヤンクせずに貼り付け
 	vnoremap	<silent>			s			c|												" 削除＆挿入モード
 	vnoremap	<silent>			<			<gv|											" インデント左シフト
 	vnoremap	<silent>			>			>gv|											" インデント右シフト
@@ -425,6 +426,11 @@ if has('unix')
 else
 	cmap							<c-v>		<S-Insert>|										" 貼り付け
 endif
+
+"=== その他モード ===
+	smap							<C-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
+	xmap							<C-k>		<Plug>(neosnippet_expand_target)|				" 【neosnippet】スニペットを展開
+	smap					<expr>	<TAB>		neosnippet#expandable_or_jumpable() ?  "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"|	" 【neosnippet】次の展開へ
 
 "=== ターミナルウィンドウ ===
 "	tnoremap						<c-n><c-h>	<c-w>h|											" ウィンドウフォーカス移動(左)
@@ -1806,11 +1812,14 @@ endif
 " ==============================================================================
 " neosnippet設定
 " ==============================================================================
-"if has('unix')
-"	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
-"else
-"	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
-"endif
+if has('unix')
+	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
+else
+	let g:neosnippet#snippets_directory = $VIM . '/_snipets'
+endif
+if has('conceal')
+	set conceallevel=2 concealcursor=i
+endif
 
 " ==============================================================================
 " showmarks 設定

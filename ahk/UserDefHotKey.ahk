@@ -47,12 +47,13 @@ global giWinTileMode := 0
 
 ;***** キー置き換え *****
 	;無変換キー＋方向キーでPgUp,PgDn,Home,End
-		vk1Dsc07B::		vk1Dsc07B
+		vk1Dsc07B::vk1Dsc07B
 		vk1Dsc07B & Right::	MuhenkanSimultPush( "End" )
 		vk1Dsc07B & Left::	MuhenkanSimultPush( "Home" )
 		vk1Dsc07B & Up::	MuhenkanSimultPush( "PgUp" )
 		vk1Dsc07B & Down::	MuhenkanSimultPush( "PgDn" )
 		Insert::Return
+		PrintScreen::return
 
 ;***** ホットキー(Global) *****
 	;ホットキー配置表示
@@ -65,17 +66,20 @@ global giWinTileMode := 0
 			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\$Hotkey"
 			StartProgramAndActivate( "", sFilePath )
 			return
-	
 	;#todo.itmz
 		^+!Up::
 			EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			StartProgramAndActivate( sExePath, sFilePath )
-			Send, {F2}{esc}
+			Sleep 100
+			Send, {F2}
+			Sleep 100
+			Send, {esc}
 			return
 	;#temp.txt
 		^+!Down::
 			EnvGet, sExePath, MYEXEPATH_GVIM
+		;	sExePath = "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe"
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
 			StartProgramAndActivate( sExePath, sFilePath )
 			return
@@ -89,13 +93,11 @@ global giWinTileMode := 0
 			sFilePath = "%DOC_DIR_PATH%\#temp.vsdm"
 			StartProgramAndActivate( "", sFilePath )
 			return
-	
 	;予算管理.xlsm
 		^+!\::
 			sFilePath = "%DOC_DIR_PATH%\210_【衣食住】家計\100_予算管理.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
-	
 	;言語チートシート
 		^+!c::
 			sFilePath = "C:\other\言語チートシート.xlsx"
@@ -129,7 +131,7 @@ global giWinTileMode := 0
 	;xf.exe
 		^+!z::
 			EnvGet, sExePath, MYEXEPATH_XF
-			Run %sExePath%
+			StartProgramAndActivate( sExePath, "", 1 )
 			return
 	;Windows Terminal
 		^+!t::
@@ -138,12 +140,11 @@ global giWinTileMode := 0
 	;cCalc.exe
 		^+!;::
 			EnvGet, sExePath, MYEXEPATH_CCALC
-			RunSuppressMultiStart( sExePath, "" )
+			StartProgramAndActivate( sExePath, "", 1 )
 			return
-	;Wifi接続
-		^+!w::
-		;Bluetoothテザリング起動
+	;Wifi接続(Bluetoothテザリング起動)
 		/*
+		^+!w::
 			Run, control printers
 			Sleep 2000
 			Send, myp
@@ -156,7 +157,8 @@ global giWinTileMode := 0
 			Sleep 5000
 			Send, !{F4}
 		*/
-		;Wifiテザリング
+	;Wifi接続(Wifiテザリング)
+		^+!w::
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run % sDirPath . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"
 			return
@@ -168,12 +170,10 @@ global giWinTileMode := 0
 			return
 	
 	;Github.io
-		^+!1::
-			Run https://draemonash2.github.io/
-			return
-		^+!2::
-			Run https://draemonash2.github.io/linux_sft/linux.html
-			return
+		^+!1::Run https://draemonash2.github.io/
+		^+!2::Run https://draemonash2.github.io/linux_sft/linux.html
+	;DeepL
+		^+!d::Run https://www.deepl.com//translator
 	
 	;Window最前面化
 		Pause::
@@ -210,9 +210,6 @@ global giWinTileMode := 0
 			ApplyWinTileMode()
 			return
 	
-	;プリントスクリーン単押しを抑制
-		PrintScreen::return
-	
 	;Teams一時退席抑止機能
 	/*
 		+^!F11::
@@ -235,15 +232,24 @@ global giWinTileMode := 0
 	*/
 	
 	;テスト用
-;		^Pause::
-;			MsgBox, ctrlpause
-;			Return
-;		+Pause::
-;			MsgBox, shiftpause
-;			Return
-		+^!i::
-			StartProgramAndActivate( "", "%DOC_DIR_PATH%\#temp.xlsm" )
-			return
+	;	^Pause::
+	;		MsgBox, ctrlpause
+	;		Return
+	;	+Pause::
+	;		MsgBox, shiftpause
+	;		Return
+	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
+	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
+	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "" )
+	;	+^!6::StartProgramAndActivate( "", "" )
+	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
+	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
+	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 0 )
+	;	+^!6::StartProgramAndActivate( "", "", 0 )
+	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
+	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
+	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 1 )
+	;	+^!6::StartProgramAndActivate( "", "", 1 )
 	;	^1::
 	;		MouseGetPos,x,y,hwnd,ctrl,3
 	;		MouseClick, left, 1209, 932
@@ -293,8 +299,8 @@ global giWinTileMode := 0
 	#IfWinActive
 	
 	#IfWinActive ahk_exe chrome.exe
-		^WheelUp::SendInput ^+{Tab}  ;Next tab.
-		^WheelDown::SendInput ^{Tab} ;Previous tab.
+	;	^WheelUp::SendInput ^+{Tab}  ;Next tab.
+	;	^WheelDown::SendInput ^{Tab} ;Previous tab.
 	#IfWinActive
 	
 	#IfWinActive ahk_class MPC-BE
@@ -303,6 +309,7 @@ global giWinTileMode := 0
 	
 	;#IfWinActive ahk_exe Kindle.exe
 		;Kindle 自動ページ送り
+		/*
 		bIsAutoPageFeed=0
 		^+!9::
 			If (bIsAutoPageFeed=0)
@@ -324,9 +331,12 @@ global giWinTileMode := 0
 				Send, {Right}
 			}
 			Return
+		*/
 	;#IfWinActive
 	
-	#IfWinActive ahk_exe PDFXCview.exe
+	#IfWinActive ahk_exe PDFXEdit.exe
+	;	^WheelUp::		SendInput !4 ;テキストハイライト
+	;	^WheelDown::	SendInput !5 ;下線
 		;ハイライトを既定の書式設定に変更する
 		+^!F11::
 			Loop, 20
@@ -353,34 +363,6 @@ global giWinTileMode := 0
 ;* ***************************************************************
 ;* Functions
 ;* ***************************************************************
-	; 単一起動
-	RunSuppressMultiStart( sExePath, sArguments )
-	{
-		IfInString, sExePath, \
-		{
-			Loop, Parse, sExePath , \
-			{
-				sExeName = %A_LoopField%
-			}
-			;MsgBox % sExeName
-			Process, Exist, % sExeName
-			If ErrorLevel<>0
-			{
-				WinActivate,ahk_pid %ErrorLevel%
-			}
-			else
-			{
-				Run % sExePath . " " . sArguments
-			}
-		}
-		else
-		{
-			MsgBox sExePath
-			MsgBox sArguments error!
-		}
-		return
-	}
-	
 	; 起動＆アクティベート処理
 	; 
 	; 既定のショートカットキーとの干渉によりプログラム起動後に
@@ -393,37 +375,35 @@ global giWinTileMode := 0
 	; されているプログラムをアクティベートするショートカットキーで
 	; あるため、Run 関数を使用してそのまま実行すると、非アクティブ
 	; 状態でプログラムが起動してしまう。
-	StartProgramAndActivate( sExePath, sFilePath )
+	StartProgramAndActivate( sExePath, sFilePath, bSingleProcess=0 )
 	{
-		IfInString, sFilePath, \
+		;*** preprocess ***
+		If ( sExePath == "" and sFilePath == "" )
 		{
-			;*** extract file name ***
-			;Loop, Parse, sFilePath , \
-			;{
-			;	sFileName = %A_LoopField%
-			;}
-			;StringReplace, sFileName, sFileName, ", , All
-			Loop, Parse, sExePath , \
-			{
-				sExeName = %A_LoopField%
-			}
-			StringReplace, sExeName, sExeName, ", , All
-			
-			;*** for debug ***
-			;MsgBox sExePath=%sExePath%`nsExeName=%sExeName%`nsFilePath=%sFilePath%`nsFileName=%sFileName%
-			
-			;*** start program ***
+			MsgBox [ERROR] please specify arguments to StartProgramAndActivate().
+			return
+		}
+		;*** extract file name ***
+		Loop, Parse, sExePath , \
+		{
+			sExeName = %A_LoopField%
+		}
+		StringReplace, sExeName, sExeName, ", , All
+		;MsgBox sExePath=%sExePath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n bSingleProcess=%bSingleProcess%
+		
+		;*** start program ***
+		If (bSingleProcess == 0) ; 複数プロセス起動
+		{
 			SetTitleMatchMode, 2 ;中間一致
 			If ( sExePath == "" )
 			{
-				;MsgBox A ;for debug
 				Run, %sFilePath%
 			}
-			else
+			Else
 			{
-				;MsgBox B ;for debug
 				Run, %sExePath% %sFilePath%
 			}
+			
 			WinWait, ahk_exe %sExeName%, , 5
 			If ErrorLevel <> 0
 			{
@@ -440,10 +420,24 @@ global giWinTileMode := 0
 				Return
 			}
 		}
-		else
+		else ; 単一プロセス起動
 		{
-			MsgBox sFilePath
-			MsgBox argument error!
+			Process, Exist, % sExeName
+			If ErrorLevel<>0
+			{
+				WinActivate,ahk_pid %ErrorLevel%
+			}
+			Else
+			{
+				If ( sExePath == "" )
+				{
+					Run, %sFilePath%
+				}
+				Else
+				{
+					Run, %sExePath% %sFilePath%
+				}
+			}
 		}
 		return
 	}

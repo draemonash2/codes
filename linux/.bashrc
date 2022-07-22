@@ -119,6 +119,31 @@ if ! shopt -oq posix; then
   fi
 fi
 
+function is_tail_char_slash() {
+	if [ $# -ne 1 ]; then
+		echo "[error] is_tail_char_slash() argument error."
+		return 1
+	fi
+	srcchr=${1}
+	srcchrtmp=`echo "${srcchr}" | sed "s/\/$//g"`
+	#echo ${srcchr} : ${srcchrtmp}
+	if [ "${srcchr}" == "${srcchrtmp}" ]; then
+		return 0 # tail char is not slash
+	else
+		return 1 # tail char is slash
+	fi
+}
+function is_tail_char_slash_test() { #{{{
+	is_tail_char_slash ./aaa/aaaaa
+	if [ $? -ne 0 ]; then
+		echo "[error] is_tail_char_slash_test() test error 02"
+	fi
+	is_tail_char_slash ./aaa/aaaaa/
+	if [ $? -ne 1 ]; then
+		echo "[error] is_tail_char_slash_test() test error 01"
+	fi
+} #}}}
+
 function gr() {
 	grep -nrI "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
@@ -132,82 +157,130 @@ function vimall() {
 	vim $list
 }
 function vimdiffdir() {
-	if [ $# -ge 2 ]; then
-		dir1=${1}
-		dir2=${2}
-		echo '***** diff -rq *****'
-		diff -rq ${dir1} ${dir2}
-		echo ''
-		echo '***** vimdiff (only files with differences) *****'
-		difflist=(`diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
-		for diffline in "${difflist[@]}"
-		do
-			file1=${diffline%:::::*}
-			file2=${diffline#*:::::}
-			echo "==> ${file1} vs ${file2} <=="
-			vimdiff ${file1} ${file2}
-		done
-	else
+	if [ $# -ne 2 ]; then
 		echo "[error] specify two arguments."
 		echo "  usage : vimdiffdir <file1> <file2>"
+		return 1
 	fi
+	dir1=${1}
+	dir2=${2}
+	echo '***** diff -rq *****'
+	diff -rq ${dir1} ${dir2}
+	echo ''
+	echo '***** vimdiff (only files with differences) *****'
+	difflist=(`diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
+	for diffline in "${difflist[@]}"
+	do
+		file1=${diffline%:::::*}
+		file2=${diffline#*:::::}
+		echo "==> ${file1} vs ${file2} <=="
+		vimdiff ${file1} ${file2}
+	done
 }
 function swap() {
 	suffix=swaptmp
-	if [ $# -eq 2 ]; then
-		file1=$1
-		file2=$2
-		\mv ./${file1} ./${file2}.${suffix}
-		\mv ./${file2} ./${file1}
-		\mv ./${file2}.${suffix} ./${file2}
-	else
+	if [ $# -ne 2 ]; then
 		echo "[error] specify two arguments."
 		echo "  usage : swap <file/dir1> <file/dir2>"
+		return 1
 	fi
+	file1=$1
+	file2=$2
+	\mv ./${file1} ./${file2}.${suffix}
+	\mv ./${file2} ./${file1}
+	\mv ./${file2}.${suffix} ./${file2}
 }
 function bak() {
 	mode=1 # 1:Alphabet other:Time
 	delimiter=_bak
-	if [ $# -eq 1 ]; then
-		infile=${1}
-		if [ ! -e ${infile} ]; then
-			return
-		fi
-		if [ ${mode} -eq 1 ]; then
-			nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d", $1)}')
-			idxa=$(printf "%d" \'a)
-			idxz=$(printf "%d" \'z)
-			for ((i = ${idxa}; i <= ${idxz}; i++)) {
-				char=$(printf "\x$(printf "%x" ${i})")
-				outfile=${infile}${delimiter}${nowsuffix}${char}
-				#echo ${outfile}
-				if [ ! -e ${outfile} ]; then
-					\cp -rf ${infile} ${outfile}
-					break
-				fi
-			}
-		else
-			nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
-			\cp -f ${INFILE} ${INFILE}${delimiter}${nowsuffix}
-		fi
-	else
+	if [ $# -ne 1 ]; then
 		echo "[error] specify one arguments."
 		echo "  usage : bak <file/dir>"
+		return 1
+	fi
+	infile=${1}
+	if [ ! -e ${infile} ]; then
+		echo "[error] \"${infile}\" does not exists."
+		return 1
+	fi
+	if [ ${mode} -eq 1 ]; then
+		nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d", $1)}')
+		idxa=$(printf "%d" \'a)
+		idxz=$(printf "%d" \'z)
+		for ((i = ${idxa}; i <= ${idxz}; i++)) {
+			char=$(printf "\x$(printf "%x" ${i})")
+			outfile=${infile}${delimiter}${nowsuffix}${char}
+			#echo ${outfile}
+			if [ ! -e ${outfile} ]; then
+				\cp -rf ${infile} ${outfile}
+				break
+			fi
+		}
+	else
+		nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
+		\cp -f ${INFILE} ${INFILE}${delimiter}${nowsuffix}
 	fi
 }
+function lndir() {
+	if [ $# -ne 2 ]; then
+		echo "[error] specify one arguments."
+		echo "  usage : lnhdir <srcdir> <dstdir>"
+		return 1
+	fi
+	srcdirroot=${1}
+	dstdirroot=${2}
+	if [ ! -e ${srcdirroot} ]; then
+		echo "[error] source directory \"${srcdirroot}\" does not exists."
+		return 1
+	fi
+	if [ -e ${dstdirroot} ]; then
+		echo "[error] destination directory \"${dstdirroot}\" exists."
+		return 1
+	fi
+	is_tail_char_slash ${srcdirroot}
+	if [ $? -ne 0 ]; then
+		echo "[error] remove tail charactor \"/\" from \"${srcdirroot}\""
+		return 1
+	fi
+	is_tail_char_slash ${dstdirroot}
+	if [ $? -ne 0 ]; then
+		echo "[error] remove tail charactor \"/\" from \"${dstdirroot}\""
+		return 1
+	fi
+	export filelist=`find ${srcdirroot} -type f`
+	for file in ${filelist}
+	do
+		file=${file/${srcdirroot}\//}
+		dir=${file%/*}
+		srcfile=${srcdirroot}/${file}
+		dstdir=${dstdirroot}/${dir}
+		dstfile=${dstdirroot}/${file}
+		#echo ${dir} : ${file} : ${dstdir}
+		#echo ${srcfile} : ${dstfile}
+		mkdir -p ${dstdir}
+		ln ${srcfile} ${dstfile}
+	done
+}
 function tma() {
-	if [ -z "$TMUX" ]; then
-		if [ -n "${1}" ]; then
-			tmux attach-session -t ${1} || tmux new-session -s ${1}
-		else
-			tmux attach-session || tmux new-session
-		fi
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
 	fi
 }
 function tmk() {
-	if [ -n "${1}" ]; then
-		tmux kill-session -t ${1}
+	if [ $# -ne 1 ]; then
+		echo "[error] specify one arguments."
+		echo "  usage : tmk <session_name>"
+		return 1
 	fi
+	session_name=${1}
+	tmux kill-session -t ${session_name}
 }
 
 alias ll='ls -lFA --color=auto'
@@ -233,6 +306,7 @@ alias ....='cd ../../..;'
 alias .....='cd ../../../..;'
 
 alias br='vim ~/.bashrc; . ~/.bashrc'
+alias bre='. ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
