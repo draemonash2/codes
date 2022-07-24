@@ -168,7 +168,7 @@ endif
 
 "=== その他モード ===
 	smap							<C-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
-	xmap							<C-k>		<Plug>(neosnippet_expand_target)|				" 【neosnippet】スニペットを展開
+"	xmap							<C-k>		<Plug>(neosnippet_expand_target)|				" 【neosnippet】スニペットを展開
 	smap					<expr>	<TAB>		neosnippet#expandable_or_jumpable() ?  "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"|	" 【neosnippet】次の展開へ
 
 "=== ターミナルウィンドウ ===

@@ -172,8 +172,11 @@ global giWinTileMode := 0
 	;Github.io
 		^+!1::Run https://draemonash2.github.io/
 		^+!2::Run https://draemonash2.github.io/linux_sft/linux.html
-	;DeepL
-		^+!d::Run https://www.deepl.com//translator
+	;翻訳サイト
+		^+!h::
+			Run https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja
+			Run https://www.deepl.com//translator
+			Return
 	
 	;Window最前面化
 		Pause::
@@ -211,7 +214,7 @@ global giWinTileMode := 0
 			return
 	
 	;Teams一時退席抑止機能
-	/*
+		/*
 		+^!F11::
 			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
 			Loop
@@ -229,37 +232,39 @@ global giWinTileMode := 0
 				}
 			}
 			return
-	*/
+		*/
 	
 	;テスト用
-	;	^Pause::
-	;		MsgBox, ctrlpause
-	;		Return
-	;	+Pause::
-	;		MsgBox, shiftpause
-	;		Return
-	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
-	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
-	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "" )
-	;	+^!6::StartProgramAndActivate( "", "" )
-	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
-	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
-	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 0 )
-	;	+^!6::StartProgramAndActivate( "", "", 0 )
-	;	+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
-	;	+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
-	;	+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 1 )
-	;	+^!6::StartProgramAndActivate( "", "", 1 )
-	;	^1::
-	;		MouseGetPos,x,y,hwnd,ctrl,3
-	;		MouseClick, left, 1209, 932
-	;		Sleep 100
-	;		MouseClick, left, 1127, 1184
-	;		Sleep 100
-	;		MouseClick, left, 2089, 302
-	;		Sleep 100
-	;		MouseMove, x, y
-	;		return
+		/*
+		^Pause::
+			MsgBox, ctrlpause
+			Return
+		+Pause::
+			MsgBox, shiftpause
+			Return
+		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
+		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
+		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "" )
+		+^!6::StartProgramAndActivate( "", "" )
+		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
+		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
+		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 0 )
+		+^!6::StartProgramAndActivate( "", "", 0 )
+		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
+		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
+		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 1 )
+		+^!6::StartProgramAndActivate( "", "", 1 )
+		^1::
+			MouseGetPos,x,y,hwnd,ctrl,3
+			MouseClick, left, 1209, 932
+			Sleep 100
+			MouseClick, left, 1127, 1184
+			Sleep 100
+			MouseClick, left, 2089, 302
+			Sleep 100
+			MouseMove, x, y
+			return
+		*/
 
 ;***** ホットキー(Software local) *****
 	#IfWinNotActive ahk_exe WindowsTerminal.exe

@@ -4,13 +4,14 @@ Option Explicit
 '  指定したファイルをバックアップする。
 '  
 '<<使用方法>>
-'  BackUpFiles.vbs <filepath> [<backupnum>]
+'  BackUpFiles.vbs <filepath> <backupnum> <logfilepath>
 '  
 '<<仕様>>
 '  ・ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
 '  ・同じファイル名のものが存在していたら、アルファベットを付与したバックアップファイルを作成する。
 '     ex. 211201a, 211202b, …
 '  ・第二引数に指定されたバックアップ数分ファイルがたまったら、古いものから削除する。
+'  ・実行結果は第三引数に指定されたログファイルに出力する。
 '  ・前回バックアップ時から更新されていない場合、バックアップしない。
 '  
 '<<注意事項>>
@@ -34,7 +35,6 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 '= 設定値
 '===============================================================================
-Const lMAX_BAK_FILE_NUM_DEFAULT = 50
 Const sBAK_DIR_NAME = "_bak"
 Const sBAK_FILE_SUFFIX = "#b#"
 
@@ -44,12 +44,11 @@ Const sBAK_FILE_SUFFIX = "#b#"
 Const sSCRIPT_NAME = "ファイルバックアップ"
 Dim sBakSrcFilePath
 Dim lBakFileNumMax
+Dim sBakLogFilePath
 If WScript.Arguments.Count >= 2 Then
     sBakSrcFilePath = WScript.Arguments(0)
     lBakFileNumMax = CLng(WScript.Arguments(1))
-ElseIf WScript.Arguments.Count = 1 Then
-    sBakSrcFilePath = WScript.Arguments(0)
-    lBakFileNumMax = lMAX_BAK_FILE_NUM_DEFAULT
+    sBakLogFilePath = WScript.Arguments(2)
 Else
     WScript.Echo "引数を指定してください。プログラムを中断します。"
     WScript.Quit
@@ -57,10 +56,8 @@ End If
 
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
-
-'スクリプトを起動した exe ファイル名(CSCRIPT.EXE/WSCRIPT.EXE)を取得
-Dim sExecPrg
-sExecPrg = split(WSCript.FullName, "\")(UBound(split(WSCript.FullName, "\")))
+Dim objLogFile
+Set objLogFile = objFSO.OpenTextFile(sBakLogFilePath, 8, True) 'AddWrite
 
 '****************
 '*** 事前準備 ***
@@ -119,16 +116,16 @@ If sBakDstFilePathLatest <> "" And _
     ElseIf Asc(sTailChar) >= Asc("0") And Asc(sTailChar) <= Asc("9") Then
         lBakDstAlphaIdx = Asc("a")
     Else
-        WScript.Echo "不正なバックアップファイルが見つかりました。"
-        WScript.Echo "  " & sBakDstFilePathLatest
-        WScript.Echo "プログラムを中断します。"
+        objLogFile.WriteLine "不正なバックアップファイルが見つかりました。"
+        objLogFile.WriteLine "  " & sBakDstFilePathLatest
+        objLogFile.WriteLine "プログラムを中断します。"
         WScript.Quit
     End If
     sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx) & "." & sBakSrcFileExt
 Else
     sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
 End If
-'WScript.Echo sBakDstFilePath & " : " & sBakDstFilePathLatest
+'objLogFile.WriteLine sBakDstFilePath & " : " & sBakDstFilePathLatest
 'WScript.Quit
 
 '更新日時取得
@@ -143,15 +140,10 @@ If ( sBakDstFilePathLatest = "" ) Or _
    ( ( sBakDstFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
     'ファイルバックアップ
     objFSO.CopyFile sBakSrcFilePath, sBakDstFilePath, True
-    
-    If UCase(sExecPrg) = "CSCRIPT.EXE" Then
-        WScript.Echo "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
-    End If
+    objLogFile.WriteLine "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
 Else
     '前回バックアップ時から更新されていない場合、バックアップせず処理を中断する
-    If UCase(sExecPrg) = "CSCRIPT.EXE" Then
-        WScript.Echo "[Skip]    " & sBakSrcFilePath
-    End If
+    objLogFile.WriteLine "[Skip]    " & sBakSrcFilePath
     WScript.Quit
 End If
 
@@ -182,7 +174,9 @@ If lBakFileNum > lBakFileNumMax Then
     objFSO.DeleteFile sDelFilePath, True
 End If
 
-'WScript.Echo "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
+'objLogFile.WriteLine "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
+
+objLogFile.Close
 
 '===============================================================================
 '= インクルード関数
