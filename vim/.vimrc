@@ -1765,7 +1765,8 @@ endif
 " winresizer.vim 設定
 " [参照] https://github.com/simeji/winresizer
 " ==============================================================================
-	let g:winresizer_start_key = '<C-S-T>'
+"	let g:winresizer_enable = 1
+"	let g:winresizer_start_key = '<C-S-T>'
 
 " ==============================================================================
 " qfixgrep 設定
