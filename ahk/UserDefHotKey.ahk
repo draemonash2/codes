@@ -340,8 +340,9 @@ global giWinTileMode := 0
 	;#IfWinActive
 	
 	#IfWinActive ahk_exe PDFXEdit.exe
-	;	^WheelUp::		SendInput !4 ;テキストハイライト
-	;	^WheelDown::	SendInput !5 ;下線
+		MButton::	SendInput ^z ;元に戻す
+		XButton1::	SendInput !5 ;下線
+		XButton2::	SendInput !4 ;テキストハイライト
 		;ハイライトを既定の書式設定に変更する
 		+^!F11::
 			Loop, 20
