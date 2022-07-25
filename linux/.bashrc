@@ -315,7 +315,7 @@ alias tmc='vim ~/.tmux.conf'
 alias tml='tmux list-sessions'
 alias tmatemp='tma temp'
 
-alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
+alias gitlo="git log -40 --oneline --graph --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
 
 #########################################################
 # Environment dependent settings
