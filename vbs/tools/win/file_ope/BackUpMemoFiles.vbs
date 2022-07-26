@@ -23,7 +23,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '= ê›íËíl
 '===============================================================================
 Const sEXTRACT_FILE_NAME_PATTERN = "\\#memo.*\.xlsm$"
-Const sBACKUP_SCRIPT_NAME = "BackUpFiles.vbs"
+Const sBACKUP_SCRIPT_NAME = "BackUpFile.vbs"
 
 '===============================================================================
 '= ñ{èàóù

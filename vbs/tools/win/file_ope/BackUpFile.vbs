@@ -4,7 +4,7 @@ Option Explicit
 '  指定したファイルをバックアップする。
 '  
 '<<使用方法>>
-'  BackUpFiles.vbs <filepath> <backupnum> <logfilepath>
+'  BackUpFile.vbs <filepath> <backupnum> <logfilepath>
 '  
 '<<仕様>>
 '  ・ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
