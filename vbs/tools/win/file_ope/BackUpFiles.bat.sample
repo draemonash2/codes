@@ -7,4 +7,4 @@ set BACKUP_LOG="%USERPROFILE%\Desktop\backup_executed_at_%dt:~2,6%-%tm:~0,2%%tm:
 set BACKUP_FILENUM=60
 
 	%BACKUP_SCRIPT% "C:\other\template\#timemng_xxx.xlsm" %BACKUP_FILENUM% %BACKUP_LOG%
-	%BACKUP_SCRIPT_ALL% %BACKUP_SCRIPT% "C:\other\template" "#memo.*\.xlsm" %BACKUP_FILENUM% %BACKUP_LOG%
+	%BACKUP_SCRIPT_ALL% "C:\other\template" %BACKUP_FILENUM% %BACKUP_LOG%

@@ -4,12 +4,15 @@ Option Explicit
 '  指定したフォルダ配下のファイルをバックアップする。
 '  
 '<<使用方法>>
-'  BackUpFilesAll.vbs <scriptpath> <rootdirpath> <filepathpattern> <backupnum> <backuplogpath>
+'  BackUpMemoFiles.vbs <rootdirpath> <backupnum> <backuplogpath>
 '  
 '<<仕様>>
-'  ・<rootdirpath> 配下の中で <filepathpattern> にマッチするファイルをバックアップする。
+'  ・<rootdirpath> 配下の中で sEXTRACT_FILE_NAME_PATTERN にマッチするファイルをバックアップする。
 '    （_bakフォルダ配下のものは対象外）
 '  ・バックアップの仕様は <scriptpath> に準ずる。
+'  
+'<<依存スクリプト>>
+'  ・BackUpMemoFiles.vbs
 
 '===============================================================================
 '= インクルード
@@ -19,27 +22,30 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 '= 設定値
 '===============================================================================
+Const sEXTRACT_FILE_NAME_PATTERN = "\\#memo.*\.xlsm$"
+Const sBACKUP_SCRIPT_NAME = "BackUpFiles.vbs"
 
 '===============================================================================
 '= 本処理
 '===============================================================================
 Const sSCRIPT_NAME = "ファイル一括バックアップ"
 
-Dim sBakScriptPath
 Dim sBakSrcRootDirPath
-Dim sExtractFileNamePattern
 Dim lBakFileNum
 Dim sBakSrcLogPath
-If WScript.Arguments.Count >= 5 Then
-    sBakScriptPath = WScript.Arguments(0)
-    sBakSrcRootDirPath = WScript.Arguments(1)
-    sExtractFileNamePattern = WScript.Arguments(2)
-    lBakFileNum = CLng(WScript.Arguments(3))
-    sBakSrcLogPath = WScript.Arguments(4)
+If WScript.Arguments.Count >= 3 Then
+    sBakSrcRootDirPath = WScript.Arguments(0)
+    lBakFileNum = CLng(WScript.Arguments(1))
+    sBakSrcLogPath = WScript.Arguments(2)
 Else
     WScript.Echo "引数を指定してください。プログラムを中断します。"
     WScript.Quit
 End If
+
+Dim objFSO
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Dim sBakScriptPath
+sBakScriptPath = objFSO.GetParentFolderName( WScript.ScriptFullName ) & "\" & sBACKUP_SCRIPT_NAME
 
 Dim cFilePaths
 Set cFilePaths = CreateObject("System.Collections.ArrayList")
@@ -52,10 +58,10 @@ Set oRegExp2 = CreateObject("VBScript.RegExp")
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
 
-oRegExp1.Pattern = sExtractFileNamePattern & "$"
+oRegExp1.Pattern = sEXTRACT_FILE_NAME_PATTERN
 oRegExp1.IgnoreCase = True
 oRegExp1.Global = True
-oRegExp2.Pattern = "\\_bak\\" & sExtractFileNamePattern & "$"
+oRegExp2.Pattern = "\\_bak" & sEXTRACT_FILE_NAME_PATTERN
 oRegExp2.IgnoreCase = True
 oRegExp2.Global = True
 

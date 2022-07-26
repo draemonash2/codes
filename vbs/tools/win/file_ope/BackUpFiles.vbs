@@ -45,7 +45,7 @@ Const sSCRIPT_NAME = "ファイルバックアップ"
 Dim sBakSrcFilePath
 Dim lBakFileNumMax
 Dim sBakLogFilePath
-If WScript.Arguments.Count >= 2 Then
+If WScript.Arguments.Count >= 3 Then
     sBakSrcFilePath = WScript.Arguments(0)
     lBakFileNumMax = CLng(WScript.Arguments(1))
     sBakLogFilePath = WScript.Arguments(2)
