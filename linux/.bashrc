@@ -145,7 +145,7 @@ function is_tail_char_slash_test() { #{{{
 } #}}}
 
 function gr() {
-	grep -nrI "$@" --exclude={tags,GTAGS*,GRTAGS*} .
+	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
