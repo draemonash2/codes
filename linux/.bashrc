@@ -119,6 +119,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
+HISTTIMEFORMAT='%F %T '
+
 function is_tail_char_slash() {
 	if [ $# -ne 1 ]; then
 		echo "[error] is_tail_char_slash() argument error."
@@ -281,6 +283,20 @@ function tmk() {
 	fi
 	session_name=${1}
 	tmux kill-session -t ${session_name}
+}
+function killall() {
+	#MAX=1
+	MAX=`jobs | wc -l`
+	#echo ${MAX}
+	JOBNOS=""
+	for NUM in `seq 1 ${MAX}`
+	do
+		JOBNOS="${JOBNOS} %${NUM}"
+	done
+	if [ "${JOBNOS}" != "" ]; then
+		#echo ${JOBNOS}
+		kill ${JOBNOS}
+	fi
 }
 
 alias ll='ls -lFA --color=auto'
