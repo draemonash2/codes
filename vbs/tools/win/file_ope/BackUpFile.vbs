@@ -17,7 +17,7 @@ Option Explicit
 '<<注意事項>>
 '  ・バックアップ対象はファイルのみ。
 '  ・以下を全て満たす場合、新しいファイルが更新されていくため要注意。
-'      - バックアップファイルの接尾辞が"z"となっているファイルがある (ex. file_#b#211122z.txt)
+'      - バックアップファイルの接尾辞が"z"となっているファイルがある (ex. file.txt.#b#211122z.txt)
 '  ・以下の理由で最新/最古バックアップファイル判定に更新日時を用いない。あくまで
 '    バックアップした日を示すファイル名で判断する。
 '      誤って古いバックアップファイルを更新してしまった場合、ファイル名上は
@@ -37,7 +37,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 Const bEXEC_TEST = False 'テスト用
 Const sSCRIPT_NAME = "ファイルバックアップ"
-Const sBAK_DIR_NAME = "_bak"
+Const sBAK_DIR_NAME = "_#b#"
 Const sBAK_FILE_SUFFIX = "#b#"
 
 '===============================================================================
@@ -71,42 +71,42 @@ Public Sub Main()
         WScript.Echo "引数を指定してください。プログラムを中断します。"
         Exit Sub
     End If
-
+    
     Dim objFSO
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objLogFile
     Set objLogFile = objFSO.OpenTextFile(sBakLogFilePath, 8, True) 'AddWrite
-
+    
     '****************
     '*** 事前準備 ***
     '****************
     '対象ファイル情報取得
     Dim sBakSrcParDirPath
-    Dim sBakSrcFileBaseName
     Dim sBakSrcFileExt
+    Dim sBakSrcFileName
     Dim sDateSuffix
     sBakSrcParDirPath = objFSO.GetParentFolderName( sBakSrcFilePath )
-    sBakSrcFileBaseName = objFSO.GetBaseName( sBakSrcFilePath )
     sBakSrcFileExt = objFSO.GetExtensionName( sBakSrcFilePath )
+    sBakSrcFileName = objFSO.GetFileName( sBakSrcFilePath )
     sDateSuffix = ConvDate2String(Now(),2)
-
+    
     'バックアップファイル情報作成
     Dim sBakDstDirPath
     Dim sBakDstPathBase
     sBakDstDirPath = sBakSrcParDirPath & "\" & sBAK_DIR_NAME
-    sBakDstPathBase = sBakDstDirPath & "\" & sBakSrcFileBaseName & "_" & sBAK_FILE_SUFFIX
-
+    sBakDstPathBase = sBakDstDirPath & "\" & sBakSrcFileName & "." & sBAK_FILE_SUFFIX
+    
     '****************************
     '*** ファイルバックアップ ***
     '****************************
     'バックアップフォルダ作成
     Call CreateDirectry( sBakDstDirPath )
-
+    
     'ファイル一覧取得
     Dim cFileList
     Set cFileList = CreateObject("System.Collections.ArrayList")
     Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
-
+    
     '既存の最新ファイル探索
     Dim sBakDstFilePathLatest  '既存の最新バックアップファイル
     sBakDstFilePathLatest = ""
@@ -118,7 +118,7 @@ Public Sub Main()
         End If
     Next
     Set cFileList = Nothing
-
+    
     'バックアップファイル名確定
     Dim sBakDstFilePath
     '既存のバックアップファイルが存在し、同じ日付のバックアップファイルが存在する場合
@@ -144,15 +144,16 @@ Public Sub Main()
         sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
     End If
     'objLogFile.WriteLine sBakDstFilePath & " : " & sBakDstFilePathLatest
+    'WScript.Echo sBakDstFilePath & " : " & sBakDstFilePathLatest
     'Exit Sub
-
+    
     '更新日時取得
     Dim vDateLastModifiedLatestBk
     Dim vDateLastModifiedTrgt
     Dim bRet
     bRet = GetFileInfo( sBakDstFilePathLatest, 11, vDateLastModifiedLatestBk)
     bRet = GetFileInfo( sBakSrcFilePath, 11, vDateLastModifiedTrgt)
-
+    
     '既存のバックアップファイル未存在 or 更新されている場合
     If ( sBakDstFilePathLatest = "" ) Or _
        ( ( sBakDstFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
@@ -164,14 +165,14 @@ Public Sub Main()
         objLogFile.WriteLine "[Skip]    " & sBakSrcFilePath
         Exit Sub
     End If
-
+    
     '************************
     '*** 古いファイル削除 ***
     '************************
     'ファイルリスト取得
     Set cFileList = CreateObject("System.Collections.ArrayList")
     Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
-
+    
     'バックアップファイル数取得＋既存の最古ファイル探索
     Dim lBakFileNum
     lBakFileNum = 0
@@ -181,7 +182,7 @@ Public Sub Main()
             lBakFileNum = lBakFileNum + 1
         End If
     Next
-
+    
     'バックアップファイル削除
     For Each sFilePath In cFileList
         If lBakFileNum > lBakFileNumMax Then
@@ -191,9 +192,9 @@ Public Sub Main()
         lBakFileNum = lBakFileNum - 1
     Next
     Set cFileList = Nothing
-
+    
     'objLogFile.WriteLine "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
-
+    
     objLogFile.Close
 End Sub
 
@@ -218,6 +219,8 @@ End Function
 '= テスト関数
 '===============================================================================
 Private Sub Test_Main() '{{{
+    Const lTestCase = 1
+    
     Dim objWshShell
     Set objWshShell = WScript.CreateObject("WScript.Shell")
     Dim sDesktopPath
@@ -254,54 +257,59 @@ Private Sub Test_Main() '{{{
     
     MsgBox "=== test start ==="
     
-    Call Main()
-    MsgBox "1 バックアップ生成後(無印追加)"
-    
-    Call Main()
-    MsgBox "2 バックアップ生成後(変化なし)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "3 バックアップ生成後(a追加)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "4 バックアップ生成後(b追加)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "5 バックアップ生成後(c追加)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "6 バックアップ生成後(d追加)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "7 バックアップ生成後(e追加 無印削除)"
-    
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "8 バックアップ生成後(f追加 a削除)"
-    
-    cArgs(1) = 2
-    Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
-    objTxtFile.WriteLine "aa"
-    objTxtFile.Close
-    Call Main()
-    MsgBox "9 バックアップ生成後(g追加 b,c,d削除)"
+    Select Case lTestCase
+        Case 1
+            Call Main()
+            MsgBox "1 バックアップ生成後(無印追加)"
+            
+            Call Main()
+            MsgBox "2 バックアップ生成後(変化なし)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "3 バックアップ生成後(a追加)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "4 バックアップ生成後(b追加)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "5 バックアップ生成後(c追加)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "6 バックアップ生成後(d追加)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "7 バックアップ生成後(e追加 無印削除)"
+            
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "8 バックアップ生成後(f追加 a削除)"
+            
+            cArgs(1) = 2
+            Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 8, True)
+            objTxtFile.WriteLine "aa"
+            objTxtFile.Close
+            Call Main()
+            MsgBox "9 バックアップ生成後(g追加 b,c,d削除)"
+        Case Else
+            Call Main()
+    End Select
     
     MsgBox "=== test finished ==="
 End Sub '}}}

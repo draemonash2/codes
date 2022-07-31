@@ -8,7 +8,7 @@ Option Explicit
 '  
 '<<仕様>>
 '  ・<rootdirpath> 配下の中で sEXTRACT_FILE_NAME_PATTERN にマッチするファイルをバックアップする。
-'    （_bakフォルダ配下のものは対象外）
+'    （_#b#フォルダ配下のものは対象外）
 '  ・バックアップの仕様は <scriptpath> に準ずる。
 '  
 '<<依存スクリプト>>
@@ -24,6 +24,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct(
 '===============================================================================
 Const sEXTRACT_FILE_NAME_PATTERN = "\\#memo.*\.xlsm$"
 Const sBACKUP_SCRIPT_NAME = "BackUpFile.vbs"
+Const sBAK_DIR_NAME = "_#b#"
 
 '===============================================================================
 '= 本処理
@@ -61,7 +62,7 @@ Set objWshShell = WScript.CreateObject("WScript.Shell")
 oRegExp1.Pattern = sEXTRACT_FILE_NAME_PATTERN
 oRegExp1.IgnoreCase = True
 oRegExp1.Global = True
-oRegExp2.Pattern = "\\_bak" & sEXTRACT_FILE_NAME_PATTERN
+oRegExp2.Pattern = "\\" & sBAK_DIR_NAME & sEXTRACT_FILE_NAME_PATTERN
 oRegExp2.IgnoreCase = True
 oRegExp2.Global = True
 
