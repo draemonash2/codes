@@ -825,7 +825,7 @@ endif
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
-	"現在のファイルに対して Grep
+	"現在のファイルに対して Grep (Grep Current)
 	" :Gc <word>
 	"------------------------------------------------------
 	command! -nargs=? Gc call s:GrepAtCurFile(<f-args>)
@@ -845,11 +845,14 @@ endif
 	endfunction
 	
 	"------------------------------------------------------
-	"上位階層の「tags」格納ディレクトリをルートとして Grep
-	" :Gp <word>
+	"上位階層のルート識別ファイル格納ディレクトリをルートとして Grep (Grep Project)
+	" :Gp <word> | :Gpa <word> | :Gpb <word> | :Gpc <word>
 	"------------------------------------------------------
-	command! -nargs=? Gp call s:GrepAtTagsPrj(<f-args>)
-	function! s:GrepAtTagsPrj(...)
+	command! -nargs=? Gp let s:sGrepRootPath = g:sProjectRootFileName | call s:GrepAtPrj(<f-args>)
+	command! -nargs=? Gpa let s:sGrepRootPath = ".greproota" | call s:GrepAtPrj(<f-args>)
+	command! -nargs=? Gpb let s:sGrepRootPath = ".greprootb" | call s:GrepAtPrj(<f-args>)
+	command! -nargs=? Gpc let s:sGrepRootPath = ".greprootc" | call s:GrepAtPrj(<f-args>)
+	function! s:GrepAtPrj(...)
 		"### 対象単語 取得 ###
 		if a:0 >= 1
 			let g:sGrepWord = a:000[(a:0 - 1)]	"引数の単語で検索
@@ -859,7 +862,7 @@ endif
 		
 		"### 対象パス 取得 ###
 		if g:sGrepPath == ""
-			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
+			let l:sRootPath = SrchStoreDirPathToTop( GetCurDirPath(), s:sGrepRootPath )
 			if l:sRootPath == ""
 				let l:sRootPath = GetCurDirPath()
 			endif
@@ -879,14 +882,15 @@ endif
 		endfor
 		
 		"### Grep 実行 ###
+	"	echom   "Grep -r " . g:sGrepOpt . " " . l:sFileTypeOpt . " """. g:sGrepWord . """ " . l:sRootPath . "/**"
 		execute "Grep -r " . g:sGrepOpt . " " . l:sFileTypeOpt . " """. g:sGrepWord . """ " . l:sRootPath . "/**"
 	endfunction
 	
 	"------------------------------------------------------
-	"ファイルパスなどを指定して対話型 Grep
-	" :Gt
+	"ファイルパスなどを指定して対話型 Grep (Grep Intaractive)
+	" :Gi
 	"------------------------------------------------------
-	command! Gt call s:GrepAtInteractive()
+	command! Gi call s:GrepAtInteractive()
 	function! s:GrepAtInteractive()
 		"### 対象単語 取得 ###
 		let l:sGrepWord = input("grep target text : ", expand('<cword>'))
