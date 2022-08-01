@@ -1,11 +1,20 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
 
-'####################################################################
-'### 設定
-'####################################################################
+'===============================================================================
+'= インクルード
+'===============================================================================
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )          ' ShowFolderSelectDialog()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )              ' ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\SettingFileClass.vbs" )    ' SettingFile
+
+'===============================================================================
+'= 設定値
+'===============================================================================
+Const bEXEC_TEST = False 'テスト用
+Const sPROG_NAME = "作業ファイルとしてファイル/フォルダ複製"
 Const lADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
-Const lDATE_STR_TYPE = 3
+Const lDATE_STR_TYPE = 1
 Const bEVACUATE_ORG_FILE = True
 Const bCHOOSE_DOWNLOAD_DIR_PATH = False
 Const bCHOOSE_FILE_AT_DIALOG_BOX = True
@@ -14,35 +23,39 @@ Const sORIGINAL_FILE_PREFIX = "o"
 Const sEDIT_FILE_PREFIX     = "e"
 Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"
 
-'####################################################################
-'### インクルード
-'####################################################################
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )          ' ShowFolderSelectDialog()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )              ' ConvDate2String()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\SettingFileClass.vbs" )    ' SettingFile
+'===============================================================================
+'= 本処理
+'===============================================================================
+Dim cArgs '{{{
+Set cArgs = CreateObject("System.Collections.ArrayList")
 
-'####################################################################
-'### 本処理
-'####################################################################
-Const sPROG_NAME = "作業ファイルとしてファイル/フォルダ複製"
+If bEXEC_TEST = True Then
+    Call Test_Main()
+Else
+    Dim vArg
+    For Each vArg in WScript.Arguments
+        cArgs.Add vArg
+    Next
+    Call Main()
+End If '}}}
 
-Dim bIsContinue
-bIsContinue = True
-
-Dim sSrcParDirPath
-Dim sIniDstParDirPath
-Dim cSelectedPaths
-Dim objFSO
-Set objFSO = CreateObject("Scripting.FileSystemObject")
-Dim objWshShell
-Set objWshShell = CreateObject("WScript.Shell")
-
-'*** 選択ファイル取得 ***
-If bIsContinue = True Then
+'===============================================================================
+'= メイン関数
+'===============================================================================
+Public Sub Main()
+    Dim sSrcParDirPath
+    Dim sIniDstParDirPath
+    Dim cSelectedPaths
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim objWshShell
+    Set objWshShell = CreateObject("WScript.Shell")
+    
+    '*** 選択ファイル取得 ***
     If EXECUTION_MODE = 0 Then 'Explorerから実行
         Dim sArg
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
-        For Each sArg In WScript.Arguments
+        For Each sArg In cArgs
             cSelectedPaths.add sArg
             If sSrcParDirPath = "" Then
                 sSrcParDirPath = objFSO.GetParentFolderName( sArg )
@@ -53,45 +66,34 @@ If bIsContinue = True Then
         Set cSelectedPaths = WScript.Col( WScript.Env("Selected") )
     Else 'デバッグ実行
         MsgBox "デバッグモードです。"
-        sSrcParDirPath = "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿"
+        sSrcParDirPath = "C:\Users\draem\OneDrive\デスクトップ"
         Set cSelectedPaths = CreateObject("System.Collections.ArrayList")
-        cSelectedPaths.Add "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿\H20年度 ゼミ出席簿.xls"
-        cSelectedPaths.Add "X:\100_Documents\200_【学校】共通\大学院\ゼミ出席簿\H21年度 ゼミ出席簿.xls"
+        cSelectedPaths.Add "C:\codes\vbs\tools\win\file_ope\CpyAndAddModDate.vbs"
+        cSelectedPaths.Add "C:\codes\vbs\tools\win\file_ope\CpyAndAddNowDate.vbs"
+        cSelectedPaths.Add "C:\codes\vbs\tools\win\other"
     End If
-Else
-    'Do Nothing
-End If
-
-'*** ファイルパスチェック ***
-If bIsContinue = True Then
+    
+    '*** ファイルパスチェック ***
     If cSelectedPaths.Count = 0 Then
         MsgBox "ファイル/フォルダが選択されていません。", vbOKOnly, sPROG_NAME
         MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     Else
         'Do Nothing
     End If
-Else
-    'Do Nothing
-End If
-
-'*** 上書き確認 ***
-'実行速度を高めるため、上書き確認省略
-'If bIsContinue = True Then
-'    Dim vbAnswer
-'    vbAnswer = MsgBox( "既にファイルが存在している場合、上書きされます。実行しますか？", vbOkCancel, sPROG_NAME )
-'    If vbAnswer = vbOk Then
-'        'Do Nothing
-'    Else
-'        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
-'        bIsContinue = False
-'    End If
-'Else
-'    'Do Nothing
-'End If
-
-'*** 出力先選択 ***
-If bIsContinue = True Then
+    
+    '*** 上書き確認 ***
+    '実行速度を高めるため、上書き確認省略
+    'Dim vbAnswer
+    'vbAnswer = MsgBox( "既にファイルが存在している場合、上書きされます。実行しますか？", vbOkCancel, sPROG_NAME )
+    'If vbAnswer = vbOk Then
+    '    'Do Nothing
+    'Else
+    '    MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
+    '    Exit Sub
+    'End If
+    
+    '*** 出力先選択 ***
     '出力先フォルダパス取得 from クリップボード
     'sIniDstParDirPath = CreateObject("htmlfile").ParentWindow.Clipboarddata.GetData("text")
     'If objFSO.FolderExists( sIniDstParDirPath ) = False Then
@@ -128,16 +130,10 @@ If bIsContinue = True Then
     
     If objFSO.FolderExists( sDstParDirPath ) = False Then 'キャンセルの場合
         MsgBox "実行がキャンセルされました。", vbOKOnly, sPROG_NAME
-        bIsContinue = False
-    Else
-        'Do Nothing
+        Exit Sub
     End If
-Else
-    'Do Nothing
-End If
-
-'*** 退避用フォルダ作成 ***
-If bIsContinue = True Then
+    
+    '*** 退避用フォルダ作成 ***
     Dim sDstParEvaDirPath
     If bEVACUATE_ORG_FILE = True Then
         sDstParEvaDirPath = sDstParDirPath & "\_#" & sORIGINAL_FILE_PREFIX & "#"
@@ -148,12 +144,8 @@ If bIsContinue = True Then
     Else
         sDstParEvaDirPath = sDstParDirPath
     End If
-Else
-    'Do Nothing
-End If
-
-'*** ショートカット作成 ***
-If bIsContinue = True Then
+    
+    '*** ショートカット作成 ***
     Dim sSelectedPath
     For Each sSelectedPath In cSelectedPaths
         'ファイル/フォルダ判定
@@ -184,14 +176,12 @@ If bIsContinue = True Then
             End If
             
             Dim sSrcFileName
-            Dim sSrcFileBaseName
             Dim sSrcFileExt
             sSrcFileName = objFSO.GetFileName( sSelectedPath )
-            sSrcFileBaseName = objFSO.GetBaseName( sSelectedPath )
             sSrcFileExt = objFSO.GetExtensionName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & "_#" & sEDIT_FILE_PREFIX     & sAddDate & "#." & sSrcFileExt
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & "_#" & sORIGINAL_FILE_PREFIX & sAddDate & "#." & sSrcFileExt
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & "_#" & sSHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcFileName & ".#" & sEDIT_FILE_PREFIX     & "#" & sAddDate & "." & sSrcFileExt
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcFileName & ".#" & sORIGINAL_FILE_PREFIX & "#" & sAddDate & "." & sSrcFileExt
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcFileName & ".#" & sSHORTCUT_FILE_SUFFIX & "#" & sAddDate & ".lnk"
             
             'ファイルコピー
             objFSO.CopyFile sSelectedPath, sDstCpyFilePath, True
@@ -199,7 +189,7 @@ If bIsContinue = True Then
             
             'ショートカット作成
             With objWshShell.CreateShortcut( sDstShrtctFilePath )
-                .TargetPath = sSrcParDirPath
+                .TargetPath = objFSO.GetParentFolderName( sSelectedPath )
                 .Save
             End With
             
@@ -221,9 +211,9 @@ If bIsContinue = True Then
             
             Dim sSrcDirName
             sSrcDirName = objFSO.GetFileName( sSelectedPath )
-            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & "_#" & sEDIT_FILE_PREFIX     & sAddDate & "#"
-            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & "_#" & sORIGINAL_FILE_PREFIX & sAddDate & "#"
-            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & "_#" & sSHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
+            sDstCpyFilePath    = sDstParDirPath    & "\" & sSrcDirName & ".#" & sEDIT_FILE_PREFIX     & "#" & sAddDate
+            sDstOrgFilePath    = sDstParEvaDirPath & "\" & sSrcDirName & ".#" & sORIGINAL_FILE_PREFIX & "#" & sAddDate
+            sDstShrtctFilePath = sDstParEvaDirPath & "\" & sSrcDirName & ".#" & sSHORTCUT_FILE_SUFFIX & "#" & sAddDate & ".lnk"
             
             'フォルダコピー
             objFSO.CopyFolder sSelectedPath, sDstCpyFilePath, True
@@ -231,7 +221,7 @@ If bIsContinue = True Then
             
             'ショートカット作成
             With objWshShell.CreateShortcut( sDstShrtctFilePath )
-                .TargetPath = sSrcParDirPath
+                .TargetPath = objFSO.GetParentFolderName( sSelectedPath )
                 .Save
             End With
             
@@ -239,7 +229,7 @@ If bIsContinue = True Then
         Else
             MsgBox "選択されたオブジェクトが存在しません" & vbNewLine & vbNewLine & sSelectedPath, vbOKOnly, sPROG_NAME
             MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
-            bIsContinue = False
+            Exit Sub
         End If
     Next
     
@@ -248,18 +238,29 @@ If bIsContinue = True Then
     
     Set objFSO = Nothing
     Set objWshShell = Nothing
-Else
-    'Do Nothing
-End If
+End Sub
 
-'####################################################################
-'### インクルード関数
-'####################################################################
-Private Function Include( ByVal sOpenFile )
+'===============================================================================
+'= テスト関数
+'===============================================================================
+Private Sub Test_Main() '{{{
+    Const lTestCase = 1
+    MsgBox "=== test start ==="
+    Select Case lTestCase
+        Case 1
+        Case Else
+            Call Main()
+    End Select
+    MsgBox "=== test finished ==="
+End Sub '}}}
+
+'===============================================================================
+'= インクルード関数
+'===============================================================================
+Private Function Include( ByVal sOpenFile ) '{{{
     sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close
     End With
-End Function
-
+End Function '}}}
