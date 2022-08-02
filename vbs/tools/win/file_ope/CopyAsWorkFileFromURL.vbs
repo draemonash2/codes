@@ -1,9 +1,19 @@
 Option Explicit
 
-'####################################################################
-'### 設定
-'####################################################################
-Const lDATE_STR_TYPE = 3
+'===============================================================================
+'= インクルード
+'===============================================================================
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )         ' ShowFolderSelectDialog()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )             ' ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\SettingFileClass.vbs" )   ' SettingFile
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )                ' DownloadFile()
+
+'===============================================================================
+'= 設定値
+'===============================================================================
+Const bEXEC_TEST = False 'テスト用
+Const sPROG_NAME = "ファイルダウンロード"
+Const lDATE_STR_TYPE = 1
 Const bEVACUATE_ORG_FILE = True
 Const bCHOOSE_DOWNLOAD_DIR_PATH = False
 Const bCHOOSE_FILE_AT_DIALOG_BOX = True
@@ -12,34 +22,37 @@ Const sORIGINAL_FILE_PREFIX = "o"
 Const sEDIT_FILE_PREFIX     = "e"
 Const sTEMP_FILE_NAME = "CopyAsWorkFileFromURL.cfg"
 
-'####################################################################
-'### インクルード
-'####################################################################
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" )         ' ShowFolderSelectDialog()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )             ' ConvDate2String()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\SettingFileClass.vbs" )   ' SettingFile
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )                ' DownloadFile()
+'===============================================================================
+'= 本処理
+'===============================================================================
+Dim cArgs '{{{
+Set cArgs = CreateObject("System.Collections.ArrayList")
 
-'####################################################################
-'### 本処理
-'####################################################################
-Const sPROG_NAME = "ファイルダウンロード"
+If bEXEC_TEST = True Then
+    Call Test_Main()
+Else
+    Dim vArg
+    For Each vArg in WScript.Arguments
+        cArgs.Add vArg
+    Next
+    Call Main()
+End If '}}}
 
-Dim bIsContinue
-bIsContinue = True
-
-Dim sSrcParDirPath
-Dim objFSO
-Set objFSO = CreateObject("Scripting.FileSystemObject")
-Dim objWshShell
-Set objWshShell = CreateObject("WScript.Shell")
-Dim clSetting
-Dim sSettingFilePath
-sSettingFilePath = objFSO.GetSpecialFolder(2) & "\" & sTEMP_FILE_NAME
-
-'*** ダウンロードファイルURL入力 ***
-'出力先フォルダパス取得 from 設定ファイル
-If bIsContinue = True Then
+'===============================================================================
+'= メイン関数
+'===============================================================================
+Public Sub Main()
+    Dim sSrcParDirPath
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim objWshShell
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim clSetting
+    Dim sSettingFilePath
+    sSettingFilePath = objFSO.GetSpecialFolder(2) & "\" & sTEMP_FILE_NAME
+    
+    '*** ダウンロードファイルURL入力 ***
+    '出力先フォルダパス取得 from 設定ファイル
     Dim sIniDownloadFileUrl
     Set clSetting = New SettingFile
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDOWNLOAD_FILE_PATH", sIniDownloadFileUrl, "", False)
@@ -47,20 +60,18 @@ If bIsContinue = True Then
     sDownloadFileUrl = InputBox( "ダウンロードしたいファイルのURLを入力してください", sPROG_NAME, sIniDownloadFileUrl )
     If IsEmpty(sDownloadFileUrl) = True Then
         MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     ElseIf sDownloadFileUrl = "" Then
         MsgBox "URLが入力されていないため、処理を中断します。", vbExclamation, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     Else
         'Do Nothing
     End If
     Call clSetting.WriteItemToFile(sSettingFilePath, "sDOWNLOAD_FILE_PATH", sDownloadFileUrl)
     Set clSetting = Nothing
-End If
-
-'*** 取得元URL入力 ***
-'出力先フォルダパス取得 from 設定ファイル
-If bIsContinue = True Then
+    
+    '*** 取得元URL入力 ***
+    '出力先フォルダパス取得 from 設定ファイル
     Dim sIniDownloadSrcUrl
     Set clSetting = New SettingFile
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDOWNLOAD_SRC_URL", sIniDownloadSrcUrl, "", False)
@@ -68,20 +79,18 @@ If bIsContinue = True Then
     sDownloadSrcUrl = InputBox( "ダウンロード元のURLを入力してください", sPROG_NAME, sIniDownloadSrcUrl )
     If IsEmpty(sDownloadSrcUrl) = True Then
         MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     ElseIf sDownloadSrcUrl = "" Then
         MsgBox "URLが入力されていないため、処理を中断します。", vbExclamation, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     Else
         'Do Nothing
     End If
     Call clSetting.WriteItemToFile(sSettingFilePath, "sDOWNLOAD_SRC_URL", sDownloadSrcUrl)
     Set clSetting = Nothing
-End If
-
-'*** 出力先選択 ***
-'出力先フォルダパス取得 from 設定ファイル
-If bIsContinue = True Then
+    
+    '*** 出力先選択 ***
+    '出力先フォルダパス取得 from 設定ファイル
     Dim sIniDstParDirPath
     Set clSetting = New SettingFile
     Call clSetting.ReadItemFromFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sIniDstParDirPath, objWshShell.SpecialFolders("Desktop"), False)
@@ -105,19 +114,15 @@ If bIsContinue = True Then
     End If
     Call clSetting.WriteItemToFile(sSettingFilePath, "sDST_PAR_DIR_PATH", sDstParDirPath)
     Set clSetting = Nothing
-End If
-
-If bIsContinue = True Then
+    
     If objFSO.FolderExists( sDstParDirPath ) = False Then 'キャンセルの場合
         MsgBox "実行がキャンセルされました。", vbExclamation, sPROG_NAME
-        bIsContinue = False
+        Exit Sub
     Else
         'Do Nothing
     End If
-End If
-
-'*** 退避用フォルダ作成 ***
-If bIsContinue = True Then
+    
+    '*** 退避用フォルダ作成 ***
     Dim sDstParEvaDirPath
     If bEVACUATE_ORG_FILE = True Then
         sDstParEvaDirPath = sDstParDirPath & "\_#" & sORIGINAL_FILE_PREFIX & "#"
@@ -141,9 +146,9 @@ If bIsContinue = True Then
     sDownloadFileBaseName = objFSO.GetBaseName( sDownloadFileName )
     sDownloadFileExt = objFSO.GetExtensionName( sDownloadFileName )
     
-    sDstCpyFilePath    = sDstParDirPath    & "\" & sDownloadFileName & "_#" & sEDIT_FILE_PREFIX     & sAddDate & "#." & sDownloadFileExt
-    sDstOrgFilePath    = sDstParEvaDirPath & "\" & sDownloadFileName & "_#" & sORIGINAL_FILE_PREFIX & sAddDate & "#." & sDownloadFileExt
-    sDstShrtctFilePath = sDstParEvaDirPath & "\" & sDownloadFileName & "_#" & sSHORTCUT_FILE_SUFFIX & sAddDate & "#.lnk"
+    sDstCpyFilePath    = sDstParDirPath    & "\" & sDownloadFileName & ".#" & sEDIT_FILE_PREFIX     & "#" & sAddDate & "." & sDownloadFileExt
+    sDstOrgFilePath    = sDstParEvaDirPath & "\" & sDownloadFileName & ".#" & sORIGINAL_FILE_PREFIX & "#" & sAddDate & "." & sDownloadFileExt
+    sDstShrtctFilePath = sDstParEvaDirPath & "\" & sDownloadFileName & ".#" & sSHORTCUT_FILE_SUFFIX & "#" & sAddDate & ".lnk"
     
     '*** ファイルダウンロード ***
     Call DownloadFile(sDownloadFileUrl, sDstCpyFilePath )
@@ -159,20 +164,33 @@ If bIsContinue = True Then
     
     '*** フォルダを開く ***
     CreateObject("Shell.Application").Explore sDstParDirPath
-End If
+    
+    Set objFSO = Nothing
+    Set clSetting = Nothing
+    Set objWshShell = Nothing
+End Sub
 
-Set objFSO = Nothing
-Set clSetting = Nothing
-Set objWshShell = Nothing
+'===============================================================================
+'= テスト関数
+'===============================================================================
+Private Sub Test_Main() '{{{
+    Const lTestCase = 1
+    MsgBox "=== test start ==="
+    Select Case lTestCase
+        Case 1
+        Case Else
+            Call Main()
+    End Select
+    MsgBox "=== test finished ==="
+End Sub '}}}
 
-'####################################################################
-'### インクルード関数
-'####################################################################
-Private Function Include( ByVal sOpenFile )
+'===============================================================================
+'= インクルード関数
+'===============================================================================
+Private Function Include( ByVal sOpenFile ) '{{{
     sOpenFile = WScript.CreateObject("WScript.Shell").ExpandEnvironmentStrings(sOpenFile)
     With CreateObject("Scripting.FileSystemObject").OpenTextFile( sOpenFile )
         ExecuteGlobal .ReadAll()
         .Close
     End With
-End Function
-
+End Function '}}}
