@@ -298,6 +298,43 @@ function killall() {
 		kill ${JOBNOS}
 	fi
 }
+function cpd() {
+	if [ $# -ne 2 ]; then
+		echo "[error] specify two arguments."
+		echo "  usage : cpd <src> <dst>"
+		return 1
+	fi
+	srcpathraw=${1}
+	srcpath=""
+	is_tail_char_slash ${srcpathraw}
+	if [ $? -eq 1 ]; then
+		srcpath=${srcpathraw%/*}
+	else
+		srcpath=${srcpathraw}
+	fi
+	dstpathraw=${2}
+	dstpath=""
+	is_tail_char_slash ${dstpathraw}
+	if [ $? -eq 1 ]; then
+		dstpath=${dstpathraw%/*}
+	else
+		dstpath=${dstpathraw}
+	fi
+	dstpardirpath=${dstpath%/*}
+	echo ${dstpardirpath}
+	if [ -f ${srcpath} ] || [ -d ${srcpath} ]; then
+		if [ ! -d ${dstpardirpath} ]; then
+			echo "mkdir -p ${dstpardirpath}"
+			mkdir -p ${dstpardirpath}
+		fi
+		echo "\cp -rf ${srcpath} ${dstpath}"
+		\cp -rf ${srcpath} ${dstpath}
+		return 0
+	else
+		echo "[error] specified path does not exists."
+		return 1
+	fi
+}
 
 alias ll='ls -lFA --color=auto'
 alias lln='ls -lFAv1 --color=auto'
