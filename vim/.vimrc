@@ -561,6 +561,12 @@ endif
 if has('unix')
 	set shell=bash										" ターミナルウィンドウ(:terminal)のデフォルトシェルをbashにする
 endif
+	set diffopt+=internal								" diff時に内部diffライブラリを使用する
+	set diffopt+=filler									" diff時に片方に行挿入されていた場合に片方に追加行を表示する
+	set diffopt+=algorithm:histogram					" diff時のアルゴリズムをhistogram差分アルゴリズムに変更する
+	set diffopt+=indent-heuristic						" diff時に内部diffライブラリのインデントヒューリスティックを使用する
+"	set diffopt+=iwhite									" diff時に空白数の違いを無視する
+"	set diffopt+=icase									" diff時に大文字小文字の違いを無視する
 "try
 "	set termkey=<c-n>									" ターミナルウィンドウのターミナルキー変更
 "catch
@@ -1801,6 +1807,34 @@ endif
 " vaffle 設定
 " ==============================================================================
 	let g:vaffle_show_hidden_files = 1	" 隠しファイルを表示
+
+" ==============================================================================
+" fern.vim 設定
+" [参照] https://github.com/lambdalisue/fern.vim/issues/102
+" ==============================================================================
+	command! -bar -nargs=*
+		\ -complete=customlist,fern#internal#command#fern#complete
+		\ Fern
+		\ call s:support_shellslash({ -> fern#internal#command#fern#command(<q-mods>, [<f-args>]) })
+	function! s:support_shellslash(func) abort
+		let restores = []
+		if exists('+shellslash')
+			call add(restores, &shellslash ? { -> execute('set shellslash') } : { -> 0 })
+			set shellslash&
+		endif
+		if exists('+completeslash')
+			let completeslash_saved = &completeslash
+			call add(restores, { -> execute('set completeslash' . completeslash_saved) })
+			set completeslash&
+		endif
+		try
+			return a:func()
+		finally
+			for l:Restore in restores
+				call Restore()
+			endfor
+		endtry
+	endfunction
 
 " ==============================================================================
 " ctrlp 設定
