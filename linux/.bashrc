@@ -145,7 +145,6 @@ function is_tail_char_slash_test() { #{{{
 		echo "[error] is_tail_char_slash_test() test error 01"
 	fi
 } #}}}
-
 function gr() {
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
@@ -194,7 +193,7 @@ function swap() {
 }
 function bak() {
 	mode=1 # 1:Alphabet other:Time
-	delimiter=_bak
+	delimiter=.bak
 	if [ $# -ne 1 ]; then
 		echo "[error] specify one arguments."
 		echo "  usage : bak <file/dir>"
