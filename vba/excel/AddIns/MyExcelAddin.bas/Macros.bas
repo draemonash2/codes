@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.12
+' my excel addin macros v2.13
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -2111,6 +2111,7 @@ End Sub
 ' = 所属    Macros.bas
 ' =============================================================================
 Public Sub Diff色付け()
+    Const bUNIFIED_MODE As Boolean = True
     Dim rCell As Range
     For Each rCell In Selection
         Dim oRegExp As Object
@@ -2121,16 +2122,36 @@ Public Sub Diff色付け()
         oRegExp.Global = True
         Dim oMatchResult As Object
         
-        oRegExp.Pattern = "^>"
+        If bUNIFIED_MODE = True Then
+            oRegExp.Pattern = "^\+"
+        Else
+            oRegExp.Pattern = "^>"
+        End If
         Set oMatchResult = oRegExp.Execute(sTargetStr)
         If oMatchResult.Count > 0 Then
             rCell.Font.Color = RGB(0, 176, 80)
         End If
         
-        oRegExp.Pattern = "^<"
+        If bUNIFIED_MODE = True Then
+            oRegExp.Pattern = "^-"
+        Else
+            oRegExp.Pattern = "^<"
+        End If
         Set oMatchResult = oRegExp.Execute(sTargetStr)
         If oMatchResult.Count > 0 Then
             rCell.Font.Color = RGB(255, 0, 0)
+        End If
+        
+        oRegExp.Pattern = "^\$ diff"
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        If oMatchResult.Count > 0 Then
+            rCell.Font.Bold = True
+        End If
+        
+        oRegExp.Pattern = "^\$ git diff"
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        If oMatchResult.Count > 0 Then
+            rCell.Font.Bold = True
         End If
     Next
 End Sub

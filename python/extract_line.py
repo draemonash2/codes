@@ -19,7 +19,7 @@ def main():
     pattern = r'^(header:|    stamp:|        sec:|        nanosec:)'
     
     try:
-        out_file = open(out_file_name, 'w')
+        out_file2 = open(out_file_name, 'w')
         in_file = open(in_file_name)
         lines = in_file.readlines()
         for line in lines:
@@ -29,7 +29,7 @@ def main():
     except Exception as e:
         print(e)
     finally:
-        out_file.close()
+        out_file2.close()
         in_file.close()
 
 if __name__ == "__main__":
