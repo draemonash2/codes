@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.13
+' my excel addin macros v2.13a
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -271,6 +271,8 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
 '   dMacroShortcutKeys.Add "^+f", "最前面へ移動" '「CtrlShiftFマクロ」にて実行
     dMacroShortcutKeys.Add "^+b", "最背面へ移動"
+    
+    dMacroShortcutKeys.Add "+%d", "Diff色付け"
     
     dMacroShortcutKeys.Add "^+i", "Excel数式整形化実施"
     dMacroShortcutKeys.Add "^%i", "Excel数式整形化解除"

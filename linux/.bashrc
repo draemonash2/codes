@@ -59,8 +59,8 @@ fi
 if [ "$color_prompt" = yes ]; then
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
 #   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[00;36;49m\] \[\e[00m\] \n$ '
 #	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
+	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[00;36;49m\] \[\e[00m\] \n$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h->\t->\w \$ '
 fi
@@ -335,8 +335,7 @@ function cpd() {
 	fi
 }
 
-alias ll='ls -lFA --color=auto'
-alias lln='ls -lFAv1 --color=auto'
+alias ll='ls -lFAv --color=auto'
 alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
 alias ff='find . -type f | grep '
