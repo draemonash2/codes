@@ -170,20 +170,20 @@ Public Sub Main()
     '*** 古いファイル削除 ***
     '************************
     'ファイルリスト取得
+    Dim cFileListAll
+    Set cFileListAll = CreateObject("System.Collections.ArrayList")
+    Call GetFileListCmdClct( sBakDstDirPath, cFileListAll, 1, "*")
     Set cFileList = CreateObject("System.Collections.ArrayList")
-    Call GetFileListCmdClct( sBakDstDirPath, cFileList, 1, "*")
-    
-    'バックアップファイル数取得＋既存の最古ファイル探索
-    Dim lBakFileNum
-    lBakFileNum = 0
-    For Each sFilePath in cFileList
+    For Each sFilePath in cFileListAll
         If ( (InStr(sFilePath, sBakDstPathBase) > 0) And _
              (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
-            lBakFileNum = lBakFileNum + 1
+            cFileList.Add sFilePath
         End If
     Next
     
     'バックアップファイル削除
+    Dim lBakFileNum
+    lBakFileNum = cFileList.Count
     For Each sFilePath In cFileList
         If lBakFileNum > lBakFileNumMax Then
             'objFSO.DeleteFile sFilePath, True
@@ -261,6 +261,11 @@ Private Sub Test_Main() '{{{
         Case 1
             Call Main()
             MsgBox "1 バックアップ生成後(無印追加)"
+            
+            Dim objDummyFile
+            Set objDummyFile = objFSO.OpenTextFile(sDesktopPath & "\" & sBAK_DIR_NAME & "\dummy_file.txt", 8, True)
+            objDummyFile.WriteLine "a"
+            objDummyFile.Close
             
             Call Main()
             MsgBox "2 バックアップ生成後(変化なし)"
