@@ -274,6 +274,8 @@ function tma() {
 		tmux attach-session || tmux new-session
 	fi
 }
+	complete -F _complete_tma tma # {{{
+	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
 function tmk() {
 	if [ $# -ne 1 ]; then
 		echo "[error] specify one arguments."
@@ -283,6 +285,8 @@ function tmk() {
 	session_name=${1}
 	tmux kill-session -t ${session_name}
 }
+	complete -F _complete_tmk tmk # {{{
+	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
 function killall() {
 	#MAX=1
 	MAX=`jobs | wc -l`
@@ -364,9 +368,10 @@ alias sr='vim ~/.screenrc'
 alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
-alias tmatemp='tma temp'
 
 alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
+
+cmpllist_tma="${cmpllist_tma} temp"
 
 #########################################################
 # Environment dependent settings
