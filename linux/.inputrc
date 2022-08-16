@@ -1,8 +1,8 @@
 $if bash
-	set editing-mode emacs
+#	set editing-mode emacs
 #	set editing-mode vi
 	
-	set show-mode-in-prompt on
+	set show-mode-in-prompt off
 #	set show-all-if-ambiguous on
 	# Color files by types
 	set colored-stats On
@@ -17,16 +17,16 @@ $if bash
 	"\C-x\C-r": re-read-init-file
 	
 	$if mode=emacs
-#		"\C-v": yank
-#		"\C-p": history-search-backward
-#		"\C-n": history-search-forward
-#		"\C-l": forward-word
-#		"\M-l": forward-word
-#		"\M-h": backward-word
-#		"\C-,": backward-char
-#		"\C-.": forward-char
-#		"\C-<": backward-word
-#		"\C->": forward-word
+		"\C-v": yank
+		"\C-p": history-search-backward
+		"\C-n": history-search-forward
+		"\C-l": forward-word
+		"\M-l": forward-word
+		"\M-h": backward-word
+		"\C-,": backward-char
+		"\C-.": forward-char
+		"\C-<": backward-word
+		"\C->": forward-word
 	$endif
 	
 	$if mode=vi

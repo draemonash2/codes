@@ -56,12 +56,28 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-if [ "$color_prompt" = yes ]; then
+# for PS1
+function puts_prompt_git_branch() {
+	branch=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+	if [ ! "${branch}" = "" ]; then
+		echo "${branch}"
+	else
+		echo "-"
+	fi
+}
+function update_ps1() {
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
-#   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-#	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
-#	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[00;36;49m\] \[\e[00m\] \n$ '
-	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[30;46m\] $(puts_prompt_git_branch) \[\e[00;36;49m\] \[\e[00m\] \n$ '
+	PS1_HEAD="\[\e[35;45m\]!"
+	PS1_USER="\[\e[37;45m\]\u@\h "
+	PS1_TIME="\[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} "
+	PS1_PWD="\[\e[37;44m\] \w "
+	PS1_GITBR="\[\e[30;46m\] $(puts_prompt_git_branch) "
+	PS1_TAIL="\[\e[30;40m\]!"
+	PS1_RST="\[\e[00;36;49m\] \[\e[00m\] "
+	PS1="\n${PS1_HEAD}${PS1_USER}${PS1_TIME}${PS1_PWD}${PS1_GITBR}${PS1_TAIL}${PS1_RST}\n$ "
+}
+if [ "$color_prompt" = yes ]; then
+	update_ps1
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h->\t->\w \$ '
 fi
@@ -147,29 +163,13 @@ function is_tail_char_slash_test() { #{{{
 		echo "[error] is_tail_char_slash_test() test error 01"
 	fi
 } #}}}
-# for PS1
-function puts_prompt_git_branch() {
-	branch=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
-	if [ ! "${branch}" = "" ]; then
-		echo "${branch}"
-	else
-		echo "-"
-	fi
-	
-}
-function puts_prompt_ok_ng() {
-	if [ "${cmd_result}" -eq 0 ]; then
-		echo "ok"
-	else
-		echo "ng"
-	fi
-}
 # command alias
 function gr() {
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
+	update_ps1
 	pwd
 	ls -lFA --color=auto
 }
@@ -359,9 +359,9 @@ function cpd() {
 	fi
 }
 
-alias ll='ls -lFAv --color=auto'
-alias la='ls -AF --color=auto'
-alias l='ls -CF --color=auto'
+alias ll='ls -lFAv --color=auto; update_ps1'
+alias la='ls -AF --color=auto; update_ps1'
+alias l='ls -CF --color=auto; update_ps1'
 alias ff='find . -type f | grep '
 alias fd='find . -type d | grep '
 (diff --help | grep -- "--color") &> /dev/null
