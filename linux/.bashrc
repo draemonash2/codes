@@ -60,7 +60,8 @@ if [ "$color_prompt" = yes ]; then
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
 #   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 #	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
-	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[00;36;49m\] \[\e[00m\] \n$ '
+#	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[00;36;49m\] \[\e[00m\] \n$ '
+	PS1='\n\[\e[37;45m\]\u@\h \[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} \[\e[37;44m\] \w \[\e[30;46m\] $(puts_prompt_git_branch) \[\e[00;36;49m\] \[\e[00m\] \n$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h->\t->\w \$ '
 fi
@@ -121,6 +122,7 @@ fi
 
 HISTTIMEFORMAT='%F %T '
 
+# for common
 function is_tail_char_slash() {
 	if [ $# -ne 1 ]; then
 		echo "[error] is_tail_char_slash() argument error."
@@ -145,6 +147,24 @@ function is_tail_char_slash_test() { #{{{
 		echo "[error] is_tail_char_slash_test() test error 01"
 	fi
 } #}}}
+# for PS1
+function puts_prompt_git_branch() {
+	branch=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+	if [ ! "${branch}" = "" ]; then
+		echo "${branch}"
+	else
+		echo "-"
+	fi
+	
+}
+function puts_prompt_ok_ng() {
+	if [ "${cmd_result}" -eq 0 ]; then
+		echo "ok"
+	else
+		echo "ng"
+	fi
+}
+# command alias
 function gr() {
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
