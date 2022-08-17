@@ -58,9 +58,15 @@ fi
 
 # for PS1
 function puts_prompt_git_branch() {
-	branch=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
-	if [ ! "${branch}" = "" ]; then
-		echo "${branch}"
+	branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+	if [ ! "${branch_name}" = "" ]; then
+		result_staged=`git status | egrep "^Changes to be committed:$"`
+		result_notstaged=`git status | egrep "^Changes not staged for commit:$"`
+		if [ "${result_staged}" != "" ] || [ "${result_notstaged}" != "" ]; then
+			echo "${branch_name} +"
+		else
+			echo "${branch_name}"
+		fi
 	else
 		echo "-"
 	fi
@@ -70,11 +76,11 @@ function update_ps1() {
 	PS1_HEAD="\[\e[35;45m\]!"
 	PS1_USER="\[\e[37;45m\]\u@\h "
 	PS1_TIME="\[\e[32;47m\] \[\e[30;47m\]\D{%m/%d %H:%M:%S} "
-	PS1_PWD="\[\e[37;44m\] \w "
-	PS1_GITBR="\[\e[30;46m\] $(puts_prompt_git_branch) "
+	PS1_GITBR="\[\e[37;44m\] $(puts_prompt_git_branch) "
+	PS1_PWD="\[\e[30;46m\] \w "
 	PS1_TAIL="\[\e[30;40m\]!"
 	PS1_RST="\[\e[00;36;49m\] \[\e[00m\] "
-	PS1="\n${PS1_HEAD}${PS1_USER}${PS1_TIME}${PS1_PWD}${PS1_GITBR}${PS1_TAIL}${PS1_RST}\n$ "
+	PS1="\n${PS1_HEAD}${PS1_USER}${PS1_TIME}${PS1_GITBR}${PS1_PWD}${PS1_TAIL}${PS1_RST}\n$ "
 }
 if [ "$color_prompt" = yes ]; then
 	update_ps1
