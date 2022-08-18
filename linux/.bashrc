@@ -177,7 +177,7 @@ function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける
 	update_ps1
 	pwd
-	ls -lFA --color=auto
+	ls -lFAv --color=auto
 }
 function vimall() {
 	list=`find . -type f`
