@@ -160,7 +160,7 @@ function _is_tail_char_slash() {
 		return 1 # tail char is slash
 	fi
 }
-function is_tail_char_slash_test() { #{{{
+function _test_is_tail_char_slash() { #{{{
 	_is_tail_char_slash ./aaa/aaaaa
 	if [ $? -ne 0 ]; then
 		echo "[error] is_tail_char_slash_test() test error 02"
@@ -386,6 +386,61 @@ function cpd() {
 		return 1
 	fi
 }
+function catrange() {
+	if [ $# -ne 3 ]; then
+		echo "[error] arguments error."
+		echo "  usage : catrange <file> <lineno_head> <lineno_tail>"
+		return 1
+	fi
+	file=${1}
+	lineno_head=${2}
+	lineno_tail=${3}
+	if [ ! -f ${file} ]; then
+		echo "[error] ${file} does not exist."
+		return 1
+	fi
+	if [ ${lineno_tail} -lt ${lineno_head} ]; then
+		echo "[error] arguments error. tail(${lineno_tail}) < head(${lineno_head})"
+		return 1
+	fi
+	if [ ${lineno_head} -lt 1 ]; then
+		echo "[error] arguments error. head(${lineno_head}) < 1)"
+		return 1
+	fi
+	file_line_num=`cat ${file} | wc -l`
+	if [ ${file_line_num} -lt ${lineno_tail} ]; then
+		echo "[error] arguments error. tail(${lineno_tail}) > file_line_num(${file_line_num})"
+		return 1
+	fi
+	linenum=`expr ${lineno_tail} - ${lineno_head} + 1`
+	#echo ${lineno_head}
+	#echo ${lineno_tail}
+	#echo ${linenum}
+	cat ${file} | head -n ${lineno_tail} | tail -n ${linenum}
+	return 0
+}
+	function _test_catrange() { # {{{
+		inputfile=test.txt
+		echo 1 >  ${inputfile}
+		echo 2 >> ${inputfile}
+		echo 3 >> ${inputfile}
+		echo 4 >> ${inputfile}
+		echo 5 >> ${inputfile}
+		
+		echo "=== test start ==="
+		cmd="catrange tst2.txt 2 3";     echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 2";   echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 0 3"; echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 4 6"; echo "# ${cmd}"; ${cmd}; echo ""
+		
+		cmd="catrange ${inputfile} 2 3"; echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 1 5"; echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 1 3"; echo "# ${cmd}"; ${cmd}; echo ""
+		cmd="catrange ${inputfile} 4 5"; echo "# ${cmd}"; ${cmd}; echo ""
+		echo "=== test finished ==="
+		
+		rm -f ${inputfile}
+	} # }}}
 
 alias ll='ls -lFAv --color=auto'
 alias la='ls -AF --color=auto'
