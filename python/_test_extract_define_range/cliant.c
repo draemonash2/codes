@@ -8,7 +8,6 @@
 
 #define DBG (1)
 #define MOD01 (1)
-#define MOD02 (0)
 
 const char* IN_VEC_PATH_BASE = "testdata/input_test_vec";
 const char* RECV_FILE_PATH_BASE = "testdata/recv_data";
@@ -50,23 +49,11 @@ char communicateTcp(
 	connect(sockfd, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
 #endif /* MOD01 */
 	
-#if MOD02
-#else /* MOD02 */
 	send(sockfd, send_str, send_size, 0);
-#endif /* MOD02 */
 	/* send */
 	printf("send : %s\n", send_str);
 	
-#if MOD02
-	/* receive */
-	recv(sockfd, recv_str, RECV_BUF_SIZE, 0);
-	printf("recv : %s\n", recv_str);
-#else /* MOD02 */
-#endif /* MOD02 */
 	
-#if MOD02
-	printf("\n");
-#endif /* MOD02 */
 	
 	close(sockfd);
 	

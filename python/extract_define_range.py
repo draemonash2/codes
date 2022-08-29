@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# extract_define_range.py ver1.1
+# 
 # usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>
 #    <remain_target_side>
 #       if   : remain if side
@@ -11,22 +13,26 @@ import shutil
 import os
 
 def main():
+    delete_org_file = True
     args = sys.argv
-    if len(args) == 5:
-        pass
-    else:
-        print('Arguments are too short')
+    if len(args) != 5:
+        print('[error]   arguments are too short')
         print('  usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>')
         print('     <remain_target_side>')
         print('        if   : remain if side')
         print('        else : remain else side')
         return 0
-    
     in_file_name = args[1]
     out_file_name = args[2]
     define_keyword = args[3]
     remain_target_side = args[4]
-    assert remain_target_side == "if" or remain_target_side == "else"
+    if not os.path.exists(in_file_name):
+        print('[error]   ' + in_file_name + ' does not exist.')
+        return 0
+    if remain_target_side != "if" and remain_target_side != "else":
+        print('[error]   specified <remain_target_side> is \"' + remain_target_side + '\". this is \"if\" or \"else\" only.')
+        return 0
+    
     same_file_name = False
     if in_file_name == out_file_name:
         shutil.copyfile(in_file_name, in_file_name + '.tmp')
@@ -66,8 +72,11 @@ def main():
             if match_timing == False and is_remain == True:
                 out_file.write(line)
         if same_file_name == True:
-            os.remove(in_file_name)
-        print("extract finished to " + out_file_name)
+            if delete_org_file == True:
+                os.remove(in_file_name)
+            print("[success] \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + out_file_name)
+        else:
+            print("[success] \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + in_file_name + " -> " + out_file_name)
     except Exception as e:
         print(e)
     finally:
