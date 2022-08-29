@@ -16,7 +16,7 @@ def main():
     delete_org_file = True
     args = sys.argv
     if len(args) != 5:
-        print('[error]   arguments are too short')
+        print('[error  ] arguments are too short')
         print('  usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>')
         print('     <remain_target_side>')
         print('        if   : remain if side')
@@ -27,10 +27,10 @@ def main():
     define_keyword = args[3]
     remain_target_side = args[4]
     if not os.path.exists(in_file_name):
-        print('[error]   ' + in_file_name + ' does not exist.')
+        print('[error  ] ' + in_file_name + ' does not exist.')
         return 0
     if remain_target_side != "if" and remain_target_side != "else":
-        print('[error]   specified <remain_target_side> is \"' + remain_target_side + '\". this is \"if\" or \"else\" only.')
+        print('[error  ] specified <remain_target_side> is \"' + remain_target_side + '\". this is \"if\" or \"else\" only.')
         return 0
     
     same_file_name = False
@@ -44,6 +44,7 @@ def main():
         in_file = open(in_file_name)
         lines = in_file.readlines()
         is_remain = True
+        remove_executed = False
         for line in lines:
             matchresult_if     = re.match(r"^#if " + define_keyword + "$", line)
             matchresult_else   = re.match(r"^#else \/\* " + define_keyword + " \*\/$", line)
@@ -56,27 +57,35 @@ def main():
                 else:
                     is_remain = False
                 match_timing = True
+                remove_executed = True
             elif matchresult_else:
                 if remain_target_side == 'if':
                     is_remain = False
                 else:
                     is_remain = True
                 match_timing = True
+                remove_executed = True
             elif matchresult_endif:
                 is_remain = True
                 match_timing = True
+                remove_executed = True
             elif matchresult_define:
                 match_timing = True
+                remove_executed = True
             else:
                 match_timing = False
             if match_timing == False and is_remain == True:
                 out_file.write(line)
+        if remove_executed == True:
+            result_str = "[success]"
+        else:
+            result_str = "[skip   ]"
         if same_file_name == True:
             if delete_org_file == True:
                 os.remove(in_file_name)
-            print("[success] \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + out_file_name)
+            print(result_str + " \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + out_file_name)
         else:
-            print("[success] \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + in_file_name + " -> " + out_file_name)
+            print(result_str + " \"" + remain_target_side + "\" side of \"" + define_keyword + "\" : " + in_file_name + " -> " + out_file_name)
     except Exception as e:
         print(e)
     finally:

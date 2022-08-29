@@ -16,3 +16,5 @@ python3 ../extract_define_range.py cliant.c.org.c DBG if
 python3 ../extract_define_range.py cliant.c.or.c cliant.c.or.c DBG if
 python3 ../extract_define_range.py cliant.c.org.c cliant.c.org.c DBG ifs
 
+python3 ../extract_define_range.py cliant.c.org.c cliant.c.org.c DBGS if
+
