@@ -4,7 +4,7 @@ Option Explicit
 '  指定したファイルをバックアップする。
 '  
 '<<使用方法>>
-'  BackUpFile.vbs <filepath> <backupnum> <logfilepath>
+'  BackUpFile.vbs <filepath> [<backupnum>] [<logfilepath>]
 '  
 '<<仕様>>
 '  ・ファイルを指定すると現在時刻を付与したバックアップファイルを作成する。
@@ -39,6 +39,7 @@ Const bEXEC_TEST = False 'テスト用
 Const sSCRIPT_NAME = "ファイルバックアップ"
 Const sBAK_DIR_NAME = "_#b#"
 Const sBAK_FILE_SUFFIX = "#b#"
+Const lBAK_FILE_NUM_DEFAULT = 30
 
 '===============================================================================
 '= 本処理
@@ -60,6 +61,10 @@ End If '}}}
 '= メイン関数
 '===============================================================================
 Public Sub Main()
+    Dim objWshShell
+    Set objWshShell = WScript.CreateObject("WScript.Shell")
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim sBakSrcFilePath
     Dim lBakFileNumMax
     Dim sBakLogFilePath
@@ -67,13 +72,19 @@ Public Sub Main()
         sBakSrcFilePath = cArgs(0)
         lBakFileNumMax = CLng(cArgs(1))
         sBakLogFilePath = cArgs(2)
+    ElseIf cArgs.Count >= 2 Then
+        sBakSrcFilePath = cArgs(0)
+        lBakFileNumMax = CLng(cArgs(1))
+        sBakLogFilePath = objWshShell.SpecialFolders("Desktop") & "\" & objFSO.GetBaseName(WScript.ScriptName) & ".log"
+    ElseIf cArgs.Count >= 1 Then
+        sBakSrcFilePath = cArgs(0)
+        lBakFileNumMax = lBAK_FILE_NUM_DEFAULT
+        sBakLogFilePath = objWshShell.SpecialFolders("Desktop") & "\" & objFSO.GetBaseName(WScript.ScriptName) & ".log"
     Else
         WScript.Echo "引数を指定してください。プログラムを中断します。"
         Exit Sub
     End If
     
-    Dim objFSO
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
     Dim objLogFile
     Set objLogFile = objFSO.OpenTextFile(sBakLogFilePath, 8, True) 'AddWrite
     
@@ -251,14 +262,14 @@ Private Sub Test_Main() '{{{
         objFSO.DeleteFolder sBakDirPath, True
     End If
     
-    cArgs.Add sTrgtFilePath
-    cArgs.Add 5
-    cArgs.Add sBakLogName
-    
     MsgBox "=== test start ==="
     
     Select Case lTestCase
         Case 1
+            cArgs.Add sTrgtFilePath
+            cArgs.Add 5
+            cArgs.Add sBakLogName
+            
             Call Main()
             MsgBox "1 バックアップ生成後(無印追加)"
             
@@ -312,6 +323,13 @@ Private Sub Test_Main() '{{{
             objTxtFile.Close
             Call Main()
             MsgBox "9 バックアップ生成後(g追加 b,c,d削除)"
+        Case 2
+            cArgs.Add sTrgtFilePath
+            cArgs.Add 5
+            Call Main()
+        Case 3
+            cArgs.Add sTrgtFilePath
+            Call Main()
         Case Else
             Call Main()
     End Select
