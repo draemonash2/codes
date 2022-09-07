@@ -135,15 +135,16 @@ def main():
         #print(lDateLastModifiedTrgt)
         
         # existing backup file does not exist or has been updated
+        sLogMsg = ""
         if (sBakDstFilePathLatest == "") or ( (sBakDstFilePathLatest != "") and (lDateLastModifiedTrgt > lDateLastModifiedLatestBk) ):
             # backup file
             #print(sBakSrcFilePath + " -> " + sBakDstFilePath)
             shutil.copy2(sBakSrcFilePath, sBakDstFilePath)
-            oLogFile.write("[Success] " + sBakSrcFilePath + " -> " + sBakDstFilePath + "\n")
+            sLogMsg = "[Success] " + sBakSrcFilePath + " -> " + sBakDstFilePath + "."
         else:
             # If no updates have been made since the last backup,
             # do not back up and skip the process.
-            oLogFile.write("[Skip]    " + sBakSrcFilePath + "\n")
+            oLogFile.write("[Skip]    " + sBakSrcFilePath + ".\n")
             return
         
         # ************************
@@ -162,10 +163,18 @@ def main():
         
         # delete backup file
         lBakFileNum = len(arrFileList)
+        lDelFileNum = 0
         for sFilePath in arrFileList:
             if lBakFileNum > lBakFileNumMax:
                 os.remove(sFilePath)
+                lDelFileNum += 1
             lBakFileNum -= 1
+        
+        #print(lDelFileNum)
+        if lDelFileNum > 0:
+            oLogFile.write(sLogMsg + " " + str(lDelFileNum) + " files deleted.\n")
+        else:
+            oLogFile.write(sLogMsg + "\n")
     except Exception as e:
         print(e)
     finally:

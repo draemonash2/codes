@@ -189,14 +189,16 @@ Public Sub Main()
     bRet = GetFileInfo( sBakSrcFilePath, 11, vDateLastModifiedTrgt)
     
     '既存のバックアップファイル未存在 or 更新されている場合
+    Dim sLogMsg
+    sLogMsg = ""
     If ( sBakDstFilePathLatest = "" ) Or _
        ( ( sBakDstFilePathLatest <> "" ) And ( vDateLastModifiedTrgt > vDateLastModifiedLatestBk ) ) Then
         'ファイルバックアップ
         objFSO.CopyFile sBakSrcFilePath, sBakDstFilePath, True
-        objLogFile.WriteLine "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath
+        sLogMsg = "[Success] " & sBakSrcFilePath & " -> " & sBakDstFilePath & "."
     Else
         '前回バックアップ時から更新されていない場合、バックアップせず処理を中断する
-        objLogFile.WriteLine "[Skip]    " & sBakSrcFilePath
+        objLogFile.WriteLine "[Skip]    " & sBakSrcFilePath & "."
         Exit Sub
     End If
     
@@ -216,15 +218,24 @@ Public Sub Main()
     
     'バックアップファイル削除
     Dim lBakFileNum
+    Dim lDelFileNum
     lBakFileNum = cFileList.Count
+    lDelFileNum = 0
     For Each sFilePath In cFileList
         If lBakFileNum > lBakFileNumMax Then
             'objFSO.DeleteFile sFilePath, True
             Call MoveToTrushBox(objFSO, sFilePath)
+            lDelFileNum = lDelFileNum + 1
         End If
         lBakFileNum = lBakFileNum - 1
     Next
     Set cFileList = Nothing
+    
+    If lDelFileNum > 0 Then
+        objLogFile.WriteLine sLogMsg & " " & lDelFileNum & " files deleted."
+    Else
+        objLogFile.WriteLine sLogMsg
+    End If
     
     'objLogFile.WriteLine "バックアップ完了！", vbOKOnly, sSCRIPT_NAME
     
