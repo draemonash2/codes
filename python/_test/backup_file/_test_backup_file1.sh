@@ -15,6 +15,8 @@ if [ -e ${sBakDirPath} ]; then
     rm -rf ${sBakDirPath}
 fi
 
+echo "=== test $(basename $0) start"
+
 python3 ../../backup_file.py ${sTrgtFilePath} 5 ${sBakLogName}
 ls -lFAv --color=auto ${sBakDirPath}
 echo "1 バックアップ生成後(無印追加)"
@@ -61,6 +63,8 @@ ls -lFAv --color=auto ${sBakDirPath}
 echo "9 バックアップ生成後(g追加 b,c,d,e削除)"
 
 cat ${sBakLogName}
+
+echo ""
 
 rm -rf ${sTrgtFilePath}
 rm -rf ${sTrgtFilePathOrg}

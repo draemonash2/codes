@@ -25,6 +25,8 @@ if [ ! -f ${sTrgtFilePath4} ]; then
     echo a >> ${sTrgtFilePath4}
 fi
 
+echo "=== test $(basename $0) start"
+
 python3 ../../backup_file.py ${sTrgtFilePath1} 5 ${sBakLogName}
 python3 ../../backup_file.py ${sTrgtFilePath2} 5 ${sBakLogName}
 python3 ../../backup_file.py ${sTrgtFilePath3} 5 ${sBakLogName}
@@ -33,6 +35,8 @@ ls -lFAv --color=auto ${sBakDirPath}
 
 ls -lFAv --color=auto ${sBakLogName}
 cat ${sBakLogName}
+
+echo ""
 
 rm -rf ${sTrgtFilePath1}
 rm -rf ${sTrgtFilePath2}

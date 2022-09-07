@@ -35,6 +35,12 @@ def main():
         # ******************
         # *** preprocess ***
         # ******************
+        if not os.path.exists(sBakSrcFilePath):
+            oLogFile.write("Backup source file does not exists.\n")
+            oLogFile.write("  " + sBakSrcFilePath + "\n")
+            oLogFile.write("Suspend the program.\n")
+            return
+        
         oLogFile = open(sBakLogFilePath, 'a')
         sBakSrcParDirPath = os.path.dirname(sBakSrcFilePath)
         sBakSrcFileName = os.path.basename(sBakSrcFilePath)
@@ -51,12 +57,6 @@ def main():
             bExistsExt = True
         else:
             bExistsExt = False
-        
-        if not os.path.exists(sBakSrcFilePath):
-            oLogFile.write("Backup source file does not exists.\n")
-            oLogFile.write("  " + sBakSrcFilePath + "\n")
-            oLogFile.write("Suspend the program.\n")
-            return
         
         sBakDstDirPath = sBakSrcParDirPath + "/" + sBAK_DIR_NAME
         sBakDstPathBase = sBakDstDirPath + "/" + sBakSrcFileName + "." + sBAK_FILE_SUFFIX

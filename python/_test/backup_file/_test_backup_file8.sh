@@ -2,10 +2,10 @@
 
 sBAK_DIR_NAME="_bak"
 sDirPath=${PWD}
-sTrgtFilePath="${sDirPath}/backup_test"
-sTrgtFilePathOrg="${sDirPath}/backup_test_org"
-sBakDirPath="${sDirPath}/${sBAK_DIR_NAME}"
-sBakLogName="${sDirPath}/backup_test.log"
+sTrgtFilePath="./backup_test"
+sTrgtFilePathOrg="./backup_test_org"
+sBakDirPath="./${sBAK_DIR_NAME}"
+sBakLogName="./backup_test.log"
 
 if [ ! -f ${sTrgtFilePathOrg} ]; then
     echo a >> ${sTrgtFilePathOrg}
