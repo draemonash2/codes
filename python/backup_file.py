@@ -74,7 +74,7 @@ def main():
         arrFileList = []
         old_ishidden = glob._ishidden
         glob._ishidden = lambda x: False
-        gFilePaths = glob.glob(sBakDstDirPath + "/*")
+        gFilePaths = sorted(glob.glob(sBakDstDirPath + "/*"))
         glob._ishidden = old_ishidden
         for sFilePath in gFilePaths:
             arrFileList.append(sFilePath)
@@ -153,7 +153,7 @@ def main():
         arrFileList = []
         old_ishidden = glob._ishidden
         glob._ishidden = lambda x: False
-        gFilePaths = glob.glob(sBakDstDirPath + "/*")
+        gFilePaths = sorted(glob.glob(sBakDstDirPath + "/*"))
         glob._ishidden = old_ishidden
         for sFilePath in gFilePaths:
             if sBakDstPathBase in sFilePath:
