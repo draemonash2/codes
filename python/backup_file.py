@@ -1,27 +1,35 @@
 #!/usr/bin/env python3
 
-# usage : python3 backup_file.py <filepath> <backupnum> <logfilepath>
+# usage : python3 backup_file.py <filepath> [<backupnum>] [<logfilepath>]
 
 import sys
 import os
 import datetime
 import glob
 import shutil
+from os.path import expanduser
 
 sBAK_DIR_NAME = "_bak"
 sBAK_FILE_SUFFIX = "bak"
+lBAK_FILE_NUM_DEFAULT = 30
 
 def main():
     args = sys.argv
     if len(args) == 4:
-        pass
+        sBakSrcFilePath = args[1]
+        lBakFileNumMax = int(args[2])
+        sBakLogFilePath = args[3]
+    elif len(args) == 3:
+        sBakSrcFilePath = args[1]
+        lBakFileNumMax = int(args[2])
+        sBakLogFilePath = expanduser("~") + "/" + os.path.basename(args[0]) + ".log"
+    elif len(args) == 2:
+        sBakSrcFilePath = args[1]
+        lBakFileNumMax = lBAK_FILE_NUM_DEFAULT
+        sBakLogFilePath = expanduser("~") + "/" + os.path.basename(args[0]) + ".log"
     else:
         print('Arguments are too short')
         return 0
-    
-    sBakSrcFilePath = args[1]
-    lBakFileNumMax = int(args[2])
-    sBakLogFilePath = args[3]
     
     try:
         # ******************
@@ -29,13 +37,20 @@ def main():
         # ******************
         oLogFile = open(sBakLogFilePath, 'a')
         sBakSrcParDirPath = os.path.dirname(sBakSrcFilePath)
-        sBakSrcFileExt = os.path.splitext(sBakSrcFilePath)[1]
         sBakSrcFileName = os.path.basename(sBakSrcFilePath)
+        sBakSrcFileBaseName = os.path.splitext(sBakSrcFilePath)[0]
+        sBakSrcFileExt = os.path.splitext(sBakSrcFilePath)[1]
         sDateSuffix = datetime.datetime.now().strftime('%y%m%d')
-        print(sBakSrcParDirPath)
-        print(sBakSrcFileExt)
-        print(sBakSrcFileName)
+        #print(sBakSrcParDirPath)
+        #print(sBakSrcFileName)
+        #print(sBakSrcFileBaseName)
+        #print(sBakSrcFileExt)
         #print(sDateSuffix)
+        
+        if sBakSrcFileBaseName != "" and sBakSrcFileExt != "":
+            bExistsExt = True
+        else:
+            bExistsExt = False
         
         if not os.path.exists(sBakSrcFilePath):
             oLogFile.write("Backup source file does not exists.\n")
@@ -57,9 +72,13 @@ def main():
         
         # get file list
         arrFileList = []
+        old_ishidden = glob._ishidden
+        glob._ishidden = lambda x: False
         gFilePaths = glob.glob(sBakDstDirPath + "/*")
+        glob._ishidden = old_ishidden
         for sFilePath in gFilePaths:
             arrFileList.append(sFilePath)
+        #print(gFilePaths)
         #print(arrFileList)
         
         # search latest backup file
@@ -69,14 +88,17 @@ def main():
             #print(sBakDstPathBase)
             #print(os.path.splitext(sFilePath)[1])
             #print(sBakSrcFileExt)
-            if (sBakDstPathBase in sFilePath) and (os.path.splitext(sFilePath)[1] == sBakSrcFileExt):
+            if sBakDstPathBase in sFilePath:
                 sBakDstFilePathLatest = sFilePath
-        print("sBakDstFilePathLatest = " + sBakDstFilePathLatest)
+        #print("sBakDstFilePathLatest = " + sBakDstFilePathLatest)
         
         # decide backup file name
         # If a backup file exists and has the same date as the backup file.
         if (sBakDstFilePathLatest != "") and ((sBakDstPathBase + sDateSuffix) in sBakDstFilePathLatest):
-            sTailChar = (os.path.splitext(sBakDstFilePathLatest)[0])[-1]
+            if bExistsExt == True:
+                sTailChar = (os.path.splitext(sBakDstFilePathLatest)[0])[-1]
+            else:
+                sTailChar = sBakDstFilePathLatest[-1]
             #print(os.path.splitext(sBakDstFilePathLatest)[0])
             #print(sTailChar)
             lBakDstAlphaIdx = 0
@@ -91,10 +113,16 @@ def main():
                 oLogFile.write("  " + sBakDstFilePathLatest + "\n")
                 oLogFile.write("Suspend the program.\n")
                 return
-            sBakDstFilePath = sBakDstPathBase + sDateSuffix + chr(lBakDstAlphaIdx) + sBakSrcFileExt
+            if bExistsExt == True:
+                sBakDstFilePath = sBakDstPathBase + sDateSuffix + chr(lBakDstAlphaIdx) + sBakSrcFileExt
+            else:
+                sBakDstFilePath = sBakDstPathBase + sDateSuffix + chr(lBakDstAlphaIdx)
         else:
-            sBakDstFilePath = sBakDstPathBase + sDateSuffix + sBakSrcFileExt
-        print("sBakDstFilePath = " + sBakDstFilePath)
+            if bExistsExt == True:
+                sBakDstFilePath = sBakDstPathBase + sDateSuffix + sBakSrcFileExt
+            else:
+                sBakDstFilePath = sBakDstPathBase + sDateSuffix
+        #print("sBakDstFilePath = " + sBakDstFilePath)
         
         # get update time
         lDateLastModifiedLatestBk = 0
@@ -109,7 +137,7 @@ def main():
         # existing backup file does not exist or has been updated
         if (sBakDstFilePathLatest == "") or ( (sBakDstFilePathLatest != "") and (lDateLastModifiedTrgt > lDateLastModifiedLatestBk) ):
             # backup file
-            print(sBakSrcFilePath + " -> " + sBakDstFilePath)
+            #print(sBakSrcFilePath + " -> " + sBakDstFilePath)
             shutil.copy2(sBakSrcFilePath, sBakDstFilePath)
             oLogFile.write("[Success] " + sBakSrcFilePath + " -> " + sBakDstFilePath + "\n")
         else:
@@ -123,11 +151,14 @@ def main():
         # ************************
         # get file list
         arrFileList = []
+        old_ishidden = glob._ishidden
+        glob._ishidden = lambda x: False
         gFilePaths = glob.glob(sBakDstDirPath + "/*")
+        glob._ishidden = old_ishidden
         for sFilePath in gFilePaths:
-            if (sBakDstPathBase in sFilePath) and (os.path.splitext(sFilePath)[1] == sBakSrcFileExt):
+            if sBakDstPathBase in sFilePath:
                 arrFileList.append(sFilePath)
-        print(arrFileList)
+        #print(arrFileList)
         
         # delete backup file
         lBakFileNum = len(arrFileList)

@@ -84,6 +84,7 @@ Public Sub Main()
         WScript.Echo "引数を指定してください。プログラムを中断します。"
         Exit Sub
     End If
+    'MsgBox sBakSrcFilePath & vbNewLine & lBakFileNumMax & vbNewLine & sBakLogFilePath
     
     Dim objLogFile
     Set objLogFile = objFSO.OpenTextFile(sBakLogFilePath, 8, True) 'AddWrite
@@ -93,13 +94,24 @@ Public Sub Main()
     '****************
     '対象ファイル情報取得
     Dim sBakSrcParDirPath
-    Dim sBakSrcFileExt
     Dim sBakSrcFileName
+    Dim sBakSrcFileBaseName
+    Dim sBakSrcFileExt
     Dim sDateSuffix
     sBakSrcParDirPath = objFSO.GetParentFolderName( sBakSrcFilePath )
-    sBakSrcFileExt = objFSO.GetExtensionName( sBakSrcFilePath )
     sBakSrcFileName = objFSO.GetFileName( sBakSrcFilePath )
+    sBakSrcFileBaseName = objFSO.GetBaseName( sBakSrcFilePath )
+    sBakSrcFileExt = objFSO.GetExtensionName( sBakSrcFilePath )
     sDateSuffix = ConvDate2String(Now(),2)
+    'MsgBox sBakSrcParDirPath & vbNewLine & sBakSrcFileName & vbNewLine & sBakSrcFileBaseName & vbNewLine & sBakSrcFileExt & vbNewLine & sDateSuffix
+    
+    '拡張子有無チェック
+    Dim bExistsExt
+    If ( (sBakSrcFileBaseName <> "") And (sBakSrcFileExt <> "") ) Then
+        bExistsExt = True
+    Else
+        bExistsExt = False
+    End If
     
     'バックアップファイル情報作成
     Dim sBakDstDirPath
@@ -123,8 +135,7 @@ Public Sub Main()
     sBakDstFilePathLatest = ""
     Dim sFilePath
     For Each sFilePath In cFileList
-        If ( ( InStr(sFilePath, sBakDstPathBase) > 0 ) And _
-           (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
+        If ( InStr(sFilePath, sBakDstPathBase) > 0 ) Then
             sBakDstFilePathLatest = sFilePath
         End If
     Next
@@ -136,7 +147,11 @@ Public Sub Main()
     If sBakDstFilePathLatest <> "" And _
        InStr(sBakDstFilePathLatest, sBakDstPathBase & sDateSuffix) > 0 Then
         Dim sTailChar
-        sTailChar = Right( objFSO.GetBaseName( sBakDstFilePathLatest ), 1)
+        If bExistsExt = True Then
+            sTailChar = Right( objFSO.GetBaseName( sBakDstFilePathLatest ), 1)
+        Else
+            sTailChar = Right( sBakDstFilePathLatest, 1)
+        End If
         Dim lBakDstAlphaIdx
         If Asc(sTailChar) >= Asc("a") And Asc(sTailChar) < Asc("z") Then
             lBakDstAlphaIdx = Asc(sTailChar) + 1
@@ -150,9 +165,17 @@ Public Sub Main()
             objLogFile.WriteLine "プログラムを中断します。"
             Exit Sub
         End If
-        sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx) & "." & sBakSrcFileExt
+        If bExistsExt = True Then
+            sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx) & "." & sBakSrcFileExt
+        Else
+            sBakDstFilePath = sBakDstPathBase & sDateSuffix & Chr(lBakDstAlphaIdx)
+        End If
     Else
-        sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
+        If bExistsExt = True Then
+            sBakDstFilePath = sBakDstPathBase & sDateSuffix & "." & sBakSrcFileExt
+        Else
+            sBakDstFilePath = sBakDstPathBase & sDateSuffix
+        End If
     End If
     'objLogFile.WriteLine sBakDstFilePath & " : " & sBakDstFilePathLatest
     'WScript.Echo sBakDstFilePath & " : " & sBakDstFilePathLatest
@@ -186,8 +209,7 @@ Public Sub Main()
     Call GetFileListCmdClct( sBakDstDirPath, cFileListAll, 1, "*")
     Set cFileList = CreateObject("System.Collections.ArrayList")
     For Each sFilePath in cFileListAll
-        If ( (InStr(sFilePath, sBakDstPathBase) > 0) And _
-             (objFSO.GetExtensionName(sFilePath) = sBakSrcFileExt) ) Then
+        If InStr(sFilePath, sBakDstPathBase) > 0 Then
             cFileList.Add sFilePath
         End If
     Next
@@ -234,38 +256,38 @@ Private Sub Test_Main() '{{{
     
     Dim objWshShell
     Set objWshShell = WScript.CreateObject("WScript.Shell")
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
     Dim sDesktopPath
     sDesktopPath = objWshShell.SpecialFolders("Desktop")
+    
+    MsgBox "=== test start ==="
     
     Dim sTrgtFilePath
     Dim sTrgtFilePathOrg
     Dim sBakDirPath
     Dim sBakLogName
-    sTrgtFilePath = sDesktopPath & "\backup_test.txt"
-    sTrgtFilePathOrg = sDesktopPath & "\backup_test_org.txt"
-    sBakDirPath = sDesktopPath & "\" & sBAK_DIR_NAME
-    sBakLogName = sDesktopPath & "\backup_test.log"
-    
-    Dim objFSO
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    
     Dim objTxtFile
-    If objFSO.FileExists(sTrgtFilePathOrg) Then
-        'Do Nothing
-    Else
-        Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePathOrg, 8, True)
-        objTxtFile.WriteLine "a"
-        objTxtFile.Close
-    End If
-    objFSO.CopyFile sTrgtFilePathOrg, sTrgtFilePath, True
-    If objFSO.FolderExists( sBakDirPath ) Then
-        objFSO.DeleteFolder sBakDirPath, True
-    End If
-    
-    MsgBox "=== test start ==="
-    
     Select Case lTestCase
         Case 1
+            sTrgtFilePath = sDesktopPath & "\backup_test.txt"
+            sTrgtFilePathOrg = sDesktopPath & "\backup_test_org.txt"
+            sBakDirPath = sDesktopPath & "\" & sBAK_DIR_NAME
+            sBakLogName = sDesktopPath & "\backup_test.log"
+            
+            If objFSO.FileExists(sTrgtFilePathOrg) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePathOrg, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+            End If
+            objFSO.CopyFile sTrgtFilePathOrg, sTrgtFilePath, True
+            If objFSO.FolderExists( sBakDirPath ) Then
+                objFSO.DeleteFolder sBakDirPath, True
+            End If
+            
             cArgs.Add sTrgtFilePath
             cArgs.Add 5
             cArgs.Add sBakLogName
@@ -322,14 +344,117 @@ Private Sub Test_Main() '{{{
             objTxtFile.WriteLine "aa"
             objTxtFile.Close
             Call Main()
-            MsgBox "9 バックアップ生成後(g追加 b,c,d削除)"
+            MsgBox "9 バックアップ生成後(g追加 b,c,d,e削除)"
         Case 2
+            sTrgtFilePath = sDesktopPath & "\backup_test.txt"
+            sTrgtFilePathOrg = sDesktopPath & "\backup_test_org.txt"
+            sBakDirPath = sDesktopPath & "\" & sBAK_DIR_NAME
+            
+            If objFSO.FileExists(sTrgtFilePathOrg) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePathOrg, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+            End If
+            objFSO.CopyFile sTrgtFilePathOrg, sTrgtFilePath, True
+            If objFSO.FolderExists( sBakDirPath ) Then
+                objFSO.DeleteFolder sBakDirPath, True
+            End If
+            
             cArgs.Add sTrgtFilePath
             cArgs.Add 5
             Call Main()
         Case 3
+            sTrgtFilePath = sDesktopPath & "\backup_test.txt"
+            sTrgtFilePathOrg = sDesktopPath & "\backup_test_org.txt"
+            sBakDirPath = sDesktopPath & "\" & sBAK_DIR_NAME
+            
+            If objFSO.FileExists(sTrgtFilePathOrg) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePathOrg, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+            End If
+            objFSO.CopyFile sTrgtFilePathOrg, sTrgtFilePath, True
+            If objFSO.FolderExists( sBakDirPath ) Then
+                objFSO.DeleteFolder sBakDirPath, True
+            End If
+            
             cArgs.Add sTrgtFilePath
             Call Main()
+        Case 4
+            Dim sTrgtFilePath1
+            Dim sTrgtFilePath2
+            Dim sTrgtFilePath3
+            Dim sTrgtFilePath4
+            sTrgtFilePath1 = sDesktopPath & "\backup_test.txt"
+            sTrgtFilePath2 = sDesktopPath & "\.backup_test.txt"
+            sTrgtFilePath3 = sDesktopPath & "\backup_test"
+            sTrgtFilePath4 = sDesktopPath & "\.backup_test"
+            sBakDirPath = sDesktopPath & "\" & sBAK_DIR_NAME
+            sBakLogName = sDesktopPath & "\backup_test.log"
+            
+            If objFSO.FileExists(sTrgtFilePath1) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath1, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+                Set objTxtFile = Nothing
+            End If
+            If objFSO.FileExists(sTrgtFilePath2) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath2, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+                Set objTxtFile = Nothing
+            End If
+            If objFSO.FileExists(sTrgtFilePath3) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath3, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+                Set objTxtFile = Nothing
+            End If
+            If objFSO.FileExists(sTrgtFilePath4) Then
+                'Do Nothing
+            Else
+                Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath4, 8, True)
+                objTxtFile.WriteLine "a"
+                objTxtFile.Close
+                Set objTxtFile = Nothing
+            End If
+            If objFSO.FolderExists( sBakDirPath ) Then
+                objFSO.DeleteFolder sBakDirPath, True
+            End If
+            
+            cArgs.Add sTrgtFilePath1
+            cArgs.Add 5
+            cArgs.Add sBakLogName
+            Call Main()
+            cArgs.Clear
+            
+            cArgs.Add sTrgtFilePath2
+            cArgs.Add 5
+            cArgs.Add sBakLogName
+            Call Main()
+            cArgs.Clear
+            
+            cArgs.Add sTrgtFilePath3
+            cArgs.Add 5
+            cArgs.Add sBakLogName
+            Call Main()
+            cArgs.Clear
+            
+            cArgs.Add sTrgtFilePath4
+            cArgs.Add 5
+            cArgs.Add sBakLogName
+            Call Main()
+            cArgs.Clear
         Case Else
             Call Main()
     End Select
