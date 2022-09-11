@@ -170,8 +170,8 @@ function _test_is_tail_char_slash() { #{{{
 		echo "[error] is_tail_char_slash_test() test error 01"
 	fi
 } #}}}
-function _output_ps1_color_list() {
-	printf "\n === color list ===\n"
+function _output_ps1_color_palette() {
+	printf "\n === PS1 color palette ===\n"
 	type[0]="none        "
 	type[1]="bold        "
 	type[2]="half-bright "
@@ -191,6 +191,22 @@ function _output_ps1_color_list() {
 		done
 	done
 	printf "\n"
+}
+function _output_tmux_color_palette() {
+	bgclridx=${1:-0}
+	echo "=== tmux colour palette ==="
+	echo "  i.e. set -g status-style \"fg=colour???,bg=colour${bgclridx}\""
+	for fgclridx in {0..255}; do
+		idxmod=`expr $(expr ${fgclridx} - 16) % 36`
+		#echo ${idxmod}
+		if [ ${idxmod} -eq 0 ]; then
+			printf "\n"
+		fi
+		bgclrstr="\x1b[48;5;${bgclridx}m"
+		fgclrstr="\x1b[38;5;${fgclridx}m"
+		fgoutstr="$(printf "%03d\n" "${fgclridx}")"
+		printf "${bgclrstr}${fgclrstr} ${fgoutstr} \x1b[0m"
+	done
 }
 # command alias
 function gr() {
@@ -472,7 +488,10 @@ alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
 
-alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
+#alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
+alias gitlo="git log -all --graph --date-order --pretty=format:\"%Cred%ad%Creset ::::: %Cblue%h%Creset ::::: %Cgreen%an%Creset ::::: %C(yellow)%s\""
+alias gitstt="git status"
+alias gitco="git checkout"
 
 cmpllist_tma="${cmpllist_tma} temp"
 cmpllist_tmk="${cmpllist_tmk} temp"

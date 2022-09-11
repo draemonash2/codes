@@ -175,7 +175,7 @@ global giWinTileMode := 0
 		^+!3::Run https://draemonash2.github.io/gitcommand_lng/gitcommand.html
 	;翻訳サイト
 		^+!h::
-			Run https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja
+		;	Run https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja
 			Run https://www.deepl.com//translator
 			Return
 	
