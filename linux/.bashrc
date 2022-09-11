@@ -152,24 +152,43 @@ function _is_tail_char_slash() {
 		return 1
 	fi
 	srcchr=${1}
-	srcchrtmp=`echo "${srcchr}" | sed "s/\/$//g"`
-	#echo ${srcchr} : ${srcchrtmp}
-	if [ "${srcchr}" == "${srcchrtmp}" ]; then
-		return 0 # tail char is not slash
-	else
+	srcchrtmp=${srcchr: -1}
+	if [ "${srcchrtmp}" == "/" ]; then
 		return 1 # tail char is slash
+	else
+		return 0 # tail char is not slash
 	fi
 }
-function _test_is_tail_char_slash() { #{{{
-	_is_tail_char_slash ./aaa/aaaaa
-	if [ $? -ne 0 ]; then
-		echo "[error] is_tail_char_slash_test() test error 02"
+	function _test_is_tail_char_slash() { #{{{
+		_is_tail_char_slash ./aaa/aaaaa
+		if [ $? -ne 0 ]; then
+			echo "[error] is_tail_char_slash_test() test error 02"
+		fi
+		_is_tail_char_slash ./aaa/aaaaa/
+		if [ $? -ne 1 ]; then
+			echo "[error] is_tail_char_slash_test() test error 01"
+		fi
+	} #}}}
+function _remove_tail_slash() {
+	if [ $# -ne 1 ]; then
+		echo "[error] argument error."
+		return 1
 	fi
-	_is_tail_char_slash ./aaa/aaaaa/
-	if [ $? -ne 1 ]; then
-		echo "[error] is_tail_char_slash_test() test error 01"
-	fi
-} #}}}
+	srcchr=${1}
+	srcchrremoved=`echo "${srcchr}" | sed "s/\/$//g"`
+	echo ${srcchrremoved}
+}
+	function _test_remove_char_slash() { #{{{
+		str=./aaa/aaaaa
+		result=`_remove_tail_slash ${str}`; echo ${result}
+		result=`_remove_tail_slash ${str}`; echo ${result}
+		str=/
+		result=`_remove_tail_slash ${str}`; echo ${result}
+		result=`_remove_tail_slash ${str}`; echo ${result}
+		str=/aa
+		result=`_remove_tail_slash ${str}`; echo ${result}
+		result=`_remove_tail_slash ${str}`; echo ${result}
+	} #}}}
 function _output_ps1_color_palette() {
 	printf "\n === PS1 color palette ===\n"
 	type[0]="none        "
@@ -372,21 +391,9 @@ function cpd() {
 		return 1
 	fi
 	srcpathraw=${1}
-	srcpath=""
-	_is_tail_char_slash ${srcpathraw}
-	if [ $? -eq 1 ]; then
-		srcpath=${srcpathraw%/*}
-	else
-		srcpath=${srcpathraw}
-	fi
 	dstpathraw=${2}
-	dstpath=""
-	_is_tail_char_slash ${dstpathraw}
-	if [ $? -eq 1 ]; then
-		dstpath=${dstpathraw%/*}
-	else
-		dstpath=${dstpathraw}
-	fi
+	srcpath=`_remove_tail_slash ${srcpathraw}`
+	dstpath=`_remove_tail_slash ${dstpathraw}`
 	dstpardirpath=${dstpath%/*}
 	echo ${dstpardirpath}
 	if [ -f ${srcpath} ] || [ -d ${srcpath} ]; then
@@ -402,6 +409,14 @@ function cpd() {
 		return 1
 	fi
 }
+	function _test_cpd() { # {{{
+		srcpath="${HOME}/.bashrc"
+		dstpath="${HOME}/test/aaa/.bashrc"
+	#	echo ${srcpath}
+	#	echo ${dstpath}
+		cpd ${srcpath} ${dstpath}
+		ll ${dstpath}
+	} # }}}
 function catrange() {
 	if [ $# -ne 3 ]; then
 		echo "[error] arguments error."
