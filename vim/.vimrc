@@ -1836,6 +1836,20 @@ if has('conceal')
 endif
 
 " ==============================================================================
+" surround 設定
+" ==============================================================================
+	let g:surround_{char2nr("「")} = "「\r」"
+	let g:surround_{char2nr("」")} = "「\r」"
+	let g:surround_{char2nr("【")} = "【\r】"
+	let g:surround_{char2nr("】")} = "【\r】"
+	let g:surround_{char2nr("（")} = "（\r）"
+	let g:surround_{char2nr("）")} = "（\r）"
+	let g:surround_{char2nr("＜")} = "＜\r＞"
+	let g:surround_{char2nr("＞")} = "＜\r＞"
+	let g:surround_{char2nr("｛")} = "｛\r｝"
+	let g:surround_{char2nr("｝")} = "｛\r｝"
+
+" ==============================================================================
 " showmarks 設定
 " ==============================================================================
 	autocmd VimEnter * DoShowMarks!
