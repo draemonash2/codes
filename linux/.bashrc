@@ -508,8 +508,7 @@ alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%
 alias gitstt="git status"
 alias gitco="git checkout"
 
-cmpllist_tma="${cmpllist_tma} temp"
-cmpllist_tmk="${cmpllist_tmk} temp"
+session_name=temp; cmpllist_tma="${cmpllist_tma} ${session_name}"; cmpllist_tmk="${cmpllist_tmk} ${session_name}"
 
 #########################################################
 # Environment dependent settings
