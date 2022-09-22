@@ -32,6 +32,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )     'ConvDate2String()
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileListCmdClct()
                                                             'CreateDirectry()
                                                             'GetFileInfo()
+                                                            'MoveToTrushBox()
 
 '===============================================================================
 '= 設定値
@@ -225,7 +226,7 @@ Public Sub Main()
     For Each sFilePath In cFileList
         If lBakFileNum > lBakFileNumMax Then
             'objFSO.DeleteFile sFilePath, True
-            Call MoveToTrushBox(objFSO, sFilePath)
+            Call MoveToTrushBox(sFilePath)
             lDelFileNum = lDelFileNum + 1
         End If
         lBakFileNum = lBakFileNum - 1
@@ -242,23 +243,6 @@ Public Sub Main()
     
     objLogFile.Close
 End Sub
-
-'===============================================================================
-'= 内部関数
-'===============================================================================
-Private Function MoveToTrushBox(ByRef objFSO, ByVal sTrgtPath)
-    If objFSO.FileExists(sTrgtPath) Then
-        CreateObject("Shell.Application").Namespace(10).movehere sTrgtPath
-        Do While objFSO.FileExists(sTrgtPath) Or objFSO.FolderExists(sTrgtPath)
-            '削除処理は非同期で進行するため、削除中にスクリプトが終了すると削除処理は中断される。
-            '削除対象が削除されるまで待機する。
-            WScript.sleep(100)
-        Loop
-        MoveToTrushBox = True
-    Else
-        MoveToTrushBox = False
-    End If
-End Function
 
 '===============================================================================
 '= テスト関数

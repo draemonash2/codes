@@ -6,6 +6,7 @@ Option Explicit
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )        'DownloadFile()
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )     'ConvDate2String()
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'CreateDirectry()
+                                                            'MoveToTrushBox()
 
 '===============================================================================
 '= 本処理
@@ -95,7 +96,8 @@ End If
 vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
     '=== フォルダ削除 ===
-    objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & sDateSuffix, True
+    'objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & sDateSuffix, True
+    Call MoveToTrushBox(sDownloadTrgtDirPathRaw & "\" & sDateSuffix)
 End If
 
 'MsgBox "処理が完了しました！", vbYesNo, sOutputMsg

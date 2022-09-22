@@ -3,8 +3,9 @@ Option Explicit
 '===============================================================================
 '= インクルード
 '===============================================================================
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )    'DownloadFile()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" ) 'ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )        'DownloadFile()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\String.vbs" )     'ConvDate2String()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'MoveToTrushBox()
 
 '===============================================================================
 '= 本処理
@@ -70,13 +71,15 @@ objFSO.MoveFolder sDiffSrcOrgDirPath, sDiffSrcNewDirPath
 objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcNewDirPath & """ """ & sDiffTrgtDirPath & """", 10, True
 
 '=== ZIP、フォルダ削除 ===
-objFSO.DeleteFile sDownloadTrgtFilePath, True
+'objFSO.DeleteFile sDownloadTrgtFilePath, True
+Call MoveToTrushBox(sDownloadTrgtFilePath)
 vAnswer = MsgBox("ダウンロードフォルダを削除しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
-    objFSO.DeleteFolder sDiffSrcNewDirPath, True
+    'objFSO.DeleteFolder sDiffSrcNewDirPath, True
+    Call MoveToTrushBox(sDiffSrcNewDirPath)
 End If
 
-MsgBox "処理が完了しました！", vbYesNo, sOutputMsg
+'MsgBox "処理が完了しました！", vbYesNo, sOutputMsg
 
 '===============================================================================
 '= インクルード関数

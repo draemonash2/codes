@@ -1537,6 +1537,53 @@ End Function
         MsgBox sResult
     End Sub
 
+' ==================================================================
+' = 概要    ゴミ箱に移動する
+' = 引数    sTrgtPath       String  [in]    削除対象ファイル/フォルダ
+' = 覚書    ・移動したファイル/フォルダはアンドゥできる
+' = 依存    なし
+' = 所属    FileSystem.vbs
+' ==================================================================
+Public Function MoveToTrushBox( _
+    ByVal sTrgtPath _
+)
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    CreateObject("Shell.Application").Namespace(10).movehere sTrgtPath
+    Do While objFSO.FileExists(sTrgtPath) Or objFSO.FolderExists(sTrgtPath)
+        '削除処理は非同期で進行するため、削除中にスクリプトが終了すると削除処理は中断される。
+        '削除対象が削除されるまで待機する。
+        WScript.sleep(100)
+    Loop
+End Function
+'   Call Test_MoveToTrushBox()
+    Private Sub Test_MoveToTrushBox()
+        Dim objWshShell
+        Set objWshShell = WScript.CreateObject("WScript.Shell")
+        Dim sTrgtFilePath
+        sTrgtFilePath = objWshShell.SpecialFolders("Desktop") & "\aaa.txt"
+        Dim objFSO
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Dim objTxtFile
+        Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 2, True)
+        objTxtFile.WriteLine "aaa"
+        objTxtFile.Close
+        
+        Dim sTrgtDirPath
+        sTrgtDirPath = objWshShell.SpecialFolders("Desktop") & "\bbb"
+        objFSO.CreateFolder( sTrgtDirPath )
+        Set objTxtFile = objFSO.OpenTextFile(sTrgtDirPath & "\bbb.txt", 2, True)
+        objTxtFile.WriteLine "bbb"
+        objTxtFile.Close
+        
+        MsgBox "デスクトップ配下にファイル「aaa」とフォルダ「bbb」を作成"
+        
+        Call MoveToTrushBox(sTrgtFilePath)
+        Call MoveToTrushBox(sTrgtDirPath)
+        
+        MsgBox "ゴミ箱移動完了"
+    End Sub
+
 '*********************************************************************
 '* ローカル関数定義
 '*********************************************************************
