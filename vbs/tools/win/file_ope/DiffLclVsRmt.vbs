@@ -96,8 +96,8 @@ End If
 vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sOutputMsg)
 If vAnswer = vbYes Then
     '=== フォルダ削除 ===
-    'objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & sDateSuffix, True
-    Call MoveToTrushBox(sDownloadTrgtDirPathRaw & "\" & sDateSuffix)
+    'objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix, True
+    Call MoveToTrushBox(sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix)
 End If
 
 'MsgBox "処理が完了しました！", vbYesNo, sOutputMsg
