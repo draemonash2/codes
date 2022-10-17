@@ -1,0 +1,77 @@
+# 共通設定
+	set vertical-split = false																	# サブビューを横分割にする
+	set diff-context = 0																		# 差分の前後の表示行数（diff-context)を指定
+	set id-width = 7																			# コミットIDの幅
+#	set blame-options = -C -C -C																# デフォルトのblameオプションの空白で区切られた文字列
+	set line-graphics = ascii																	# 画面描画文字コード
+#	set show-line-numbers = no																	# 行番号表示
+#	set line-number-interval = 5																# 行番号表示間隔
+	set horizontal-scroll = 33%																	# 各ステップでの水平方向へのスクロールの間隔
+	set git-colors = no																			# Gitの色設定を読み込まない
+	set show-notes = yes																		# コミットのための注記を表示する
+	set show-changes = yes																		# メインビュー内でのステージおよびステージされていない変更を表示する
+	set split-view-height = 70%																	# 水平分割時の下画面サイズの割合
+	set status-show-untracked-dirs = yes														# ステータスビューに非追跡対象ディレクトリを表示する
+	set tab-size = 4																			# タブ幅
+	set ignore-space = some																		# 検索時空白無視
+	set ignore-case = true																		# 検索時大文字小文字無視
+	set commit-order = topo																		# コミットの表示順(topo)
+	set wrap-lines = no																			# 長い行をラップする
+	set focus-child = yes																		# 子ビューが開かれている場合に子ビューにフォーカスする
+	set refresh-mode = auto																		# 画面描画タイミング自動
+	set main-view = id date author commit-title:graph=yes,refs=yes								# main viewの左端にコミットIDを表示する
+
+# 色設定 (color area fgcolor bgcolor)
+	color default			white		black
+	color cursor			default		color235
+	color date				cyan		default
+	color delimiter			cyan		default
+	color line-number		yellow		default
+	color diff-header		yellow		default
+	color diff-index		blue		default
+	color diff-chunk		magenta		default
+	color "Reported-by:"	green		default
+	color graph-commit		cyan		default
+	
+	color diff-add			color028	default
+	color diff-del			color160	default
+	
+	color "commit "			color220	default
+	color "Author: "		color220	default
+	color "Refs: "			color220	default
+	color "AuthorDate: "	color220	default
+	color "Commit: "		color220	default
+	color "CommitDate: "	color220	default
+	color "Date: "			color220	default
+	
+	color "diff --"			color220	default
+	color "index "			color229	default
+	color "--- "			color229	default
+	color "+++ "			color229	default
+	color "@@"				color026	default
+
+# キーバインド設定
+#   <usage - command prefix>
+#     !cmd : コマンド実行 (標準出力)
+#     ?cmd : コマンド実行 (事前に確認画面表示)
+#     @cmd : コマンド実行 (バックグラウンド実行)
+#     <cmd : コマンド実行 (実行後tig終了)
+#	bind generic	W			:!git reflog													# reflogをpagerで表示
+#	bind generic	y			@sh -c "echo %(commit) | pbcopy"								# commitハッシュをコピー
+#	bind generic	^			@hub browse														# リポジトリのGitHubを表示
+#	bind generic	F			none															# 無効化
+#	bind generic	F			?git fetch														# fetch
+	bind generic	M			@source ~/.tigrc
+#	bind generic	M			none															# 無効化
+#	bind main		B			?git checkout -b "%(prompt Enter new branch name: )"			# checkout -b
+#	bind main		U			?git poh "%(prompt Enter push branch => )"						# poh = push origin HEAD:$1
+#	bind main		<Ctrl-r>	?git rebase -i %(commit)										# rebase
+#	bind branch		B			?git checkout -b "%(prompt Enter new branch name:)" %(branch)	# checkout -b
+#	bind branch		[			@hub compare %(branch)											# 選択したbranchのcompare画面
+#	bind branch		n			?git checkout -b %(prompt) %(branch)							# チェックアウト
+#	bind branch		P			?git push origin %(branch)										# プッシュ
+#	bind branch		L			?git pull origin %(branch)										# プル
+#	bind branch		M			none															# 無効化
+#	bind branch		M			!git merge %(branch)											# マージ
+#	bind status		<Ctrl-r>	?git reset --hard HEAD											# reset hard
+

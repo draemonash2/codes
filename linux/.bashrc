@@ -211,9 +211,9 @@ function _output_ps1_color_palette() {
 	done
 	printf "\n"
 }
-function _output_tmux_color_palette() {
+function _output_color_palette_clridx() {
 	bgclridx=${1:-0}
-	echo "=== tmux colour palette ==="
+	echo "=== colour palette color idx ==="
 	echo "  i.e. set -g status-style \"fg=colour???,bg=colour${bgclridx}\""
 	for fgclridx in {0..255}; do
 		idxmod=`expr $(expr ${fgclridx} - 16) % 36`
@@ -499,6 +499,7 @@ alias bre='. ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
+alias tgr='vim ~/.tigrc'
 alias tmc='vim ~/.tmux.conf'
 
 alias tml='tmux list-sessions'
