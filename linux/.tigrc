@@ -40,10 +40,12 @@
 	color "Commit: "		color220	color017
 	color "CommitDate: "	color220	color017
 	color "Date: "			color220	color017
+	color "---"				color236	default
 	color diff-header		color220	color017
 	color diff-newmode		color236	default
 	color diff-oldmode		color236	default
 	color diff-index		color236	default
+	color diff-stat			color067	default
 	color "--- "			color236	default
 	color "+++ "			color236	default
 	color diff-chunk		color026	default
