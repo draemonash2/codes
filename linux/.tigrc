@@ -10,7 +10,7 @@
 	set git-colors = no																			# Gitの色設定を読み込まない
 	set show-notes = yes																		# コミットのための注記を表示する
 	set show-changes = yes																		# メインビュー内でのステージおよびステージされていない変更を表示する
-	set split-view-height = 70%																	# 水平分割時の下画面サイズの割合
+	set split-view-height = 80%																	# 水平分割時の下画面サイズの割合
 	set status-show-untracked-dirs = yes														# ステータスビューに非追跡対象ディレクトリを表示する
 	set tab-size = 4																			# タブ幅
 	set ignore-space = some																		# 検索時空白無視
@@ -22,33 +22,33 @@
 	set main-view = id date author commit-title:graph=yes,refs=yes								# main viewの左端にコミットIDを表示する
 
 # 色設定 (color area fgcolor bgcolor)
+	# general
 	color default			white		black
 	color cursor			default		color235
-	color date				cyan		default
+	color id				color136	default
+	color date				color067	default
+	color author			color035	default
+	color graph-commit		color080	default
 	color delimiter			cyan		default
-	color line-number		yellow		default
-	color diff-header		yellow		default
-	color diff-index		blue		default
-	color diff-chunk		magenta		default
 	color "Reported-by:"	green		default
-	color graph-commit		cyan		default
 	
+	# diff view
+	color "commit "			color220	color017
+	color "Author: "		color220	color017
+	color "Refs: "			color220	color017
+	color "AuthorDate: "	color220	color017
+	color "Commit: "		color220	color017
+	color "CommitDate: "	color220	color017
+	color "Date: "			color220	color017
+	color diff-header		color220	color017
+	color diff-newmode		color236	default
+	color diff-oldmode		color236	default
+	color diff-index		color236	default
+	color "--- "			color236	default
+	color "+++ "			color236	default
+	color diff-chunk		color026	default
 	color diff-add			color028	default
 	color diff-del			color160	default
-	
-	color "commit "			color220	default
-	color "Author: "		color220	default
-	color "Refs: "			color220	default
-	color "AuthorDate: "	color220	default
-	color "Commit: "		color220	default
-	color "CommitDate: "	color220	default
-	color "Date: "			color220	default
-	
-	color "diff --"			color220	default
-	color "index "			color229	default
-	color "--- "			color229	default
-	color "+++ "			color229	default
-	color "@@"				color026	default
 
 # キーバインド設定
 #   <usage - command prefix>
@@ -56,22 +56,22 @@
 #     ?cmd : コマンド実行 (事前に確認画面表示)
 #     @cmd : コマンド実行 (バックグラウンド実行)
 #     <cmd : コマンド実行 (実行後tig終了)
-#	bind generic	W			:!git reflog													# reflogをpagerで表示
+	bind generic	W			:!git reflog													# reflogをpagerで表示
 #	bind generic	y			@sh -c "echo %(commit) | pbcopy"								# commitハッシュをコピー
-#	bind generic	^			@hub browse														# リポジトリのGitHubを表示
-#	bind generic	F			none															# 無効化
 #	bind generic	F			?git fetch														# fetch
 	bind generic	M			@source ~/.tigrc
+	bind generic	<Ctrl-b>	scroll-page-up
+	bind generic	<Ctrl-f>	scroll-page-down
+	bind generic	<Ctrl-k>	move-half-page-up
+	bind generic	<Ctrl-j>	move-half-page-down
 #	bind generic	M			none															# 無効化
 #	bind main		B			?git checkout -b "%(prompt Enter new branch name: )"			# checkout -b
 #	bind main		U			?git poh "%(prompt Enter push branch => )"						# poh = push origin HEAD:$1
 #	bind main		<Ctrl-r>	?git rebase -i %(commit)										# rebase
 #	bind branch		B			?git checkout -b "%(prompt Enter new branch name:)" %(branch)	# checkout -b
-#	bind branch		[			@hub compare %(branch)											# 選択したbranchのcompare画面
 #	bind branch		n			?git checkout -b %(prompt) %(branch)							# チェックアウト
 #	bind branch		P			?git push origin %(branch)										# プッシュ
 #	bind branch		L			?git pull origin %(branch)										# プル
-#	bind branch		M			none															# 無効化
 #	bind branch		M			!git merge %(branch)											# マージ
 #	bind status		<Ctrl-r>	?git reset --hard HEAD											# reset hard
 
