@@ -52,6 +52,7 @@ cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".bashrc"
 cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".inputrc"
 cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".gdbinit"
 cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".tmux.conf"
+cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".tigrc"
 
 'バックアップフォルダ作成
 Dim sDateSuffix
