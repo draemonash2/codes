@@ -811,6 +811,15 @@ endif
 	augroup END
 
 " ==============================================================================
+" 行末の空白をハイライトする
+" ==============================================================================
+	augroup highlightSpace
+		autocmd!
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('highlightSpaces', '\S\+\zs\s\+\ze$')
+		autocmd WinEnter,BufRead,BufNew,Syntax * highlight highlightSpaces ctermbg=Red guibg=Red
+	augroup END
+
+" ==============================================================================
 " 関数名の色付け設定
 " [参照] http://ogawa.s18.xrea.com/tdiary/20070523.html
 " ==============================================================================
