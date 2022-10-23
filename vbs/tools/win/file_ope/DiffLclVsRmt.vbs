@@ -68,6 +68,11 @@ If vAnswer = vbYes Then
     '=== ファイル受信(Remote → Local) ===
     For iIdx = 0 To cTrgtFileNames.Count - 1
         objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & cTrgtFileNames(iIdx) & " " & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
+        If objFSO.FileExists(sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx)) Then
+            'Do Nothing
+        Else
+            objFSO.CopyFile sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx), sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx)
+        End If
     Next
     '=== ファイルバックアップ ===
     For iIdx = 0 To cTrgtFileNames.Count - 1
