@@ -1,7 +1,7 @@
 Option Explicit
 
 Const sTRGT_TIME = "09:01"
-Const sCMD = "cmd /c C:\root\BackUpFile.bat"
+Const sCMD = "cmd /c C:\codes\BackUpFiles.bat"
 
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
