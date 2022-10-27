@@ -370,6 +370,18 @@ function tmk() {
 }
 	complete -F _complete_tmk tmk # {{{
 	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
+function tmr() {
+	if [ $# -ne 1 ]; then
+		echo "[error] specify one arguments."
+		echo "  usage : tmr <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tma ${session_name}
+}
+	complete -F _complete_tmr tmr # {{{
+	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
 function killall() {
 	#MAX=1
 	MAX=`jobs | wc -l`
@@ -506,15 +518,17 @@ alias tml='tmux list-sessions'
 
 #alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
 alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
-alias gitstt="git status"
+alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
-session_name=temp; cmpllist_tma="${cmpllist_tma} ${session_name}"; cmpllist_tmk="${cmpllist_tmk} ${session_name}"
+session_name=temp; cmpllist_tma="${cmpllist_tma} ${session_name}"; cmpllist_tmk="${cmpllist_tmk} ${session_name}"; cmpllist_tmr="${cmpllist_tmr} ${session_name}"
 
 #########################################################
 # Environment dependent settings
 #########################################################
-alias cdw='cd /mnt/c/;'
-alias exp='explorer.exe .'		# open current directory with explorer.exe
+# WSL
+if [[ "$(uname -r)" == *Microsoft* ]]; then
+	alias cdw='cd /mnt/c/'
+fi
 alias sht='sudo shutdown -h now'
 
