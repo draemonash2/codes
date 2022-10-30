@@ -345,7 +345,7 @@ function lndir() {
 		ln ${srcfile} ${dstfile}
 	done
 }
-function tma() {
+function tma() { # TMux Attach
 	if [ ! -z "$TMUX" ]; then
 		echo "[error] cannot be run on tmux."
 		return 1
@@ -359,7 +359,7 @@ function tma() {
 }
 	complete -F _complete_tma tma # {{{
 	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
-function tmk() {
+function tmk() { # TMux Kill
 	if [ $# -ne 1 ]; then
 		echo "[error] specify one arguments."
 		echo "  usage : tmk <session_name>"
@@ -370,7 +370,7 @@ function tmk() {
 }
 	complete -F _complete_tmk tmk # {{{
 	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
-function tmr() {
+function tmr() { # TMux Restart
 	if [ $# -ne 1 ]; then
 		echo "[error] specify one arguments."
 		echo "  usage : tmr <session_name>"
@@ -522,6 +522,7 @@ alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
 session_name=temp; cmpllist_tma="${cmpllist_tma} ${session_name}"; cmpllist_tmk="${cmpllist_tmk} ${session_name}"; cmpllist_tmr="${cmpllist_tmr} ${session_name}"
+alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
 
 #########################################################
 # Environment dependent settings
