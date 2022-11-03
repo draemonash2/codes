@@ -70,6 +70,7 @@ global giWinTileMode := 0
 		^+!Up::
 			EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
+			Process, wait, Dropbox.exe, 30 ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
 			StartProgramAndActivate( sExePath, sFilePath )
 			Sleep 100
 			Send, {F2}

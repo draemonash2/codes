@@ -187,6 +187,18 @@ endif
 					\		'anzu': 'anzu#search_status'
 					\	}
 
+" ==============================================================================
+" ctrlp 設定
+" [参照] https://github.com/ctrlpvim/ctrlp.vim
+" ==============================================================================
+	let g:ctrlp_map = '<F4>'
+	let g:ctrlp_cmd = 'CtrlP'
+	let g:ctrlp_working_path_mode = 'ra'
+"	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'tags']
+	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
+	
+	command! -nargs=? Cpa CtrlP '/mnt/c/codes_sample'
+
 " =======================================
 " osc52 設定（リモート越しのローカルコピー）
 " <usage>
@@ -1819,18 +1831,6 @@ endif
 " vaffle 設定
 " ==============================================================================
 	let g:vaffle_show_hidden_files = 1	" 隠しファイルを表示
-
-" ==============================================================================
-" ctrlp 設定
-" [参照] https://github.com/ctrlpvim/ctrlp.vim
-" ==============================================================================
-	let g:ctrlp_map = '<c-p>'
-	let g:ctrlp_cmd = 'CtrlP'
-	let g:ctrlp_working_path_mode = 'ra'
-"	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'tags']
-	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
-	
-	command! -nargs=? Cpa CtrlP '/mnt/c/codes_sample'
 
 " ==============================================================================
 " neosnippet設定
