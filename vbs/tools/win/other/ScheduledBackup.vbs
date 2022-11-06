@@ -1,7 +1,7 @@
 Option Explicit
 
 Const sTRGT_TIME = "09:01"
-Const sCMD = "cmd /c C:\codes\BackUpFiles.bat"
+Const sCMD = "cmd /c C:\codes\BackUpFiles.bat" '注意）BackUpFiles.bat.git_sampleの場合は、シンボリックリンクを経由しない絶対パスを指定すること。
 
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")

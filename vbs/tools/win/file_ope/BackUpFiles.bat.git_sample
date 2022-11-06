@@ -1,0 +1,14 @@
+@echo off
+git add %~dp0%~n0%~x0
+git add %~dp0..\#temp.txt
+git add %~dp0..\#memo.xlsm
+git add %~dp0..\#memo.qea
+git add %~dp0..\**\#memo*.xlsx
+git add %~dp0..\**\#memo*.xlsm
+git commit -m "Scheduled backup."
+
+set tm=%time: =0%
+set dt=%date:/=%
+set BACKUP_LOG="%USERPROFILE%\Desktop\backup_executed_at_%dt:~2,6%-%tm:~0,2%%tm:~3,2%%tm:~6,2%.log"
+echo. > %BACKUP_LOG%
+

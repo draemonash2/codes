@@ -79,6 +79,7 @@
 "	nnoremap	<silent>			<F3>														" <F3>はペーストモード切替に割り当て
 "	nnoremap	<silent>						a<C-R>=strftime("%Y/%m/%d (%a)")<cr><esc>|		" 現在日時出力
 "	nnoremap	<silent>						a<C-R>=strftime("%H:%M:%S")<cr><esc>|			" 現在時刻出力
+"	nnoremap	<silent>			<F4>														" <F4>はCtrlP起動に割り当て
 	nnoremap	<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
 "	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
