@@ -99,6 +99,11 @@ global giWinTileMode := 0
 			sFilePath = "%DOC_DIR_PATH%\210_【衣食住】家計\100_予算管理.xlsm"
 			StartProgramAndActivate( "", sFilePath )
 			return
+	;予算管理＠家族用.xlsx
+		^+!^::
+			sFilePath = "%DOC_DIR_PATH%\..\000_Public\家計\予算管理＠家族用.xlsx"
+			StartProgramAndActivate( "", sFilePath )
+			return
 	;言語チートシート
 		^+!c::
 			sFilePath = "C:\other\言語チートシート.xlsx"
