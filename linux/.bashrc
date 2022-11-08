@@ -488,8 +488,22 @@ function catrange() {
 alias ll='ls -lFAv --color=auto'
 alias la='ls -AF --color=auto'
 alias l='ls -CF --color=auto'
-alias ff='find . -type f | grep '
-alias fd='find . -type d | grep '
+function ff() {
+	if [ $# -ne 1 ]; then
+		echo "[error] specify one arguments."
+		echo "  usage : ff <keyword>"
+		return 1
+	fi
+	find . -type f -name $1 2> /dev/null
+}
+function fd() {
+	if [ $# -ne 1 ]; then
+		echo "[error] specify one arguments."
+		echo "  usage : fd <keyword>"
+		return 1
+	fi
+	find . -type d -name $1 2> /dev/null
+}
 (diff --help | grep -- "--color") &> /dev/null
 if [ $? -eq 0 ]; then
 	alias diff='\diff --color'
