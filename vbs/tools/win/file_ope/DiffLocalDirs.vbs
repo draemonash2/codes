@@ -39,7 +39,7 @@ For each vDirPath in oFolder.subfolders
         sDiffSrcDirPath = sParDirPath & "\" & sDirNameBase
         sDiffTrgtDirPath = sParDirPath & "\" & sDirNameRaw
         If objFSO.FolderExists( sParDirPath & "\" & sDirNameBase ) Then
-            objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcDirPath & """ """ & sDiffTrgtDirPath & """", 10, False
+            objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sDiffSrcDirPath & """ """ & sDiffTrgtDirPath & """", 10, False
         Else
             'Do Nothing
         End If

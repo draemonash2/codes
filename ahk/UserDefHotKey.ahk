@@ -146,6 +146,7 @@ global giWinTileMode := 0
 	;cCalc.exe
 		^+!;::
 			EnvGet, sExePath, MYEXEPATH_CCALC
+		;	sExePath = "calc"
 			StartProgramAndActivate( sExePath, "", 1 )
 			return
 	;Wifi接続(Bluetoothテザリング起動)
