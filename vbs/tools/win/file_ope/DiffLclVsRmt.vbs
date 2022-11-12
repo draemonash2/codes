@@ -80,7 +80,7 @@ If vAnswer = vbYes Then
     Next
     '=== フォルダ比較 ===
     For iIdx = 0 To cTrgtFileNames.Count - 1
-        objWshShell.Run """" & sDiffProgramPath & """ -r """ & sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx) & """ """ & sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """", 10, False
+        objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx) & """ """ & sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """", 10, False
     Next
     On Error Goto 0
     vAnswer = MsgBox("比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg)
