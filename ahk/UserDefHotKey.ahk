@@ -126,8 +126,13 @@ global giWinTileMode := 0
 			return
 	;rapture.exe
 		^+!x::
+			; 作業フォルダ内のrapture.iniを読み込んでしまうため、一度作業
+			; フォルダをrapture.exeの格納先フォルダに変更してから実行する。
+			EnvGet, sPrgExePath, MYDIRPATH_PRG_EXE
+			SetWorkingDir, %sPrgExePath%\Rapture ; 作業フォルダ変更
 			EnvGet, sExePath, MYEXEPATH_RAPTURE
 			Run %sExePath%
+			SetWorkingDir, %A_ScriptDir% ; 作業フォルダを元に戻す
 			return
 	;KitchenTimer.vbs
 		^+!k::
@@ -145,8 +150,7 @@ global giWinTileMode := 0
 			return
 	;cCalc.exe
 		^+!;::
-			EnvGet, sExePath, MYEXEPATH_CCALC
-		;	sExePath = "calc"
+			EnvGet, sExePath, MYEXEPATH_CALC
 			StartProgramAndActivate( sExePath, "", 1 )
 			return
 	;Wifi接続(Bluetoothテザリング起動)

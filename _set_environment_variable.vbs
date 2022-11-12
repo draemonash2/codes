@@ -31,7 +31,8 @@ With dEnvVars                                                                   
     .Add "MYEXEPATH_LINAME"         ,"%MYDIRPATH_PRG_EXE%\LiName\LiName.exe"                                ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_EXCEL"          ,"C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE"      ' |  ÅZ  |  Å|  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_XF"             ,"%MYDIRPATH_PRG_EXE%\X-Finder\XF.exe"                                  ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
-    .Add "MYEXEPATH_CCALC"          ,"%MYDIRPATH_PRG_EXE%\cCalc\cCalc.exe"                                  ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+    .Add "MYEXEPATH_CALC"           ,"%MYDIRPATH_PRG_EXE%\cCalc\cCalc.exe"                                  ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
+'   .Add "MYEXEPATH_CALC"           ,"calc"                                                                 ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_RAPTURE"        ,"%MYDIRPATH_PRG_EXE%\Rapture\rapture.exe"                              ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_ITHOUGHTS"      ,"%MYDIRPATH_PRG_EXE%\iThoughts\iThoughts.exe"                          ' |  Å|  |  ÅZ  |  Å|  |     Å|     |      Å|      |
     .Add "MYEXEPATH_CTAGS"          ,"%MYDIRPATH_PRG_EXE%\Ctags\ctags.exe"                                  ' |  Å|  |  Å|  |  ÅZ  |     Å|     |      Å|      |
