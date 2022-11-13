@@ -1,7 +1,14 @@
 Option Explicit
 
-Const sTRGT_TIME = "09:01"
-Const sCMD = "cmd /c C:\codes\BackUpFiles.bat" '注意）BackUpFiles.bat.git_sampleの場合は、シンボリックリンクを経由しない絶対パスを指定すること。
+Dim sExecTime
+Dim sBackupBatchFile
+If WScript.Arguments.Count = 2 Then
+	sBackupBatchFile = WScript.Arguments(0) '注意）BackUpFiles.bat.git_sampleの場合は、シンボリックリンクを経由しない絶対パスを指定すること。
+	sExecTime = WScript.Arguments(1)
+Else
+	WScript.Echo "引数を指定してください。プログラムを中断します。"
+	WScript.Quit
+End If
 
 Dim objWshShell
 Set objWshShell = WScript.CreateObject("WScript.Shell")
@@ -10,16 +17,17 @@ Do While True
 	Dim sCurTime
 	Dim sTrgtDateTime
 	sCurTime = Now()
-	sTrgtDateTime = Left(sCurTime, InStr(sCurTime, " ")) & " " & sTRGT_TIME
+	sTrgtDateTime = Left(sCurTime, InStr(sCurTime, " ")) & " " & sExecTime
 	'MsgBox sTrgtDateTime
 	Dim lDateDiff
 	lDateDiff = DateDiff("n", sCurTime, sTrgtDateTime)
 	'MsgBox lDateDiff
 	If lDateDiff = 0 Then
-		objWshShell.Run sCMD, 0, True
-		'MsgBox "Time is Money!"
+		Dim sCmd
+		sCmd = "cmd /c " & sBackupBatchFile
+		'MsgBox "The time has come!" & vbNewLine & sCmd
+		objWshShell.Run sCmd, 0, True
 	End If
 	WScript.sleep(60000) '60[s]
 Loop
-
 
