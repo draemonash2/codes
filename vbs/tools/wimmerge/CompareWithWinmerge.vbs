@@ -77,10 +77,10 @@ If bIsContinue = True Then
         Dim sDiffPath2
         Dim objTxtFile
         If cSelected.Count >= 3 Then
-            sExecCmd = """" & sExePath & """ -r """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """ """ & cSelected.Item(2) & """"
+            sExecCmd = """" & sExePath & """ -r -s """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """ """ & cSelected.Item(2) & """"
             objWshShell.Run sExecCmd, 3, False
         ElseIf cSelected.Count = 2 Then
-            sExecCmd = """" & sExePath & """ -r """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """"
+            sExecCmd = """" & sExePath & """ -r -s """ & cSelected.Item(0) & """ """ & cSelected.Item(1) & """"
             objWshShell.Run sExecCmd, 3, False
         ElseIf cSelected.Count = 1 Then
             sDiffPath1 = cSelected.Item(0)
@@ -89,7 +89,7 @@ If bIsContinue = True Then
                 sDiffPath2 = objTxtFile.ReadLine
                 objTxtFile.Close
                 Set objTxtFile = Nothing
-                sExecCmd = """" & sExePath & """ -r """ & sDiffPath2 & """ """ & sDiffPath1 & """"
+                sExecCmd = """" & sExePath & """ -r -s """ & sDiffPath2 & """ """ & sDiffPath1 & """"
                 objWshShell.Run sExecCmd, 3, False
                 objFSO.DeleteFile sTmpPath, True
             Else

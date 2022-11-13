@@ -68,7 +68,7 @@ objWshShell.Run """" & sUnzipProgramPath & """ x -o""" & sDownloadTrgtDirPath & 
 objFSO.MoveFolder sDiffSrcOrgDirPath, sDiffSrcNewDirPath
 
 '=== フォルダ比較 ===
-objWshShell.Run """" & sDiffProgramPath & """ -r """ & sDiffSrcNewDirPath & """ """ & sDiffTrgtDirPath & """", 10, True
+objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sDiffSrcNewDirPath & """ """ & sDiffTrgtDirPath & """", 10, True
 
 '=== ZIP、フォルダ削除 ===
 'objFSO.DeleteFile sDownloadTrgtFilePath, True
