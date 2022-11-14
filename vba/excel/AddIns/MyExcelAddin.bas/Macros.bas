@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.13a
+' my excel addin macros v2.14
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -12,6 +12,9 @@ Option Explicit
 ' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
 ' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
 ' =         アドインマクロ実行                          アドインマクロ実行
+' =
+' =     ・ブック操作
+' =         別プロセスで開く                            アクティブブックを別プロセスで開く
 ' =
 ' =     ・シート操作
 ' =         EpTreeの関数ツリーをExcelで取り込む         EpTreeの関数ツリーをExcelで取り込む
@@ -2156,6 +2159,20 @@ Public Sub Diff色付け()
             rCell.Font.Bold = True
         End If
     Next
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックを別プロセスで開く
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 別プロセスで開く()
+    Dim objWshShell
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sActiveBookPath
+    sActiveBookPath = ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
+    objWshShell.Run "cmd /c excel /x /r """ & sActiveBookPath & """", 0, False
 End Sub
 
 ' =============================================================================
