@@ -506,6 +506,16 @@ function fd() {
 if [ $? -eq 0 ]; then
 	alias diff='\diff --color'
 fi
+function storescpdata() {
+	if [ $# -ne 1 ]; then
+		echo "[error] arguments error."
+		echo "  usage : storescpdata <file/dir>"
+		return 1
+	fi
+	trgtdir=~/_scp_to_win
+	mkdir -p ${trgtdir}
+	\cp -rf $1 ${trgtdir}/.
+}
 
 alias cp='cp -i'
 alias mv='mv -i'

@@ -144,14 +144,20 @@ global giWinTileMode := 0
 			EnvGet, sExePath, MYEXEPATH_XF
 			StartProgramAndActivate( sExePath, "", 1 )
 			return
-	;Windows Terminal
-		^+!t::
-			Run %comspec% /c wt -d C:\
-			return
 	;cCalc.exe
 		^+!;::
 			EnvGet, sExePath, MYEXEPATH_CALC
 			StartProgramAndActivate( sExePath, "", 1 )
+			return
+	;SCPデータ取得
+		^+!g::
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\_fetch_scp_from_remote.bat"
+			return
+	;定期キー送信
+		^+!t::
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\vbs\tools\win\other\PeriodicKeyTransmission.bat"
 			return
 	;Wifi接続(Bluetoothテザリング起動)
 		/*
