@@ -29,8 +29,8 @@ Dim sParDirPath
 Dim sDiffSrcDirPath
 Dim sDiffTrgtDirPath
 dim oFolder
-set oFolder = objFSO.getFolder(sTrgtDirPath)
-For each vDirPath in oFolder.subfolders
+Set oFolder = objFSO.getFolder(sTrgtDirPath)
+For Each vDirPath In oFolder.subfolders
     'MsgBox vDirPath
     sParDirPath = objFSO.GetParentFolderName( vDirPath )
     sDirNameRaw = objFSO.GetFileName( vDirPath )
@@ -45,6 +45,20 @@ For each vDirPath in oFolder.subfolders
         End If
     Else
         'Do Nothing
+    End If
+Next
+Dim oFile
+For Each oFile In oFolder.Files
+    Dim sFilePathDst
+    Dim sFilePathSrc
+    sFilePathDst = oFile.Path
+    If InStr(sFilePathDst, "_local.") > 0 Then
+        sFilePathSrc = Replace(sFilePathDst, "_local.", ".")
+        'MsgBox """" & sFilePathSrc & """ """ & sFilePathDst & """"
+        If sFilePathSrc <> sFilePathDst And objFSO.FileExists( sFilePathSrc ) Then
+            'MsgBox """" & sFilePathSrc & """ """ & sFilePathDst & """"
+            objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sFilePathSrc & """ """ & sFilePathDst & """", 10, False
+        End If
     End If
 Next
 
