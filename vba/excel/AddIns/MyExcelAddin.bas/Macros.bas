@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.14
+' my excel addin macros v2.15
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -15,6 +15,8 @@ Option Explicit
 ' =
 ' =     ・ブック操作
 ' =         別プロセスで開く                            アクティブブックを別プロセスで開く
+' =         ファイルパスコピー                          アクティブブックのファイルパスをコピー
+' =         ファイル名コピー                            アクティブブックのファイル名をコピー
 ' =
 ' =     ・シート操作
 ' =         EpTreeの関数ツリーをExcelで取り込む         EpTreeの関数ツリーをExcelで取り込む
@@ -236,6 +238,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
     dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
     
+    dMacroShortcutKeys.Add "^%p", "ファイルパスコピー"
+    dMacroShortcutKeys.Add "^%n", "ファイル名コピー"
+
 '   dMacroShortcutKeys.Add "", "シート再計算時間計測"
     
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
@@ -2173,6 +2178,44 @@ Public Sub 別プロセスで開く()
     Dim sActiveBookPath
     sActiveBookPath = ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
     objWshShell.Run "cmd /c excel /x /r """ & sActiveBookPath & """", 0, False
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックのファイルパスをコピー
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ファイルパスコピー()
+    Const sMACRO_NAME As String = "ファイルパスコピー"
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
+        .PutInClipboard
+    End With
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックのファイル名をコピー
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ファイル名コピー()
+    Const sMACRO_NAME As String = "ファイル名コピー"
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText ActiveWorkbook.Name
+        .PutInClipboard
+    End With
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
 End Sub
 
 ' =============================================================================

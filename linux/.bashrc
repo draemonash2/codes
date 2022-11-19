@@ -148,7 +148,8 @@ HISTTIMEFORMAT='%F %T '
 # for common
 function _is_tail_char_slash() {
 	if [ $# -ne 1 ]; then
-		echo "[error] _is_tail_char_slash() argument error."
+		echo "[error] wrong number of arguments."
+		echo "  usage : _is_tail_char_slash <word>"
 		return 1
 	fi
 	srcchr=${1}
@@ -171,7 +172,8 @@ function _is_tail_char_slash() {
 	} #}}}
 function _remove_tail_slash() {
 	if [ $# -ne 1 ]; then
-		echo "[error] argument error."
+		echo "[error] wrong number of arguments."
+		echo "  usage : _remove_tail_slash <word>"
 		return 1
 	fi
 	srcchr=${1}
@@ -229,6 +231,11 @@ function _output_color_palette_clridx() {
 }
 # command alias
 function gr() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : gr <keyword>"
+		return 1
+	fi
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
 function cdex() {
@@ -242,7 +249,7 @@ function vimall() {
 }
 function vimdiffdir() {
 	if [ $# -ne 2 ]; then
-		echo "[error] specify two arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : vimdiffdir <file1> <file2>"
 		return 1
 	fi
@@ -264,7 +271,7 @@ function vimdiffdir() {
 function swap() {
 	suffix=swaptmp
 	if [ $# -ne 2 ]; then
-		echo "[error] specify two arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : swap <file/dir1> <file/dir2>"
 		return 1
 	fi
@@ -278,7 +285,7 @@ function bak() {
 	mode=1 # 1:Alphabet other:Time
 	delimiter=.bak
 	if [ $# -ne 1 ]; then
-		echo "[error] specify one arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : bak <file/dir>"
 		return 1
 	fi
@@ -307,7 +314,7 @@ function bak() {
 }
 function lndir() {
 	if [ $# -ne 2 ]; then
-		echo "[error] specify one arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : lnhdir <srcdir> <dstdir>"
 		return 1
 	fi
@@ -361,7 +368,7 @@ function tma() { # TMux Attach
 	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
 function tmk() { # TMux Kill
 	if [ $# -ne 1 ]; then
-		echo "[error] specify one arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : tmk <session_name>"
 		return 1
 	fi
@@ -372,7 +379,7 @@ function tmk() { # TMux Kill
 	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
 function tmr() { # TMux Restart
 	if [ $# -ne 1 ]; then
-		echo "[error] specify one arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : tmr <session_name>"
 		return 1
 	fi
@@ -398,7 +405,7 @@ function killall() {
 }
 function cpd() {
 	if [ $# -ne 2 ]; then
-		echo "[error] specify two arguments."
+		echo "[error] wrong number of arguments."
 		echo "  usage : cpd <src> <dst>"
 		return 1
 	fi
@@ -431,7 +438,7 @@ function cpd() {
 	} # }}}
 function catrange() {
 	if [ $# -ne 3 ]; then
-		echo "[error] arguments error."
+		echo "[error] wrong number of arguments."
 		echo "  usage : catrange <file> <lineno_head> <lineno_tail>"
 		return 1
 	fi
@@ -508,7 +515,7 @@ if [ $? -eq 0 ]; then
 fi
 function storescpdata() {
 	if [ $# -ne 1 ]; then
-		echo "[error] arguments error."
+		echo "[error] wrong number of arguments."
 		echo "  usage : storescpdata <file/dir>"
 		return 1
 	fi

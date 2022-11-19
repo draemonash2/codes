@@ -289,6 +289,13 @@ global giWinTileMode := 0
 		RAlt::Send, {AppsKey}	;右Altキーをコンテキストメニュー表示に変更
 	#IfWinNotActive
 	
+	#IfWinActive ahk_exe explorer.exe
+		^+c::
+			Send, +{F10}
+			Send, a
+			return
+	#IfWinActive
+	
 	#IfWinActive ahk_exe EXCEL.EXE
 		F1::return	;F1ヘルプ無効化
 		+Space::	;IME ON状態でShift+Space(行選択)が効かない対策
