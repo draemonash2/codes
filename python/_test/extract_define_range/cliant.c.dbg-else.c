@@ -6,7 +6,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define DBG (1)
 #define MOD_IF (1)
 #define MOD_IFDEF (1)
 #define MOD_IFNDEF (1)
@@ -25,10 +24,6 @@ char communicateTcp(
 	char* recv_str
 )
 {
-#if DBG
-	printf("communicateTcp() called\n");
-#else /* DBG */
-#endif /* DBG */
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sockfd < 0) {
 		printf("Error socket\n");

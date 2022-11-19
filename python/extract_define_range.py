@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
 
-# extract_define_range.py ver1.1
+# extract_define_range.py ver1.2
 # 
 # usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>
 #    <remain_target_side>
 #       if   : remain if side
 #       else : remain else side
+# TODO: #if 等の記載方法を明記する
+# TODO: if sideとtrue sideどっちがいい？
+#
+# #if AAA          #del
+#    if side
+# #else /* AAA */  #del
+#    else side     #del
+# #endif /* AAA */ #del
+#
+# #ifdef AAA       #del
+#    if side
+# #else /* AAA */  #del
+#    else side     #del
+# #endif /* AAA */ #del
+#
+# #ifndef AAA       #del
+#    if side        #del
+# #else /* !AAA */  #del
+#    else side
+# #endif /* !AAA */ #del
 
 import re
 import sys
@@ -45,37 +65,91 @@ def main():
         lines = in_file.readlines()
         is_remain = True
         remove_executed = False
+        iftype = ""
+        linenum = 1
         for line in lines:
-            matchresult_if     = re.match(r"^#if " + define_keyword + "$", line)
-            matchresult_else   = re.match(r"^#else \/\* " + define_keyword + " \*\/$", line)
-            matchresult_endif  = re.match(r"^#endif \/\* " + define_keyword + " \*\/$", line)
             matchresult_define = re.match(r"^#define " + define_keyword + " ", line)
+            matchresult_if     = re.match(r"^#if " + define_keyword + "$", line)
+            matchresult_ifdef  = re.match(r"^#ifdef " + define_keyword + "$", line)
+            matchresult_ifndef = re.match(r"^#ifndef " + define_keyword + "$", line)
+            matchresult_else   = re.match(r"^#else \/\* " + define_keyword + " \*\/$", line)
+            matchresult_elsen  = re.match(r"^#else \/\* !" + define_keyword + " \*\/$", line)
+            matchresult_endif  = re.match(r"^#endif \/\* " + define_keyword + " \*\/$", line)
+            matchresult_endifn = re.match(r"^#endif \/\* !" + define_keyword + " \*\/$", line)
+            
             match_timing = False
-            if matchresult_if:
+            if matchresult_define:
+                match_timing = True
+                remove_executed = True
+            elif matchresult_if:
                 if remain_target_side == 'if':
                     is_remain = True
                 else:
                     is_remain = False
                 match_timing = True
                 remove_executed = True
+                iftype = "IF"
+            elif matchresult_ifdef:
+                if remain_target_side == 'if':
+                    is_remain = True
+                else:
+                    is_remain = False
+                match_timing = True
+                remove_executed = True
+                iftype = "IFDEF"
+            elif matchresult_ifndef:
+                if remain_target_side == 'if':
+                    is_remain = True
+                else:
+                    is_remain = False
+                match_timing = True
+                remove_executed = True
+                iftype = "IFNDEF"
             elif matchresult_else:
+                if iftype == "IF" or iftype == "IFDEF":
+                    pass
+                else:
+                    print('[error  ] this "#else" must be preceded by an "#if" or "#ifdef" at line:' + linenum + '.')
+                    return 0
+                
                 if remain_target_side == 'if':
                     is_remain = False
                 else:
                     is_remain = True
                 match_timing = True
                 remove_executed = True
+                iftype = ""
+            elif matchresult_elsen:
+                if iftype == "IFNDEF":
+                    pass
+                else:
+                    print('[error  ] this "#else" must be preceded by an "#ifndef" at line:' + linenum + '.')
+                    return 0
+                
+                if remain_target_side == 'if':
+                    is_remain = False
+                else:
+                    is_remain = True
+                match_timing = True
+                remove_executed = True
+                iftype = ""
             elif matchresult_endif:
                 is_remain = True
                 match_timing = True
                 remove_executed = True
-            elif matchresult_define:
+                iftype = ""
+            elif matchresult_endifn:
+                is_remain = True
                 match_timing = True
                 remove_executed = True
+                iftype = ""
             else:
                 match_timing = False
+            
             if match_timing == False and is_remain == True:
                 out_file.write(line)
+            
+            linenum = linenum + 1
         if remove_executed == True:
             result_str = "[success]"
         else:

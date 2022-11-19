@@ -7,7 +7,8 @@
 #include <unistd.h>
 
 #define DBG (1)
-#define MOD02 (0)
+#define MOD_IF (1)
+#define MOD_IFNDEF (1)
 
 const char* IN_VEC_PATH_BASE = "testdata/input_test_vec";
 const char* RECV_FILE_PATH_BASE = "testdata/recv_data";
@@ -33,26 +34,30 @@ char communicateTcp(
 		return 1;
 	}
 	
+#if MOD_IF
+	struct sockaddr_in addr;
+#else /* MOD_IF */
+#endif /* MOD_IF */
+#if MOD_IF
+	memset(&addr, 0, sizeof(struct sockaddr_in));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(PORTNO);
+	addr.sin_addr.s_addr = inet_addr(IPADDR);
+#endif /* MOD_IF */
 	
+#if MOD_IF
+#else /* MOD_IF */
 	connect(sockfd, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+#endif /* MOD_IF */
 	
-#if MOD02
-#else /* MOD02 */
-	send(sockfd, send_str, send_size, 0);
-#endif /* MOD02 */
+#if MOD_IF
 	/* send */
+#else /* MOD_IF */
+	send(sockfd, send_str, send_size, 0);
+#endif /* MOD_IF */
 	printf("send : %s\n", send_str);
 	
-#if MOD02
-	/* receive */
-	recv(sockfd, recv_str, RECV_BUF_SIZE, 0);
-	printf("recv : %s\n", recv_str);
-#else /* MOD02 */
-#endif /* MOD02 */
 	
-#if MOD02
-	printf("\n");
-#endif /* MOD02 */
 	
 	close(sockfd);
 	
@@ -69,7 +74,6 @@ char readInputVecFile(
 	char invecpath[50];
 	char* p = send_str;
 	
-	/* open inputvecfile */
 	sprintf(invecpath, "%s%d" , IN_VEC_PATH_BASE, fileidx);
 	fp = fopen(invecpath , "r");
 	if (fp == NULL) {
@@ -88,7 +92,6 @@ char readInputVecFile(
 			} else {
 				*p = ch;
 			}
-			p++;
 		} else {
 			break;
 		}
@@ -96,8 +99,6 @@ char readInputVecFile(
 	p--;
 	*p = '\0';
 	
-	/* close inputvecfile */
-	fclose(fp);
 	
 	return 0;
 }
@@ -114,6 +115,11 @@ char writeRecvDataFile(
 	char recv_words[RECV_WORDS_NUM][100];
 	
 	/* open recvdatafile */
+#ifndef MOD_IFNDEF
+	p--;
+#else /* !MOD_IFNDEF */
+	*p = '\0';
+#endif /* !MOD_IFNDEF */
 	sprintf(recvvecpath, "%s%d" , RECV_FILE_PATH_BASE, fileidx);
 	fp = fopen(recvvecpath , "w");
 	if (fp == NULL) {
@@ -121,7 +127,10 @@ char writeRecvDataFile(
 	}
 	
 	/* split receive messages with delimiter */
+#ifndef MOD_IFNDEF
+#else /* !MOD_IFNDEF */
 	memset(recv_words, '\0', sizeof(recv_words));
+#endif /* !MOD_IFNDEF */
 	for ( int wordsidx = 0; wordsidx < RECV_WORDS_NUM; wordsidx++ )
 	{
 		int charidx = 0;
@@ -133,15 +142,20 @@ char writeRecvDataFile(
 			} else {
 				recv_words[wordsidx][charidx] = *p;
 				charidx++;
+#ifndef MOD_IFNDEF
 				p++;
+#endif /* !MOD_IFNDEF */
 			}
 		};
 	}
 	
 	/* output receive messages to recvdatafile */
+#ifndef MOD_IFNDEF
 	fprintf(fp, "%s,%s\n", recv_words[0], recv_words[1]);
 	fprintf(fp, "%s,%s\n", recv_words[2], recv_words[3]);
 	fprintf(fp, "%s\n", recv_words[4]);
+#else /* !MOD_IFNDEF */
+#endif /* !MOD_IFNDEF */
 	
 	/* close recvdatafile */
 	fclose(fp);
