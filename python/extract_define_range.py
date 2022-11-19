@@ -1,31 +1,29 @@
 #!/usr/bin/env python3
 
 # extract_define_range.py ver1.2
-# 
+#
 # usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>
 #    <remain_target_side>
-#       if   : remain if side
-#       else : remain else side
-# TODO: #if 等の記載方法を明記する
-# TODO: if sideとtrue sideどっちがいい？
+#       true  : remain "true" side
+#       false : remain "false" side
+#         e.g. specified "true" side
+#           #if AAA           #del
+#              true side      #remain
+#           #else /* AAA */   #del
+#              false side     #del
+#           #endif /* AAA */  #del
 #
-# #if AAA          #del
-#    if side
-# #else /* AAA */  #del
-#    else side     #del
-# #endif /* AAA */ #del
+#           #ifdef AAA        #del
+#              true side      #remain
+#           #else /* AAA */   #del
+#              false side     #del
+#           #endif /* AAA */  #del
 #
-# #ifdef AAA       #del
-#    if side
-# #else /* AAA */  #del
-#    else side     #del
-# #endif /* AAA */ #del
-#
-# #ifndef AAA       #del
-#    if side        #del
-# #else /* !AAA */  #del
-#    else side
-# #endif /* !AAA */ #del
+#           #ifndef AAA       #del
+#              true side      #remain
+#           #else /* !AAA */  #del
+#              false side     #del
+#           #endif /* !AAA */ #del
 
 import re
 import sys
@@ -39,8 +37,8 @@ def main():
         print('[error  ] arguments are too short')
         print('  usage : python3 extract_define_range.py <infile> <outfile> <define_keyword> <remain_target_side>')
         print('     <remain_target_side>')
-        print('        if   : remain if side')
-        print('        else : remain else side')
+        print('        true  : remain "true" side')
+        print('        false : remain "false" side')
         return 0
     in_file_name = args[1]
     out_file_name = args[2]
@@ -49,8 +47,8 @@ def main():
     if not os.path.exists(in_file_name):
         print('[error  ] ' + in_file_name + ' does not exist.')
         return 0
-    if remain_target_side != "if" and remain_target_side != "else":
-        print('[error  ] specified <remain_target_side> is \"' + remain_target_side + '\". this is \"if\" or \"else\" only.')
+    if remain_target_side != "true" and remain_target_side != "false":
+        print('[error  ] specified <remain_target_side> is \"' + remain_target_side + '\". this is \"true\" or \"false\" only.')
         return 0
     
     same_file_name = False
@@ -82,7 +80,7 @@ def main():
                 match_timing = True
                 remove_executed = True
             elif matchresult_if:
-                if remain_target_side == 'if':
+                if remain_target_side == 'true':
                     is_remain = True
                 else:
                     is_remain = False
@@ -90,7 +88,7 @@ def main():
                 remove_executed = True
                 iftype = "IF"
             elif matchresult_ifdef:
-                if remain_target_side == 'if':
+                if remain_target_side == 'true':
                     is_remain = True
                 else:
                     is_remain = False
@@ -98,7 +96,7 @@ def main():
                 remove_executed = True
                 iftype = "IFDEF"
             elif matchresult_ifndef:
-                if remain_target_side == 'if':
+                if remain_target_side == 'true':
                     is_remain = True
                 else:
                     is_remain = False
@@ -112,7 +110,7 @@ def main():
                     print('[error  ] this "#else" must be preceded by an "#if" or "#ifdef" at line:' + linenum + '.')
                     return 0
                 
-                if remain_target_side == 'if':
+                if remain_target_side == 'true':
                     is_remain = False
                 else:
                     is_remain = True
@@ -126,7 +124,7 @@ def main():
                     print('[error  ] this "#else" must be preceded by an "#ifndef" at line:' + linenum + '.')
                     return 0
                 
-                if remain_target_side == 'if':
+                if remain_target_side == 'true':
                     is_remain = False
                 else:
                     is_remain = True
