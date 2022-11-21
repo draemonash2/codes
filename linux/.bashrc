@@ -513,15 +513,19 @@ function fd() {
 if [ $? -eq 0 ]; then
 	alias diff='\diff --color'
 fi
-function storescpdata() {
+function storescpsenddata() {
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : storescpdata <file/dir>"
+		echo "  usage : storescpsenddata <file/dir>"
 		return 1
 	fi
 	trgtdir=~/_scp_to_win
 	mkdir -p ${trgtdir}
 	\cp -rf $1 ${trgtdir}/.
+}
+function clearscpsenddata() {
+	trgtdir=~/_scp_to_win
+	rm -rf ${trgtdir}/*
 }
 
 alias cp='cp -i'
