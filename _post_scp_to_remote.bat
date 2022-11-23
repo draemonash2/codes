@@ -1,8 +1,10 @@
 @echo off
 set DST_DIR_UPATH=~/_scp_from_win
-set USER=user
-set HOST=XXX.XXX.XXX.XXX
-set PASSWORD=password
+for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_scp_to_remote.config) do (
+	set USER=%%a
+	set HOST=%%b
+	set PASSWORD=%%c
+)
 
 if "%~1"=="" (
     echo ˆø”‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢Bˆ—‚ğ’†’f‚µ‚Ü‚·B

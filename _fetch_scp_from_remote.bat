@@ -1,9 +1,11 @@
 @echo off
 set DST_DIR_WPATH=%HOMEDRIVE%%HOMEPATH%\Desktop\_scp_from_remote
 set SRC_DIR_UPATH=~/_scp_to_win
-set USER=user
-set HOST=XXX.XXX.XXX.XXX
-set PASSWORD=password
+for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_scp_to_remote.config) do (
+	set USER=%%a
+	set HOST=%%b
+	set PASSWORD=%%c
+)
 
 echo %DST_DIR_WPATH%
 for /f "usebackq" %%A in (`wsl wslpath -a "%DST_DIR_WPATH%"`) do set DST_DIR_UPATH=%%A
