@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.15a
+' my excel addin macros v2.15b
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -49,10 +49,10 @@ Option Explicit
 ' =         ●設定変更●一行にまとめてセルコピー        一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
 ' =         クリップボード値貼り付け                    クリップボードから値貼り付けする
 ' =         フォント色をトグル                          フォント色を「設定色」⇔「自動」でトグルする
-' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
 ' =         ●設定変更●フォント色をトグルの色選択      「フォント色をトグル」の設定色をカラーパレットから取得して変更する
-' =         ●設定変更●背景色をトグルの色選択          「背景色をトグル」の設定色をカラーパレットから取得して変更する
 ' =         ●設定変更●フォント色をトグルの色スポイト  「フォント色をトグル」の設定色をアクティブセルから取得して変更する
+' =         背景色をトグル                              背景色を「設定色」⇔「背景色なし」でトグルする
+' =         ●設定変更●背景色をトグルの色選択          「背景色をトグル」の設定色をカラーパレットから取得して変更する
 ' =         ●設定変更●背景色をトグルの色スポイト      「背景色をトグル」の設定色をアクティブセルから取得して変更する
 ' =         オートフィル実行                            オートフィルを実行する
 ' =         画面を上に移動                              画面を上に移動(スクロールロック動作)
@@ -61,12 +61,12 @@ Option Explicit
 ' =         画面を右に移動                              画面を右に移動(スクロールロック動作)
 ' =         インデントを上げる                          インデントを上げる
 ' =         インデントを下げる                          インデントを下げる
-' =         ●設定変更●アクティブセルコメントのみ表示  アクティブセルコメント設定を切り替える
 ' =         アクティブセルコメントのみ表示              他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して下移動    下移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して上移動    上移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して右移動    右移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
 ' =         アクティブセルコメントのみ表示して左移動    左移動後、他セルコメントを“非表示”にしてアクティブセルコメントを“表示”にする
+' =         ●設定変更●アクティブセルコメントのみ表示  アクティブセルコメント設定を切り替える
 ' =         Excel数式整形化実施                         Excel数式整形化実施
 ' =         Excel数式整形化解除                         Excel数式整形化解除
 ' =         セルコメントの書式設定を一括変更            セルコメントの書式設定を一括変更
@@ -216,76 +216,64 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     '   詳細は以下 URL 参照。
     '     https://msdn.microsoft.com/ja-jp/library/office/ff197461.aspx
     '▼▼▼ 設定 ▼▼▼
-'   dMacroShortcutKeys.Add "", "選択範囲内で中央"
+    '共通
+'   dMacroShortcutKeys.Add "", "F1ヘルプ無効化"
     
+    'マクロ設定
+'   dMacroShortcutKeys.Add "", "マクロショートカットキー全て有効化"
+'   dMacroShortcutKeys.Add "", "マクロショートカットキー全て無効化"
+    dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
+    dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
+    
+    'ブック操作
+'   dMacroShortcutKeys.Add "", "別プロセスで開く"
+    dMacroShortcutKeys.Add "^%p", "ファイルパスコピー"
+    dMacroShortcutKeys.Add "^%n", "ファイル名コピー"
+    
+    'シート操作
+'   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
+    dMacroShortcutKeys.Add "^%h", "Excel方眼紙"
+'   dMacroShortcutKeys.Add "", "選択シート切り出し"
+    dMacroShortcutKeys.Add "^%c", "全シート名をコピー"
+'   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
+'   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
+    dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
+    dMacroShortcutKeys.Add "^%{PGDN}", "シート選択ウィンドウを表示"
+'   dMacroShortcutKeys.Add "", "シート名一括変更"
+    dMacroShortcutKeys.Add "+{F11}", "シート追加カスタム"
+    dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
+    dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
+'   dMacroShortcutKeys.Add "", "シート再計算時間計測"
+    
+    'セル操作
+'   dMacroShortcutKeys.Add "", "ファイルエクスポート"
+'   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
+'   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
+'   dMacroShortcutKeys.Add "^+f", "検索文字の文字色を変更" '「CtrlShiftFマクロ」にて実行
+'   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
+'   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
+'   dMacroShortcutKeys.Add "", "ツリーをグループ化"
+'   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
+    dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
+'   dMacroShortcutKeys.Add "", "選択範囲内で中央"
     dMacroShortcutKeys.Add "^+c", "範囲を維持したままセルコピー"
     dMacroShortcutKeys.Add "^+d", "一行にまとめてセルコピー"
     dMacroShortcutKeys.Add "^%d", "●設定変更●一行にまとめてセルコピー"
 '   dMacroShortcutKeys.Add "^+v", "クリップボード値貼り付け" 'マクロ使用時はアンドゥできないため、極力使用しない
-    dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
-    
-'   dMacroShortcutKeys.Add "", "ファイルエクスポート"
-'   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
-'   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
-'   dMacroShortcutKeys.Add "^+f", "検索文字の文字色を変更" '「CtrlShiftFマクロ」にて実行
-    
-    dMacroShortcutKeys.Add "^%c", "全シート名をコピー"
-'   dMacroShortcutKeys.Add "", "選択シート切り出し"
-'   dMacroShortcutKeys.Add "", "シート表示非表示を切り替え"
-'   dMacroShortcutKeys.Add "", "シート並べ替え作業用シートを作成"
-    dMacroShortcutKeys.Add "+{F11}", "シート追加カスタム"
-    dMacroShortcutKeys.Add "^%{PGUP}", "シート選択ウィンドウを表示"
-    dMacroShortcutKeys.Add "^%{PGDN}", "シート選択ウィンドウを表示"
-    dMacroShortcutKeys.Add "^%{HOME}", "先頭シートへジャンプ"
-    dMacroShortcutKeys.Add "^%{END}", "末尾シートへジャンプ"
-    
-    dMacroShortcutKeys.Add "^%p", "ファイルパスコピー"
-    dMacroShortcutKeys.Add "^%n", "ファイル名コピー"
-
-'   dMacroShortcutKeys.Add "", "シート再計算時間計測"
-    
-'   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
-'   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
-    
-'   dMacroShortcutKeys.Add "", "ツリーをグループ化"
-'   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
-    
     dMacroShortcutKeys.Add "^2", "背景色をトグル"
     dMacroShortcutKeys.Add "^%2", "●設定変更●背景色をトグルの色選択"
     dMacroShortcutKeys.Add "+%2", "●設定変更●背景色をトグルの色スポイト"
     dMacroShortcutKeys.Add "^3", "フォント色をトグル"
     dMacroShortcutKeys.Add "^%3", "●設定変更●フォント色をトグルの色選択"
     dMacroShortcutKeys.Add "+%3", "●設定変更●フォント色をトグルの色スポイト"
-
 '   dMacroShortcutKeys.Add "^%{DOWN}", "'オートフィル実行(""Down"")'"
 '   dMacroShortcutKeys.Add "^%{UP}", "'オートフィル実行(""Up"")'"
-    
     dMacroShortcutKeys.Add "^%{UP}", "画面を上に移動"
     dMacroShortcutKeys.Add "^%{DOWN}", "画面を下に移動"
     dMacroShortcutKeys.Add "^%{LEFT}", "画面を左に移動"
     dMacroShortcutKeys.Add "^%{RIGHT}", "画面を右に移動"
-    
     dMacroShortcutKeys.Add "^+>", "インデントを上げる"
     dMacroShortcutKeys.Add "^+<", "インデントを下げる"
-    
-    dMacroShortcutKeys.Add "^+{F11}", "●設定変更●アクティブセルコメントのみ表示"
-    dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
-    
-    dMacroShortcutKeys.Add "^%h", "Excel方眼紙"
-'   dMacroShortcutKeys.Add "", "EpTreeの関数ツリーをExcelで取り込む"
-    
-'   dMacroShortcutKeys.Add "", "自動列幅調整"
-'   dMacroShortcutKeys.Add "", "自動行幅調整"
-    
-    dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
-'   dMacroShortcutKeys.Add "^+f", "最前面へ移動" '「CtrlShiftFマクロ」にて実行
-    dMacroShortcutKeys.Add "^+b", "最背面へ移動"
-    
-    dMacroShortcutKeys.Add "+%d", "Diff色付け"
-    
-    dMacroShortcutKeys.Add "^+i", "Excel数式整形化実施"
-    dMacroShortcutKeys.Add "^%i", "Excel数式整形化解除"
-    
     If bCmntVsblEnb = True Then
         dMacroShortcutKeys.Add "{DOWN}", "アクティブセルコメントのみ表示して下移動"
         dMacroShortcutKeys.Add "{UP}", "アクティブセルコメントのみ表示して上移動"
@@ -297,6 +285,15 @@ Private Sub SwitchMacroShortcutKeysActivation( _
         dMacroShortcutKeys.Add "{RIGHT}", ""
         dMacroShortcutKeys.Add "{LEFT}", ""
     End If
+    dMacroShortcutKeys.Add "^+{F11}", "●設定変更●アクティブセルコメントのみ表示"
+    dMacroShortcutKeys.Add "^+i", "Excel数式整形化実施"
+    dMacroShortcutKeys.Add "^%i", "Excel数式整形化解除"
+'   dMacroShortcutKeys.Add "", "セルコメントの書式設定を一括変更"
+    dMacroShortcutKeys.Add "+%d", "Diff色付け"
+    
+    'オブジェクト操作
+'   dMacroShortcutKeys.Add "^+f", "最前面へ移動" '「CtrlShiftFマクロ」にて実行
+    dMacroShortcutKeys.Add "^+b", "最背面へ移動"
     '▲▲▲ 設定 ▲▲▲
     
     '*** ショートカットキー設定反映 ***
@@ -321,6 +318,22 @@ End Sub
 ' *****************************************************************************
 ' * 外部公開用マクロ
 ' *****************************************************************************
+Private Sub ▼▼▼▼▼外部公開用マクロ▼▼▼▼▼()
+    'プロシージャリスト表示用のダミープロシージャ
+End Sub
+
+' ▽▽▽ 共通 ▽▽▽
+' =============================================================================
+' = 概要    F1ヘルプを無効化する
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub F1ヘルプ無効化()
+    Application.OnKey "{F1}", ""
+End Sub
+
+' ▽▽▽ マクロ設定 ▽▽▽
 ' =============================================================================
 ' = 概要    マクロショートカットキー全て有効化
 ' = 覚書    なし
@@ -350,6 +363,16 @@ Public Sub マクロショートカットキー全て無効化()
 End Sub
 
 ' =============================================================================
+' = 概要    アドインマクロ実行
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub アドインマクロ実行()
+    ExecAddInMacro.Show
+End Sub
+
+' =============================================================================
 ' = 概要    ショートカットキー重複時の振り分け処理（Ctrl+Shift+F）
 ' = 覚書    なし
 ' = 依存    Macros.bas/最前面へ移動()
@@ -365,92 +388,290 @@ Public Sub CtrlShiftFマクロ()
     On Error GoTo 0
 End Sub
 
+' ▽▽▽ ブック操作 ▽▽▽
 ' =============================================================================
-' = 概要    F1ヘルプを無効化する
+' = 概要    アクティブブックを別プロセスで開く
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub F1ヘルプ無効化()
-    Application.OnKey "{F1}", ""
+Public Sub 別プロセスで開く()
+    Dim objWshShell
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sActiveBookPath
+    sActiveBookPath = ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
+    objWshShell.Run "cmd /c excel /x /r """ & sActiveBookPath & """", 0, False
 End Sub
 
 ' =============================================================================
-' = 概要    選択セルに対して「選択範囲内で中央」を実行する
+' = 概要    アクティブブックのファイルパスをコピー
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 選択範囲内で中央()
-    If Selection(1).HorizontalAlignment = xlCenterAcrossSelection Then
-        Selection.HorizontalAlignment = xlGeneral
-    Else
-        Selection.HorizontalAlignment = xlCenterAcrossSelection
+Public Sub ファイルパスコピー()
+    Const sMACRO_NAME As String = "ファイルパスコピー"
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
+        .PutInClipboard
+    End With
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックのファイル名をコピー
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ファイル名コピー()
+    Const sMACRO_NAME As String = "ファイル名コピー"
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText ActiveWorkbook.Name
+        .PutInClipboard
+    End With
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' ▽▽▽ シート操作 ▽▽▽
+' =============================================================================
+' = 概要    EpTreeの関数ツリーをExcelで取り込む
+' = 覚書    なし
+' = 依存    Mng_FileSys.bas/ShowFileSelectDialog()
+' =         Mng_FileSys.bas/ShowFolderSelectDialog()
+' =         Mng_Collection.bas/ReadTxtFileToCollection()
+' =         Mng_String.bas/ExecRegExp()
+' =         Mng_String.bas/ExtractTailWord()
+' =         Mng_String.bas/ExtractRelativePath()
+' =         Mng_ExcelOpe.bas/CreateNewWorksheet()
+' =         SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub EpTreeの関数ツリーをExcelで取り込む()
+    Const sMACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
+    Const lSTRT_ROW As Long = 1
+    Const lSTRT_CLM As Long = 1
+    
+    Dim lRowIdx As Long
+    Dim lStrtRow As Long
+    Dim lLastRow As Long
+    Dim lStrtClm As Long
+    Dim lLastClm As Long
+    
+    '=============================================
+    '= 事前処理
+    '=============================================
+    Dim sOutSheetName As String
+    Dim lMaxFuncLevelIni As Long
+    Dim lClmWidth As Long
+    Dim sEptreeLogPath As String
+    Dim sDevRootDirPath As String
+    Dim sDevRootDirName As String
+    Dim lDevRootLevel As Long
+    
+    '*** アドイン設定ファイルから設定読み出し ***
+    sOutSheetName = ReadSettingFile("sEPTREE_OUT_SHEET_NAME", sEPTREE_OUT_SHEET_NAME)
+    lMaxFuncLevelIni = ReadSettingFile("lEPTREE_MAX_FUNC_LEVEL_INI", lEPTREE_MAX_FUNC_LEVEL_INI)
+    lClmWidth = ReadSettingFile("lEPTREE_CLM_WIDTH", lEPTREE_CLM_WIDTH)
+    
+    'Eptreeログファイルパス取得
+    sEptreeLogPath = ReadSettingFile("sEPTREE_OUT_LOG_PATH", sEPTREE_OUT_LOG_PATH)
+    sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
+    If sEptreeLogPath = "" Then
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
+        Exit Sub
     End If
+    Call WriteSettingFile("sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
+    
+    '開発用ルートフォルダ取得
+    sDevRootDirPath = ReadSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sEPTREE_DEV_ROOT_DIR_PATH)
+    sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
+    If sDevRootDirPath = "" Then
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
+        Exit Sub
+    End If
+    sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
+    Call WriteSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
+    
+    'ルートフォルダレベル取得
+    lDevRootLevel = ReadSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", lEPTREE_DEV_ROOT_DIR_LEVEL)
+    Dim sDevRootLevel As String
+    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, CStr(lDevRootLevel))
+    If sDevRootLevel = "" Then
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
+        Exit Sub
+    End If
+    Call WriteSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
+    
+    '=============================================
+    '= 本処理
+    '=============================================
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    
+    'シート追加
+    Dim sSheetName As String
+    Dim shTrgtSht As Worksheet
+    sSheetName = CreateNewWorksheet(sOutSheetName)
+    Set shTrgtSht = ActiveWorkbook.Sheets(sSheetName)
+    
+    'テキストファイル読み出し
+    Dim cFileContents As Collection
+    Set cFileContents = New Collection
+    Call ReadTxtFileToCollection(sEptreeLogPath, cFileContents)
+    
+    'ファイルツリー出力
+    lStrtRow = lSTRT_ROW
+    lStrtClm = lSTRT_CLM
+    lRowIdx = lStrtRow
+    
+    With shTrgtSht
+        .Cells(lRowIdx, lStrtClm + 0).Value = "ファイルパス"
+        .Cells(lRowIdx, lStrtClm + 1).Value = "行数"
+        .Cells(lRowIdx, lStrtClm + 2).Value = "関数名"
+        .Cells(lRowIdx, lStrtClm + 3).Value = "コールツリー"
+    End With
+    lRowIdx = lRowIdx + 1
+    
+    Dim lMaxFuncLevel As Long
+    lMaxFuncLevel = lMaxFuncLevelIni
+    Dim vFileLine As Variant
+    For Each vFileLine In cFileContents
+        Dim oMatchResult As Object
+        Call ExecRegExp( _
+            vFileLine, _
+            "^([^ ]+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
+            oMatchResult _
+        )
+        
+        Dim sFilePath As String
+        Dim sLineNo As String
+        Dim lFuncLevel As Long
+        Dim sFuncName As String
+        Dim sOmission As String
+        sFilePath = oMatchResult(0).SubMatches(0)
+        Call ExtractRelativePath(sFilePath, sDevRootDirName, Int(sDevRootLevel), sFilePath)
+        sLineNo = oMatchResult(0).SubMatches(1)
+        If sLineNo = 0 Then
+            sLineNo = ""
+        End If
+        lFuncLevel = LenB(StrConv(oMatchResult(0).SubMatches(3), vbFromUnicode)) / 2
+        sFuncName = oMatchResult(0).SubMatches(4)
+        sOmission = String(LenB(oMatchResult(0).SubMatches(5)) / 2, "▲")
+        
+        With shTrgtSht
+            .Cells(lRowIdx, lStrtClm + 0).Value = sFilePath
+            .Cells(lRowIdx, lStrtClm + 1).Value = sLineNo
+            .Cells(lRowIdx, lStrtClm + 2).Value = sFuncName
+            .Cells(lRowIdx, lStrtClm + 3 + lFuncLevel).Value = sFuncName & sOmission
+        End With
+        If lFuncLevel > lMaxFuncLevel Then
+            lMaxFuncLevel = lFuncLevel
+        End If
+        
+        lRowIdx = lRowIdx + 1
+    Next
+    
+    With shTrgtSht
+        lLastClm = lSTRT_CLM + 3 + lMaxFuncLevel
+        lLastRow = lRowIdx
+        
+        'タイトル行 中央揃え
+        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lStrtRow, lStrtClm + 2)).HorizontalAlignment = xlCenter
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lStrtRow, lLastClm)).HorizontalAlignment = xlCenterAcrossSelection
+        
+        '列幅調整
+        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
+        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = lClmWidth
+        
+        'オートフィルタ
+        .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
+        
+        '行高さ
+        .Rows(lStrtRow).RowHeight = .Rows(lStrtRow).RowHeight * 3
+        
+        'タイトル列固定
+        ActiveWindow.FreezePanes = False
+        .Rows(lStrtRow + 1).Select
+        ActiveWindow.FreezePanes = True
+        .Cells(1, 1).Select
+        
+        'シート見出し色
+        .Tab.Color = RGB(242, 220, 219)
+    End With
+    
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    
+    MsgBox "関数コールツリー作成完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
-' = 概要    ①～⑭を指定して、指定番号以降をデクリメントする
+' = 概要    Excel方眼紙
 ' = 覚書    なし
-' = 依存    Mng_String.bas/NumConvStr2Lng()
-' =         Mng_String.bas/NumConvLng2Str()
+' = 依存    SettingFile.cls
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub セル内の丸数字をデクリメント()
-    Const sMACRO_NAME As String = "セル内の丸数字をデクリメント"
-    Const NUM_MAX As Long = 15
-    Const NUM_MIN As Long = 1
+Public Sub Excel方眼紙()
+    'アドイン設定読み出し
+    Dim sFontName As String
+    Dim lFontSize As Long
+    Dim lClmWidth As Long
+    sFontName = ReadSettingFile("sEXCELGRID_FONT_NAME", sEXCELGRID_FONT_NAME)
+    lFontSize = ReadSettingFile("lEXCELGRID_FONT_SIZE", lEXCELGRID_FONT_SIZE)
+    lClmWidth = ReadSettingFile("lEXCELGRID_CLM_WIDTH", lEXCELGRID_CLM_WIDTH)
     
-    Dim lTrgtNum As Long
-    Dim sTrgtNum As String
-    Dim lLoopCnt As Long
-    
-    sTrgtNum = InputBox("デクリメントします。" & vbNewLine & "開始番号を入力してください。（②～⑮）", "番号入力", "")
-    
-    '入力値チェック
-    If sTrgtNum = "" Then: MsgBox "入力値エラー！": Exit Sub
-    lTrgtNum = NumConvStr2Lng(sTrgtNum)
-    If (lTrgtNum > NUM_MAX Or NUM_MIN + 1 > lTrgtNum) Then: MsgBox "入力値エラー！": Exit Sub
-    
-    '本処理
-    For lLoopCnt = lTrgtNum To NUM_MAX
-        Selection.Replace _
-            what:=NumConvLng2Str(lLoopCnt), _
-            replacement:=NumConvLng2Str(lLoopCnt - 1)
-    Next lLoopCnt
-    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
+    'Excel方眼紙設定
+    ActiveSheet.Cells.Select
+    With Selection
+        .Font.Name = sFontName
+        .Font.Size = lFontSize
+        .ColumnWidth = lClmWidth
+        .Rows.AutoFit
+    End With
+    ActiveSheet.Cells(1, 1).Select
 End Sub
 
-' =============================================================================
-' = 概要    ②～⑮を指定して、指定番号以降をインクリメントする
+' ==================================================================
+' = 概要    選択シートを別ファイルに切り出す。
+' =         コピー元ブックと同フォルダに出力する。
 ' = 覚書    なし
-' = 依存    Mng_String.bas/NumConvStr2Lng()
-' =         Mng_String.bas/NumConvLng2Str()
+' = 依存    なし
 ' = 所属    Macros.bas
-' =============================================================================
-Public Sub セル内の丸数字をインクリメント()
-    Const sMACRO_NAME As String = "セル内の丸数字をインクリメント"
-    Const NUM_MAX As Long = 15
-    Const NUM_MIN As Long = 1
+' ==================================================================
+Public Sub 選択シート切り出し()
+    Const sMACRO_NAME As String = "選択シート切り出し"
     
-    Dim lTrgtNum As Long
-    Dim sTrgtNum As String
-    Dim lLoopCnt As Long
+    Dim shSht As Worksheet
+    Dim wSrcWindow As Window
+    Dim bkSrcBook As Workbook
+    Dim bkTrgtBook As Workbook
+    Dim sTrgtBookName As String
     
-    sTrgtNum = InputBox("インクリメントします。" & vbNewLine & "開始番号を入力してください。（①～⑭）", "番号入力", "")
+    Set bkSrcBook = ActiveWorkbook
+    Set wSrcWindow = ActiveWindow
+    Set bkTrgtBook = Workbooks.Add
     
-    '入力値チェック
-    If sTrgtNum = "" Then: MsgBox "入力値エラー！": Exit Sub
-    lTrgtNum = NumConvStr2Lng(sTrgtNum)
-    If (lTrgtNum > NUM_MAX - 1 Or NUM_MIN > lTrgtNum) Then: MsgBox "入力値エラー！": Exit Sub
+    wSrcWindow.SelectedSheets.Copy _
+        After:=bkTrgtBook.Sheets(bkTrgtBook.Sheets.Count)
+    Application.DisplayAlerts = False
+    bkTrgtBook.Sheets(1).Delete
+    Application.DisplayAlerts = True
     
-    '本処理
-    For lLoopCnt = NUM_MAX - 1 To lTrgtNum Step -1
-        Selection.Replace _
-            what:=NumConvLng2Str(lLoopCnt), _
-            replacement:=NumConvLng2Str(lLoopCnt + 1)
-    Next lLoopCnt
-    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
+    bkTrgtBook.SaveAs bkSrcBook.Path & "\" & wSrcWindow.SelectedSheets(1).Name & ".xlsx"
+    bkTrgtBook.Close
+    
+    MsgBox "選択シート切り出し完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -490,6 +711,104 @@ End Sub
 ' =============================================================================
 Public Sub シート表示非表示を切り替え()
     SheetVisibleSetting.Show
+End Sub
+
+' =============================================================================
+' = 概要    シートを並び替える。
+' =         本処理を実行すると、シート並べ替え作業用シートを作成する。
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub シート並べ替え作業用シートを作成()
+    Const sMACRO_NAME As String = "シート並べ替え作業用シートを作成"
+    Const WORK_SHEET_NAME As String = "シート並べ替え作業用"
+    Const ROW_BTN = 2
+    Const ROW_TEXT_1 = 4
+    Const ROW_TEXT_2 = 5
+    Const ROW_SHT_NAME_TITLE = 7
+    Const ROW_SHT_NAME_STRT = 8
+    Const CLM_BTN = 2
+    Const CLM_SHT_NAME = 2
+    
+    Dim lShtIdx As Long
+    Dim asShtName() As String
+    Dim shWorkSht As Worksheet
+    Dim bExistWorkSht As Boolean
+    Dim lRowIdx As Long
+    Dim lClmIdx As Long
+    Dim lArrIdx As Long
+    
+    With ActiveWorkbook
+        Application.ScreenUpdating = False
+        
+        ' === シート情報取得 ===
+        ReDim Preserve asShtName(.Worksheets.Count - 1)
+        For lShtIdx = 1 To .Worksheets.Count
+            asShtName(lShtIdx - 1) = .Sheets(lShtIdx).Name
+        Next lShtIdx
+        
+        ' === 作業用シート作成 ===
+        bExistWorkSht = False
+        For lShtIdx = 1 To .Worksheets.Count
+            If .Sheets(lShtIdx).Name = WORK_SHEET_NAME Then
+                bExistWorkSht = True
+                Exit For
+            Else
+                'Do Nothing
+            End If
+        Next lShtIdx
+        If bExistWorkSht = True Then
+            MsgBox "既に「" & WORK_SHEET_NAME & "」シートが作成されています。", vbCritical, sMACRO_NAME
+            MsgBox "処理を続けたい場合は、シートを削除してください。", vbCritical, sMACRO_NAME
+            MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
+            End
+        Else
+            Set shWorkSht = .Sheets.Add(After:=.Sheets(.Sheets.Count))
+            shWorkSht.Name = WORK_SHEET_NAME
+        End If
+        
+        'シート情報書き込み
+        shWorkSht.Cells(ROW_TEXT_1, CLM_SHT_NAME).Value = "希望通りにシート名を並べ替えてください。（上から順に並べ替えます）"
+        shWorkSht.Cells(ROW_TEXT_2, CLM_SHT_NAME).Value = "並べ替えが終わったら、「並べ替え実行！！」ボタンを押してください。"
+        shWorkSht.Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).Value = "シート名"
+        lArrIdx = 0
+        For lRowIdx = ROW_SHT_NAME_STRT To ROW_SHT_NAME_STRT + UBound(asShtName)
+            shWorkSht.Cells(lRowIdx, CLM_SHT_NAME).NumberFormatLocal = "@"
+            shWorkSht.Cells(lRowIdx, CLM_SHT_NAME).Value = asShtName(lArrIdx)
+            lArrIdx = lArrIdx + 1
+        Next lRowIdx
+        
+        'ボタン追加
+        With shWorkSht.Buttons.Add( _
+            shWorkSht.Cells(ROW_BTN, CLM_BTN).Left, _
+            shWorkSht.Cells(ROW_BTN, CLM_BTN).Top, _
+            shWorkSht.Cells(ROW_BTN, CLM_BTN).Width, _
+            shWorkSht.Cells(ROW_BTN, CLM_BTN).Height _
+        )
+            .OnAction = "SortSheetPost"
+            .Characters.Text = "並べ替え実行！！"
+        End With
+        
+        '書式設定
+        With ActiveSheet
+            .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).Interior.ColorIndex = 34
+            .Cells(ROW_BTN, CLM_BTN).RowHeight = 30
+            .Cells(ROW_BTN, CLM_BTN).ColumnWidth = 40
+            .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).HorizontalAlignment = xlCenter
+            .Range( _
+                .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME), _
+                .Cells(.Rows.Count, CLM_SHT_NAME).End(xlUp) _
+            ).Borders.LineStyle = True
+            .Rows(ROW_SHT_NAME_TITLE + 1).Select
+            ActiveWindow.FreezePanes = True
+            .Rows(ROW_SHT_NAME_TITLE).Select
+            Selection.AutoFilter
+            .Cells(1, 1).Select
+        End With
+        
+        Application.ScreenUpdating = True
+    End With
 End Sub
 
 ' =============================================================================
@@ -570,238 +889,92 @@ Public Sub シート追加カスタム()
     Application.ScreenUpdating = True
 End Sub
 
+' =============================================================================
+' = 概要    アクティブブックの先頭シートへ移動する
+' = 覚書    なし
+' = 依存　　なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 先頭シートへジャンプ()
+    Application.ScreenUpdating = False
+    Dim shSheet As Worksheet
+    For Each shSheet In ActiveWorkbook.Sheets
+        If shSheet.Visible = True Then
+            shSheet.Activate
+            Exit For
+        End If
+    Next
+    Application.ScreenUpdating = True
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブックの末尾シートへ移動する
+' = 覚書    なし
+' = 依存　　なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 末尾シートへジャンプ()
+    Application.ScreenUpdating = False
+    With ActiveWorkbook
+        Dim lShtCnt As Long
+        For lShtCnt = .Sheets.Count To 1 Step -1
+            If .Sheets(lShtCnt).Visible = True Then
+                .Sheets(lShtCnt).Activate
+                Exit For
+            End If
+        Next
+    End With
+    Application.ScreenUpdating = True
+End Sub
+
 ' ==================================================================
-' = 概要    選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
-' = 覚書    ・セル内に改行が含まれる場合は範囲が崩れることに注意
-' = 依存    Mng_Array.bas/ConvRange2Array()
-' =         Mng_Clipboard.bas/SetToClipboard()
-' =         SettingFile.cls
+' = 概要    シート毎に再計算にかかる時間を計測する
+' = 覚書    なし
+' = 依存    なし
 ' = 所属    Macros.bas
 ' ==================================================================
-Public Sub 範囲を維持したままセルコピー()
-    Const sMACRO_NAME As String = "範囲を維持したままセルコピー"
+Public Sub シート再計算時間計測()
+    Const lLOOP_NUM As Long = 10
     
     Application.ScreenUpdating = False
     
-    '*** アドイン設定読み出し ***
-    Dim bIgnoreInvisible As Boolean
-    bIgnoreInvisible = ReadSettingFile("bCELLCOPYRNG_IGNORE_INVISIBLE_CELL", bCELLCOPYRNG_IGNORE_INVISIBLE_CELL)
+    Dim previonsCalculationcMode As Variant
+    previonsCalculationcMode = Application.Calculation
+    Application.Calculation = xlCalculationManual
     
-    Dim sDelimiter As String
-    sDelimiter = ReadSettingFile("sCELLCOPYRNG_DELIMITER", sCELLCOPYRNG_DELIMITER)
-    
-    '*** 選択範囲取得 ***
-    Dim sClipedText As String
-    sClipedText = ""
-    Dim lAreaIdx As Long
-    For lAreaIdx = 1 To Selection.Areas.Count
-        '*** 追加テキスト取得 ***
-        Dim asLine() As String
-        Call ConvRange2Array( _
-            Selection.Areas(lAreaIdx), _
-            asLine, _
-            bIgnoreInvisible, _
-            sDelimiter _
-        )
-        
-        Dim sNewText As String
-        sNewText = ""
-        Dim lLineIdx As Long
-        For lLineIdx = LBound(asLine) To UBound(asLine)
-            If lLineIdx = LBound(asLine) Then
-                sNewText = asLine(lLineIdx)
-            Else
-                sNewText = sNewText & vbNewLine & asLine(lLineIdx)
-            End If
-        Next lLineIdx
-        
-        If lAreaIdx = 1 Then
-            sClipedText = sNewText
-        Else
-            sClipedText = sClipedText & vbNewLine & sNewText
-        End If
-    Next lAreaIdx
-    
-    '*** クリップボード設定 ***
-    Call SetToClipboard(sClipedText)
-    
-    Application.ScreenUpdating = True
-    
-    '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
-    Sleep 200 'ms 単位
-    Application.StatusBar = False
-End Sub
-
-' =============================================================================
-' = 概要    選択範囲を一行にまとめてセルコピーする。
-' = 覚書    ・セル内に改行が含まれる場合は一行にまとめられないことに注意
-' = 依存    Mng_Clipboard.bas/SetToClipboard()
-' =         SettingFile.cls
-' = 所属    Macro.bas
-' =============================================================================
-Public Sub 一行にまとめてセルコピー()
-    Const sMACRO_NAME As String = "一行にまとめてセルコピー"
-    
-    Application.ScreenUpdating = False
-    
-    '*** アドイン設定読み出し ***
-    Dim bIgnoreInvisibleCell As Boolean
-    Dim bIgnoreBlankCell As Boolean
-    Dim sPreffix As String
-    Dim sDelimiter As String
-    Dim sSuffix As String
-    bIgnoreInvisibleCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_INVISIBLE_CELL", bCELLCOPYLINE_IGNORE_INVISIBLE_CELL)
-    bIgnoreBlankCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_BLANK_CELL", bCELLCOPYLINE_IGNORE_BLANK_CELL)
-    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
-    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
-    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
-    
-    '*** 選択範囲取得 ***
-    Dim sClipedText As String
-    sClipedText = ""
-    Dim lAreaIdx As Long
-    For lAreaIdx = 1 To Selection.Areas.Count
-        Dim lItemIdx As Long
-        For lItemIdx = 1 To Selection.Areas(lAreaIdx).Count
-            With Selection.Areas(lAreaIdx).Item(lItemIdx)
-                If .Value = "" Then                                     '空白セル
-                    If bIgnoreBlankCell = True Then
-                        'Do Nothing
-                    Else
-                        If sClipedText = "" Then
-                            sClipedText = sPreffix & .Value
-                        Else
-                            sClipedText = sClipedText & sDelimiter & .Value
-                        End If
-                    End If
-                Else
-                    If .EntireRow.Hidden Or .EntireColumn.Hidden Then   '非表示セル
-                        If bIgnoreInvisibleCell = True Then
-                            'Do Nothing
-                        Else
-                            If sClipedText = "" Then
-                                sClipedText = sPreffix & .Value
-                            Else
-                                sClipedText = sClipedText & sDelimiter & .Value
-                            End If
-                        End If
-                    Else                                                '上記以外
-                        If sClipedText = "" Then
-                            sClipedText = sPreffix & .Value
-                        Else
-                            sClipedText = sClipedText & sDelimiter & .Value
-                        End If
-                    End If
-                End If
-            End With
-        Next lItemIdx
-    Next lAreaIdx
-    sClipedText = sClipedText & sSuffix
-    
-    '*** クリップボード設定 ***
-    Call SetToClipboard(sClipedText)
-    
-    Application.ScreenUpdating = True
-    
-    '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
-    Sleep 200 'ms 単位
-    Application.StatusBar = False
-End Sub
-
-' =============================================================================
-' = 概要    一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' = 所属    Macro.bas
-' =============================================================================
-Public Sub ●設定変更●一行にまとめてセルコピー()
-    Const sMACRO_NAME As String = "●設定変更●一行にまとめてセルコピー"
-    
-    Application.ScreenUpdating = False
-    
-    '*** アドイン設定読み出し ***
-    Dim sPreffix As String
-    Dim sDelimiter As String
-    Dim sSuffix As String
-    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
-    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
-    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
-    
-    Dim vRet As Variant
-    vRet = MsgBox( _
-        "「" & sMACRO_NAME & "」の設定を変更します。" & vbNewLine & _
-        "　先頭文字：" & sPreffix & vbNewLine & _
-        "　区切り文字：" & sDelimiter & vbNewLine & _
-        "　末尾文字：" & sSuffix & vbNewLine & _
-        "" & vbNewLine & _
-        "新たに設定を変更しますか？(→はい)" & vbNewLine & _
-        "デフォルトの設定に戻しますか？(→いいえ)", _
-        vbYesNoCancel, _
-        sMACRO_NAME _
-    )
-    If vRet = vbYes Then
-        sPreffix = InputBox( _
-            "「先頭文字」を指定してください", _
-            sMACRO_NAME, _
-            sPreffix _
-        )
-        sDelimiter = InputBox( _
-            "「区切り文字」を指定してください", _
-            sMACRO_NAME, _
-            sDelimiter _
-        )
-        sSuffix = InputBox( _
-            "「末尾文字」を指定してください", _
-            sMACRO_NAME, _
-            sSuffix _
-        )
-        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
-        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
-        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
-        MsgBox _
-            "設定を変更しました" & vbNewLine & _
-            "　先頭文字：" & sPreffix & vbNewLine & _
-            "　区切り文字：" & sDelimiter & vbNewLine & _
-            "　末尾文字：" & sSuffix, _
-            vbOKOnly, _
-            sMACRO_NAME
-    ElseIf vRet = vbNo Then
-        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
-        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
-        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
-        Application.ScreenUpdating = True
-        MsgBox _
-            "設定をデフォルトに戻しました" & vbNewLine & _
-            "　先頭文字：" & sPreffix & vbNewLine & _
-            "　区切り文字：" & sDelimiter & vbNewLine & _
-            "　末尾文字：" & sSuffix, _
-            vbOKOnly, _
-            sMACRO_NAME
-    Else
-        Application.ScreenUpdating = True
-        MsgBox "処理をキャンセルします", vbExclamation, sMACRO_NAME
+    ' 入力値が1未満の場合は終了する
+    If Not (lLOOP_NUM > 0) Then
+        Exit Sub
     End If
+    
+    ' ### ベンチマーク開始 ###
+    ' ヘッダー(シート名の一覧)を出力
+    Dim shTrgtSheet As Worksheet
+    For Each shTrgtSheet In ActiveWorkbook.Worksheets
+        Debug.Print shTrgtSheet.Name & vbTab;
+    Next
+    Debug.Print
+    
+    Dim lLoopIdx As Long
+    For lLoopIdx = 1 To lLOOP_NUM
+        ' シートごとに再計算&処理時間を出力
+        Dim vStartTime As Variant
+        Dim vFinishTime As Variant
+        For Each shTrgtSheet In Worksheets
+            shTrgtSheet.Cells.Dirty
+            vStartTime = Timer
+            shTrgtSheet.Calculate
+            vFinishTime = Timer
+            Debug.Print Format(vFinishTime - vStartTime, "0.0000") & vbTab;
+        Next
+        Debug.Print
+    Next
+    
+    Application.Calculation = previonsCalculationcMode
+    Application.ScreenUpdating = True
 End Sub
 
-' =============================================================================
-' = 概要    クリップボードから値貼り付けする
-' = 覚書    ・現在の選択範囲は無視する
-' = 依存    Mng_Clipboard.bas/GetFromClipboard()
-' = 所属    Macro.bas
-' =============================================================================
-Public Sub クリップボード値貼り付け()
-    Dim bResult As Boolean
-    Dim sStr As String
-    bResult = GetFromClipboard(sStr)
-    If bResult = True Then
-        ActiveSheet.PasteSpecial Format:="テキスト"
-    Else
-        'Do Nothing
-    End If
-End Sub
-
+' ▽▽▽ セル操作 ▽▽▽
 ' =============================================================================
 ' = 概要    選択範囲をファイルとしてエクスポートする。
 ' =         隣り合った列のセルにはタブ文字を挿入して出力する。
@@ -1195,6 +1368,70 @@ Public Sub 検索文字の文字色を変更()
 End Sub
 
 ' =============================================================================
+' = 概要    ①～⑭を指定して、指定番号以降をデクリメントする
+' = 覚書    なし
+' = 依存    Mng_String.bas/NumConvStr2Lng()
+' =         Mng_String.bas/NumConvLng2Str()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub セル内の丸数字をデクリメント()
+    Const sMACRO_NAME As String = "セル内の丸数字をデクリメント"
+    Const NUM_MAX As Long = 15
+    Const NUM_MIN As Long = 1
+    
+    Dim lTrgtNum As Long
+    Dim sTrgtNum As String
+    Dim lLoopCnt As Long
+    
+    sTrgtNum = InputBox("デクリメントします。" & vbNewLine & "開始番号を入力してください。（②～⑮）", "番号入力", "")
+    
+    '入力値チェック
+    If sTrgtNum = "" Then: MsgBox "入力値エラー！": Exit Sub
+    lTrgtNum = NumConvStr2Lng(sTrgtNum)
+    If (lTrgtNum > NUM_MAX Or NUM_MIN + 1 > lTrgtNum) Then: MsgBox "入力値エラー！": Exit Sub
+    
+    '本処理
+    For lLoopCnt = lTrgtNum To NUM_MAX
+        Selection.Replace _
+            what:=NumConvLng2Str(lLoopCnt), _
+            replacement:=NumConvLng2Str(lLoopCnt - 1)
+    Next lLoopCnt
+    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
+End Sub
+
+' =============================================================================
+' = 概要    ②～⑮を指定して、指定番号以降をインクリメントする
+' = 覚書    なし
+' = 依存    Mng_String.bas/NumConvStr2Lng()
+' =         Mng_String.bas/NumConvLng2Str()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub セル内の丸数字をインクリメント()
+    Const sMACRO_NAME As String = "セル内の丸数字をインクリメント"
+    Const NUM_MAX As Long = 15
+    Const NUM_MIN As Long = 1
+    
+    Dim lTrgtNum As Long
+    Dim sTrgtNum As String
+    Dim lLoopCnt As Long
+    
+    sTrgtNum = InputBox("インクリメントします。" & vbNewLine & "開始番号を入力してください。（①～⑭）", "番号入力", "")
+    
+    '入力値チェック
+    If sTrgtNum = "" Then: MsgBox "入力値エラー！": Exit Sub
+    lTrgtNum = NumConvStr2Lng(sTrgtNum)
+    If (lTrgtNum > NUM_MAX - 1 Or NUM_MIN > lTrgtNum) Then: MsgBox "入力値エラー！": Exit Sub
+    
+    '本処理
+    For lLoopCnt = NUM_MAX - 1 To lTrgtNum Step -1
+        Selection.Replace _
+            what:=NumConvLng2Str(lLoopCnt), _
+            replacement:=NumConvLng2Str(lLoopCnt + 1)
+    Next lLoopCnt
+    MsgBox "置換完了！", vbOKOnly, sMACRO_NAME
+End Sub
+
+' =============================================================================
 ' = 概要    行をツリー構造にしてグループ化
 ' =         Usage：ツリーグループ化したい範囲を選択し、マクロ「ツリーをグループ化」を実行する
 ' = 覚書    なし
@@ -1226,136 +1463,6 @@ Public Sub ツリーをグループ化()
 End Sub
 
 ' =============================================================================
-' = 概要    シートを並び替える。
-' =         本処理を実行すると、シート並べ替え作業用シートを作成する。
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub シート並べ替え作業用シートを作成()
-    Const sMACRO_NAME As String = "シート並べ替え作業用シートを作成"
-    Const WORK_SHEET_NAME As String = "シート並べ替え作業用"
-    Const ROW_BTN = 2
-    Const ROW_TEXT_1 = 4
-    Const ROW_TEXT_2 = 5
-    Const ROW_SHT_NAME_TITLE = 7
-    Const ROW_SHT_NAME_STRT = 8
-    Const CLM_BTN = 2
-    Const CLM_SHT_NAME = 2
-    
-    Dim lShtIdx As Long
-    Dim asShtName() As String
-    Dim shWorkSht As Worksheet
-    Dim bExistWorkSht As Boolean
-    Dim lRowIdx As Long
-    Dim lClmIdx As Long
-    Dim lArrIdx As Long
-    
-    With ActiveWorkbook
-        Application.ScreenUpdating = False
-        
-        ' === シート情報取得 ===
-        ReDim Preserve asShtName(.Worksheets.Count - 1)
-        For lShtIdx = 1 To .Worksheets.Count
-            asShtName(lShtIdx - 1) = .Sheets(lShtIdx).Name
-        Next lShtIdx
-        
-        ' === 作業用シート作成 ===
-        bExistWorkSht = False
-        For lShtIdx = 1 To .Worksheets.Count
-            If .Sheets(lShtIdx).Name = WORK_SHEET_NAME Then
-                bExistWorkSht = True
-                Exit For
-            Else
-                'Do Nothing
-            End If
-        Next lShtIdx
-        If bExistWorkSht = True Then
-            MsgBox "既に「" & WORK_SHEET_NAME & "」シートが作成されています。", vbCritical, sMACRO_NAME
-            MsgBox "処理を続けたい場合は、シートを削除してください。", vbCritical, sMACRO_NAME
-            MsgBox "処理を中断します。", vbCritical, sMACRO_NAME
-            End
-        Else
-            Set shWorkSht = .Sheets.Add(After:=.Sheets(.Sheets.Count))
-            shWorkSht.Name = WORK_SHEET_NAME
-        End If
-        
-        'シート情報書き込み
-        shWorkSht.Cells(ROW_TEXT_1, CLM_SHT_NAME).Value = "希望通りにシート名を並べ替えてください。（上から順に並べ替えます）"
-        shWorkSht.Cells(ROW_TEXT_2, CLM_SHT_NAME).Value = "並べ替えが終わったら、「並べ替え実行！！」ボタンを押してください。"
-        shWorkSht.Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).Value = "シート名"
-        lArrIdx = 0
-        For lRowIdx = ROW_SHT_NAME_STRT To ROW_SHT_NAME_STRT + UBound(asShtName)
-            shWorkSht.Cells(lRowIdx, CLM_SHT_NAME).NumberFormatLocal = "@"
-            shWorkSht.Cells(lRowIdx, CLM_SHT_NAME).Value = asShtName(lArrIdx)
-            lArrIdx = lArrIdx + 1
-        Next lRowIdx
-        
-        'ボタン追加
-        With shWorkSht.Buttons.Add( _
-            shWorkSht.Cells(ROW_BTN, CLM_BTN).Left, _
-            shWorkSht.Cells(ROW_BTN, CLM_BTN).Top, _
-            shWorkSht.Cells(ROW_BTN, CLM_BTN).Width, _
-            shWorkSht.Cells(ROW_BTN, CLM_BTN).Height _
-        )
-            .OnAction = "SortSheetPost"
-            .Characters.Text = "並べ替え実行！！"
-        End With
-        
-        '書式設定
-        With ActiveSheet
-            .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).Interior.ColorIndex = 34
-            .Cells(ROW_BTN, CLM_BTN).RowHeight = 30
-            .Cells(ROW_BTN, CLM_BTN).ColumnWidth = 40
-            .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME).HorizontalAlignment = xlCenter
-            .Range( _
-                .Cells(ROW_SHT_NAME_TITLE, CLM_SHT_NAME), _
-                .Cells(.Rows.Count, CLM_SHT_NAME).End(xlUp) _
-            ).Borders.LineStyle = True
-            .Rows(ROW_SHT_NAME_TITLE + 1).Select
-            ActiveWindow.FreezePanes = True
-            .Rows(ROW_SHT_NAME_TITLE).Select
-            Selection.AutoFilter
-            .Cells(1, 1).Select
-        End With
-        
-        Application.ScreenUpdating = True
-    End With
-End Sub
-
-' ==================================================================
-' = 概要    選択シートを別ファイルに切り出す。
-' =         コピー元ブックと同フォルダに出力する。
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' ==================================================================
-Public Sub 選択シート切り出し()
-    Const sMACRO_NAME As String = "選択シート切り出し"
-    
-    Dim shSht As Worksheet
-    Dim wSrcWindow As Window
-    Dim bkSrcBook As Workbook
-    Dim bkTrgtBook As Workbook
-    Dim sTrgtBookName As String
-    
-    Set bkSrcBook = ActiveWorkbook
-    Set wSrcWindow = ActiveWindow
-    Set bkTrgtBook = Workbooks.Add
-    
-    wSrcWindow.SelectedSheets.Copy _
-        After:=bkTrgtBook.Sheets(bkTrgtBook.Sheets.Count)
-    Application.DisplayAlerts = False
-    bkTrgtBook.Sheets(1).Delete
-    Application.DisplayAlerts = True
-    
-    bkTrgtBook.SaveAs bkSrcBook.Path & "\" & wSrcWindow.SelectedSheets(1).Name & ".xlsx"
-    bkTrgtBook.Close
-    
-    MsgBox "選択シート切り出し完了！", vbOKOnly, sMACRO_NAME
-End Sub
-
-' =============================================================================
 ' = 概要    選択した範囲のハイパーリンクを一括で開く
 ' = 覚書    なし
 ' = 依存    なし
@@ -1375,6 +1482,274 @@ Public Sub ハイパーリンク一括オープン()
 End Sub
 
 ' =============================================================================
+' = 概要    アクティブセルからハイパーリンク先に飛ぶ
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ハイパーリンクで飛ぶ()
+    Dim rTrgtCell As Range
+    On Error Resume Next
+    For Each rTrgtCell In Selection
+        rTrgtCell.Hyperlinks(1).Follow NewWindow:=True
+        If Err.Number = 0 Then
+            'Do Nothing
+        Else
+            Debug.Print "[" & Now & "] Error " & _
+                        "[Macro] ハイパーリンクで飛ぶ " & _
+                        "[Error No." & Err.Number & "] " & Err.Description
+        End If
+    Next
+    On Error GoTo 0
+End Sub
+
+' =============================================================================
+' = 概要    選択セルに対して「選択範囲内で中央」を実行する
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 選択範囲内で中央()
+    If Selection(1).HorizontalAlignment = xlCenterAcrossSelection Then
+        Selection.HorizontalAlignment = xlGeneral
+    Else
+        Selection.HorizontalAlignment = xlCenterAcrossSelection
+    End If
+End Sub
+
+' ==================================================================
+' = 概要    選択範囲を範囲を維持したままセルコピーする。(ダブルクオーテーションを除く)
+' = 覚書    ・セル内に改行が含まれる場合は範囲が崩れることに注意
+' = 依存    Mng_Array.bas/ConvRange2Array()
+' =         Mng_Clipboard.bas/SetToClipboard()
+' =         SettingFile.cls
+' = 所属    Macros.bas
+' ==================================================================
+Public Sub 範囲を維持したままセルコピー()
+    Const sMACRO_NAME As String = "範囲を維持したままセルコピー"
+    
+    Application.ScreenUpdating = False
+    
+    '*** アドイン設定読み出し ***
+    Dim bIgnoreInvisible As Boolean
+    bIgnoreInvisible = ReadSettingFile("bCELLCOPYRNG_IGNORE_INVISIBLE_CELL", bCELLCOPYRNG_IGNORE_INVISIBLE_CELL)
+    
+    Dim sDelimiter As String
+    sDelimiter = ReadSettingFile("sCELLCOPYRNG_DELIMITER", sCELLCOPYRNG_DELIMITER)
+    
+    '*** 選択範囲取得 ***
+    Dim sClipedText As String
+    sClipedText = ""
+    Dim lAreaIdx As Long
+    For lAreaIdx = 1 To Selection.Areas.Count
+        '*** 追加テキスト取得 ***
+        Dim asLine() As String
+        Call ConvRange2Array( _
+            Selection.Areas(lAreaIdx), _
+            asLine, _
+            bIgnoreInvisible, _
+            sDelimiter _
+        )
+        
+        Dim sNewText As String
+        sNewText = ""
+        Dim lLineIdx As Long
+        For lLineIdx = LBound(asLine) To UBound(asLine)
+            If lLineIdx = LBound(asLine) Then
+                sNewText = asLine(lLineIdx)
+            Else
+                sNewText = sNewText & vbNewLine & asLine(lLineIdx)
+            End If
+        Next lLineIdx
+        
+        If lAreaIdx = 1 Then
+            sClipedText = sNewText
+        Else
+            sClipedText = sClipedText & vbNewLine & sNewText
+        End If
+    Next lAreaIdx
+    
+    '*** クリップボード設定 ***
+    Call SetToClipboard(sClipedText)
+    
+    Application.ScreenUpdating = True
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    選択範囲を一行にまとめてセルコピーする。
+' = 覚書    ・セル内に改行が含まれる場合は一行にまとめられないことに注意
+' = 依存    Mng_Clipboard.bas/SetToClipboard()
+' =         SettingFile.cls
+' = 所属    Macro.bas
+' =============================================================================
+Public Sub 一行にまとめてセルコピー()
+    Const sMACRO_NAME As String = "一行にまとめてセルコピー"
+    
+    Application.ScreenUpdating = False
+    
+    '*** アドイン設定読み出し ***
+    Dim bIgnoreInvisibleCell As Boolean
+    Dim bIgnoreBlankCell As Boolean
+    Dim sPreffix As String
+    Dim sDelimiter As String
+    Dim sSuffix As String
+    bIgnoreInvisibleCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_INVISIBLE_CELL", bCELLCOPYLINE_IGNORE_INVISIBLE_CELL)
+    bIgnoreBlankCell = ReadSettingFile("bCELLCOPYLINE_IGNORE_BLANK_CELL", bCELLCOPYLINE_IGNORE_BLANK_CELL)
+    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
+    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
+    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
+    
+    '*** 選択範囲取得 ***
+    Dim sClipedText As String
+    sClipedText = ""
+    Dim lAreaIdx As Long
+    For lAreaIdx = 1 To Selection.Areas.Count
+        Dim lItemIdx As Long
+        For lItemIdx = 1 To Selection.Areas(lAreaIdx).Count
+            With Selection.Areas(lAreaIdx).Item(lItemIdx)
+                If .Value = "" Then                                     '空白セル
+                    If bIgnoreBlankCell = True Then
+                        'Do Nothing
+                    Else
+                        If sClipedText = "" Then
+                            sClipedText = sPreffix & .Value
+                        Else
+                            sClipedText = sClipedText & sDelimiter & .Value
+                        End If
+                    End If
+                Else
+                    If .EntireRow.Hidden Or .EntireColumn.Hidden Then   '非表示セル
+                        If bIgnoreInvisibleCell = True Then
+                            'Do Nothing
+                        Else
+                            If sClipedText = "" Then
+                                sClipedText = sPreffix & .Value
+                            Else
+                                sClipedText = sClipedText & sDelimiter & .Value
+                            End If
+                        End If
+                    Else                                                '上記以外
+                        If sClipedText = "" Then
+                            sClipedText = sPreffix & .Value
+                        Else
+                            sClipedText = sClipedText & sDelimiter & .Value
+                        End If
+                    End If
+                End If
+            End With
+        Next lItemIdx
+    Next lAreaIdx
+    sClipedText = sClipedText & sSuffix
+    
+    '*** クリップボード設定 ***
+    Call SetToClipboard(sClipedText)
+    
+    Application.ScreenUpdating = True
+    
+    '*** フィードバック ***
+    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
+    Sleep 200 'ms 単位
+    Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    一行にまとめてセルコピーにて使用する「先頭文字,区切り文字,末尾文字」を変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macro.bas
+' =============================================================================
+Public Sub ●設定変更●一行にまとめてセルコピー()
+    Const sMACRO_NAME As String = "●設定変更●一行にまとめてセルコピー"
+    
+    Application.ScreenUpdating = False
+    
+    '*** アドイン設定読み出し ***
+    Dim sPreffix As String
+    Dim sDelimiter As String
+    Dim sSuffix As String
+    sPreffix = ReadSettingFile("sCELLCOPYLINE_PREFFIX", sCELLCOPYLINE_PREFFIX)
+    sDelimiter = ReadSettingFile("sCELLCOPYLINE_DELIMITER", sCELLCOPYLINE_DELIMITER)
+    sSuffix = ReadSettingFile("sCELLCOPYLINE_SUFFIX", sCELLCOPYLINE_SUFFIX)
+    
+    Dim vRet As Variant
+    vRet = MsgBox( _
+        "「" & sMACRO_NAME & "」の設定を変更します。" & vbNewLine & _
+        "　先頭文字：" & sPreffix & vbNewLine & _
+        "　区切り文字：" & sDelimiter & vbNewLine & _
+        "　末尾文字：" & sSuffix & vbNewLine & _
+        "" & vbNewLine & _
+        "新たに設定を変更しますか？(→はい)" & vbNewLine & _
+        "デフォルトの設定に戻しますか？(→いいえ)", _
+        vbYesNoCancel, _
+        sMACRO_NAME _
+    )
+    If vRet = vbYes Then
+        sPreffix = InputBox( _
+            "「先頭文字」を指定してください", _
+            sMACRO_NAME, _
+            sPreffix _
+        )
+        sDelimiter = InputBox( _
+            "「区切り文字」を指定してください", _
+            sMACRO_NAME, _
+            sDelimiter _
+        )
+        sSuffix = InputBox( _
+            "「末尾文字」を指定してください", _
+            sMACRO_NAME, _
+            sSuffix _
+        )
+        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
+        MsgBox _
+            "設定を変更しました" & vbNewLine & _
+            "　先頭文字：" & sPreffix & vbNewLine & _
+            "　区切り文字：" & sDelimiter & vbNewLine & _
+            "　末尾文字：" & sSuffix, _
+            vbOKOnly, _
+            sMACRO_NAME
+    ElseIf vRet = vbNo Then
+        Call WriteSettingFile("sCELLCOPYLINE_PREFFIX", sPreffix)
+        Call WriteSettingFile("sCELLCOPYLINE_DELIMITER", sDelimiter)
+        Call WriteSettingFile("sCELLCOPYLINE_SUFFIX", sSuffix)
+        Application.ScreenUpdating = True
+        MsgBox _
+            "設定をデフォルトに戻しました" & vbNewLine & _
+            "　先頭文字：" & sPreffix & vbNewLine & _
+            "　区切り文字：" & sDelimiter & vbNewLine & _
+            "　末尾文字：" & sSuffix, _
+            vbOKOnly, _
+            sMACRO_NAME
+    Else
+        Application.ScreenUpdating = True
+        MsgBox "処理をキャンセルします", vbExclamation, sMACRO_NAME
+    End If
+End Sub
+
+' =============================================================================
+' = 概要    クリップボードから値貼り付けする
+' = 覚書    ・現在の選択範囲は無視する
+' = 依存    Mng_Clipboard.bas/GetFromClipboard()
+' = 所属    Macro.bas
+' =============================================================================
+Public Sub クリップボード値貼り付け()
+    Dim bResult As Boolean
+    Dim sStr As String
+    bResult = GetFromClipboard(sStr)
+    If bResult = True Then
+        ActiveSheet.PasteSpecial Format:="テキスト"
+    Else
+        'Do Nothing
+    End If
+End Sub
+
+' =============================================================================
 ' = 概要    フォント色を「設定色」⇔「自動」でトグルする
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
@@ -1390,25 +1765,6 @@ Public Sub フォント色をトグル()
         Selection.Font.ColorIndex = xlAutomatic
     Else
         Selection.Font.Color = lClrRgb
-    End If
-End Sub
-
-' =============================================================================
-' = 概要    背景色を「設定色」⇔「背景色なし」でトグルする
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 背景色をトグル()
-    'アドイン設定読み出し
-    Dim lClrRgb As Long
-    lClrRgb = ReadSettingFile("lCLRTGLBG_CLR_RGB", lCLRTGLBG_CLR_RGB)
-    
-    '背景色変更
-    If Selection(1).Interior.Color = lClrRgb Then
-        Selection.Interior.ColorIndex = 0
-    Else
-        Selection.Interior.Color = lClrRgb
     End If
 End Sub
 
@@ -1442,6 +1798,42 @@ Public Sub ●設定変更●フォント色をトグルの色選択()
 End Sub
 
 ' =============================================================================
+' = 概要    「フォント色をトグル」の設定色をアクティブセルから取得して変更する
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub ●設定変更●フォント色をトグルの色スポイト()
+    Const sMACRO_NAME As String = "●設定変更●フォント色をトグルの色スポイト"
+    
+    '色取得
+    Dim lClrRgb As Long
+    lClrRgb = Selection(1).Font.Color
+    
+    'アドイン設定更新
+    Call WriteSettingFile("lCLRTGLFONT_CLR_RGB", lClrRgb)
+End Sub
+
+' =============================================================================
+' = 概要    背景色を「設定色」⇔「背景色なし」でトグルする
+' = 覚書    なし
+' = 依存    SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 背景色をトグル()
+    'アドイン設定読み出し
+    Dim lClrRgb As Long
+    lClrRgb = ReadSettingFile("lCLRTGLBG_CLR_RGB", lCLRTGLBG_CLR_RGB)
+    
+    '背景色変更
+    If Selection(1).Interior.Color = lClrRgb Then
+        Selection.Interior.ColorIndex = 0
+    Else
+        Selection.Interior.Color = lClrRgb
+    End If
+End Sub
+
+' =============================================================================
 ' = 概要    「背景色をトグル」の設定色をカラーパレットから取得して変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
@@ -1471,23 +1863,6 @@ Public Sub ●設定変更●背景色をトグルの色選択()
 End Sub
 
 ' =============================================================================
-' = 概要    「フォント色をトグル」の設定色をアクティブセルから取得して変更する
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ●設定変更●フォント色をトグルの色スポイト()
-    Const sMACRO_NAME As String = "●設定変更●フォント色をトグルの色スポイト"
-    
-    '色取得
-    Dim lClrRgb As Long
-    lClrRgb = Selection(1).Font.Color
-    
-    'アドイン設定更新
-    Call WriteSettingFile("lCLRTGLFONT_CLR_RGB", lClrRgb)
-End Sub
-
-' =============================================================================
 ' = 概要    「背景色をトグル」の設定色をアクティブセルから取得して変更する
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
@@ -1502,88 +1877,6 @@ Public Sub ●設定変更●背景色をトグルの色スポイト()
     
     'アドイン設定更新
     Call WriteSettingFile("lCLRTGLBG_CLR_RGB", lClrRgb)
-End Sub
-
-' =============================================================================
-' = 概要    画面を上に移動(スクロールロック動作)
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 画面を上に移動()
-    With ActiveWindow
-        If .ScrollRow > 1 Then
-            .ScrollRow = .ScrollRow - 1
-        End If
-    End With
-End Sub
-
-' =============================================================================
-' = 概要    画面を下に移動(スクロールロック動作)
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 画面を下に移動()
-    With ActiveWindow
-        .ScrollRow = .ScrollRow + 1
-    End With
-End Sub
-
-' =============================================================================
-' = 概要    画面を左に移動(スクロールロック動作)
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 画面を左に移動()
-    With ActiveWindow
-        If .ScrollColumn > 1 Then
-            .ScrollColumn = .ScrollColumn - 1
-        End If
-    End With
-End Sub
-
-' =============================================================================
-' = 概要    画面を右に移動(スクロールロック動作)
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 画面を右に移動()
-    With ActiveWindow
-        .ScrollColumn = .ScrollColumn + 1
-    End With
-End Sub
-
-' =============================================================================
-' = 概要    インデントを上げる
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub インデントを上げる()
-    Dim rCell As Range
-    For Each rCell In Selection
-        rCell.IndentLevel = rCell.IndentLevel + 1
-    Next
-End Sub
-
-' =============================================================================
-' = 概要    インデントを下げる
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub インデントを下げる()
-    Dim rCell As Range
-    For Each rCell In Selection
-        If rCell.IndentLevel = 0 Then
-            'Do Nothing
-        Else
-            rCell.IndentLevel = rCell.IndentLevel - 1
-        End If
-    Next
 End Sub
 
 ' =============================================================================
@@ -1674,145 +1967,85 @@ Public Sub オートフィル実行( _
 End Sub
 
 ' =============================================================================
-' = 概要    アクティブセルからハイパーリンク先に飛ぶ
+' = 概要    画面を上に移動(スクロールロック動作)
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub ハイパーリンクで飛ぶ()
-    Dim rTrgtCell As Range
-    On Error Resume Next
-    For Each rTrgtCell In Selection
-        rTrgtCell.Hyperlinks(1).Follow NewWindow:=True
-        If Err.Number = 0 Then
+Public Sub 画面を上に移動()
+    With ActiveWindow
+        If .ScrollRow > 1 Then
+            .ScrollRow = .ScrollRow - 1
+        End If
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を下に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を下に移動()
+    With ActiveWindow
+        .ScrollRow = .ScrollRow + 1
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を左に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を左に移動()
+    With ActiveWindow
+        If .ScrollColumn > 1 Then
+            .ScrollColumn = .ScrollColumn - 1
+        End If
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    画面を右に移動(スクロールロック動作)
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 画面を右に移動()
+    With ActiveWindow
+        .ScrollColumn = .ScrollColumn + 1
+    End With
+End Sub
+
+' =============================================================================
+' = 概要    インデントを上げる
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub インデントを上げる()
+    Dim rCell As Range
+    For Each rCell In Selection
+        rCell.IndentLevel = rCell.IndentLevel + 1
+    Next
+End Sub
+
+' =============================================================================
+' = 概要    インデントを下げる
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub インデントを下げる()
+    Dim rCell As Range
+    For Each rCell In Selection
+        If rCell.IndentLevel = 0 Then
             'Do Nothing
         Else
-            Debug.Print "[" & Now & "] Error " & _
-                        "[Macro] ハイパーリンクで飛ぶ " & _
-                        "[Error No." & Err.Number & "] " & Err.Description
+            rCell.IndentLevel = rCell.IndentLevel - 1
         End If
     Next
-    On Error GoTo 0
-End Sub
-
-' =============================================================================
-' = 概要    アクティブブックの先頭シートへ移動する
-' = 覚書    なし
-' = 依存　　なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 先頭シートへジャンプ()
-    Application.ScreenUpdating = False
-    Dim shSheet As Worksheet
-    For Each shSheet In ActiveWorkbook.Sheets
-        If shSheet.Visible = True Then
-            shSheet.Activate
-            Exit For
-        End If
-    Next
-    Application.ScreenUpdating = True
-End Sub
-
-' =============================================================================
-' = 概要    アクティブブックの末尾シートへ移動する
-' = 覚書    なし
-' = 依存　　なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 末尾シートへジャンプ()
-    Application.ScreenUpdating = False
-    With ActiveWorkbook
-        Dim lShtCnt As Long
-        For lShtCnt = .Sheets.Count To 1 Step -1
-            If .Sheets(lShtCnt).Visible = True Then
-                .Sheets(lShtCnt).Activate
-                Exit For
-            End If
-        Next
-    End With
-    Application.ScreenUpdating = True
-End Sub
-
-' ==================================================================
-' = 概要    シート毎に再計算にかかる時間を計測する
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' ==================================================================
-Public Sub シート再計算時間計測()
-    Const lLOOP_NUM As Long = 10
-    
-    Application.ScreenUpdating = False
-    
-    Dim previonsCalculationcMode As Variant
-    previonsCalculationcMode = Application.Calculation
-    Application.Calculation = xlCalculationManual
-    
-    ' 入力値が1未満の場合は終了する
-    If Not (lLOOP_NUM > 0) Then
-        Exit Sub
-    End If
-    
-    ' ### ベンチマーク開始 ###
-    ' ヘッダー(シート名の一覧)を出力
-    Dim shTrgtSheet As Worksheet
-    For Each shTrgtSheet In ActiveWorkbook.Worksheets
-        Debug.Print shTrgtSheet.Name & vbTab;
-    Next
-    Debug.Print
-    
-    Dim lLoopIdx As Long
-    For lLoopIdx = 1 To lLOOP_NUM
-        ' シートごとに再計算&処理時間を出力
-        Dim vStartTime As Variant
-        Dim vFinishTime As Variant
-        For Each shTrgtSheet In Worksheets
-            shTrgtSheet.Cells.Dirty
-            vStartTime = Timer
-            shTrgtSheet.Calculate
-            vFinishTime = Timer
-            Debug.Print Format(vFinishTime - vStartTime, "0.0000") & vbTab;
-        Next
-        Debug.Print
-    Next
-    
-    Application.Calculation = previonsCalculationcMode
-    Application.ScreenUpdating = True
-End Sub
-
-' =============================================================================
-' = 概要    アクティブセルのコメント表示の有効/無効を切り替える
-' = 覚書    なし
-' = 依存    SettingFile.cls
-' =         Macros.bas/SwitchMacroShortcutKeysActivation()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ●設定変更●アクティブセルコメントのみ表示()
-    Const sMACRO_NAME As String = "●設定変更●アクティブセルコメントのみ表示"
-    
-    'アドイン設定ファイル読み出し
-    Dim bExistSetting As Boolean
-    bExistSetting = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
-    
-    'アクティブセルコメント設定更新
-    Dim bCmntVsblEnb As Boolean
-    If bExistSetting = True Then
-        If bCmntVsblEnb = True Then
-            MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
-            bCmntVsblEnb = False
-        Else
-            MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-            bCmntVsblEnb = True
-        End If
-    Else
-        MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-        bCmntVsblEnb = True
-    End If
-    
-    Call WriteSettingFile("bCMNT_VSBL_ENB", bCmntVsblEnb)
-    
-    'ショートカットキー設定 更新(有効化)
-    Call SwitchMacroShortcutKeysActivation(True)
 End Sub
 
 ' =============================================================================
@@ -1852,216 +2085,38 @@ Public Sub アクティブセルコメントのみ表示して右移動()
 End Sub
 
 ' =============================================================================
-' = 概要    Excel方眼紙
+' = 概要    アクティブセルのコメント表示の有効/無効を切り替える
 ' = 覚書    なし
 ' = 依存    SettingFile.cls
+' =         Macros.bas/SwitchMacroShortcutKeysActivation()
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub Excel方眼紙()
-    'アドイン設定読み出し
-    Dim sFontName As String
-    Dim lFontSize As Long
-    Dim lClmWidth As Long
-    sFontName = ReadSettingFile("sEXCELGRID_FONT_NAME", sEXCELGRID_FONT_NAME)
-    lFontSize = ReadSettingFile("lEXCELGRID_FONT_SIZE", lEXCELGRID_FONT_SIZE)
-    lClmWidth = ReadSettingFile("lEXCELGRID_CLM_WIDTH", lEXCELGRID_CLM_WIDTH)
+Public Sub ●設定変更●アクティブセルコメントのみ表示()
+    Const sMACRO_NAME As String = "●設定変更●アクティブセルコメントのみ表示"
     
-    'Excel方眼紙設定
-    ActiveSheet.Cells.Select
-    With Selection
-        .Font.Name = sFontName
-        .Font.Size = lFontSize
-        .ColumnWidth = lClmWidth
-        .Rows.AutoFit
-    End With
-    ActiveSheet.Cells(1, 1).Select
-End Sub
-
-' =============================================================================
-' = 概要    最前面、最背面へ移動する
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub 最前面へ移動()
-    Selection.ShapeRange.ZOrder msoBringToFront
-End Sub
-Public Sub 最背面へ移動()
-    Selection.ShapeRange.ZOrder msoSendToBack
-End Sub
-
-' =============================================================================
-' = 概要    EpTreeの関数ツリーをExcelで取り込む
-' = 覚書    なし
-' = 依存    Mng_FileSys.bas/ShowFileSelectDialog()
-' =         Mng_FileSys.bas/ShowFolderSelectDialog()
-' =         Mng_Collection.bas/ReadTxtFileToCollection()
-' =         Mng_String.bas/ExecRegExp()
-' =         Mng_String.bas/ExtractTailWord()
-' =         Mng_String.bas/ExtractRelativePath()
-' =         Mng_ExcelOpe.bas/CreateNewWorksheet()
-' =         SettingFile.cls
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub EpTreeの関数ツリーをExcelで取り込む()
-    Const sMACRO_NAME As String = "EpTreeの関数ツリーをExcelで取り込む"
-    Const lSTRT_ROW As Long = 1
-    Const lSTRT_CLM As Long = 1
+    'アドイン設定ファイル読み出し
+    Dim bExistSetting As Boolean
+    bExistSetting = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
     
-    Dim lRowIdx As Long
-    Dim lStrtRow As Long
-    Dim lLastRow As Long
-    Dim lStrtClm As Long
-    Dim lLastClm As Long
-    
-    '=============================================
-    '= 事前処理
-    '=============================================
-    Dim sOutSheetName As String
-    Dim lMaxFuncLevelIni As Long
-    Dim lClmWidth As Long
-    Dim sEptreeLogPath As String
-    Dim sDevRootDirPath As String
-    Dim sDevRootDirName As String
-    Dim lDevRootLevel As Long
-    
-    '*** アドイン設定ファイルから設定読み出し ***
-    sOutSheetName = ReadSettingFile("sEPTREE_OUT_SHEET_NAME", sEPTREE_OUT_SHEET_NAME)
-    lMaxFuncLevelIni = ReadSettingFile("lEPTREE_MAX_FUNC_LEVEL_INI", lEPTREE_MAX_FUNC_LEVEL_INI)
-    lClmWidth = ReadSettingFile("lEPTREE_CLM_WIDTH", lEPTREE_CLM_WIDTH)
-    
-    'Eptreeログファイルパス取得
-    sEptreeLogPath = ReadSettingFile("sEPTREE_OUT_LOG_PATH", sEPTREE_OUT_LOG_PATH)
-    sEptreeLogPath = ShowFileSelectDialog(sEptreeLogPath, "EpTreeLog.txtのファイルパスを選択してください")
-    If sEptreeLogPath = "" Then
-        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
-        Exit Sub
-    End If
-    Call WriteSettingFile("sEPTREE_OUT_LOG_PATH", sEptreeLogPath)
-    
-    '開発用ルートフォルダ取得
-    sDevRootDirPath = ReadSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sEPTREE_DEV_ROOT_DIR_PATH)
-    sDevRootDirPath = ShowFolderSelectDialog(sDevRootDirPath, "開発用ルートフォルダパスを選択してください（空欄の場合は親フォルダが選択されます）")
-    If sDevRootDirPath = "" Then
-        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
-        Exit Sub
-    End If
-    sDevRootDirName = ExtractTailWord(sDevRootDirPath, "\")
-    Call WriteSettingFile("sEPTREE_DEV_ROOT_DIR_PATH", sDevRootDirPath)
-    
-    'ルートフォルダレベル取得
-    lDevRootLevel = ReadSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", lEPTREE_DEV_ROOT_DIR_LEVEL)
-    Dim sDevRootLevel As String
-    sDevRootLevel = InputBox("ルートフォルダレベルを入力してください", sMACRO_NAME, CStr(lDevRootLevel))
-    If sDevRootLevel = "" Then
-        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
-        Exit Sub
-    End If
-    Call WriteSettingFile("lEPTREE_DEV_ROOT_DIR_LEVEL", sDevRootLevel)
-    
-    '=============================================
-    '= 本処理
-    '=============================================
-    Application.Calculation = xlCalculationManual
-    Application.ScreenUpdating = False
-    
-    'シート追加
-    Dim sSheetName As String
-    Dim shTrgtSht As Worksheet
-    sSheetName = CreateNewWorksheet(sOutSheetName)
-    Set shTrgtSht = ActiveWorkbook.Sheets(sSheetName)
-    
-    'テキストファイル読み出し
-    Dim cFileContents As Collection
-    Set cFileContents = New Collection
-    Call ReadTxtFileToCollection(sEptreeLogPath, cFileContents)
-    
-    'ファイルツリー出力
-    lStrtRow = lSTRT_ROW
-    lStrtClm = lSTRT_CLM
-    lRowIdx = lStrtRow
-    
-    With shTrgtSht
-        .Cells(lRowIdx, lStrtClm + 0).Value = "ファイルパス"
-        .Cells(lRowIdx, lStrtClm + 1).Value = "行数"
-        .Cells(lRowIdx, lStrtClm + 2).Value = "関数名"
-        .Cells(lRowIdx, lStrtClm + 3).Value = "コールツリー"
-    End With
-    lRowIdx = lRowIdx + 1
-    
-    Dim lMaxFuncLevel As Long
-    lMaxFuncLevel = lMaxFuncLevelIni
-    Dim vFileLine As Variant
-    For Each vFileLine In cFileContents
-        Dim oMatchResult As Object
-        Call ExecRegExp( _
-            vFileLine, _
-            "^([^ ]+)? +(\d+): (  )?([│|└|├|  ]*)(\w+)(↑)?", _
-            oMatchResult _
-        )
-        
-        Dim sFilePath As String
-        Dim sLineNo As String
-        Dim lFuncLevel As Long
-        Dim sFuncName As String
-        Dim sOmission As String
-        sFilePath = oMatchResult(0).SubMatches(0)
-        Call ExtractRelativePath(sFilePath, sDevRootDirName, Int(sDevRootLevel), sFilePath)
-        sLineNo = oMatchResult(0).SubMatches(1)
-        If sLineNo = 0 Then
-            sLineNo = ""
+    'アクティブセルコメント設定更新
+    Dim bCmntVsblEnb As Boolean
+    If bExistSetting = True Then
+        If bCmntVsblEnb = True Then
+            MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
+            bCmntVsblEnb = False
+        Else
+            MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
+            bCmntVsblEnb = True
         End If
-        lFuncLevel = LenB(StrConv(oMatchResult(0).SubMatches(3), vbFromUnicode)) / 2
-        sFuncName = oMatchResult(0).SubMatches(4)
-        sOmission = String(LenB(oMatchResult(0).SubMatches(5)) / 2, "▲")
-        
-        With shTrgtSht
-            .Cells(lRowIdx, lStrtClm + 0).Value = sFilePath
-            .Cells(lRowIdx, lStrtClm + 1).Value = sLineNo
-            .Cells(lRowIdx, lStrtClm + 2).Value = sFuncName
-            .Cells(lRowIdx, lStrtClm + 3 + lFuncLevel).Value = sFuncName & sOmission
-        End With
-        If lFuncLevel > lMaxFuncLevel Then
-            lMaxFuncLevel = lFuncLevel
-        End If
-        
-        lRowIdx = lRowIdx + 1
-    Next
+    Else
+        MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
+        bCmntVsblEnb = True
+    End If
     
-    With shTrgtSht
-        lLastClm = lSTRT_CLM + 3 + lMaxFuncLevel
-        lLastRow = lRowIdx
-        
-        'タイトル行 中央揃え
-        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lStrtRow, lStrtClm + 2)).HorizontalAlignment = xlCenter
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lStrtRow, lLastClm)).HorizontalAlignment = xlCenterAcrossSelection
-        
-        '列幅調整
-        .Range(.Cells(lStrtRow, lStrtClm + 0), .Cells(lLastRow, lStrtClm + 0)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 1), .Cells(lLastRow, lStrtClm + 1)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 2), .Cells(lLastRow, lStrtClm + 2)).Columns.AutoFit
-        .Range(.Cells(lStrtRow, lStrtClm + 3), .Cells(lLastRow, lLastClm)).ColumnWidth = lClmWidth
-        
-        'オートフィルタ
-        .Range(.Cells(lStrtRow, lStrtClm), .Cells(lLastRow, lLastClm)).AutoFilter
-        
-        '行高さ
-        .Rows(lStrtRow).RowHeight = .Rows(lStrtRow).RowHeight * 3
-        
-        'タイトル列固定
-        ActiveWindow.FreezePanes = False
-        .Rows(lStrtRow + 1).Select
-        ActiveWindow.FreezePanes = True
-        .Cells(1, 1).Select
-        
-        'シート見出し色
-        .Tab.Color = RGB(242, 220, 219)
-    End With
+    Call WriteSettingFile("bCMNT_VSBL_ENB", bCmntVsblEnb)
     
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
-    
-    MsgBox "関数コールツリー作成完了！", vbOKOnly, sMACRO_NAME
+    'ショートカットキー設定 更新(有効化)
+    Call SwitchMacroShortcutKeysActivation(True)
 End Sub
 
 ' =============================================================================
@@ -2167,66 +2222,18 @@ Public Sub Diff色付け()
     Next
 End Sub
 
+' ▽▽▽ オブジェクト操作 ▽▽▽
 ' =============================================================================
-' = 概要    アクティブブックを別プロセスで開く
+' = 概要    最前面、最背面へ移動する
 ' = 覚書    なし
 ' = 依存    なし
 ' = 所属    Macros.bas
 ' =============================================================================
-Public Sub 別プロセスで開く()
-    Dim objWshShell
-    Set objWshShell = CreateObject("WScript.Shell")
-    Dim sActiveBookPath
-    sActiveBookPath = ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
-    objWshShell.Run "cmd /c excel /x /r """ & sActiveBookPath & """", 0, False
+Public Sub 最前面へ移動()
+    Selection.ShapeRange.ZOrder msoBringToFront
 End Sub
-
-' =============================================================================
-' = 概要    アクティブブックのファイルパスをコピー
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ファイルパスコピー()
-    Const sMACRO_NAME As String = "ファイルパスコピー"
-    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
-        .SetText ActiveWorkbook.Path & "\" & ActiveWorkbook.Name
-        .PutInClipboard
-    End With
-    
-    '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
-    Sleep 200 'ms 単位
-    Application.StatusBar = False
-End Sub
-
-' =============================================================================
-' = 概要    アクティブブックのファイル名をコピー
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub ファイル名コピー()
-    Const sMACRO_NAME As String = "ファイル名コピー"
-    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
-        .SetText ActiveWorkbook.Name
-        .PutInClipboard
-    End With
-    
-    '*** フィードバック ***
-    Application.StatusBar = "■■■■■■■■ " & sMACRO_NAME & "完了！ ■■■■■■■■"
-    Sleep 200 'ms 単位
-    Application.StatusBar = False
-End Sub
-
-' =============================================================================
-' = 概要    アドインマクロ実行
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub アドインマクロ実行()
-    ExecAddInMacro.Show
+Public Sub 最背面へ移動()
+    Selection.ShapeRange.ZOrder msoSendToBack
 End Sub
 
 ' *****************************************************************************
