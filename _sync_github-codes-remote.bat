@@ -1,4 +1,3 @@
-@echo off
 for /f "tokens=1,2,3,4" %%a in (%MYDIRPATH_CODES_CONFIG%\_sync_github-codes-remote.config) do (
 	set HOST=%%a
 	set USER=%%b
