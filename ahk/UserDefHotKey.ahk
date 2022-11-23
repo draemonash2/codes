@@ -152,7 +152,7 @@ global giWinTileMode := 0
 	;SCPデータ取得
 		^+!g::
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\_fetch_scp_from_remote.bat"
+			Run % sDirPath . "\bat\tools\file_ope\FetchScpFromRemote.bat"
 			return
 	;定期キー送信
 		^+!t::
