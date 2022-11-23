@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.15b
+' my excel addin macros v2.16
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -11,6 +11,7 @@ Option Explicit
 ' =     ・マクロ設定
 ' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
 ' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
+' =         vbeplus出力bas移動                          vbeplusで出力した.basをAddInsフォルダに格納
 ' =         アドインマクロ実行                          アドインマクロ実行
 ' =         CtrlShiftFマクロ                            ショートカットキー重複時の振り分け処理(Ctrl + Shift + F)
 ' =
@@ -222,6 +223,7 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     'マクロ設定
 '   dMacroShortcutKeys.Add "", "マクロショートカットキー全て有効化"
 '   dMacroShortcutKeys.Add "", "マクロショートカットキー全て無効化"
+'   dMacroShortcutKeys.Add "", "vbeplus出力bas移動"
     dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
     dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
     
@@ -360,6 +362,71 @@ Public Sub マクロショートカットキー全て無効化()
     Application.StatusBar = "■■■マクロショートカットキーを無効化しました■■■"
     Sleep 200 'ms 単位
     Application.StatusBar = False
+End Sub
+
+' =============================================================================
+' = 概要    vbeplusで出力した.basをAddInsフォルダに格納
+' = 覚書    なし
+' = 依存    Macros.bas/GetFileListCmdClct()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub vbeplus出力bas移動()
+    Const sMACRO_NAME As String = "vbeplus出力bas移動"
+    
+    'アドインフォルダパス取得
+    Dim sAddinDirPath As String
+    sAddinDirPath = ThisWorkbook.Path
+    
+    'フォルダパス一覧取得
+    Dim cDirPathList As Object
+    Set cDirPathList = CreateObject("System.Collections.ArrayList")
+    Call GetFileListCmdClct(sAddinDirPath, cDirPathList, 2, "")
+    
+    'コピー元フォルダ判定
+    Dim sSrcDirPath As String
+    sSrcDirPath = ""
+    Dim vDirPathTmp As Variant
+    For Each vDirPathTmp In cDirPathList
+        Dim oRegExp As Object
+        Dim sTargetStr As String
+        Dim sSearchPattern As String
+        Set oRegExp = CreateObject("VBScript.RegExp")
+        sTargetStr = vDirPathTmp
+        sSearchPattern = "\Tmp\d{8}$"
+        oRegExp.Pattern = sSearchPattern
+        oRegExp.IgnoreCase = True
+        oRegExp.Global = True
+        Dim oMatchResult As Object
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        If oMatchResult.Count > 0 Then
+            sSrcDirPath = vDirPathTmp
+            Exit For
+        End If
+    Next
+    If sSrcDirPath = "" Then
+        MsgBox "コピー元フォルダが見つからないため、処理を中断します", vbOKOnly, sMACRO_NAME
+        Exit Sub
+    End If
+    
+    'コピー元フォルダ内のファイルリスト取得
+    Dim cSrcFilePathList As Object
+    Set cSrcFilePathList = CreateObject("System.Collections.ArrayList")
+    Call GetFileListCmdClct(sSrcDirPath, cSrcFilePathList, 1, "")
+    
+    'コピー元フォルダ内のファイルをコピー先フォルダへコピー
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim vSrcFilePath As Variant
+    Dim sDstDirPath As String
+    sDstDirPath = sAddinDirPath & "\MyExcelAddin.bas\"
+    For Each vSrcFilePath In cSrcFilePathList
+        objFSO.CopyFile vSrcFilePath, sDstDirPath
+    Next
+    
+    'コピー元フォルダ削除
+    objFSO.DeleteFolder sSrcDirPath, True
+    
+    MsgBox "更新完了！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -3510,4 +3577,99 @@ Private Function CreateDirectry( _
     
     Set oFileSys = Nothing
 End Function
+
+' ==================================================================
+' = 概要    ファイル/フォルダパス一覧を取得する(Collection,Dirコマンド版)
+' = 引数    sTrgtDir        String              [in]    対象フォルダ
+' = 引数    cFileList       Object(Collection)  [out]   ファイル/フォルダパス一覧
+' = 引数    lFileListType   Long                [in]    取得する一覧の形式
+' =                                                         0：両方
+' =                                                         1:ファイル
+' =                                                         2:フォルダ
+' =                                                         それ以外：格納しない
+' = 引数    sFileExtStr     String              [in]    取得するファイルの拡張子(省略可能)
+' =                                                       ex1) ""
+' =                                                       ex2) "*"
+' =                                                       ex3) "*.c"
+' =                                                       ex4) "*.txt *.log *.csv"
+' = 戻値    なし
+' = 覚書    ・Dir コマンドによるファイル一覧取得。GetFileList() よりも高速。
+' = 覚書    ・sFileExtStrはファイル指定時のみ有効
+' = 依存    なし
+' = 所属    Mng_FileSys.bas
+' ==================================================================
+Public Function GetFileListCmdClct( _
+    ByVal sTrgtDir As String, _
+    ByRef cFileList As Object, _
+    ByVal lFileListType As Long, _
+    Optional ByVal sFileExtStr As String = "" _
+)
+    Dim objFSO As Object 'FileSystemObjectの格納先
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    
+    'Dir コマンド実行（出力結果を一時ファイルに格納）
+    Dim sTmpFilePath As String
+    Dim sExecCmd As String
+    sTmpFilePath = CreateObject("WScript.Shell").CurrentDirectory & "\Dir.tmp"
+    Dim sTrgtDirStr As String
+    If sFileExtStr = "" Then
+        sTrgtDirStr = """" & sTrgtDir & """"
+    Else
+        Dim vFileExtentions As Variant
+        vFileExtentions = Split(sFileExtStr, " ")
+        Dim lSplitIdx As Long
+        For lSplitIdx = 0 To UBound(vFileExtentions)
+            If sTrgtDirStr = "" Then
+                sTrgtDirStr = """" & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            Else
+                sTrgtDirStr = sTrgtDirStr & " """ & sTrgtDir & "\" & vFileExtentions(lSplitIdx) & """"
+            End If
+        Next lSplitIdx
+    End If
+    Select Case lFileListType
+        Case 0:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a > """ & sTmpFilePath & """"
+        Case 1:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:a-d > """ & sTmpFilePath & """"
+        Case 2:    sExecCmd = "Dir " & sTrgtDirStr & " /b /s /a:d > """ & sTmpFilePath & """"
+        Case Else: sExecCmd = ""
+    End Select
+    With CreateObject("Wscript.Shell")
+        .Run "cmd /c" & sExecCmd, 7, True
+    End With
+    
+    Dim objFile As Object
+    On Error Resume Next
+    If Err.Number = 0 Then
+        Set objFile = objFSO.OpenTextFile(sTmpFilePath, 1)
+        If Err.Number = 0 Then
+            Do Until objFile.AtEndOfStream
+                cFileList.Add objFile.ReadLine
+            Loop
+        Else
+            MsgBox "ファイルが開けません: " & Err.Description
+        End If
+        Set objFile = Nothing   'オブジェクトの破棄
+    Else
+        MsgBox "エラー " & Err.Description
+    End If
+    objFSO.DeleteFile sTmpFilePath, True
+    Set objFSO = Nothing    'オブジェクトの破棄
+    On Error GoTo 0
+End Function
+    Private Sub Test_GetFileListCmdClct()
+        Dim sRootDir As String
+        sRootDir = "C:\codes"
+        
+        Dim cFileList As Object
+        Set cFileList = CreateObject("System.Collections.ArrayList")
+        
+'        Call GetFileListCmdClct(sRootDir, cFileList, 0)
+        Call GetFileListCmdClct(sRootDir, cFileList, 1)
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*.c *.h")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*.vbs")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "*")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 1, "")
+'        Call GetFileListCmdClct(sRootDir, cFileList, 2)
+        Stop
+    End Sub
+
 
