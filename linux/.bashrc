@@ -244,7 +244,11 @@ function cdex() {
 	ls -lFAv --color=auto
 }
 function vimall() {
-	list=`find . -type f`
+	if [ $# -eq 0 ]; then
+		list=`find . -type f`
+	else
+		list=`find . -type f -name $1`
+	fi
 	vim $list
 }
 function vimdiffdir() {

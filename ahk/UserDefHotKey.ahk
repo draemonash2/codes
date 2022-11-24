@@ -290,7 +290,7 @@ global giWinTileMode := 0
 	#IfWinNotActive
 	
 	#IfWinActive ahk_exe explorer.exe
-		^+c::
+		^+c::	; ファイルパスコピー
 			Send, +{F10}
 			Send, a
 			return
