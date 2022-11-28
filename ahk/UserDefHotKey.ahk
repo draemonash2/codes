@@ -53,113 +53,131 @@ global giWinTileMode := 0
 		vk1Dsc07B & Left::	MuhenkanSimultPush( "Home" )
 		vk1Dsc07B & Up::	MuhenkanSimultPush( "PgUp" )
 		vk1Dsc07B & Down::	MuhenkanSimultPush( "PgDn" )
+	;Insertキー
 		Insert::Return
+	;PrintScreenキー
 		PrintScreen::return
 
 ;***** ホットキー(Global) *****
+	;UserDefHotKey.ahk
+		^+!a::
+			EnvGet, sExePath, MYEXEPATH_GVIM
+			sFilePath = "%A_ScriptFullPath%"
+			StartProgramAndActivate( sExePath, sFilePath )
+			return
 	;ホットキー配置表示
 		!^+F1::
 			sFilePath = "C:\other\グローバルホットキー配置.vsdx"
-			StartProgramAndActivate( "", sFilePath )
+		;	StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;ホットキーフォルダ表示
 		!^+F12::
 			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\$Hotkey"
-			StartProgramAndActivate( "", sFilePath )
+		;	StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;#todo.itmz
 		^+!Up::
-			EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
+		;	EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			Process, wait, Dropbox.exe, 30 ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
-			StartProgramAndActivate( sExePath, sFilePath )
-			Sleep 100
-			Send, {F2}
-			Sleep 100
-			Send, {esc}
+		;	StartProgramAndActivate( sExePath, sFilePath )
+		;	Sleep 100
+		;	Send, {F2}
+		;	Sleep 100
+		;	Send, {esc}
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;#temp.txt
 		^+!Down::
-			EnvGet, sExePath, MYEXEPATH_GVIM
-		;	sExePath = "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe"
+		;	EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
-			StartProgramAndActivate( sExePath, sFilePath )
+		;	StartProgramAndActivate( sExePath, sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;#temp.xlsm
 		^+!Right::
 			sFilePath = "%DOC_DIR_PATH%\#temp.xlsm"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;#temp.vsdm
 		^+!Left::
 			sFilePath = "%DOC_DIR_PATH%\#temp.vsdm"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;予算管理.xlsm
 		^+!\::
 			sFilePath = "%DOC_DIR_PATH%\210_【衣食住】家計\100_予算管理.xlsm"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;予算管理＠家族用.xlsx
 		^+!^::
 			sFilePath = "%DOC_DIR_PATH%\..\000_Public\家計\予算管理＠家族用.xlsx"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;言語チートシート
 		^+!c::
 			sFilePath = "C:\other\言語チートシート.xlsx"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;ショートカットキー
 		^+!s::
 			sFilePath = "C:\other\ショートカットキー一覧.xlsx"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;$object.xlsm
 		^+!o::
 			sFilePath = "C:\other\template\#object.xlsm"
-			StartProgramAndActivate( "", sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;用語集
 		^+!/::
 			sFilePath = "%DOC_DIR_PATH%\320_【自己啓発】勉強\words.itmz"
-			StartProgramAndActivate( "", sFilePath )
-			return
-	;rapture.exe
-		^+!x::
-			; 作業フォルダ内のrapture.iniを読み込んでしまうため、一度作業
-			; フォルダをrapture.exeの格納先フォルダに変更してから実行する。
-			EnvGet, sPrgExePath, MYDIRPATH_PRG_EXE
-			SetWorkingDir, %sPrgExePath%\Rapture ; 作業フォルダ変更
-			EnvGet, sExePath, MYEXEPATH_RAPTURE
-			Run %sExePath%
-			SetWorkingDir, %A_ScriptDir% ; 作業フォルダを元に戻す
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;KitchenTimer.vbs
 		^+!k::
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\vbs\tools\win\other\KitchenTimer.vbs"
-			return
-	;xf.exe
-		^+!z::
-			EnvGet, sExePath, MYEXEPATH_XF
-			StartProgramAndActivate( sExePath, "", 1 )
-			return
-	;cCalc.exe
-		^+!;::
-			EnvGet, sExePath, MYEXEPATH_CALC
-			StartProgramAndActivate( sExePath, "", 1 )
+			sFilePath = %sDirPath%\vbs\tools\win\other\KitchenTimer.vbs
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;SCPデータ取得
 		^+!g::
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\bat\tools\file_ope\FetchScpFromRemote.bat"
+			sFilePath = %sDirPath%\bat\tools\file_ope\FetchScpFromRemote.bat
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;定期キー送信
 		^+!t::
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\vbs\tools\win\other\PeriodicKeyTransmission.bat"
+			sFilePath = %sDirPath%\vbs\tools\win\other\PeriodicKeyTransmission.bat
+			StartProgramAndActivateFile( sFilePath )
 			return
+	;rapture.exe
+		^+!x::
+			EnvGet, sExePath, MYEXEPATH_RAPTURE
+			StartProgramAndActivateExe( sExePath )
+			return
+	;xf.exe
+		^+!z::
+			EnvGet, sExePath, MYEXEPATH_XF
+			StartProgramAndActivateExe( sExePath )
+			return
+	;cCalc.exe
+		^+!;::
+			EnvGet, sExePath, MYEXEPATH_CALC
+			StartProgramAndActivateExe( sExePath )
+			return
+	;Github.io
+		^+!1::Run https://draemonash2.github.io/
+		^+!2::Run https://draemonash2.github.io/linux_sft/linux.html
+		^+!3::Run https://draemonash2.github.io/gitcommand_lng/gitcommand.html
+	;翻訳サイト
+		^+!h::
+		;	Run https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja
+			Run https://www.deepl.com//translator
+			Return
 	;Wifi接続(Bluetoothテザリング起動)
 		/*
 		^+!w::
@@ -176,27 +194,12 @@ global giWinTileMode := 0
 			Send, !{F4}
 		*/
 	;Wifi接続(Wifiテザリング)
+		/*
 		^+!w::
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run % sDirPath . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"
 			return
-	;UserDefHotKey.ahk
-		^+!a::
-			EnvGet, sExePath, MYEXEPATH_GVIM
-			sFilePath = "%A_ScriptFullPath%"
-			StartProgramAndActivate( sExePath, sFilePath )
-			return
-	
-	;Github.io
-		^+!1::Run https://draemonash2.github.io/
-		^+!2::Run https://draemonash2.github.io/linux_sft/linux.html
-		^+!3::Run https://draemonash2.github.io/gitcommand_lng/gitcommand.html
-	;翻訳サイト
-		^+!h::
-		;	Run https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja
-			Run https://www.deepl.com//translator
-			Return
-	
+		*/
 	;Window最前面化
 		Pause::
 			;HP製PCでは「Pause」は「Fn＋Shift」。
@@ -221,7 +224,6 @@ global giWinTileMode := 0
 				}
 			}
 			Return
-	
 	;Windowタイル切り替え
 		!#LEFT::
 			IncrementWinTileMode()
@@ -231,7 +233,6 @@ global giWinTileMode := 0
 			DecrementWinTileMode()
 			ApplyWinTileMode()
 			return
-	
 	;Teams一時退席抑止機能
 		/*
 		+^!F11::
@@ -252,7 +253,6 @@ global giWinTileMode := 0
 			}
 			return
 		*/
-	
 	;テスト用
 		/*
 		^Pause::
@@ -294,32 +294,93 @@ global giWinTileMode := 0
 		^+c::	; ファイルパスコピー
 			sTrgtPaths := CopySelFilePathAtExplorer()
 			return
+		+F1::	; winmergeで開く
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . sTrgtPaths
+			return
 		+F2::	; vimで開く
 			sTrgtPaths := CopySelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_GVIM
-			Run, %sExePath% %sTrgtPaths%
+			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F3::	; VSCodeで開く
 			sTrgtPaths := CopySelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_VSCODE
-			Run, %sExePath% %sTrgtPaths%
+			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
-		^+l::	; ショートカットファイル作成
-			Send, +{F10}
-			Send, s
-	;	^+l::	; シンボリックリンクファイル作成
+		+F4::	; 秀丸で開く
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_HIDEMARU
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+			return
+		+F5::	; EXCELで開く
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_EXCEL
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+			return
+		^+g::	; Grep検索＠TresGrep
+			sTrgtPaths := CopyCurDirPathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_TRESGREP
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+			return
+		^+z::	; 圧縮＠7-Zip
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
+			return
+	;	^+z::	; 解凍＠7-Zip
 	;		sTrgtPaths := CopySelFilePathAtExplorer()
 	;		EnvGet, sDirPath, MYDIRPATH_CODES
-	;		Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
+	;		Run, % sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths
 	;		return
+	;	^+z::	; パスワード圧縮＠7-Zip
+	;		sTrgtPaths := CopySelFilePathAtExplorer()
+	;		EnvGet, sDirPath, MYDIRPATH_CODES
+	;		Run, % sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths
+	;		return
+		^+l::	; ショートカットファイル作成
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
+			return
+		^!l::	; シンボリックリンクファイル作成
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
+			return
 		^+r::	; リネーム用バッチファイル作成
 			sTrgtPaths := CopySelFilePathAtExplorer()
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
 			return
+		^+F3::	; 隠しファイル 表示非表示切替え
+			Send, !vhh
+			return
 		^+F10::	; コマンドプロンプトを開く
 			sDirPath := CopyCurDirPathAtExplorer()
 			Run, %comspec% /k cd %sDirPath%
+			return
+		^+F11::	; フォルダ情報作成_パス一覧(ファイル/フォルダ)
+			sDirPath := CopyCurDirPathAtExplorer()
+			Run, %ComSpec% /c dir /s /b /a > "%sDirPath%\_PathList_FileDir.txt"
+			return
+	;	^+F11::	; フォルダ情報作成_パス一覧(ファイル)
+	;		sDirPath := CopyCurDirPathAtExplorer()
+	;		Run, %ComSpec% /c dir *.* /b /s /a:a-d > "%sDirPath%\_PathList_File.txt"
+	;		return
+	;	^+F11::	; フォルダ情報作成_パス一覧(フォルダ)
+	;		sDirPath := CopyCurDirPathAtExplorer()
+	;		Run, %ComSpec% /c dir /b /s /a:d > "%sDirPath%\_PathList_Dir.txt"
+	;		return
+	;	^+F11::	; フォルダ情報作成_フォルダツリー
+	;		sDirPath := CopyCurDirPathAtExplorer()
+	;		Run, %ComSpec% /c tree /f > "%sDirPath%\_DirTree.txt"
+	;		return
+		^+F12::	; フォルダサイズ解析＠DiskInfo
+			sTrgtPaths := CopyCurDirPathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_DISKINFO3
+			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 	#IfWinActive
 	
@@ -433,66 +494,89 @@ global giWinTileMode := 0
 	; されているプログラムをアクティベートするショートカットキーで
 	; あるため、Run 関数を使用してそのまま実行すると、非アクティブ
 	; 状態でプログラムが起動してしまう。
-	StartProgramAndActivate( sExePath, sFilePath, bSingleProcess=0 )
+	StartProgramAndActivate( sExePath, sFilePath )
 	{
 		;*** preprocess ***
-		If ( sExePath == "" and sFilePath == "" )
+		If ( sExePath == "" or sFilePath == "" )
 		{
 			MsgBox [ERROR] please specify arguments to StartProgramAndActivate().
+			return
+		}
+		sExeName := ExtractFileName(sExePath)
+		sExeDirPath := ExtractDirPath(sExePath)
+		sFileName := ExtractFileName(sFilePath)
+		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n sFileName=%sFileName%
+		
+		;*** start program ***
+		SetTitleMatchMode, 2 ;中間一致
+		Run, %sExePath% %sFilePath%, %sExeDirPath%
+		
+		WinWait, ahk_exe %sExeName%, %sFileName%, 5
+		If ErrorLevel <> 0
+		{
+			;MsgBox, could not be found %sExeName%.
+			Return
+		}
+		
+		;*** activate started program ***
+		WinActivate, ahk_exe %sExeName%, %sFileName%
+		WinWaitActive, ahk_exe %sExeName%, %sFileName%, 5
+		If ErrorLevel <> 0
+		{
+			;MsgBox, could not be activated %sExeName%.
+			Return
+		}
+		return
+	}
+	
+	; 起動＆アクティベート処理 (ファイルパス指定のみ)
+	StartProgramAndActivateFile( sFilePath )
+	{
+		;*** preprocess ***
+		If ( sFilePath == "" )
+		{
+			MsgBox [ERROR] please specify arguments to StartProgramAndActivateFile().
+			return
+		}
+		sFileName := ExtractFileName(sFilePath)
+		;MsgBox sFilePath=%sFilePath% `n sFileName=%sFileName%
+		
+		;*** start program ***
+		Run, %sFilePath%
+	;	WinActivate, , %sFileName%
+	;	WinWaitActive, , %sFileName%, 5
+	;	If ErrorLevel <> 0
+	;	{
+	;		;MsgBox, could not be activated %sFileName%.
+	;		Return
+	;	}
+		return
+	}
+	
+	; 起動＆アクティベート処理 (実行プログラム指定のみ)
+	;   "sExePathのみ指定"かつ"起動済み"の場合はアクティブ化のみを行う
+	StartProgramAndActivateExe( sExePath )
+	{
+		;*** preprocess ***
+		If ( sExePath == "" )
+		{
+			MsgBox [ERROR] please specify arguments to StartProgramAndActivateExe().
 			return
 		}
 		
 		sExeName := ExtractFileName(sExePath)
 		sExeDirPath := ExtractDirPath(sExePath)
-		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n bSingleProcess=%bSingleProcess%
+		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName%
 		
 		;*** start program ***
-		If (bSingleProcess == 0) ; 複数プロセス起動
+		Process, Exist, % sExeName
+		If ErrorLevel<>0
 		{
-			SetTitleMatchMode, 2 ;中間一致
-			If ( sExePath == "" )
-			{
-				Run, %sFilePath%
-			}
-			Else
-			{
-				Run, %sExePath% %sFilePath%, %sExeDirPath%
-			}
-			
-			WinWait, ahk_exe %sExeName%, , 5
-			If ErrorLevel <> 0
-			{
-				;MsgBox, could not be found %sExeName%.
-				Return
-			}
-			
-			;*** activate started program ***
-			WinActivate, ahk_exe %sExeName%
-			WinWaitActive, ahk_exe %sExeName%, , 5
-			If ErrorLevel <> 0
-			{
-				;MsgBox, could not be activated %sExeName%.
-				Return
-			}
+			WinActivate,ahk_pid %ErrorLevel%
 		}
-		else ; 単一プロセス起動
+		Else
 		{
-			Process, Exist, % sExeName
-			If ErrorLevel<>0
-			{
-				WinActivate,ahk_pid %ErrorLevel%
-			}
-			Else
-			{
-				If ( sExePath == "" )
-				{
-					Run, %sFilePath%
-				}
-				Else
-				{
-					Run, %sExePath% %sFilePath%, %sExeDirPath%
-				}
-			}
+			Run, %sExePath%, %sExeDirPath%
 		}
 		return
 	}
