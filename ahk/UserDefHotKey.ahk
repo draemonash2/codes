@@ -291,8 +291,34 @@ global giWinTileMode := 0
 	
 	#IfWinActive ahk_exe explorer.exe
 		^+c::	; ファイルパスコピー
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			return
+		+F2::	; vimで開く
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_GVIM
+			Run, %sExePath% %sTrgtPaths%
+			return
+		+F3::	; VSCodeで開く
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_VSCODE
+			Run, %sExePath% %sTrgtPaths%
+			return
+		^+l::	; ショートカットファイル作成
 			Send, +{F10}
-			Send, a
+			Send, s
+	;	^+l::	; シンボリックリンクファイル作成
+	;		sTrgtPaths := CopySelFilePathAtExplorer()
+	;		EnvGet, sDirPath, MYDIRPATH_CODES
+	;		Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
+	;		return
+		^+r::	; リネーム用バッチファイル作成
+			sTrgtPaths := CopySelFilePathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
+			return
+		^+F10::	; コマンドプロンプトを開く
+			sDirPath := CopyCurDirPathAtExplorer()
+			Run, %comspec% /k cd %sDirPath%
 			return
 	#IfWinActive
 	
@@ -395,12 +421,12 @@ global giWinTileMode := 0
 ;* Functions
 ;* ***************************************************************
 	; 起動＆アクティベート処理
-	; 
+	;
 	; 既定のショートカットキーとの干渉によりプログラム起動後に
 	; ウィンドウがアクティベートされないことがある。(※)
 	; 上記問題を対処するため、本関数ではプログラム起動後に
 	; ウィンドウをアクティベートする処理を実行する。
-	; 
+	;
 	; (※)例
 	; 「Windows キー + 1」はタスクパーに１つ目にピン止め
 	; されているプログラムをアクティベートするショートカットキーで
@@ -472,7 +498,7 @@ global giWinTileMode := 0
 		}
 		return
 	}
-	
+
 	; 無変換キー同時押し実装
 	MuhenkanSimultPush( sSendKey )
 	{
@@ -495,7 +521,7 @@ global giWinTileMode := 0
 		}
 		return
 	}
-	
+
 	;Windowタイル切り替え
 	GetWinTileModeMin()
 	{
@@ -592,5 +618,29 @@ global giWinTileMode := 0
 	;	MsgBox, giWinTileMode: %giWinTileMode%`nwinx: %winx%`nwiny: %winy%`nwinwidth: %winwidth%`nwinheight: %winheight%
 		WinMove, A, , winx, winy, winwidth, winheight
 		return
+	}
+
+	; 選択ファイルパスコピー＠explorer
+	CopySelFilePathAtExplorer()
+	{
+		Clipboard =
+		Send, !hcp
+		ClipWait
+		sTrgtPaths = %Clipboard%
+		StringReplace, sTrgtPaths, sTrgtPaths, `r`n, %A_Space%, All
+	;	MsgBox %sTrgtPaths%
+		return sTrgtPaths
+	}
+
+	; 現在フォルダパスコピー＠explorer
+	CopyCurDirPathAtExplorer()
+	{
+		Clipboard =
+		Send, !d
+		Send, ^c
+		ClipWait
+		sTrgtPaths = %Clipboard%
+	;	MsgBox %sTrgtPaths%
+		return sTrgtPaths
 	}
 
