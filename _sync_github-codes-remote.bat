@@ -6,10 +6,10 @@ for /f "tokens=1,2,3,4" %%a in (%MYDIRPATH_CODES_CONFIG%\_sync_github-codes-remo
 )
 
 echo githubからダウンロードして比較します。
-"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\UpdateCheck.vbs" "%~dp0" "https://github.com/draemonash2/codes/archive/master.zip" "codes-master"
+"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\SyncGithubToCodes.vbs" "%~dp0" "https://github.com/draemonash2/codes/archive/master.zip" "codes-master"
 
 echo %MYDIRPATH_CODES%内の_localフォルダを比較します。
-"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffLocalDirs.vbs" "%~dp0"
+"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\SyncCodesToLocal.vbs" "%~dp0"
 
 echo %MYDIRPATH_CODES%とremote接続先のファイルを比較します。
-"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffLclVsRmt.vbs" "%USER%" "%PASSWORD%" "%HOST%" "%HOMEDIR%"
+"%MYDIRPATH_CODES%\vbs\tools\win\file_ope\SyncCodesToRemote.vbs" "%USER%" "%PASSWORD%" "%HOST%" "%HOMEDIR%"
