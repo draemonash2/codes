@@ -6,6 +6,7 @@
 ;	SetWorkingDir %A_ScriptDir%		; スクリプトの作業ディレクトリを本スクリプトの格納ディレクトリに変更。
 	#SingleInstance force			; このスクリプトが再度呼び出されたらリロードして置き換え
 	#HotkeyModifierTimeout 100		; キーボードフックなしでホットキー中でSendコマンドを使用したときに修飾キーの状態を復元しなくなるタイムアウト時間を設定。
+	#WinActivateForce				; ウィンドウのアクティブ化時に、穏やかな方法を試みるのを省略して常に強制的な方法でアクティブ化を行う。（タスクバーアイコンが点滅する現象が起こらなくなる）
 
 	#Include %A_ScriptDir%\lib\IME.ahk
 
@@ -440,13 +441,10 @@ global giWinTileMode := 0
 			MsgBox [ERROR] please specify arguments to StartProgramAndActivate().
 			return
 		}
-		;*** extract file name ***
-		Loop, Parse, sExePath , \
-		{
-			sExeName = %A_LoopField%
-		}
-		StringReplace, sExeName, sExeName, ", , All
-		;MsgBox sExePath=%sExePath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n bSingleProcess=%bSingleProcess%
+		
+		sExeName := ExtractFileName(sExePath)
+		sExeDirPath := ExtractDirPath(sExePath)
+		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n bSingleProcess=%bSingleProcess%
 		
 		;*** start program ***
 		If (bSingleProcess == 0) ; 複数プロセス起動
@@ -458,7 +456,7 @@ global giWinTileMode := 0
 			}
 			Else
 			{
-				Run, %sExePath% %sFilePath%
+				Run, %sExePath% %sFilePath%, %sExeDirPath%
 			}
 			
 			WinWait, ahk_exe %sExeName%, , 5
@@ -492,7 +490,7 @@ global giWinTileMode := 0
 				}
 				Else
 				{
-					Run, %sExePath% %sFilePath%
+					Run, %sExePath% %sFilePath%, %sExeDirPath%
 				}
 			}
 		}
@@ -619,7 +617,30 @@ global giWinTileMode := 0
 		WinMove, A, , winx, winy, winwidth, winheight
 		return
 	}
+	
+	; ファイル名取得
+	ExtractFileName( sFilePath )
+	{
+		Loop, Parse, sFilePath , \
+		{
+			sFileName = %A_LoopField%
+		}
+		StringReplace, sFileName, sFileName, ", , All
+		return sFileName
+	}
 
+	; ディレクトリパス取得
+	ExtractDirPath( sTrgtPath )
+	{
+		Loop, Parse, sTrgtPath , \
+		{
+			sLeafName = %A_LoopField%
+		}
+		sLeafName = \%sLeafName%
+		StringReplace, sDirPath, sTrgtPath, %sLeafName%, , All
+	;	MsgBox %sTrgtPath%`n%sLeafName%`n%sDirPath%
+		return sDirPath
+	}
 	; 選択ファイルパスコピー＠explorer
 	CopySelFilePathAtExplorer()
 	{

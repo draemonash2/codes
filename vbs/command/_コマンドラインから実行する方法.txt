@@ -1,2 +1,0 @@
-・「cscript //nologo」をつけて実行する。
-  例）cscript //nologo OutputShortcutTrgtPath.vbs -v C:\Users\test.txt.lnk
