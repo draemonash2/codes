@@ -83,7 +83,7 @@ If vAnswer = vbYes Then
         objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx) & """ """ & sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """", 10, False
     Next
     On Error Goto 0
-    vAnswer = MsgBox("比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg)
+    MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg
 Else
     MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sOutputMsg
     WScript.Quit

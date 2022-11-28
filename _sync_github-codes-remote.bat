@@ -12,5 +12,4 @@ echo %MYDIRPATH_CODES%内の_localフォルダを比較します。
 "%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffLocalDirs.vbs" "%~dp0"
 
 echo %MYDIRPATH_CODES%とremote接続先のファイルを比較します。
-pause
 "%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffLclVsRmt.vbs" "%USER%" "%PASSWORD%" "%HOST%" "%HOMEDIR%"
