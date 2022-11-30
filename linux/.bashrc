@@ -523,13 +523,15 @@ function storescpsenddata() {
 		echo "  usage : storescpsenddata <file/dir>"
 		return 1
 	fi
-	trgtdir=~/_scp_to_win
+	trgtdir=~/_scp_to_xxx
 	mkdir -p ${trgtdir}
 	\cp -rf $1 ${trgtdir}/.
+	ll ${trgtdir}
 }
 function clearscpsenddata() {
-	trgtdir=~/_scp_to_win
+	trgtdir=~/_scp_to_xxx
 	rm -rf ${trgtdir}/*
+	ll ${trgtdir}
 }
 
 alias cp='cp -i'

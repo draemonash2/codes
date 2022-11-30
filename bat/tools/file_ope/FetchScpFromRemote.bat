@@ -1,6 +1,8 @@
 @echo off
-set DST_DIR_WPATH=%HOMEDRIVE%%HOMEPATH%\Desktop\_scp_from_remote
-set SRC_DIR_UPATH=~/_scp_to_win
+set tm=%time: =0%
+set dt=%date:/=%
+set DST_DIR_WPATH=%HOMEDRIVE%%HOMEPATH%\Desktop\_scp_from_remote_%dt:~2,6%-%tm:~0,2%%tm:~3,2%%tm:~6,2%
+set SRC_DIR_UPATH=~/_scp_to_xxx
 for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_scp_to_remote.config) do (
 	set USER=%%a
 	set HOST=%%b

@@ -71,9 +71,9 @@ global giWinTileMode := 0
 		;	StartProgramAndActivate( "", sFilePath )
 			StartProgramAndActivateFile( sFilePath )
 			return
-	;ホットキーフォルダ表示
+	;Programsフォルダ表示
 		!^+F12::
-			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\$Hotkey"
+			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
 		;	StartProgramAndActivate( "", sFilePath )
 			StartProgramAndActivateFile( sFilePath )
 			return

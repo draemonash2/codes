@@ -1,5 +1,5 @@
 @echo off
-set DST_DIR_UPATH=~/_scp_from_win
+set DST_DIR_UPATH=~/_scp_from_xxx
 for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_scp_to_remote.config) do (
 	set USER=%%a
 	set HOST=%%b
