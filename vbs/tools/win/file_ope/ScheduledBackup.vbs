@@ -24,7 +24,7 @@ Do While True
 	'MsgBox lDateDiff
 	If lDateDiff = 0 Then
 		Dim sCmd
-		sCmd = "cmd /c " & sBackupBatchFile & """ ""Scheduled backup."""
+		sCmd = "cmd /c """ & sBackupBatchFile & """ ""Scheduled backup."""
 		'MsgBox "The time has come!" & vbNewLine & sCmd
 		objWshShell.Run sCmd, 0, True
 	End If
