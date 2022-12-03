@@ -93,10 +93,9 @@ global giWinTileMode := 0
 			return
 	;#temp.txt
 		^+!Down::
-		;	EnvGet, sExePath, MYEXEPATH_GVIM
+			EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
-		;	StartProgramAndActivate( sExePath, sFilePath )
-			StartProgramAndActivateFile( sFilePath )
+			StartProgramAndActivate( sExePath, sFilePath )
 			return
 	;#temp.xlsm
 		^+!Right::
