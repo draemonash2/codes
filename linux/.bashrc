@@ -533,6 +533,86 @@ function clearscpsenddata() {
 	rm -rf ${trgtdir}/*
 	ll ${trgtdir}
 }
+function lsscpsenddata() {
+	trgtdir=~/_scp_to_xxx
+	echo "$ ll ${trgtdir}"; ll ${trgtdir};
+	trgtdir=~/_scp_from_xxx
+	echo "$ ll ${trgtdir}"; ll ${trgtdir};
+}
+function sendscp() {
+	if [ $# -ne 5 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : sendscp <host> <user> <password> <srcfiledir> <dstdir>"
+		return 1
+	fi
+	host=$1
+	user=$2
+	password=$3
+	srcfiledir=$4
+	dstdir=$5
+	expect -c "spawn scp -r ${srcfiledir} ${user}@${host}:${dstdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+}
+function fetchscp() {
+	if [ $# -ne 5 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : fetchscp <host> <user> <password> <srcfiledir> <dstdir>"
+		return 1
+	fi
+	host=$1
+	user=$2
+	password=$3
+	srcfiledir=$4
+	dstdir=$5
+	expect -c "spawn scp -r ${user}@${host}:${srcfiledir} ${dstdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+}
+function syncscp() {
+	if [ $# -ne 5 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : syncscp <host> <user> <password> <fetchfiledir> <myfiledir>"
+		return 1
+	fi
+	tmpdir=~/_scp_from_xxx
+	host=$1
+	user=$2
+	password=$3
+	fetchfiledir=$4
+	myfiledir=$5
+	fetchscp ${host} ${user} ${password} ${fetchfiledir} ${tmpdir}
+	diff ${tmpdir}/${fetchfiledir} ~/${myfiledir} &> /dev/null
+	if [ $? -eq 1 ]; then
+		vimdiff ${tmpdir}/${fetchfiledir} ~/${myfiledir}
+	fi
+#	sendscp ${host} ${user} ${password} ~/${myfiledir} ${fetchfiledir}
+	rm -rf ${tmpdir}/${fetchfiledir}
+}
+#function sendscp_sample() {
+#	if [ $# -ne 1 ]; then
+#		echo "[error] wrong number of arguments."
+#		echo "  usage : sendscp_sample <trgtfiledir>"
+#		return 1
+#	fi
+#	host=XXX.XXX.XXX.XXX
+#	user=user
+#	password=passwd
+#	trgtfiledir=$1
+#	sendscp ${host} ${user} ${password} ${trgtfiledir} /home/${user}/_scp_from_xxx
+#}
+#function syncscp_sample() {
+#	if [ $# -ne 2 ]; then
+#		echo "[error] wrong number of arguments."
+#		echo "  usage : syncscp_sample <fetchfiledir> <myfiledir>"
+#		return 1
+#	fi
+#	host=XXX.XXX.XXX.XXX
+#	user=user
+#	password=passwd
+#	fetchfiledir=$1
+#	myfiledir=$2
+#	syncscp ${host} ${user} ${password} ${fetchfiledir} ${myfiledir}
+#}
+#function syncdotfiles_sample() {
+#	file=".bashrc";	syncscp_sample ${file} ${file}
+#}
 
 alias cp='cp -i'
 alias mv='mv -i'

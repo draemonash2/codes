@@ -1,14 +1,27 @@
 @echo off
-git add %~dp0%~n0%~x0
-git add %~dp0..\#temp.txt
-git add %~dp0..\#memo.xlsm
-git add %~dp0..\#memo.qea
-git add %~dp0..\**\#memo*.xlsx
-git add %~dp0..\**\#memo*.xlsm
-git commit -m "Scheduled backup."
-
 set tm=%time: =0%
 set dt=%date:/=%
 set BACKUP_LOG="%USERPROFILE%\Desktop\backup_executed_at_%dt:~2,6%-%tm:~0,2%%tm:~3,2%%tm:~6,2%.log"
+set CUR_DIR=%~dp0
+set ME=%~n0%~x0
+::echo %BACKUP_LOG%
+::echo %CUR_DIR%
+::echo %ME%
+
+if "%~1" == "" (
+    set COMMITMSG=Add backup.
+) else (
+    set COMMITMSG=%~1
+)
+::echo %COMMITMSG%
+
+git add %CUR_DIR%%~n0%~x0
+git add %CUR_DIR%..\#temp.txt
+git add %CUR_DIR%..\#memo.xlsm
+git add %CUR_DIR%..\#memo.qea
+git add %CUR_DIR%..\**\#memo*.xlsx
+git add %CUR_DIR%..\**\#memo*.xlsm
+git commit -m "%COMMITMSG%"
+
 echo. > %BACKUP_LOG%
 

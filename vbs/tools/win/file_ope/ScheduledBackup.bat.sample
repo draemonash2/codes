@@ -1,7 +1,8 @@
 @echo off
-:: 【事前準備】%MYDIRPATH_CODES%配下にBackUpFiles.batを格納しておくこと。
-::             さらに、BackUpFiles.batのベースがBackUpFiles.bat.git_sampleの場合は
-::             シンボリックリンクを経由しない絶対パスを指定すること。
+:: 【事前準備】
+::    ・%MYDIRPATH_CODES%配下にBackUpFiles.bat(※)を格納しておくこと。
+::        (※) BackUpFiles.batのベースがBackUpFiles.bat.git_sampleの場合は、
+::             SCHEDULE_BACKUP_VBSにシンボリックリンクを経由しない絶対パスを指定すること。
 
 set SCHEDULE_BACKUP_VBS="%MYDIRPATH_CODES%\vbs\tools\win\file_ope\ScheduledBackup.vbs"
 set BACKUP_BAT="%MYDIRPATH_CODES%\BackUpFiles.bat"

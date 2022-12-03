@@ -76,6 +76,8 @@ global giWinTileMode := 0
 			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
 		;	StartProgramAndActivate( "", sFilePath )
 			StartProgramAndActivateFile( sFilePath )
+			Sleep 100
+			Send, +{tab}
 			return
 	;#todo.itmz
 		^+!Up::
@@ -159,10 +161,19 @@ global giWinTileMode := 0
 			EnvGet, sExePath, MYEXEPATH_RAPTURE
 			StartProgramAndActivateExe( sExePath )
 			return
+	/*
 	;xf.exe
 		^+!z::
 			EnvGet, sExePath, MYEXEPATH_XF
 			StartProgramAndActivateExe( sExePath )
+			return
+	*/
+	;DOC_DIR_PATHフォルダ表示
+		!^+z::
+			sFilePath = "%DOC_DIR_PATH%"
+			StartProgramAndActivateFile( sFilePath )
+			Sleep 100
+			Send, +{tab}
 			return
 	;cCalc.exe
 		^+!;::
