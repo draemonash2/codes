@@ -15,7 +15,7 @@ if "%~1" == "" (
 )
 ::echo %COMMITMSG%
 
-git add %CUR_DIR%%~n0%~x0
+git add %CUR_DIR%%ME%
 git add %CUR_DIR%..\#temp.txt
 git add %CUR_DIR%..\#memo.xlsm
 git add %CUR_DIR%..\#memo.qea
