@@ -540,76 +540,124 @@ function lsscpsenddata() {
 	echo "$ ll ${trgtdir}"; ll ${trgtdir};
 }
 function sendscp() {
-	if [ $# -ne 5 ]; then
+	if [ $# -lt 5 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : sendscp <host> <user> <password> <srcfiledir> <dstdir>"
+		echo "  usage : sendscp <host> <user> <password> <partnerdir> <myobj> [<myobj>...]"
+		echo "    <partnerdir> partner directory path (absolute path)"
+		echo "    <myobj>      my object path (absolute/relative path)"
 		return 1
 	fi
-	host=$1
-	user=$2
-	password=$3
-	srcfiledir=$4
-	dstdir=$5
-	expect -c "spawn scp -r ${srcfiledir} ${user}@${host}:${dstdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+	argv=("$@")
+	host=${argv[0]}
+	user=${argv[1]}
+	password=${argv[2]}
+	partnerdir=${argv[3]}
+	for i in $(seq 4 $(($# - 1)))
+	do
+		myobj=${argv[$i]}
+		expect -c "spawn scp -r ${myobj} ${user}@${host}:${partnerdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+	done
 }
 function fetchscp() {
-	if [ $# -ne 5 ]; then
+	if [ $# -lt 5 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : fetchscp <host> <user> <password> <srcfiledir> <dstdir>"
+		echo "  usage : fetchscp <host> <user> <password> <mydir> <partnerobj> [<partnerobj>...]"
+		echo "    <mydir>       my directory path (absolute/relative path)"
+		echo "    <partnerobj>  partner object path (absolute path)"
 		return 1
 	fi
-	host=$1
-	user=$2
-	password=$3
-	srcfiledir=$4
-	dstdir=$5
-	expect -c "spawn scp -r ${user}@${host}:${srcfiledir} ${dstdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+	argv=("$@")
+	host=${argv[0]}
+	user=${argv[1]}
+	password=${argv[2]}
+	mydir=${argv[3]}
+	for i in $(seq 4 $(($# - 1)))
+	do
+		partnerobj=${argv[$i]}
+		expect -c "spawn scp -r ${user}@${host}:${partnerobj} ${mydir} ; expect password: ; send ${password}\r ; expect $ ; interact"
+	done
 }
 function syncscp() {
 	if [ $# -ne 5 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : syncscp <host> <user> <password> <fetchfiledir> <myfiledir>"
+		echo "  usage : syncscp <host> <user> <password> <partnerfile> <myfile>"
+		echo "    <partnerfile>  partner file path (relative path from home dir)"
+		echo "    <myfile>       my file path (relative path from home dir)"
 		return 1
 	fi
-	tmpdir=~/_scp_from_xxx
+	mytmpdir=~/_scp_from_xxx
 	host=$1
 	user=$2
 	password=$3
-	fetchfiledir=$4
-	myfiledir=$5
-	fetchscp ${host} ${user} ${password} ${fetchfiledir} ${tmpdir}
-	diff ${tmpdir}/${fetchfiledir} ~/${myfiledir} &> /dev/null
+	partnerfile=$4
+	myfile=$5
+	fetchscp ${host} ${user} ${password} ${mytmpdir} /home/${user}/${partnerfile}
+	diff ${mytmpdir}/${partnerfile} ~/${myfile} &> /dev/null
 	if [ $? -eq 1 ]; then
-		vimdiff ${tmpdir}/${fetchfiledir} ~/${myfiledir}
+		vimdiff ${mytmpdir}/${partnerfile} ~/${myfile}
 	fi
-#	sendscp ${host} ${user} ${password} ~/${myfiledir} ${fetchfiledir}
-	rm -rf ${tmpdir}/${fetchfiledir}
+#	sendscp ${host} ${user} ${password} /home/${user} ~/${myfile}
+	rm -rf ${mytmpdir}/${partnerfile}
 }
-#function sendscp_sample() {
-#	if [ $# -ne 1 ]; then
-#		echo "[error] wrong number of arguments."
-#		echo "  usage : sendscp_sample <trgtfiledir>"
-#		return 1
-#	fi
-#	host=XXX.XXX.XXX.XXX
-#	user=user
-#	password=passwd
-#	trgtfiledir=$1
-#	sendscp ${host} ${user} ${password} ${trgtfiledir} /home/${user}/_scp_from_xxx
-#}
-#function syncscp_sample() {
-#	if [ $# -ne 2 ]; then
-#		echo "[error] wrong number of arguments."
-#		echo "  usage : syncscp_sample <fetchfiledir> <myfiledir>"
-#		return 1
-#	fi
-#	host=XXX.XXX.XXX.XXX
-#	user=user
-#	password=passwd
-#	fetchfiledir=$1
-#	myfiledir=$2
-#	syncscp ${host} ${user} ${password} ${fetchfiledir} ${myfiledir}
-#}
+function _get_scp_config() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : _get_scp_config <partner_name>"
+		echo "    <partner_name> partner name"
+		return 1
+	fi
+	config_file=~/_config_scp_$1
+	if [ ! -f ${config_file} ]; then
+		echo "[error] ${config_file} does not exist."
+		return 1
+	fi
+	head -n 1 ${config_file} | while IFS= read CFG_HOST CFG_USER CFG_PASSWORD
+	do
+		host=$CFG_HOST
+		user=$CFG_USER
+		password=$CFG_PASSWORD
+	done
+}
+function sendscpto() {
+	if [ $# -lt 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : sendscpto <partner_name> <myobj> [<myobj>...]"
+		echo "    <partner_name> partner name"
+		echo "    <myobj>        my object path (absolute/relative path)"
+		return 1
+	fi
+	argv=("$@")
+	partnername=${argv[0]}
+	_get_scp_config ${partnername}
+	if [ $? -eq 1 ]; then
+		return 1
+	fi
+	for i in $(seq 1 $(($# - 1)))
+	do
+		myobj=${argv[$i]}
+	#	sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}
+		echo "sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}"
+	done
+}
+function syncscpto() {
+	if [ $# -ne 3 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : syncscpto <partnername> <partnerfile> <myfile>"
+		echo "    <partnername> partner name"
+		echo "    <partnerfile> partner file path (relative path from home dir)"
+		echo "    <myfile>      my file path (relative path from home dir)"
+		return 1
+	fi
+	partnername=$1
+	partnerfile=$2
+	myfile=$3
+	_get_scp_config ${partnername}
+	if [ $? -eq 1 ]; then
+		return 1
+	fi
+#	syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}
+	echo "syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}"
+}
 #function syncdotfiles_sample() {
 #	file=".bashrc";	syncscp_sample ${file} ${file}
 #}
