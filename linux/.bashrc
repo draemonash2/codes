@@ -600,13 +600,19 @@ function syncscp() {
 	rm -rf ${mytmpdir}/${partnerfile}
 }
 function _get_scp_config() {
+	# - config file format
+	#     hostname<tab>username<tab>password
+	#     e.g.
+	#       $ cat ~/_config_scp_a
+	#       192.168.12.11<tab>endo<tab>pw1234
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : _get_scp_config <partner_name>"
-		echo "    <partner_name> partner name"
+		echo "  usage : _get_scp_config <partnername>"
+		echo "    <partnername> partner name"
 		return 1
 	fi
-	config_file=~/_config_scp_$1
+	partnername=$1
+	config_file=~/_config_scp_${partnername}
 	if [ ! -f ${config_file} ]; then
 		echo "[error] ${config_file} does not exist."
 		return 1
@@ -621,9 +627,9 @@ function _get_scp_config() {
 function sendscpto() {
 	if [ $# -lt 2 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : sendscpto <partner_name> <myobj> [<myobj>...]"
-		echo "    <partner_name> partner name"
-		echo "    <myobj>        my object path (absolute/relative path)"
+		echo "  usage : sendscpto <partnername> <myobj> [<myobj>...]"
+		echo "    <partnername> partner name"
+		echo "    <myobj>       my object path (absolute/relative path)"
 		return 1
 	fi
 	argv=("$@")
@@ -635,8 +641,7 @@ function sendscpto() {
 	for i in $(seq 1 $(($# - 1)))
 	do
 		myobj=${argv[$i]}
-	#	sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}
-		echo "sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}"
+		sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}
 	done
 }
 function syncscpto() {
@@ -655,12 +660,16 @@ function syncscpto() {
 	if [ $? -eq 1 ]; then
 		return 1
 	fi
-#	syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}
-	echo "syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}"
+	syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}
 }
-#function syncdotfiles_sample() {
-#	file=".bashrc";	syncscp_sample ${file} ${file}
-#}
+function syncdotfiles() {
+	file=".bashrc";		syncscpto a ${file} ${file}
+	file=".gdbinit";	syncscpto a ${file} ${file}
+	file=".inputrc";	syncscpto a ${file} ${file}
+	file=".tigrc";		syncscpto a ${file} ${file}
+	file=".tmux.conf";	syncscpto a ${file} ${file}
+	file=".vimrc";		syncscpto a ${file} ${file}
+}
 
 alias cp='cp -i'
 alias mv='mv -i'
