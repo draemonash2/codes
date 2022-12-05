@@ -517,6 +517,12 @@ function fd() {
 if [ $? -eq 0 ]; then
 	alias diff='\diff --color'
 fi
+function lsscpdata() {
+	trgtdir=~/_scp_to_xxx
+	echo "$ ll ${trgtdir}"; ll ${trgtdir};
+	trgtdir=~/_scp_from_xxx
+	echo "$ ll ${trgtdir}"; ll ${trgtdir};
+}
 function storescpsenddata() {
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -526,18 +532,14 @@ function storescpsenddata() {
 	trgtdir=~/_scp_to_xxx
 	mkdir -p ${trgtdir}
 	\cp -rf $1 ${trgtdir}/.
-	ll ${trgtdir}
+	lsscpdata
 }
 function clearscpsenddata() {
 	trgtdir=~/_scp_to_xxx
 	rm -rf ${trgtdir}/*
-	ll ${trgtdir}
-}
-function lsscpsenddata() {
-	trgtdir=~/_scp_to_xxx
-	echo "$ ll ${trgtdir}"; ll ${trgtdir};
 	trgtdir=~/_scp_from_xxx
-	echo "$ ll ${trgtdir}"; ll ${trgtdir};
+	rm -rf ${trgtdir}/*
+	lsscpdata
 }
 function sendscp() {
 	if [ $# -lt 5 ]; then
@@ -600,11 +602,11 @@ function syncscp() {
 	rm -rf ${mytmpdir}/${partnerfile}
 }
 function _get_scp_config() {
-	# - config file format
-	#     hostname<tab>username<tab>password
-	#     e.g.
-	#       $ cat ~/_config_scp_a
-	#       192.168.12.11<tab>endo<tab>pw1234
+	# [config file format]
+	#   hostname<tab>username<tab>password
+	#   e.g.
+	#     $ cat ~/_config_scp_a
+	#     192.168.12.11<tab>endo<tab>pw1234
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : _get_scp_config <partnername>"
@@ -638,11 +640,34 @@ function sendscpto() {
 	if [ $? -eq 1 ]; then
 		return 1
 	fi
+	partnerdir=/home/${user}/_scp_from_xxx
 	for i in $(seq 1 $(($# - 1)))
 	do
 		myobj=${argv[$i]}
-		sendscp ${host} ${user} ${password} /home/${user}/_scp_from_xxx ${myobj}
+		sendscp ${host} ${user} ${password} ${partnerdir} ${myobj}
 	done
+}
+function fetchscpfrom() {
+	if [ $# -lt 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : fetchscpfrom <partnername> <partnerobj> [<partnerobj>...]"
+		echo "    <partnername> partner name"
+		echo "    <partnerobj>  partner object path (absolute path)"
+		return 1
+	fi
+	argv=("$@")
+	partnername=${argv[0]}
+	_get_scp_config ${partnername}
+	if [ $? -eq 1 ]; then
+		return 1
+	fi
+	mydir=~/_scp_from_xxx
+	for i in $(seq 1 $(($# - 1)))
+	do
+		partnerobj=${argv[$i]}
+		fetchscp ${host} ${user} ${password} ${mydir} ${partnerobj}
+	done
+	echo "$ ll ${mydir}"; ll ${mydir};
 }
 function syncscpto() {
 	if [ $# -ne 3 ]; then
