@@ -21,6 +21,7 @@ git add %CUR_DIR%..\#memo.xlsm
 git add %CUR_DIR%..\#memo.qea
 git add %CUR_DIR%..\**\#memo*.xlsx
 git add %CUR_DIR%..\**\#memo*.xlsm
+git add %CUR_DIR%*_local\**
 git commit -m "%COMMITMSG%"
 
 echo. > %BACKUP_LOG%
