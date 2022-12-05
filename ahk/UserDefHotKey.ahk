@@ -302,65 +302,96 @@ global giWinTileMode := 0
 	
 	#IfWinActive ahk_exe explorer.exe
 		^+c::	; ファイルパスコピー
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
+			Clipboard =
+			Clipboard = %sTrgtPaths%
+			ClipWait
+			return
+		^+d::	; ファイル名コピー
+			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtFileName := ExtractFileName(sTrgtPaths)
+			Clipboard =
+			Clipboard = %sTrgtFileName%
+			ClipWait
 			return
 		+F1::	; winmergeで開く
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run, % sDirPath . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . sTrgtPaths
 			return
 		+F2::	; vimで開く
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_GVIM
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F3::	; VSCodeで開く
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_VSCODE
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F4::	; 秀丸で開く
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_HIDEMARU
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F5::	; EXCELで開く
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_EXCEL
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		^+g::	; Grep検索＠TresGrep
-			sTrgtPaths := CopyCurDirPathAtExplorer()
+			sTrgtPaths := GetCurDirPathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_TRESGREP
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
-		^+z::	; 圧縮＠7-Zip
-			sTrgtPaths := CopySelFilePathAtExplorer()
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
+		^+z::	; 圧縮/パスワード圧縮/解凍
+			Gui, New, ,
+			Gui, Add, Text,, 圧縮/パスワード圧縮/解凍を実行します。`n処理を選択してください。
+			Gui, Add, ListBox, vAnswer Choose1 R3, 圧縮|パスワード圧縮|解凍
+			Gui, Add, Button, Hidden w0 h0 Default, ZipEnter
+			Gui, Show, Center
 			return
-	;	^+z::	; 解凍＠7-Zip
-	;		sTrgtPaths := CopySelFilePathAtExplorer()
-	;		EnvGet, sDirPath, MYDIRPATH_CODES
-	;		Run, % sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths
-	;		return
-	;	^+z::	; パスワード圧縮＠7-Zip
-	;		sTrgtPaths := CopySelFilePathAtExplorer()
-	;		EnvGet, sDirPath, MYDIRPATH_CODES
-	;		Run, % sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths
-	;		return
-		^+l::	; ショートカットファイル作成
-			sTrgtPaths := CopySelFilePathAtExplorer()
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
+			
+			ButtonZipEnter:
+				GuiControlGet, vAnswer, , ListBox1
+				;MsgBox %vAnswer%
+				Gui, Cancel
+				sTrgtPaths := GetSelFilePathAtExplorer()
+				EnvGet, sDirPath, MYDIRPATH_CODES
+				If ( vAnswer == "圧縮" ) {
+					Run, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
+				} Else If ( vAnswer == "パスワード圧縮" ) {
+					Run, % sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths
+				} Else If ( vAnswer == "解凍" ) {
+					Run, % sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths
+				} Else {
+					MsgBox "[ERROR] 圧縮/パスワード圧縮/解凍 選択"
+				}
+				return
+		^+l::	; ショートカット/シンボリックリンク作成
+			Gui, New, ,
+			Gui, Add, Text,, ショートカット/シンボリックリンクを作成します。`n処理を選択してください。
+			Gui, Add, ListBox, vAnswer Choose1 R2, ショートカット作成|シンボリックリンク作成
+			Gui, Add, Button, Hidden w0 h0 Default, SelLinkEnter
+			Gui, Show, Center
 			return
-		^!l::	; シンボリックリンクファイル作成
-			sTrgtPaths := CopySelFilePathAtExplorer()
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
-			return
+			
+			ButtonSelLinkEnter:
+				GuiControlGet, vAnswer, , ListBox1
+				;MsgBox %vAnswer%
+				Gui, Cancel
+				sTrgtPaths := GetSelFilePathAtExplorer()
+				EnvGet, sDirPath, MYDIRPATH_CODES
+				If ( vAnswer == "ショートカット作成" ) {
+					Run % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
+				} Else If ( vAnswer == "シンボリックリンク作成" ) {
+					Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
+				} Else {
+					MsgBox "[ERROR] ショートカット/シンボリックリンク作成"
+				}
+				return
 		^+r::	; リネーム用バッチファイル作成
-			sTrgtPaths := CopySelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer()
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
 			return
@@ -368,30 +399,45 @@ global giWinTileMode := 0
 			Send, !vhh
 			return
 		^+F10::	; コマンドプロンプトを開く
-			sDirPath := CopyCurDirPathAtExplorer()
+			sDirPath := GetCurDirPathAtExplorer()
 			Run, %comspec% /k cd %sDirPath%
 			return
-		^+F11::	; フォルダ情報作成_パス一覧(ファイル/フォルダ)
-			sDirPath := CopyCurDirPathAtExplorer()
-			Run, %ComSpec% /c dir /s /b /a > "%sDirPath%\_PathList_FileDir.txt"
+		^+F11::	; パス一覧作成
+			Gui, New, ,
+			Gui, Add, Text,, パス一覧を作成します。`n処理を選択してください。
+			Gui, Add, ListBox, vAnswer Choose1 R4, ファイル＆フォルダ一覧作成|ファイル一覧作成|フォルダ一覧作成|フォルダツリー作成
+			Gui, Add, Button, Hidden w0 h0 Default, PathListEnter
+			Gui, Show, Center
 			return
-	;	^+F11::	; フォルダ情報作成_パス一覧(ファイル)
-	;		sDirPath := CopyCurDirPathAtExplorer()
-	;		Run, %ComSpec% /c dir *.* /b /s /a:a-d > "%sDirPath%\_PathList_File.txt"
-	;		return
-	;	^+F11::	; フォルダ情報作成_パス一覧(フォルダ)
-	;		sDirPath := CopyCurDirPathAtExplorer()
-	;		Run, %ComSpec% /c dir /b /s /a:d > "%sDirPath%\_PathList_Dir.txt"
-	;		return
-	;	^+F11::	; フォルダ情報作成_フォルダツリー
-	;		sDirPath := CopyCurDirPathAtExplorer()
-	;		Run, %ComSpec% /c tree /f > "%sDirPath%\_DirTree.txt"
-	;		return
+			
+			ButtonPathListEnter:
+				GuiControlGet, vAnswer, , ListBox1
+				;MsgBox %vAnswer%
+				Gui, Cancel
+				sDirPath := GetCurDirPathAtExplorer()
+				If ( vAnswer == "ファイル＆フォルダ一覧作成" ) {
+					Run, %ComSpec% /c dir /s /b /a > "%sDirPath%\_PathList_FileDir.txt", %sDirPath%
+				} Else If ( vAnswer == "ファイル一覧作成" ) {
+					Run, %ComSpec% /c dir *.* /b /s /a:a-d > "%sDirPath%\_PathList_File.txt", %sDirPath%
+				} Else If ( vAnswer == "フォルダ一覧作成" ) {
+					Run, %ComSpec% /c dir /b /s /a:d > "%sDirPath%\_PathList_Dir.txt", %sDirPath%
+				} Else If ( vAnswer == "フォルダツリー作成" ) {
+					Run, %ComSpec% /c tree /f > "%sDirPath%\_DirTree.txt", %sDirPath%
+				} Else {
+					MsgBox "[ERROR] パス一覧作成"
+				}
+				return
 		^+F12::	; フォルダサイズ解析＠DiskInfo
-			sTrgtPaths := CopyCurDirPathAtExplorer()
+			sTrgtPaths := GetCurDirPathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_DISKINFO3
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
+		
+		GuiEscape:
+		GuiClose:
+		ButtonCancel:
+			Gui, Cancel
+			Return
 	#IfWinActive
 	
 	#IfWinActive ahk_exe EXCEL.EXE
@@ -722,7 +768,6 @@ global giWinTileMode := 0
 		StringReplace, sFileName, sFileName, ", , All
 		return sFileName
 	}
-
 	; ディレクトリパス取得
 	ExtractDirPath( sTrgtPath )
 	{
@@ -735,26 +780,30 @@ global giWinTileMode := 0
 	;	MsgBox %sTrgtPath%`n%sLeafName%`n%sDirPath%
 		return sDirPath
 	}
+
 	; 選択ファイルパスコピー＠explorer
-	CopySelFilePathAtExplorer()
+	GetSelFilePathAtExplorer()
 	{
+		clipboard_old=%Clipboard%
 		Clipboard =
 		Send, !hcp
 		ClipWait
 		sTrgtPaths = %Clipboard%
+		Clipboard = %clipboard_old%
 		StringReplace, sTrgtPaths, sTrgtPaths, `r`n, %A_Space%, All
 	;	MsgBox %sTrgtPaths%
 		return sTrgtPaths
 	}
-
 	; 現在フォルダパスコピー＠explorer
-	CopyCurDirPathAtExplorer()
+	GetCurDirPathAtExplorer()
 	{
+		clipboard_old=%Clipboard%
 		Clipboard =
 		Send, !d
 		Send, ^c
 		ClipWait
 		sTrgtPaths = %Clipboard%
+		Clipboard = %clipboard_old%
 	;	MsgBox %sTrgtPaths%
 		return sTrgtPaths
 	}
