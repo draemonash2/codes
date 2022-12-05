@@ -6,7 +6,7 @@
 '####################################################################
 '### 設定
 '####################################################################
-Const OBJECT_SUFFIX = " - シンボリックリンク"
+Const OBJECT_SUFFIX = ".symlink"
 
 '####################################################################
 '### 事前処理
@@ -75,9 +75,10 @@ For Each oObjPath In cFilePaths
     sDstPath = oObjPath
     Dim sCmd
     If lObjType = 1 Then 'file
-        sSrcPath = objFSO.GetParentFolderName( oObjPath ) & "\" & _
-                   objFSO.GetBaseName( oObjPath ) & OBJECT_SUFFIX & "." & _
-                   objFSO.GetExtensionName( oObjPath )
+       'sSrcPath = objFSO.GetParentFolderName( oObjPath ) & "\" & _
+       '           objFSO.GetBaseName( oObjPath ) & OBJECT_SUFFIX & "." & _
+       '           objFSO.GetExtensionName( oObjPath )
+        sSrcPath = oObjPath & OBJECT_SUFFIX & "." & objFSO.GetExtensionName( oObjPath )
         sCmd = "mklink """ & sSrcPath & """ """ & sDstPath & """"
     ElseIf lObjType = 2 Then 'folder
         sSrcPath = oObjPath & OBJECT_SUFFIX
@@ -93,7 +94,7 @@ For Each oObjPath In cFilePaths
     call ExecDosCmd( sCmd )
 Next
 
-MsgBox "シンボリックリンクを作成しました", vbYes, sPROG_NAME
+'MsgBox "シンボリックリンクを作成しました", vbYes, sPROG_NAME
 
 '####################################################################
 '### インクルード関数
