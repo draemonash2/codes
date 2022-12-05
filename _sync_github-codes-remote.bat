@@ -1,4 +1,4 @@
-for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_sync_github-codes-remote.config) do (
+for /f "tokens=1,2,3" %%a in (%MYDIRPATH_CODES_CONFIG%\_ssh_target_a.config) do (
 	set HOST=%%a
 	set USER=%%b
 	set PASSWORD=%%c
