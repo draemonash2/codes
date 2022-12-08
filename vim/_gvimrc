@@ -846,7 +846,10 @@ endif
 		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
 		let l:sCurFilePath = GetCurFilePath()
 		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
-		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName ) . g:sSysPathDlmtr
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
+		if l:sPrjRootPath != ""
+			let l:sPrjRootPath = l:sPrjRootPath . g:sSysPathDlmtr
+		endif
 		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sSysPathDlmtr, "g" )
@@ -908,7 +911,10 @@ endif
 		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
 		let l:sCurFilePath = GetCurFilePath()
 		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
-		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName ) . g:sSysPathDlmtr
+		let l:sPrjRootPath = SrchStoreDirPathToTop( GetCurDirPath(), g:sProjectRootFileName )
+		if l:sPrjRootPath != ""
+			let l:sPrjRootPath = l:sPrjRootPath . g:sSysPathDlmtr
+		endif
 		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
 		let l:sCurFileName = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
 		let l:sCurFileName = substitute( l:sCurFileName, "/", g:sSysPathDlmtr, "g" )

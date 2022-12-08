@@ -695,6 +695,14 @@ function syncdotfiles() {
 	file=".tmux.conf";	syncscpto a ${file} ${file}
 	file=".vimrc";		syncscpto a ${file} ${file}
 }
+function convunixtimetodate() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : convunixtimetodate <unixtime>"
+		return 1
+	fi
+	echo $1 | awk '{print strftime("%c",$1)}'
+}
 
 alias cp='cp -i'
 alias mv='mv -i'
