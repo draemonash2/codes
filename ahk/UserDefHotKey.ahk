@@ -68,34 +68,25 @@ global giWinTileMode := 0
 	;ホットキー配置表示
 		!^+F1::
 			sFilePath = "C:\other\グローバルホットキー配置.vsdx"
-		;	StartProgramAndActivate( "", sFilePath )
 			StartProgramAndActivateFile( sFilePath )
 			return
 	;Programsフォルダ表示
 		!^+F12::
 			sFilePath = "C:\Users\%A_Username%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
-		;	StartProgramAndActivate( "", sFilePath )
 			StartProgramAndActivateFile( sFilePath )
 			Sleep 100
 			Send, +{tab}
 			return
 	;#todo.itmz
 		^+!Up::
-		;	EnvGet, sExePath, MYEXEPATH_ITHOUGHTS
 			sFilePath = "%DOC_DIR_PATH%\#todo.itmz"
 			Process, wait, Dropbox.exe, 30 ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
-		;	StartProgramAndActivate( sExePath, sFilePath )
-		;	Sleep 100
-		;	Send, {F2}
-		;	Sleep 100
-		;	Send, {esc}
 			StartProgramAndActivateFile( sFilePath )
 			return
 	;#temp.txt
 		^+!Down::
-			EnvGet, sExePath, MYEXEPATH_GVIM
 			sFilePath = "%DOC_DIR_PATH%\#temp.txt"
-			StartProgramAndActivate( sExePath, sFilePath )
+			StartProgramAndActivateFile( sFilePath )
 			return
 	;#temp.xlsm
 		^+!Right::
@@ -558,30 +549,17 @@ global giWinTileMode := 0
 			MsgBox [ERROR] please specify arguments to StartProgramAndActivate().
 			return
 		}
-		sExeName := ExtractFileName(sExePath)
 		sExeDirPath := ExtractDirPath(sExePath)
-		sFileName := ExtractFileName(sFilePath)
-		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName% `n sFilePath=%sFilePath% `n sFileName=%sFileName%
+		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sFilePath=%sFilePath%
 		
 		;*** start program ***
-		SetTitleMatchMode, 2 ;中間一致
-		Run, %sExePath% %sFilePath%, %sExeDirPath%
-		
-		WinWait, ahk_exe %sExeName%, %sFileName%, 5
-		If ErrorLevel <> 0
-		{
-			;MsgBox, could not be found %sExeName%.
-			Return
+		Try {
+			Run, %sExePath% %sFilePath%, %sExeDirPath%, , sOutputVarPID
+		;	MsgBox, 0x1000, , %sOutputVarPID%
+		} Catch errorno {
+			MsgBox, [error] run error : %errorno%
 		}
-		
-		;*** activate started program ***
-		WinActivate, ahk_exe %sExeName%, %sFileName%
-		WinWaitActive, ahk_exe %sExeName%, %sFileName%, 5
-		If ErrorLevel <> 0
-		{
-			;MsgBox, could not be activated %sExeName%.
-			Return
-		}
+		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
@@ -598,14 +576,13 @@ global giWinTileMode := 0
 		;MsgBox sFilePath=%sFilePath% `n sFileName=%sFileName%
 		
 		;*** start program ***
-		Run, %sFilePath%
-	;	WinActivate, , %sFileName%
-	;	WinWaitActive, , %sFileName%, 5
-	;	If ErrorLevel <> 0
-	;	{
-	;		;MsgBox, could not be activated %sFileName%.
-	;		Return
-	;	}
+		Try {
+			Run, %sFilePath%, , , sOutputVarPID
+		;	MsgBox, 0x1000, , %sOutputVarPID%
+		} Catch errorno {
+			MsgBox, [error] run error : %errorno%
+		}
+		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
@@ -632,7 +609,13 @@ global giWinTileMode := 0
 		}
 		Else
 		{
-			Run, %sExePath%, %sExeDirPath%
+			Try {
+				Run, %sExePath%, %sExeDirPath%, , sOutputVarPID
+			;	MsgBox, 0x1000, , %sOutputVarPID%
+			} Catch errorno {
+				MsgBox, [error] run error : %errorno%
+			}
+			WinActivate, ahk_pid %sOutputVarPID%
 		}
 		return
 	}
@@ -761,23 +744,17 @@ global giWinTileMode := 0
 	; ファイル名取得
 	ExtractFileName( sFilePath )
 	{
-		Loop, Parse, sFilePath , \
-		{
-			sFileName = %A_LoopField%
-		}
+		SplitPath, sFilePath, sFileName, sDirPath, sExtName, sFileBaseName, sDrive
 		StringReplace, sFileName, sFileName, ", , All
+	;	MsgBox, %sFilePath%`n%sFileName%`n%sDirPath%`n%sExtName%`n%sFileBaseName%`n%sDrive%
 		return sFileName
 	}
 	; ディレクトリパス取得
-	ExtractDirPath( sTrgtPath )
+	ExtractDirPath( sFilePath )
 	{
-		Loop, Parse, sTrgtPath , \
-		{
-			sLeafName = %A_LoopField%
-		}
-		sLeafName = \%sLeafName%
-		StringReplace, sDirPath, sTrgtPath, %sLeafName%, , All
-	;	MsgBox %sTrgtPath%`n%sLeafName%`n%sDirPath%
+		SplitPath, sFilePath, sFileName, sDirPath, sExtName, sFileBaseName, sDrive
+		StringReplace, sDirPath, sDirPath, ", , All
+	;	MsgBox, %sFilePath%`n%sFileName%`n%sDirPath%`n%sExtName%`n%sFileBaseName%`n%sDrive%
 		return sDirPath
 	}
 
