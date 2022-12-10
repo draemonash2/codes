@@ -293,40 +293,39 @@ global giWinTileMode := 0
 	
 	#IfWinActive ahk_exe explorer.exe
 		^+c::	; ファイルパスコピー
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(0)
 			Clipboard =
 			Clipboard = %sTrgtPaths%
 			ClipWait
 			return
 		^+d::	; ファイル名コピー
-			sTrgtPaths := GetSelFilePathAtExplorer()
-			sTrgtFileName := ExtractFileName(sTrgtPaths)
+			sTrgtNames := GetSelFileNameAtExplorer()
 			Clipboard =
-			Clipboard = %sTrgtFileName%
+			Clipboard = %sTrgtNames%
 			ClipWait
 			return
 		+F1::	; winmergeで開く
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run, % sDirPath . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . sTrgtPaths
 			return
 		+F2::	; vimで開く
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sExePath, MYEXEPATH_GVIM
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F3::	; VSCodeで開く
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sExePath, MYEXEPATH_VSCODE
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F4::	; 秀丸で開く
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sExePath, MYEXEPATH_HIDEMARU
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
 		+F5::	; EXCELで開く
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sExePath, MYEXEPATH_EXCEL
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
@@ -347,7 +346,7 @@ global giWinTileMode := 0
 				GuiControlGet, vAnswer, , ListBox1
 				;MsgBox %vAnswer%
 				Gui, Cancel
-				sTrgtPaths := GetSelFilePathAtExplorer()
+				sTrgtPaths := GetSelFilePathAtExplorer(1)
 				EnvGet, sDirPath, MYDIRPATH_CODES
 				If ( vAnswer == "圧縮" ) {
 					Run, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
@@ -371,7 +370,7 @@ global giWinTileMode := 0
 				GuiControlGet, vAnswer, , ListBox1
 				;MsgBox %vAnswer%
 				Gui, Cancel
-				sTrgtPaths := GetSelFilePathAtExplorer()
+				sTrgtPaths := GetSelFilePathAtExplorer(1)
 				EnvGet, sDirPath, MYDIRPATH_CODES
 				If ( vAnswer == "ショートカット作成" ) {
 					Run % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
@@ -382,7 +381,7 @@ global giWinTileMode := 0
 				}
 				return
 		^+r::	; リネーム用バッチファイル作成
-			sTrgtPaths := GetSelFilePathAtExplorer()
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sDirPath, MYDIRPATH_CODES
 			Run, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
 			return
@@ -758,8 +757,8 @@ global giWinTileMode := 0
 		return sDirPath
 	}
 
-	; 選択ファイルパスコピー＠explorer
-	GetSelFilePathAtExplorer()
+	; 選択ファイルパス取得＠explorer
+	GetSelFilePathAtExplorer( bIsDelimiterSpace )
 	{
 		clipboard_old=%Clipboard%
 		Clipboard =
@@ -767,21 +766,34 @@ global giWinTileMode := 0
 		ClipWait
 		sTrgtPaths = %Clipboard%
 		Clipboard = %clipboard_old%
-		StringReplace, sTrgtPaths, sTrgtPaths, `r`n, %A_Space%, All
-	;	MsgBox %sTrgtPaths%
+		if ( bIsDelimiterSpace = 1 ) {
+			StringReplace, sTrgtPaths, sTrgtPaths, `r`n, %A_Space%, All
+		}
+	;	MsgBox sTrgtPaths=%sTrgtPaths%
 		return sTrgtPaths
 	}
-	; 現在フォルダパスコピー＠explorer
+	; 現在フォルダパス取得＠explorer
 	GetCurDirPathAtExplorer()
 	{
 		clipboard_old=%Clipboard%
 		Clipboard =
 		Send, !d
 		Send, ^c
+		Send, {ESC}
 		ClipWait
 		sTrgtPaths = %Clipboard%
 		Clipboard = %clipboard_old%
-	;	MsgBox %sTrgtPaths%
+	;	MsgBox sTrgtPaths=%sTrgtPaths%
+		return sTrgtPaths
+	}
+	; 選択ファイル名取得＠explorer
+	GetSelFileNameAtExplorer()
+	{
+		sFilePaths := GetSelFilePathAtExplorer(0)
+		sDirPaths := GetCurDirPathAtExplorer()
+		StringReplace, sTrgtPaths, sFilePaths, %sDirPaths%\, , All
+		StringReplace, sTrgtPaths, sTrgtPaths, ", , All
+	;	MsgBox sTrgtPaths=%sTrgtPaths% `n sFilePaths=%sFilePaths% `n sDirPaths=%sDirPaths%
 		return sTrgtPaths
 	}
 
