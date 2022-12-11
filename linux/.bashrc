@@ -619,12 +619,9 @@ function _get_scp_config() {
 		echo "[error] ${config_file} does not exist."
 		return 1
 	fi
-	head -n 1 ${config_file} | while IFS= read CFG_HOST CFG_USER CFG_PASSWORD
-	do
-		host=$CFG_HOST
-		user=$CFG_USER
-		password=$CFG_PASSWORD
-	done
+	host=$(cut -f 1 ${config_file} | head -n 1)
+	user=$(cut -f 2 ${config_file} | head -n 1)
+	password=$(cut -f 3 ${config_file} | head -n 1)
 }
 function sendscpto() {
 	if [ $# -lt 2 ]; then
