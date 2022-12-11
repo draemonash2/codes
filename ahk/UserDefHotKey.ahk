@@ -155,7 +155,7 @@ global giWinTileMode := 0
 	;xf.exe
 		^+!z::
 			EnvGet, sExePath, MYEXEPATH_XF
-			StartProgramAndActivateExe( sExePath )
+			StartProgramAndActivateExe( sExePath, 1 )
 			return
 	*/
 	;DOC_DIR_PATHフォルダ表示
@@ -168,7 +168,7 @@ global giWinTileMode := 0
 	;cCalc.exe
 		^+!;::
 			EnvGet, sExePath, MYEXEPATH_CALC
-			StartProgramAndActivateExe( sExePath )
+			StartProgramAndActivateExe( sExePath, 1 )
 			return
 	;Github.io
 		^+!1::Run https://draemonash2.github.io/
@@ -540,7 +540,7 @@ global giWinTileMode := 0
 	; されているプログラムをアクティベートするショートカットキーで
 	; あるため、Run 関数を使用してそのまま実行すると、非アクティブ
 	; 状態でプログラムが起動してしまう。
-	StartProgramAndActivate( sExePath, sFilePath )
+	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess=0 )
 	{
 		;*** preprocess ***
 		If ( sExePath == "" or sFilePath == "" )
@@ -548,10 +548,20 @@ global giWinTileMode := 0
 			MsgBox [ERROR] please specify arguments to StartProgramAndActivate().
 			return
 		}
+		sExeName := ExtractFileName(sExePath)
 		sExeDirPath := ExtractDirPath(sExePath)
-		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sFilePath=%sFilePath%
+		;MsgBox sExePath=%sExePath% `n sExeName=%sExeName% `n sExeDirPath=%sExeDirPath% `n sFilePath=%sFilePath%
 		
 		;*** start program ***
+		If ( bLaunchSingleProcess == 1 ) {
+			Process, Exist, % sExeName
+			If ErrorLevel<>0
+			{
+				WinActivate,ahk_pid %ErrorLevel%
+				return
+			}
+		}
+		
 		Try {
 			Run, %sExePath% %sFilePath%, %sExeDirPath%, , sOutputVarPID
 		;	MsgBox, 0x1000, , %sOutputVarPID%
@@ -563,6 +573,12 @@ global giWinTileMode := 0
 	}
 	
 	; 起動＆アクティベート処理 (ファイルパス指定のみ)
+	;
+	; 備考：
+	;   ・単一プロセス起動は指定不可。
+	;       理由）単一プロセス起動は、プログラム名を基にしたプロセスの起動有無を
+	;             確認することで実現できる。本関数はプログラム名を指定しないため、
+	;             単一プロセス起動を実現できない。
 	StartProgramAndActivateFile( sFilePath )
 	{
 		;*** preprocess ***
@@ -586,8 +602,7 @@ global giWinTileMode := 0
 	}
 	
 	; 起動＆アクティベート処理 (実行プログラム指定のみ)
-	;   "sExePathのみ指定"かつ"起動済み"の場合はアクティブ化のみを行う
-	StartProgramAndActivateExe( sExePath )
+	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess=0 )
 	{
 		;*** preprocess ***
 		If ( sExePath == "" )
@@ -601,21 +616,22 @@ global giWinTileMode := 0
 		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName%
 		
 		;*** start program ***
-		Process, Exist, % sExeName
-		If ErrorLevel<>0
-		{
-			WinActivate,ahk_pid %ErrorLevel%
-		}
-		Else
-		{
-			Try {
-				Run, %sExePath%, %sExeDirPath%, , sOutputVarPID
-			;	MsgBox, 0x1000, , %sOutputVarPID%
-			} Catch errorno {
-				MsgBox, [error] run error : %errorno%
+		If ( bLaunchSingleProcess == 1 ) {
+			Process, Exist, % sExeName
+			If ErrorLevel<>0
+			{
+				WinActivate,ahk_pid %ErrorLevel%
+				return
 			}
-			WinActivate, ahk_pid %sOutputVarPID%
 		}
+		
+		Try {
+			Run, %sExePath%, %sExeDirPath%, , sOutputVarPID
+		;	MsgBox, 0x1000, , %sOutputVarPID%
+		} Catch errorno {
+			MsgBox, [error] run error : %errorno%
+		}
+		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 
