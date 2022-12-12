@@ -553,11 +553,14 @@ endif
 " ==============================================================================
 " 行末の空白をハイライトする
 " ==============================================================================
-	augroup highlightSpace
-		autocmd!
-		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('highlightSpaces', '\S\+\zs\s\+\ze$')
-		autocmd WinEnter,BufRead,BufNew,Syntax * highlight highlightSpaces ctermbg=Red guibg=Red
-	augroup END
+	let g:bHilightTailSpaces = 0
+	if g:bHilightTailSpaces == 1
+		augroup highlightSpace
+			autocmd!
+			autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('highlightSpaces', '\S\+\zs\s\+\ze$')
+			autocmd WinEnter,BufRead,BufNew,Syntax * highlight highlightSpaces ctermbg=Red guibg=Red
+		augroup END
+	endif
 
 " ==============================================================================
 " 関数名の色付け設定

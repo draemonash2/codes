@@ -128,6 +128,12 @@ global giWinTileMode := 0
 			sFilePath = "%DOC_DIR_PATH%\320_【自己啓発】勉強\words.itmz"
 			StartProgramAndActivateFile( sFilePath )
 			return
+	;codes同期
+		^+!y::
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			sFilePath = %sDirPath%\_sync_github-codes-remote.bat
+			StartProgramAndActivateFile( sFilePath )
+			return
 	;KitchenTimer.vbs
 		^+!k::
 			EnvGet, sDirPath, MYDIRPATH_CODES
@@ -358,6 +364,12 @@ global giWinTileMode := 0
 					MsgBox "[ERROR] 圧縮/パスワード圧縮/解凍 選択"
 				}
 				return
+		^s::	; ファイル作成
+			InputBox, sFileName , , テキストファイルを作成します。`n処理を選択してください。, , , , , , , , .txt
+			sDirPath := GetCurDirPathAtExplorer()
+			sleep 500	; explorerのファイル選択ペインへの遷移待ち処理
+			Run, %ComSpec% /c copy nul %sFileName%, %sDirPath%
+			return
 		^+l::	; ショートカット/シンボリックリンク作成
 			Gui, New, ,
 			Gui, Add, Text,, ショートカット/シンボリックリンクを作成します。`n処理を選択してください。
@@ -795,8 +807,9 @@ global giWinTileMode := 0
 		Clipboard =
 		Send, !d
 		Send, ^c
-		Send, {ESC}
 		ClipWait
+	;	Send, {ESC}
+		Send, +{Tab 4}
 		sTrgtPaths = %Clipboard%
 		Clipboard = %clipboard_old%
 	;	MsgBox sTrgtPaths=%sTrgtPaths%
