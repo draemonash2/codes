@@ -303,12 +303,14 @@ global giWinTileMode := 0
 			Clipboard =
 			Clipboard = %sTrgtPaths%
 			ClipWait
+			FocusFileDirListAtExplorer()
 			return
 		^+d::	; ファイル名コピー
 			sTrgtNames := GetSelFileNameAtExplorer()
 			Clipboard =
 			Clipboard = %sTrgtNames%
 			ClipWait
+			FocusFileDirListAtExplorer()
 			return
 		+F1::	; winmergeで開く
 			sTrgtPaths := GetSelFilePathAtExplorer(1)
@@ -338,17 +340,8 @@ global giWinTileMode := 0
 		+F9::	; 作業ファイルとしてコピー
 			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run, % sDirPath . "\vbs\tools\win\file_ope\CopyAsWorkFile.vbs " . sTrgtPaths
-			return
-		+F10::	; 配下全てをVimで開く
-			sTrgtPaths := GetCurDirPathAtExplorer()
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run, % sDirPath . "\vbs\tools\vim\OpenAllFilesWithVim.vbs " . sTrgtPaths
-			return
-		+F11::	; タグファイルを作成する
-			sTrgtPaths := GetCurDirPathAtExplorer()
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run, % sDirPath . "\vbs\tools\ctags,gtags\CreateTagFiles.vbs " . sTrgtPaths
+			RunWait, % sDirPath . "\vbs\tools\win\file_ope\CopyAsWorkFile.vbs " . sTrgtPaths
+			FocusFileDirListAtExplorer()
 			return
 		^+g::	; Grep検索＠TresGrep
 			sTrgtPaths := GetCurDirPathAtExplorer()
@@ -370,20 +363,22 @@ global giWinTileMode := 0
 				sTrgtPaths := GetSelFilePathAtExplorer(1)
 				EnvGet, sDirPath, MYDIRPATH_CODES
 				If ( vAnswer == "圧縮" ) {
-					Run, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
+					RunWait, % sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths
 				} Else If ( vAnswer == "パスワード圧縮" ) {
-					Run, % sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths
+					RunWait, % sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths
 				} Else If ( vAnswer == "解凍" ) {
-					Run, % sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths
+					RunWait, % sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths
 				} Else {
 					MsgBox "[ERROR] 圧縮/パスワード圧縮/解凍 選択"
 				}
+				FocusFileDirListAtExplorer()
 				return
 		^s::	; ファイル作成
 			InputBox, sFileName , , テキストファイルを作成します。`n処理を選択してください。, , , , , , , , .txt
 			sDirPath := GetCurDirPathAtExplorer()
 			sleep 500	; explorerのファイル選択ペインへの遷移待ち処理
-			Run, %ComSpec% /c copy nul %sFileName%, %sDirPath%
+			RunWait, %ComSpec% /c copy nul %sFileName%, %sDirPath%
+			FocusFileDirListAtExplorer()
 			return
 		^+l::	; ショートカット/シンボリックリンク作成
 			Gui, New, ,
@@ -400,20 +395,39 @@ global giWinTileMode := 0
 				sTrgtPaths := GetSelFilePathAtExplorer(1)
 				EnvGet, sDirPath, MYDIRPATH_CODES
 				If ( vAnswer == "ショートカット作成" ) {
-					Run % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
+					RunWait % sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths
 				} Else If ( vAnswer == "シンボリックリンク作成" ) {
-					Run % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
+					RunWait % sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths
 				} Else {
 					MsgBox "[ERROR] ショートカット/シンボリックリンク作成"
 				}
+				FocusFileDirListAtExplorer()
 				return
 		^+r::	; リネーム用バッチファイル作成
 			sTrgtPaths := GetSelFilePathAtExplorer(1)
 			EnvGet, sDirPath, MYDIRPATH_CODES
-			Run, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
+			RunWait, % sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths
+			FocusFileDirListAtExplorer()
 			return
 		^+F3::	; 隠しファイル 表示非表示切替え
 			Send, !vhh
+			FocusFileDirListAtExplorer()
+			return
+		^+F4::	; フォルダサイズ解析＠DiskInfo
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			EnvGet, sExePath, MYEXEPATH_DISKINFO3
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+			return
+		^+F8::	; タグファイルを作成する
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			RunWait, % sDirPath . "\vbs\tools\ctags,gtags\CreateTagFiles.vbs " . sTrgtPaths
+			FocusFileDirListAtExplorer()
+			return
+		^+F9::	; 配下全てをVimで開く
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\vim\OpenAllFilesWithVim.vbs " . sTrgtPaths
 			return
 		^+F10::	; コマンドプロンプトを開く
 			sDirPath := GetCurDirPathAtExplorer()
@@ -433,21 +447,33 @@ global giWinTileMode := 0
 				Gui, Cancel
 				sDirPath := GetCurDirPathAtExplorer()
 				If ( vAnswer == "ファイル＆フォルダ一覧作成" ) {
-					Run, %ComSpec% /c dir /s /b /a > "%sDirPath%\_PathList_FileDir.txt", %sDirPath%
+					RunWait, %ComSpec% /c dir /s /b /a > "%sDirPath%\_PathList_FileDir.txt", %sDirPath%
 				} Else If ( vAnswer == "ファイル一覧作成" ) {
-					Run, %ComSpec% /c dir *.* /b /s /a:a-d > "%sDirPath%\_PathList_File.txt", %sDirPath%
+					RunWait, %ComSpec% /c dir *.* /b /s /a:a-d > "%sDirPath%\_PathList_File.txt", %sDirPath%
 				} Else If ( vAnswer == "フォルダ一覧作成" ) {
-					Run, %ComSpec% /c dir /b /s /a:d > "%sDirPath%\_PathList_Dir.txt", %sDirPath%
+					RunWait, %ComSpec% /c dir /b /s /a:d > "%sDirPath%\_PathList_Dir.txt", %sDirPath%
 				} Else If ( vAnswer == "フォルダツリー作成" ) {
-					Run, %ComSpec% /c tree /f > "%sDirPath%\_DirTree.txt", %sDirPath%
+					RunWait, %ComSpec% /c tree /f > "%sDirPath%\_DirTree.txt", %sDirPath%
 				} Else {
 					MsgBox "[ERROR] パス一覧作成"
 				}
+				FocusFileDirListAtExplorer()
 				return
-		^+F12::	; フォルダサイズ解析＠DiskInfo
-			sTrgtPaths := GetCurDirPathAtExplorer()
-			EnvGet, sExePath, MYEXEPATH_DISKINFO3
-			StartProgramAndActivate( sExePath, sTrgtPaths )
+		^!F12::	; テスト
+		;	ControlGetFocus, sClassNN
+		;	If ( ErrorLevel = 0 ) {
+		;		If ( %sClassNN% == DirectUIHWND2 ) {
+		;			MsgBox, "aaa"
+		;		} Else {
+		;			MsgBox, "bbb"
+		;		}
+		;		MsgBox, Control with focus = %sClassNN%
+		;	} Else {
+		;		MsgBox, The target window doesn't exist or none of its controls has input focus.
+		;	}
+		;	FocusFileDirListAtExplorer()
+			ControlGetText, OutputVar
+			MsgBox, Control text = %OutputVar%
 			return
 		
 		GuiEscape:
@@ -839,5 +865,28 @@ global giWinTileMode := 0
 		StringReplace, sTrgtPaths, sTrgtPaths, ", , All
 	;	MsgBox sTrgtPaths=%sTrgtPaths% `n sFilePaths=%sFilePaths% `n sDirPaths=%sDirPaths%
 		return sTrgtPaths
+	}
+	; ファイルリストへフォーカスを移す＠explorer
+	;FocusFileDirListAtExplorer()
+	;{
+	;	Sleep 100
+	;	ControlFocus, SysTreeView321
+	;	If ErrorLevel=0
+	;	{
+	;	;	MsgBox "ControlFocus success"
+	;		Sleep 100
+	;		Send, {Tab}
+	;	}
+	;}
+	FocusFileDirListAtExplorer()
+	{
+		WinActivate, ahk_class CabinetWClass ahk_exe Explorer.EXE
+		Sleep 200
+		Send, ^f
+		Sleep 200
+		Send, {Tab}
+		Sleep 200
+		Send, {Tab}
+		return
 	}
 
