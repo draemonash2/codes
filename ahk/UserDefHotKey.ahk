@@ -335,6 +335,21 @@ global giWinTileMode := 0
 			EnvGet, sExePath, MYEXEPATH_EXCEL
 			StartProgramAndActivate( sExePath, sTrgtPaths )
 			return
+		+F9::	; 作業ファイルとしてコピー
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\win\file_ope\CopyAsWorkFile.vbs " . sTrgtPaths
+			return
+		+F10::	; 配下全てをVimで開く
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\vim\OpenAllFilesWithVim.vbs " . sTrgtPaths
+			return
+		+F11::	; タグファイルを作成する
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			EnvGet, sDirPath, MYDIRPATH_CODES
+			Run, % sDirPath . "\vbs\tools\ctags,gtags\CreateTagFiles.vbs " . sTrgtPaths
+			return
 		^+g::	; Grep検索＠TresGrep
 			sTrgtPaths := GetCurDirPathAtExplorer()
 			EnvGet, sExePath, MYEXEPATH_TRESGREP
