@@ -14,21 +14,12 @@ Const sPROG_NAME = "カレントフォルダ配下の特定ファイルを Vim で全て開く"
 Dim bIsContinue
 bIsContinue = True
 
-Dim objFSO
 Dim sCurDirPath
 
 '*** 選択ファイル取得 ***
 If bIsContinue = True Then
     If EXECUTION_MODE = 0 Then 'Explorerから実行
-        Dim sArg
-        Dim sDefaultPath
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
-        For Each sArg In WScript.Arguments
-            If sDefaultPath = "" Then
-                sDefaultPath = objFSO.GetParentFolderName( sArg )
-            End If
-        Next
-        sCurDirPath = InputBox( "ファイルパスを指定してください", sPROG_NAME, sDefaultPath )
+        sCurDirPath = InputBox( "フォルダパスを指定してください", sPROG_NAME, WScript.Arguments(0) )
     ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
         sCurDirPath = WScript.Env("Current")
     Else 'デバッグ実行
@@ -37,6 +28,19 @@ If bIsContinue = True Then
     End If
 Else
     'Do Nothing
+End If
+
+'*** フォルダ存在確認 ***
+If bIsContinue = True Then
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FolderExists( sCurDirPath ) Then
+        ' Do Nothing
+    Else
+        MsgBox "指定されたフォルダが存在しません。" & vbNewLine & sCurDirPath, vbOKOnly, sPROG_NAME
+        MsgBox "処理を中断します。", vbOKOnly, sPROG_NAME
+        WScript.Quit
+    End If
 End If
 
 '*** 拡張子選択 ***
