@@ -393,19 +393,13 @@ function tmr() { # TMux Restart
 }
 	complete -F _complete_tmr tmr # {{{
 	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
-function killall() {
-	#MAX=1
-	MAX=`jobs | wc -l`
-	#echo ${MAX}
-	JOBNOS=""
-	for NUM in `seq 1 ${MAX}`
+function killjobsall() {
+	jobidlist=$(jobs | cut -d] -f -1 | cut -d[ -f 2-)
+	for jobid in ${jobidlist}
 	do
-		JOBNOS="${JOBNOS} %${NUM}"
+		#echo ${jobid}
+		kill %${jobid}
 	done
-	if [ "${JOBNOS}" != "" ]; then
-		#echo ${JOBNOS}
-		kill ${JOBNOS}
-	fi
 }
 function cpd() {
 	if [ $# -ne 2 ]; then
