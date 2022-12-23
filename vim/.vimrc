@@ -1113,7 +1113,7 @@ endif
 	command! Cfp call CopyCurFilePath()
 	function! CopyCurFilePath()
 		let l:sCurFilePath = GetCurFilePath()
-		call CopyString(l:sCurFilePath)
+		call SetToClipboard(l:sCurFilePath)
 		echo "copy file path        : " . l:sCurFilePath
 	endfunction
 	
@@ -1129,28 +1129,28 @@ endif
 		let l:sPrjRootPath = substitute( l:sPrjRootPath, "\\", "/", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurFilePath, l:sPrjRootPath, "", "g" )
 		let l:sCurPrjRltvFilePath = substitute( l:sCurPrjRltvFilePath, "/", g:sSysPathDlmtr, "g" )
-		call CopyString(l:sCurPrjRltvFilePath)
+		call SetToClipboard(l:sCurPrjRltvFilePath)
 		echo "copy rltv file path   : " . l:sCurPrjRltvFilePath
 	endfunction
 	
 	command! Cdp call CopyCurDirPath()
 	function! CopyCurDirPath()
 		let l:sCurDirPath = GetCurDirPath()
-		call CopyString(l:sCurDirPath)
+		call SetToClipboard(l:sCurDirPath)
 		echo "copy directory path   : " . l:sCurDirPath
 	endfunction
 	
 	command! Cfn call CopyCurFileName()
 	function! CopyCurFileName()
 		let l:sCurFileName = GetCurFileName()
-		call CopyString(l:sCurFileName)
+		call SetToClipboard(l:sCurFileName)
 		echo "copy file name        : " . l:sCurFileName
 	endfunction
 	
 	command! Cfe call CopyCurFileExt()
 	function! CopyCurFileExt()
 		let l:sCurFileExt = GetCurFileExt()
-		call CopyString(l:sCurFileExt)
+		call SetToClipboard(l:sCurFileExt)
 		echo "copy file extention   : " . l:sCurFileExt
 	endfunction
 	
@@ -1161,14 +1161,14 @@ endif
 		let l:sPrgNoTmp = substitute( l:sPrgNoTmp, "^\/\\* ", "", "g" )
 		let l:sPrgNoTmp = substitute( l:sPrgNoTmp, " \\*\/$", "", "g" )
 		let l:sPrgNo = l:sPrgNoTmp
-		call CopyString(l:sPrgNo)
+		call SetToClipboard(l:sPrgNo)
 		echo "copy program no       : " . l:sPrgNo
 	endfunction
 	
 	command! Cln call CopyFileLineNo()
 	function! CopyFileLineNo()
 		let l:sLineNo = g:sSelRowsRng
-		call CopyString(l:sLineNo)
+		call SetToClipboard(l:sLineNo)
 		echo "copy line no          : " . l:sLineNo
 	endfunction
 	
@@ -1178,7 +1178,7 @@ endif
 		"let l:sLineNo = line(".")
 		let l:sLineNo = g:sSelRowsRng
 		let l:sFileLineNo = l:sCurFileName . "/" . l:sLineNo
-		call CopyString(l:sFileLineNo)
+		call SetToClipboard(l:sFileLineNo)
 		echo "copy fileext & line   : " . l:sFileLineNo
 	endfunction
 	
@@ -1197,7 +1197,7 @@ endif
 		"let l:sLineNo = line(".")
 		let l:sLineNo = g:sSelRowsRng
 		let l:sFileLineNo = l:sCurFileName . ":" . l:sLineNo
-		call CopyString(l:sFileLineNo)
+		call SetToClipboard(l:sFileLineNo)
 		echo "copy rfilepath & line : " . l:sFileLineNo
 	endfunction
 	
@@ -1226,12 +1226,21 @@ endif
 		endfor
 	"	echom l:lStartRow . " " . l:lEndRow
 		redraw
-		call CopyString(l:sCopyStr)
+		call SetToClipboard(l:sCopyStr)
 		exec "normal \<esc>"
 		"echo "copy line with lineno"
 	endfunction
 	
-	function! CopyString(sString)
+	function! GetFromClipboard()
+		if g:lCopy2UnnamedRegister == 1
+		"	let l:sClipbordStr = @* " * register
+			let l:sClipbordStr = @" " unnamed register
+		else
+			let l:sClipbordStr = @* " * register
+		endif
+		return l:sClipbordStr
+	endfunction
+	function! SetToClipboard(sString)
 		if has('unix')
 			call SendViaOSC52(a:sString)
 		else
