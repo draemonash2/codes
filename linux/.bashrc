@@ -694,6 +694,27 @@ function convunixtimetodate() {
 	fi
 	echo $1 | awk '{print strftime("%c",$1)}'
 }
+function aggregate() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : aggregate <file>"
+		return 1
+	fi
+	filename=$1
+	tmpfile=aggregated.tmp
+	cat ${filename} | sort -n > ${tmpfile}
+	
+	min=$(cat ${tmpfile} | head -1)
+	max=$(cat ${tmpfile} | tail -1)
+	mid=$(cat ${tmpfile} | awk '{v[i++]=$1;}END {x=int((i+1)/2); if(x<(i+1)/2) print (v[x-1]+v[x])/2; else print v[x-1];}')
+	avg=$(cat ${tmpfile} | awk '{x++;sum+=$1}END {print sum/x}')
+	stddev=$(awk '{ x[NR] = $1 } END{ if(NR == 0) exit; for(i in x){ sum_x += x[i]; } m_x = sum_x / NR; for(i in x){ sum_dx2 += ((x[i] - m_x) ^ 2); } print sqrt(sum_dx2 / NR); }' ${tmpfile})
+	
+#	echo "[filename] [min] [max] [mid] [avg] [stddev]"
+	echo "${filename} ${min} ${max} ${mid} ${avg} ${stddev}"
+	
+	rm -f ${tmpfile}
+}
 
 alias cp='cp -i'
 alias mv='mv -i'
