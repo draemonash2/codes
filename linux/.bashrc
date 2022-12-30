@@ -144,6 +144,7 @@ if ! shopt -oq posix; then
 fi
 
 HISTTIMEFORMAT='%F %T '
+export LANG=en_US.UTF8
 
 # for common
 function _is_tail_char_slash() {
