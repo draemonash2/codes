@@ -198,12 +198,16 @@ Return
 	Dim = 80
 	GoTo, DimHotKey
 #PgDn::							; 明度を下げる（不透明度を上げる）
-	Dim += 5
+; ★custum mod <TOP>
+	Dim += 10
+; ★custum mod <END>
 	If Dim > 80
 		Dim = 80
 	GoTo, DimHotKey
 #PgUp::							; 明度を上げる（不透明度を下げる）
-	Dim -= 5
+; ★custum mod <TOP>
+	Dim -= 10
+; ★custum mod <END>
 	If Dim < 0
 		Dim = 0
 	GoTo, DimHotKey

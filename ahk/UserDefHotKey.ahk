@@ -9,6 +9,7 @@
 	#WinActivateForce				; ウィンドウのアクティブ化時に、穏やかな方法を試みるのを省略して常に強制的な方法でアクティブ化を行う。（タスクバーアイコンが点滅する現象が起こらなくなる）
 
 	#Include %A_ScriptDir%\lib\IME.ahk
+	#Include %A_ScriptDir%\DimMonitor\DimMonitor.ahk
 
 ;* ***************************************************************
 ;* Settings
