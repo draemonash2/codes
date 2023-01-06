@@ -2,7 +2,7 @@
 ; https://sites.google.com/site/bucuerider/
 
 #NoEnv
-#SingleInstance
+#SingleInstance force
 
 Dim = 0
 DMPause = 0
@@ -199,14 +199,14 @@ Return
 	GoTo, DimHotKey
 #PgDn::							; 明度を下げる（不透明度を上げる）
 ; ★custum mod <TOP>
-	Dim += 10
+	Dim += 20
 ; ★custum mod <END>
 	If Dim > 80
 		Dim = 80
 	GoTo, DimHotKey
 #PgUp::							; 明度を上げる（不透明度を下げる）
 ; ★custum mod <TOP>
-	Dim -= 10
+	Dim -= 20
 ; ★custum mod <END>
 	If Dim < 0
 		Dim = 0
