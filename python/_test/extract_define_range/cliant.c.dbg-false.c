@@ -9,6 +9,7 @@
 #define MOD_IF (1)
 #define MOD_IFDEF (1)
 #define MOD_IFNDEF (1)
+#define MOD_IFDEFIFNDEF (1)
 
 const char* IN_VEC_PATH_BASE = "testdata/input_test_vec";
 const char* RECV_FILE_PATH_BASE = "testdata/recv_data";
@@ -121,9 +122,15 @@ char writeRecvDataFile(
 {
 	FILE *fp;
 	char ch;
+#ifdef MOD_IFDEFIFNDEF
+#else /* MOD_IFDEFIFNDEF */
 	char* p = (char*)recv_str;
+#endif /* MOD_IFDEFIFNDEF */
 	char recvvecpath[50];
+#ifndef MOD_IFDEFIFNDEF
+#else /* !MOD_IFDEFIFNDEF */
 	char recv_words[RECV_WORDS_NUM][100];
+#endif /* !MOD_IFDEFIFNDEF */
 	
 	/* open recvdatafile */
 #ifndef MOD_IFNDEF

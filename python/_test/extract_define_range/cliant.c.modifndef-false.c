@@ -9,6 +9,7 @@
 #define DBG (1)
 #define MOD_IF (1)
 #define MOD_IFDEF (1)
+#define MOD_IFDEFIFNDEF (1)
 
 const char* IN_VEC_PATH_BASE = "testdata/input_test_vec";
 const char* RECV_FILE_PATH_BASE = "testdata/recv_data";
@@ -125,12 +126,18 @@ char writeRecvDataFile(
 {
 	FILE *fp;
 	char ch;
+#ifdef MOD_IFDEFIFNDEF
+#else /* MOD_IFDEFIFNDEF */
 	char* p = (char*)recv_str;
+#endif /* MOD_IFDEFIFNDEF */
 	char recvvecpath[50];
+#ifndef MOD_IFDEFIFNDEF
+#else /* !MOD_IFDEFIFNDEF */
 	char recv_words[RECV_WORDS_NUM][100];
+#endif /* !MOD_IFDEFIFNDEF */
 	
 	/* open recvdatafile */
-	*p = '\0';
+	p--;
 	sprintf(recvvecpath, "%s%d" , RECV_FILE_PATH_BASE, fileidx);
 	fp = fopen(recvvecpath , "w");
 	if (fp == NULL) {
@@ -138,7 +145,6 @@ char writeRecvDataFile(
 	}
 	
 	/* split receive messages with delimiter */
-	memset(recv_words, '\0', sizeof(recv_words));
 	for ( int wordsidx = 0; wordsidx < RECV_WORDS_NUM; wordsidx++ )
 	{
 		int charidx = 0;
@@ -150,11 +156,15 @@ char writeRecvDataFile(
 			} else {
 				recv_words[wordsidx][charidx] = *p;
 				charidx++;
+				p++;
 			}
 		};
 	}
 	
 	/* output receive messages to recvdatafile */
+	fprintf(fp, "%s,%s\n", recv_words[0], recv_words[1]);
+	fprintf(fp, "%s,%s\n", recv_words[2], recv_words[3]);
+	fprintf(fp, "%s\n", recv_words[4]);
 	
 	/* close recvdatafile */
 	fclose(fp);

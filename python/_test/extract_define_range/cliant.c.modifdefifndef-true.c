@@ -6,10 +6,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#define DBG (1)
 #define MOD_IF (1)
 #define MOD_IFDEF (1)
 #define MOD_IFNDEF (1)
-#define MOD_IFDEFIFNDEF (1)
 
 const char* IN_VEC_PATH_BASE = "testdata/input_test_vec";
 const char* RECV_FILE_PATH_BASE = "testdata/recv_data";
@@ -25,7 +25,10 @@ char communicateTcp(
 	char* recv_str
 )
 {
+#if DBG
 	printf("communicateTcp() called\n");
+#else /* DBG */
+#endif /* DBG */
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sockfd < 0) {
 		printf("Error socket\n");
@@ -123,15 +126,8 @@ char writeRecvDataFile(
 {
 	FILE *fp;
 	char ch;
-#ifdef MOD_IFDEFIFNDEF
-#else /* MOD_IFDEFIFNDEF */
-	char* p = (char*)recv_str;
-#endif /* MOD_IFDEFIFNDEF */
 	char recvvecpath[50];
-#ifndef MOD_IFDEFIFNDEF
-#else /* !MOD_IFDEFIFNDEF */
 	char recv_words[RECV_WORDS_NUM][100];
-#endif /* !MOD_IFDEFIFNDEF */
 	
 	/* open recvdatafile */
 #ifndef MOD_IFNDEF

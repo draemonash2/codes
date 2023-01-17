@@ -14,6 +14,8 @@ exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifdef-
 exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifdef-false.c MOD_IFDEF false
 exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifndef-true.c MOD_IFNDEF true
 exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifndef-false.c MOD_IFNDEF false
+exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifdefifndef-true.c MOD_IFDEFIFNDEF true
+exectest python3 ../../extract_define_range.py cliant.c.org.c cliant.c.modifdefifndef-false.c MOD_IFDEFIFNDEF false
 
 \cp -f cliant.c.org.c cliant.c
 exectest python3 ../../extract_define_range.py cliant.c cliant.c MOD_IF false

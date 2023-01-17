@@ -20,9 +20,9 @@
 #           #endif /* AAA */  #del
 #
 #           #ifndef AAA       #del
-#              true side      #remain
+#              true side      #del
 #           #else /* !AAA */  #del
-#              false side     #del
+#              false side     #remain
 #           #endif /* !AAA */ #del
 
 import re
@@ -97,9 +97,9 @@ def main():
                 iftype = "IFDEF"
             elif matchresult_ifndef:
                 if remain_target_side == 'true':
-                    is_remain = True
-                else:
                     is_remain = False
+                else:
+                    is_remain = True
                 match_timing = True
                 remove_executed = True
                 iftype = "IFNDEF"
@@ -125,9 +125,9 @@ def main():
                     return 0
                 
                 if remain_target_side == 'true':
-                    is_remain = False
-                else:
                     is_remain = True
+                else:
+                    is_remain = False
                 match_timing = True
                 remove_executed = True
                 iftype = ""
