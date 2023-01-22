@@ -264,7 +264,7 @@ function vimdiffdir() {
 	diff -rq ${dir1} ${dir2}
 	echo ''
 	echo '***** vimdiff (only files with differences) *****'
-	difflist=(`diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
+	difflist=(`LANG=C; diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
 	for diffline in "${difflist[@]}"
 	do
 		file1=${diffline%:::::*}

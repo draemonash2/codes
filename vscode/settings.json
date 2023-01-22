@@ -1,0 +1,7 @@
+{
+    "C_Cpp.updateChannel": "Insiders",
+    "workbench.iconTheme": "vscode-icons",
+    "editor.stickyScroll.enabled": true,
+    "vsicons.dontShowNewVersionMessage": true,
+    "files.autoSave": "afterDelay"
+}

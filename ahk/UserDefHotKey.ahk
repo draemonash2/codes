@@ -24,6 +24,7 @@ global iWIN_TILE_MODE_OFFSET := 0
 ;* Define variables
 ;* ***************************************************************
 global giWinTileMode := 0
+global DimOld := 0
 
 ;* ***************************************************************
 ;* Timer
@@ -155,8 +156,17 @@ global giWinTileMode := 0
 			return
 	;rapture.exe
 		^+!x::
+			; 明るさを最大にする
+			DimOld := Dim
+			Dim := 0
+			GoSub, LoopMonitor
+			; Rapture 起動
 			EnvGet, sExePath, MYEXEPATH_RAPTURE
 			StartProgramAndActivateExe( sExePath )
+			; 明るさを元に戻す
+			Sleep 5000
+			Dim := DimOld
+			GoSub, LoopMonitor
 			return
 	/*
 	;xf.exe
