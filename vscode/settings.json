@@ -3,5 +3,13 @@
     "workbench.iconTheme": "vscode-icons",
     "editor.stickyScroll.enabled": true,
     "vsicons.dontShowNewVersionMessage": true,
-    "files.autoSave": "afterDelay"
+    "editor.fontSize": 12,
+    "editor.renderWhitespace": "all",
+    "editor.minimap.showSlider": "always",
+    "editor.minimap.renderCharacters": false,
+    "editor.copyWithSyntaxHighlighting": false,
+    "editor.dragAndDrop": false,
+    "search.showLineNumbers": true,
+    "terminal.integrated.confirmOnExit": "always",
+    "terminal.integrated.copyOnSelection": true
 }
