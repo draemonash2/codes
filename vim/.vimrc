@@ -305,6 +305,7 @@ endif
 	noremap		<silent>			<c-j>		10jzz|											" カーソル移動＋画面移動（下）
 	noremap		<silent>			<c-k>		10kzz|											" カーソル移動＋画面移動（上）
 	noremap		<silent>			<c-h>		10zh10h|										" カーソル移動＋画面移動（左）
+	noremap		<silent>			<bs>		10zh10h|										" カーソル移動＋画面移動（左） for tmux
 	noremap		<silent>			<c-l>		10zl10l|										" カーソル移動＋画面移動（右）
 
 "=== ノーマルモード ===
