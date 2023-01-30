@@ -142,12 +142,6 @@ global DimOld := 0
 			sFilePath = %sDirPath%\vbs\tools\win\other\KitchenTimer.vbs
 			StartProgramAndActivateFile( sFilePath )
 			return
-	;SCPデータ取得
-		^+!g::
-			EnvGet, sDirPath, MYDIRPATH_CODES
-			sFilePath = %sDirPath%\bat\tools\file_ope\FetchScpFromRemote.bat
-			StartProgramAndActivateFile( sFilePath )
-			return
 	;定期キー送信
 		^+!t::
 			EnvGet, sDirPath, MYDIRPATH_CODES
