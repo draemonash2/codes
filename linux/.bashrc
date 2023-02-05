@@ -399,7 +399,8 @@ function killjobsall() {
 	for jobid in ${jobidlist}
 	do
 		#echo ${jobid}
-		kill %${jobid}
+		kill -9 %${jobid}
+		wait %${jobid} 2>/dev/null
 	done
 }
 function cpd() {
