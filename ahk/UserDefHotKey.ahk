@@ -608,9 +608,10 @@ global DimOld := 0
 		}
 		sExeName := ExtractFileName(sExePath)
 		sExeDirPath := ExtractDirPath(sExePath)
+		sFileName := ExtractFileName(sFilePath)
 		;MsgBox sExePath=%sExePath% `n sExeName=%sExeName% `n sExeDirPath=%sExeDirPath% `n sFilePath=%sFilePath%
 		
-		;*** start program ***
+		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == 1 ) {
 			Process, Exist, % sExeName
 			If ErrorLevel<>0
@@ -620,13 +621,24 @@ global DimOld := 0
 			}
 		}
 		
-		Try {
-			Run, %sExePath% %sFilePath%, %sExeDirPath%, , sOutputVarPID
-		;	MsgBox, 0x1000, , %sOutputVarPID%
-		} Catch errorno {
-			MsgBox, [error] run error : %errorno%
+		;*** start program ***
+		Loop, 10
+		{
+			Try {
+				Run, %sExePath% %sFilePath%, %sExeDirPath%, , sOutputVarPID
+			;	MsgBox, 0x1000, , %sOutputVarPID%
+			} Catch errorno {
+				MsgBox, [error] run error : %errorno%
+				break
+			}
+			sleep 1000
+			WinGetActiveTitle, Title
+		;	MsgBox, The active window is "%Title%".
+			IfInString, Title, %sFileName%
+			{
+				break
+			}
 		}
-		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
@@ -649,13 +661,23 @@ global DimOld := 0
 		;MsgBox sFilePath=%sFilePath% `n sFileName=%sFileName%
 		
 		;*** start program ***
-		Try {
-			Run, %sFilePath%, , , sOutputVarPID
-		;	MsgBox, 0x1000, , %sOutputVarPID%
-		} Catch errorno {
-			MsgBox, [error] run error : %errorno%
+		Loop, 10
+		{
+			Try {
+				Run, %sFilePath%, , , sOutputVarPID
+			;	MsgBox, 0x1000, , %sOutputVarPID%
+			} Catch errorno {
+				MsgBox, [error] run error : %errorno%
+				break
+			}
+			sleep 1000
+			WinGetActiveTitle, Title
+		;	MsgBox, The active window is "%Title%".
+			IfInString, Title, %sFileName%
+			{
+				break
+			}
 		}
-		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
@@ -673,7 +695,7 @@ global DimOld := 0
 		sExeDirPath := ExtractDirPath(sExePath)
 		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName%
 		
-		;*** start program ***
+		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == 1 ) {
 			Process, Exist, % sExeName
 			If ErrorLevel<>0
@@ -683,6 +705,7 @@ global DimOld := 0
 			}
 		}
 		
+		;*** start program ***
 		Try {
 			Run, %sExePath%, %sExeDirPath%, , sOutputVarPID
 		;	MsgBox, 0x1000, , %sOutputVarPID%
