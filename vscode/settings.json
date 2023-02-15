@@ -11,5 +11,7 @@
     "editor.dragAndDrop": false,
     "search.showLineNumbers": true,
     "terminal.integrated.confirmOnExit": "always",
-    "terminal.integrated.copyOnSelection": true
+    "terminal.integrated.copyOnSelection": true,
+    "vim.vimrc.enable": true,
+    "vim.vimrc.path": "C:\\\\codes\\\\vscode\\\\.vimrc"
 }
