@@ -1,13 +1,16 @@
-﻿;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
-	#Warn							; Enable warnings to assist with detecting common errors.
+﻿;	https://www.autohotkey.com/docs/v2/index.htm
+
+;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
+	#Warn All						; Enable warnings to assist with detecting common errors.
 	#SingleInstance force			; このスクリプトが再度呼び出されたらリロードして置き換え
 	#WinActivateForce				; ウィンドウのアクティブ化時に、穏やかな方法を試みるのを省略して常に強制的な方法でアクティブ化を行う。（タスクバーアイコンが点滅する現象が起こらなくなる）
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 
+
 ;* ***************************************************************
 ;* Settings
 ;* ***************************************************************
-DOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
+global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global iWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
 global iWIN_TILE_MODE_MAX := 3
 global iWIN_Y_OFFSET := 2/7
@@ -18,21 +21,14 @@ global bEnableAlwaysOnTop := 0
 ;* Define variables
 ;* ***************************************************************
 global giWinTileMode := 0
-global DimOld := 0
 global Dim := 0
 global DimId := 0
 
 ;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
-; TODO
-;	SetTimer ClearWinTileMode, %iWIN_TILE_MODE_CLEAR_INTERVAL%
-;		Return
-;	ClearWinTileMode:
-;		giWinTileMode := iWIN_TILE_MODE_MAX
-;	;	TrayTip, タイマーClearWinTileMode実行, giWinTileMode = %giWinTileMode%, 1, 17
-;		Return
-
+SetTimerWinTileMode()
+TraySetIcon "UserDefHotKey2.ico"
 DimMon_GenFilter()
 
 ;* ***************************************************************
@@ -46,166 +42,169 @@ DimMon_GenFilter()
 ;* ***************************************************************
 
 ;***** キー置き換え *****
-; TODO
-;	;無変換キー＋方向キーでPgUp,PgDn,Home,End
-;		vk1Dsc07B::vk1Dsc07B
-;		vk1Dsc07B & Right::	MuhenkanSimultPush( "End" )
-;		vk1Dsc07B & Left::	MuhenkanSimultPush( "Home" )
-;		vk1Dsc07B & Up::	MuhenkanSimultPush( "PgUp" )
-;		vk1Dsc07B & Down::	MuhenkanSimultPush( "PgDn" )
-;	;Insertキー
-;		Insert::Return
-;	;PrintScreenキー
-;		PrintScreen::return
+	;無変換キー＋方向キーでPgUp,PgDn,Home,End
+		VK1D::VK1D
+		VK1D & Right::	MuhenkanSimultPush( "End" )
+		VK1D & Left::	MuhenkanSimultPush( "Home" )
+		VK1D & Up::		MuhenkanSimultPush( "PgUp" )
+		VK1D & Down::	MuhenkanSimultPush( "PgDn" )
+	;Insertキー
+		Insert::Return
+	;PrintScreenキー
+		PrintScreen::return
 
 ;***** ホットキー(Global) *****
+	;スクリプトリロード
+		^+!F5::
+		{
+			Reload
+			Sleep 1000 ; If successful, the reload will close this instance during the Sleep, so the line below will never be reached.
+			Result := MsgBox("The script could not be reloaded. Would you like to open it for editing?",, 4)
+			if Result = "Yes"
+				Edit
+		}
 	;UserDefHotKey.ahk
 		^+!a::
 		{
 			sExePath := EnvGet("MYEXEPATH_GVIM")
 			sFilePath := A_ScriptFullPath
-			Run sExePath . " " . sFilePath
+			StartProgramAndActivate( sExePath, sFilePath )
 		}
 	;ホットキー配置表示
 		!^+F1::
 		{
 			sFilePath := "C:\other\グローバルホットキー配置.vsdx"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;Programsフォルダ表示
 		!^+F12::
 		{
 			sFilePath := "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 			Sleep 100
 			Send "+{tab}"
 		}
 	;#todo.itmz
 		^+!Up::
 		{
-			sFilePath := DOC_DIR_PATH . "\#todo.itmz"
+			sFilePath := gsDOC_DIR_PATH . "\#todo.itmz"
 		;	lPID := ProcessWait("Dropbox.exe", 30) ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;#temp.txt
 		^+!Down::
-		{
-			sFilePath := "C:\Users\draem\Dropbox\100_Documents\#temp.txt"
-			Run sFilePath
-		}
 		^+!Space::
 		{
 			sFilePath := "C:\Users\draem\Dropbox\100_Documents\#temp.txt"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;#temp.xlsm
 		^+!Right::
 		{
-			sFilePath := DOC_DIR_PATH . "\#temp.xlsm"
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH . "\#temp.xlsm"
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;#temp.vsdm
 		^+!Left::
 		{
-			sFilePath := DOC_DIR_PATH . "\#temp.vsdm"
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH . "\#temp.vsdm"
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;予算管理.xlsm
 		^+!\::
 		{
-			sFilePath := DOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm"
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm"
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;予算管理＠家族用.xlsx
 		^+!^::
 		{
-			sFilePath := DOC_DIR_PATH . "\..\000_Public\家計\予算管理＠家族用.xlsx"
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH . "\..\000_Public\家計\予算管理＠家族用.xlsx"
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;言語チートシート
 		^+!c::
 		{
 			sFilePath := "C:\other\言語チートシート.xlsx"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;ショートカットキー
 		^+!s::
 		{
 			sFilePath := "C:\other\ショートカットキー一覧.xlsx"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;#object.xlsm
 		^+!o::
 		{
 			sFilePath := "C:\other\template\#object.xlsm"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;用語集
 		^+!/::
 		{
-			sFilePath := DOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz"
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz"
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;codes同期
 		^+!y::
 		{
 			sDirPath := EnvGet("MYDIRPATH_CODES")
 			sFilePath := sDirPath . "\_sync_github-codes-remote.bat"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;KitchenTimer.vbs
 		^+!k::
 		{
 			sDirPath := EnvGet("MYDIRPATH_CODES")
 			sFilePath := sDirPath . "\vbs\tools\win\other\KitchenTimer.vbs"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;定期キー送信
 		^+!t::
 		{
 			sDirPath := EnvGet("MYDIRPATH_CODES")
 			sFilePath := sDirPath . "\vbs\tools\win\other\PeriodicKeyTransmission.bat"
-			Run sFilePath
+			StartProgramAndActivateFile( sFilePath )
 		}
 	;rapture.exe
 		^+!x::
 		{
-			; TODO
-;			; 明るさを最大にする
-;			DimOld := Dim
-;			Dim := 0
-;			GoSub, LoopMonitor
+			static DimOld := 0
+			global Dim
+			; 明るさを最大にする
+			DimOld := Dim
+			Dim := 0
+			DimMon_LoopMonitor()
 			; Rapture 起動
 			sExePath := EnvGet("MYEXEPATH_RAPTURE")
-			Run sExePath
-;			; 明るさを元に戻す
-;			Sleep 5000
-;			Dim := DimOld
-;			GoSub, LoopMonitor
+			StartProgramAndActivateExe( sExePath )
+			; 明るさを元に戻す
+			Sleep 5000
+			Dim := DimOld
+			DimMon_LoopMonitor()
 		}
 	;xf.exe
 	/*
 		^+!z::
 		{
 			sExePath := EnvGet("MYEXEPATH_XF")
-			Run sExePath ; TODO: single instance
-			
+			StartProgramAndActivateExe( sExePath, 1 )
 		}
 	*/
-	;DOC_DIR_PATHフォルダ表示
+	;gsDOC_DIR_PATHフォルダ表示
 		!^+z::
 		{
-			sFilePath := DOC_DIR_PATH
-			Run sFilePath
+			sFilePath := gsDOC_DIR_PATH
+			StartProgramAndActivateFile( sFilePath )
 			Sleep 100
 			Send "+{tab}"
 		}
 	;cCalc.exe
 		^+!;::
 		{
-			; TODO: Path to cCalc.dat
 			sExePath := EnvGet("MYEXEPATH_CALC")
-			Run sExePath ; TODO: single instance
+			StartProgramAndActivateExe( sExePath, 1 )
 		}
 	;Github.io
 		^+!1::Run "https://draemonash2.github.io/"
@@ -219,10 +218,10 @@ DimMon_GenFilter()
 		}
 	;Wifi接続(Bluetoothテザリング起動)
 		/*
-		; TODO: test
 		^+!w::
 		{
 			Run, control printers
+			
 			Sleep 2000
 			Send "myp"
 			Sleep 300
@@ -236,7 +235,6 @@ DimMon_GenFilter()
 		*/
 	;Wifi接続(Wifiテザリング)
 		/*
-		; TODO: test
 		^+!w::
 		{
 			sDirPath := EnvGet("MYDIRPATH_CODES")
@@ -263,11 +261,13 @@ DimMon_GenFilter()
 	;Windowタイル切り替え
 		!#LEFT::
 		{
+			SetTimerWinTileMode()
 			IncrementWinTileMode()
 			ApplyWinTileMode()
 		}
 		!#RIGHT::
 		{
+			SetTimerWinTileMode()
 			DecrementWinTileMode()
 			ApplyWinTileMode()
 		}
@@ -308,9 +308,7 @@ DimMon_GenFilter()
 		#PgDn::							; 明度を下げる（不透明度を上げる）
 		{
 			global Dim
-		; ★custum mod <TOP>
 			Dim += 20
-		; ★custum mod <END>
 			if (Dim > 80)
 				Dim := 80
 			DimMon_HotKey()
@@ -319,9 +317,7 @@ DimMon_GenFilter()
 		#PgUp::							; 明度を上げる（不透明度を下げる）
 		{
 			global Dim
-		; ★custum mod <TOP>
 			Dim -= 20
-		; ★custum mod <END>
 			if (Dim < 0)
 				Dim := 0
 			DimMon_HotKey()
@@ -363,9 +359,7 @@ DimMon_GenFilter()
 		
 		^1::
 		{
-			sFilePath := "C:\Users\draem\Dropbox\100_Documents\#temp.txt"
-			sRet := ExtractDirPath(sFilePath)
-			MsgBox sRet
+			KeyHistory
 		}
 
 ;***** ホットキー(Software local) *****
@@ -374,7 +368,211 @@ DimMon_GenFilter()
 	#HotIf
 	
 	#HotIf WinActive("ahk_exe explorer.exe")
-	; TODO:
+		^+c::	; ファイルパスコピー
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(0)
+			A_Clipboard := ""
+			A_Clipboard := sTrgtPaths
+			ClipWait
+			;FocusFileDirListAtExplorer()
+		}
+		^+d::	; ファイル名コピー
+		{
+			sTrgtNames := GetSelFileNameAtExplorer()
+			A_Clipboard := ""
+			A_Clipboard := sTrgtNames
+			ClipWait
+			;FocusFileDirListAtExplorer()
+		}
+		+F1::	; winmergeで開く
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sDirPath := EnvGet("MYDIRPATH_CODES")
+			Run sDirPath . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . sTrgtPaths
+		}
+		+F2::	; vimで開く
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sExePath := EnvGet("MYEXEPATH_GVIM")
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+		}
+		+F3::	; VSCodeで開く
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sExePath := EnvGet("MYEXEPATH_VSCODE")
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+		}
+		+F4::	; 秀丸で開く
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sExePath := EnvGet("MYEXEPATH_HIDEMARU")
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+		}
+		+F5::	; EXCELで開く
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sExePath := EnvGet("MYEXEPATH_EXCEL")
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+		}
+		+F9::	; 作業ファイルとしてコピー
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sDirPath := EnvGet("MYDIRPATH_CODES")
+			RunWait sDirPath . "\vbs\tools\win\file_ope\CopyAsWorkFile.vbs " . sTrgtPaths
+			;FocusFileDirListAtExplorer()
+		}
+		^+g::	; Grep検索＠TresGrep
+		{
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			sExePath := EnvGet("MYEXEPATH_TRESGREP")
+			Run sExePath . " " . sTrgtPaths
+		}
+		^+z::	; 圧縮/パスワード圧縮/解凍
+		{
+			global myGui
+			global ogcListBoxAnswer
+			myGui := Gui()
+			myGui.OnEvent("Close", GuiEscape)
+			myGui.OnEvent("Escape", GuiEscape)
+			myGui.Add("Text", , "圧縮/パスワード圧縮/解凍を実行します。`n処理を選択してください。")
+			ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R3", ["圧縮", "パスワード圧縮", "解凍"])
+			ogcButtonZipEnter := myGui.Add("Button", "Hidden w0 h0 Default", "ZipEnter")
+			ogcButtonZipEnter.OnEvent("Click", ButtonZipEnter.Bind("Normal"))
+			myGui.Show("Center")
+		}
+			ButtonZipEnter(A_GuiEvent, GuiCtrlObj, Info, *)
+			{
+				global myGui
+				global ogcListBoxAnswer
+				vAnswer := ogcListBoxAnswer.Text
+				;MsgBox %vAnswer%
+				myGui.Destroy()
+				sTrgtPaths := GetSelFilePathAtExplorer(1)
+				sDirPath := EnvGet("MYDIRPATH_CODES")
+				If ( vAnswer == "圧縮" ) {
+					RunWait(sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths)
+				} Else If ( vAnswer == "パスワード圧縮" ) {
+					RunWait(sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths)
+				} Else If ( vAnswer == "解凍" ) {
+					RunWait(sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths)
+				} Else {
+					MsgBox("`"[ERROR] 圧縮/パスワード圧縮/解凍 選択`"")
+				}
+				;FocusFileDirListAtExplorer()
+				return
+			}
+		^s::	; ファイル作成
+		{
+			IB := InputBox("テキストファイルを作成します。`n処理を選択してください。", "", , ".txt"), sFileName := IB.Value, ErrorLevel := IB.Result="OK" ? 0 : IB.Result="CANCEL" ? 1 : IB.Result="Timeout" ? 2 : "ERROR"
+			sDirPath := GetCurDirPathAtExplorer()
+			Sleep(500)	; explorerのファイル選択ペインへの遷移待ち処理
+			RunWait(A_ComSpec " /c copy nul " sFileName, sDirPath)
+			;FocusFileDirListAtExplorer()
+		}
+		^+l::	; ショートカット/シンボリックリンク作成
+		{
+			global myGui
+			global ogcListBoxAnswer
+			myGui := Gui()
+			myGui.Add("Text", , "ショートカット/シンボリックリンクを作成します。`n処理を選択してください。")
+			ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R2", ["ショートカット作成", "シンボリックリンク作成"])
+			ogcButtonSelLinkEnter := myGui.Add("Button", "Hidden w0 h0 Default", "SelLinkEnter")
+			ogcButtonSelLinkEnter.OnEvent("Click", ButtonSelLinkEnter.Bind("Normal"))
+			myGui.Show("Center")
+		}
+			ButtonSelLinkEnter(A_GuiEvent, GuiCtrlObj, Info, *)
+			{
+				global myGui
+				global ogcListBoxAnswer
+				vAnswer := ogcListBoxAnswer.Text
+				myGui.Destroy()
+				sTrgtPaths := GetSelFilePathAtExplorer(1)
+				sDirPath := EnvGet("MYDIRPATH_CODES")
+				If ( vAnswer == "ショートカット作成" ) {
+					RunWait(sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths)
+				} Else If ( vAnswer == "シンボリックリンク作成" ) {
+					RunWait(sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths)
+				} Else {
+					MsgBox("`"[ERROR] ショートカット/シンボリックリンク作成`"")
+				}
+				;FocusFileDirListAtExplorer()
+				return
+			}
+		^+r::	; リネーム用バッチファイル作成
+		{
+			sTrgtPaths := GetSelFilePathAtExplorer(1)
+			sDirPath := EnvGet("MYDIRPATH_CODES")
+			RunWait(sDirPath . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . sTrgtPaths)
+			;FocusFileDirListAtExplorer()
+			return
+		}
+		^+F3::	; 隠しファイル 表示非表示切替え
+		{
+			Send("!vhh")
+			;FocusFileDirListAtExplorer()
+		}
+		^+F4::	; フォルダサイズ解析＠DiskInfo
+		{
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			sExePath := EnvGet("MYEXEPATH_DISKINFO3")
+			StartProgramAndActivate( sExePath, sTrgtPaths )
+		}
+		^+F8::	; タグファイルを作成する
+		{
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			sDirPath := EnvGet("MYDIRPATH_CODES")
+			RunWait(sDirPath . "\vbs\tools\ctags,gtags\CreateTagFiles.vbs " . sTrgtPaths)
+			;FocusFileDirListAtExplorer()
+		}
+		^+F9::	; 配下全てをVimで開く
+		{
+			sTrgtPaths := GetCurDirPathAtExplorer()
+			sDirPath := EnvGet("MYDIRPATH_CODES")
+			Run(sDirPath . "\vbs\tools\vim\OpenAllFilesWithVim.vbs " . sTrgtPaths)
+		}
+		^+F10::	; コマンドプロンプトを開く
+		{
+			sDirPath := GetCurDirPathAtExplorer()
+			Run(A_ComSpec " /k cd " sDirPath)
+		}
+		^+F11::	; パス一覧作成
+		{
+			global myGui
+			global ogcListBoxAnswer
+			myGui := Gui()
+			myGui.Add("Text", , "パス一覧を作成します。`n処理を選択してください。")
+			ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R4", ["ファイル＆フォルダ一覧作成", "ファイル一覧作成", "フォルダ一覧作成", "フォルダツリー作成"])
+			ogcButtonPathListEnter := myGui.Add("Button", "Hidden w0 h0 Default", "PathListEnter")
+			ogcButtonPathListEnter.OnEvent("Click", ButtonPathListEnter.Bind("Normal"))
+			myGui.Show("Center")
+		}
+			ButtonPathListEnter(A_GuiEvent, GuiCtrlObj, Info, *)
+			{
+				global myGui
+				global ogcListBoxAnswer
+				vAnswer := ogcListBoxAnswer.Text
+				myGui.Destroy()
+				sDirPath := GetCurDirPathAtExplorer()
+				If ( vAnswer == "ファイル＆フォルダ一覧作成" ) {
+					RunWait(A_ComSpec " /c dir /s /b /a > `"" sDirPath "\_PathList_FileDir.txt`"", sDirPath)
+				} Else If ( vAnswer == "ファイル一覧作成" ) {
+					RunWait(A_ComSpec " /c dir *.* /b /s /a:a-d > `"" sDirPath "\_PathList_File.txt`"", sDirPath)
+				} Else If ( vAnswer == "フォルダ一覧作成" ) {
+					RunWait(A_ComSpec " /c dir /b /s /a:d > `"" sDirPath "\_PathList_Dir.txt`"", sDirPath)
+				} Else If ( vAnswer == "フォルダツリー作成" ) {
+					RunWait(A_ComSpec " /c tree /f > `"" sDirPath "\_DirTree.txt`"", sDirPath)
+				} Else {
+					MsgBox("`"[ERROR] パス一覧作成`"")
+				}
+				;FocusFileDirListAtExplorer()
+			}
+		
+		GuiEscape(*) {
+		}
+	;	GuiClose:
+	;	ButtonCancel:
+	;		myGui.Cancel()
+	;		Return
 	#HotIf
 	
 	#HotIf WinActive("ahk_exe EXCEL.EXE")
@@ -428,6 +626,123 @@ DimMon_GenFilter()
 ;* ***************************************************************
 ;* Functions
 ;* ***************************************************************
+	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=0 )
+	{
+		;*** preprocess ***
+		If ( sExePath == "" or sFilePath == "" )
+		{
+			MsgBox "[ERROR] please specify arguments to StartProgramAndActivate()."
+			return
+		}
+		sExeName := ExtractFileName(sExePath)
+		sExeDirPath := ExtractDirPath(sExePath)
+		sFileName := ExtractFileName(sFilePath)
+		;MsgBox sExePath=%sExePath% `n sExeName=%sExeName% `n sExeDirPath=%sExeDirPath% `n sFilePath=%sFilePath%
+		
+		;*** check if the program is running ***
+		If ( bLaunchSingleProcess == 1 ) {
+			PID := ProcessExist(sExeName)
+			If (PID == 0)
+			{
+				WinActivate "ahk_pid " . PID
+				return
+			}
+		}
+		
+		;*** start program ***
+		Try {
+			Run sExePath . " " . sFilePath, sExeDirPath, , &sOutputVarPID
+		} Catch Error {
+			MsgBox "[error] run error : " . Error
+		}
+	;	WinActivate "ahk_pid " . sOutputVarPID
+		return
+	}
+	
+	; 起動＆アクティベート処理 (ファイルパス指定のみ)
+	;
+	; 備考：
+	;   ・単一プロセス起動は指定不可。
+	;       理由）単一プロセス起動は、プログラム名を基にしたプロセスの起動有無を
+	;             確認することで実現できる。本関数はプログラム名を指定しないため、
+	;             単一プロセス起動を実現できない。
+	StartProgramAndActivateFile( sFilePath )
+	{
+		;*** preprocess ***
+		If ( sFilePath == "" )
+		{
+			MsgBox "[ERROR] please specify arguments to StartProgramAndActivateFile()."
+			return
+		}
+		sFileName := ExtractFileName(sFilePath)
+		;MsgBox sFilePath=%sFilePath% `n sFileName=%sFileName%
+		
+		;*** start program ***
+		Try {
+			Run sFilePath, , , &sOutputVarPID
+		} Catch Error {
+			MsgBox "[error] run error : " . Error
+		}
+	;	WinActivate "ahk_pid " . sOutputVarPID
+		return
+	}
+	
+	; 起動＆アクティベート処理 (実行プログラム指定のみ)
+	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=0 )
+	{
+		;*** preprocess ***
+		If ( sExePath == "" )
+		{
+			MsgBox "[ERROR] please specify arguments to StartProgramAndActivateExe()."
+			return
+		}
+		
+		sExeName := ExtractFileName(sExePath)
+		sExeDirPath := ExtractDirPath(sExePath)
+		;MsgBox sExePath=%sExePath% `n sExeDirPath=%sExeDirPath% `n sExeName=%sExeName%
+		
+		;*** check if the program is running ***
+		If ( bLaunchSingleProcess == 1 ) {
+			PID := ProcessExist(sExeName)
+			If (PID != 0)
+			{
+				WinActivate "ahk_pid " . PID
+				return
+			}
+		}
+		
+		;*** start program ***
+		Try {
+			Run sExePath, sExeDirPath, , &sOutputVarPID
+		} Catch Error {
+			MsgBox "[error] run error : " . Error
+		}
+	;	WinActivate "ahk_pid " . sOutputVarPID
+		return
+	}
+
+	; 無変換キー同時押し実装
+	MuhenkanSimultPush( sSendKey )
+	{
+		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
+			Send "!^+{" . sSendKey . "}"
+		} else if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P")){
+			Send "^+{" . sSendKey . "}"
+		} else if(GetKeyState("Shift","P") and GetKeyState("Alt","P")){
+			Send "!+{" . sSendKey . "}"
+		} else if(GetKeyState("Alt","P") and GetKeyState("Ctrl","P")){
+			Send "!^{" . sSendKey . "}"
+		} else if(GetKeyState("Alt","P")){
+			Send "!{" . sSendKey . "}"
+		} else if(GetKeyState("Ctrl","P")){
+			Send "^{" . sSendKey . "}"
+		} else if(GetKeyState("Shift","P")){
+			Send "+{" . sSendKey . "}"
+		} else {
+			Send "{" . sSendKey . "}"
+		}
+		return
+	}
 
 	;Windowタイル切り替え
 	GetWinTileModeMin()
@@ -532,6 +847,19 @@ DimMon_GenFilter()
 		WinMove winx, winy, winwidth, winheight, "A"
 		return
 	}
+	SetTimerWinTileMode()
+	{
+		SetTimer ClearWinTileMode, iWIN_TILE_MODE_CLEAR_INTERVAL
+	}
+	ClearWinTileMode()
+	{
+		global giWinTileMode
+		giWinTileMode := iWIN_TILE_MODE_MAX
+	;	TrayTip "タイルモードをクリアしました", "タイルモードクリアタイマー", 1
+	;	Sleep 5000
+	;	TrayTip
+		Return
+	}
 
 	; ファイル名取得
 	ExtractFileName( sFilePath )
@@ -550,7 +878,6 @@ DimMon_GenFilter()
 		return sDirPath
 	}
 
-; TODO: Implement
 	; 選択ファイルパス取得＠explorer
 	GetSelFilePathAtExplorer( bIsDelimiterSpace )
 	{
@@ -586,7 +913,7 @@ DimMon_GenFilter()
 	{
 		sFilePaths := GetSelFilePathAtExplorer(0)
 		sDirPaths := GetCurDirPathAtExplorer()
-		sTrgtPaths := StrReplace(sTrgtPaths, sDirPaths . "\", A_Space)
+		sTrgtPaths := StrReplace(sFilePaths, sDirPaths . "\", )
 		sTrgtPaths := StrReplace(sTrgtPaths, "`"", )
 	;	MsgBox sTrgtPaths=%sTrgtPaths% `n sFilePaths=%sFilePaths% `n sDirPaths=%sDirPaths%
 		return sTrgtPaths
@@ -656,7 +983,6 @@ DimMon_GenFilter()
 
 	; DimMonitor.ahk
 	; [URL] https://sites.google.com/site/bucuerider/autohotkey/dimmonitor
-	
 	DimMon_GenFilter()
 	{
 		global MonitorCount := MonitorGetCount()
@@ -681,14 +1007,14 @@ DimMon_GenFilter()
 		}
 		Return
 	}
-
+	
 	DimMon_HotKey()
 	{
 		DimMon_LoopMonitor()
 		DimMon_AutoHideTip("明るさ：" . 100 - Dim . "%", 500)
 		Return
 	}
-
+	
 	DimMon_LoopMonitor()
 	{
 		global DimId
@@ -701,14 +1027,14 @@ DimMon_GenFilter()
 		}
 		Return
 	}
-
+	
 	DimMon_AutoHideTip(Txt, Time)
 	{
 		ToolTip(Txt)
 		SetTimer(DimMon_HideTip, -1 * Time)
 		Return
 	}
-
+	
 	DimMon_HideTip()
 	{
 		ToolTip()
