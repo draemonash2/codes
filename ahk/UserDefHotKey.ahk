@@ -622,23 +622,24 @@ global DimOld := 0
 		}
 		
 		;*** start program ***
-		Loop, 10
-		{
+	;	Loop, 10
+	;	{
 			Try {
 				Run, %sExePath% %sFilePath%, %sExeDirPath%, , sOutputVarPID
 			;	MsgBox, 0x1000, , %sOutputVarPID%
 			} Catch errorno {
 				MsgBox, [error] run error : %errorno%
-				break
+	;			break
 			}
-			sleep 1000
-			WinGetActiveTitle, Title
-		;	MsgBox, The active window is "%Title%".
-			IfInString, Title, %sFileName%
-			{
-				break
-			}
-		}
+	;		sleep 1000
+	;		WinGetActiveTitle, Title
+	;	;	MsgBox, The active window is "%Title%".
+	;		IfInString, Title, %sFileName%
+	;		{
+	;			break
+	;		}
+	;	}
+		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
@@ -661,23 +662,24 @@ global DimOld := 0
 		;MsgBox sFilePath=%sFilePath% `n sFileName=%sFileName%
 		
 		;*** start program ***
-		Loop, 10
-		{
+	;	Loop, 10
+	;	{
 			Try {
 				Run, %sFilePath%, , , sOutputVarPID
 			;	MsgBox, 0x1000, , %sOutputVarPID%
 			} Catch errorno {
 				MsgBox, [error] run error : %errorno%
-				break
+	;			break
 			}
-			sleep 1000
-			WinGetActiveTitle, Title
-		;	MsgBox, The active window is "%Title%".
-			IfInString, Title, %sFileName%
-			{
-				break
-			}
-		}
+	;		sleep 1000
+	;		WinGetActiveTitle, Title
+	;	;	MsgBox, The active window is "%Title%".
+	;		IfInString, Title, %sFileName%
+	;		{
+	;			break
+	;		}
+	;	}
+		WinActivate, ahk_pid %sOutputVarPID%
 		return
 	}
 	
