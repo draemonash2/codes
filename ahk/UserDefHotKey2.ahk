@@ -780,7 +780,7 @@ DimMon_GenFilter()
 	{
 		try
 		{
-			ActualN := MonitorGet(MonitorNum, &Left, &Top, &Right, &Bottom)
+			ActualN := MonitorGetWorkArea(MonitorNum, &Left, &Top, &Right, &Bottom)
 		;	MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
 		}
 		catch
