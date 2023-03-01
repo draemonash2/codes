@@ -24,9 +24,8 @@ global gsCUR_MONTH_1DEG := Format("{1:d}" , gsCUR_MONTH)
 ;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
-ShowAutoHideToolTip(A_ScriptName . " is loaded.", 2000)
 TraySetIcon "UserDefHotKey2.ico"
-
+ShowAutoHideTrayTip(A_ScriptName, A_ScriptName . " is loaded.", 2000)
 InitScreenBrightness()
 InitWinTileMode()
 
@@ -43,10 +42,10 @@ InitWinTileMode()
 ;***** キー置き換え *****
 	;無変換キー＋方向キーでPgUp,PgDn,Home,End
 		VK1D::VK1D
-		VK1D & Right::	MuhenkanSimultPush( "End" )
-		VK1D & Left::	MuhenkanSimultPush( "Home" )
-		VK1D & Up::		MuhenkanSimultPush( "PgUp" )
-		VK1D & Down::	MuhenkanSimultPush( "PgDn" )
+		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
+		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
+		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
+		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
 	;Insertキー
 		Insert::Return
 	;PrintScreenキー
@@ -169,7 +168,7 @@ InitWinTileMode()
 	;rapture.exe
 		^+!x::
 		{
-			static giBrightnessOld := 0
+			giBrightnessOld := 0
 			global giBrightness
 			; 明るさを最大にする
 			giBrightnessOld := giBrightness
@@ -219,7 +218,7 @@ InitWinTileMode()
 		/*
 		^+!w::
 		{
-			Run, control printers
+			Run "control printers"
 			
 			Sleep 2000
 			Send "myp"
@@ -231,13 +230,14 @@ InitWinTileMode()
 			Send "a"
 			Sleep 5000
 			Send "!{F4}"
+		}
 		*/
 	;Wifi接続(Wifiテザリング)
 		/*
 		^+!w::
 		{
 			sDirPath := EnvGet("MYDIRPATH_CODES")
-			Run % sDirPath . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"
+			Run sDirPath . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"
 		}
 		*/
 	;Window最前面化
@@ -292,35 +292,22 @@ InitWinTileMode()
 			}
 		}
 		*/
-	;DimMonitor
+	;画面明るさ設定
 		#Home::							; 明度100%（不透明度0%）
 		{
-			global giBrightness
-			giBrightness := 0
-			ApplyBrightnessWithToolTip()
+			SetBrightness(0)
 		}
 		#End::							; 明度0%（不透明度100%）
 		{
-			global giBrightness
-			giBrightness := 80
-			ApplyBrightnessWithToolTip()
+			SetBrightness(80)
 		}
 		#PgDn::							; 明度を下げる（不透明度を上げる）
 		{
-			global giBrightness
-			giBrightness += 20
-			if (giBrightness > 80)
-				giBrightness := 80
-			ApplyBrightnessWithToolTip()
+			IncrementBrightness()
 		}
-		
 		#PgUp::							; 明度を上げる（不透明度を下げる）
 		{
-			global giBrightness
-			giBrightness -= 20
-			if (giBrightness < 0)
-				giBrightness := 0
-			ApplyBrightnessWithToolTip()
+			DecrementBrightness()
 		}
 	;テスト用
 		/*
@@ -356,11 +343,6 @@ InitWinTileMode()
 			MouseMove, x, y
 		}
 		*/
-		
-		^1::
-		{
-			KeyHistory
-		}
 
 ;***** ホットキー(Software local) *****
 	#HotIf !WinActive("ahk_exe WindowsTerminal.exe")
@@ -721,8 +703,8 @@ InitWinTileMode()
 		return
 	}
 
-	; 無変換キー同時押し実装
-	MuhenkanSimultPush( sSendKey )
+	; 今押している修飾キーと共にキー送信する
+	SendKeyWithModKeyCurPressing( sSendKey )
 	{
 		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
 			Send "!^+{" . sSendKey . "}"
@@ -864,9 +846,7 @@ InitWinTileMode()
 	{
 		global giWinTileMode
 		giWinTileMode := giWIN_TILE_MODE_MAX
-	;	TrayTip "タイルモードをクリアしました", "タイルモードクリアタイマー", 1
-	;	Sleep 5000
-	;	TrayTip
+		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
 		Return
 	}
 
@@ -951,60 +931,33 @@ InitWinTileMode()
 		return
 	}
 
+	; ツールチップ表示
 	ShowAutoHideToolTip(sMsg, iShowPeriodMs)
 	{
 		ToolTip(sMsg)
 		SetTimer(HideToolTip, -1 * iShowPeriodMs)
 		Return
 	}
-	
 	HideToolTip()
 	{
 		ToolTip()
 		Return
 	}
 
-	; IME.ahk
-	; [URL] https://github.com/s-show/AutoHotKey/blob/AutoHotKey/IME.ahk
-	;-----------------------------------------------------------
-	; IMEの状態の取得
-	;   WinTitle="A"    対象Window
-	;   戻り値          1:ON / 0:OFF
-	;-----------------------------------------------------------
-	IME_GET(WinTitle:="A")  {
-		Controls := WinGetControlsHwnd(WinTitle)
-		hwnd := ControlGetHWND(Controls[1], WinTitle)
-		if (WinActive(WinTitle))    {
-			PtrSize := !A_PtrSize ? 4 : A_PtrSize
-			stGTI := Buffer(cbSize:=4+4+(PtrSize*6)+16, 0) ; V1toV2: if 'stGTI' is a UTF-16 string, use 'VarSetStrCapacity(&stGTI, cbSize:=4+4+(PtrSize*6)+16)'
-			NumPut "UInt", cbSize, stGTI   ;    DWORD   cbSize;
-			hwnd := DllCall("GetGUIThreadInfo", "Uint", 0, "Ptr", stGTI)
-					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
-		}
-		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x0005, "Int", 0)
+	; トレイチップ表示
+	ShowAutoHideTrayTip(sTitle, sMsg, iShowPeriodMs)
+	{
+		TrayTip sMsg, sTitle, 1
+		SetTimer(HideTrayTip, -1 * iShowPeriodMs)
+		Return
 	}
-	
-	;-----------------------------------------------------------
-	; IMEの状態をセット
-	;	SetSts			1:ON / 0:OFF
-	;	WinTitle="A"	対象Window
-	;	戻り値			0:成功 / 0以外:失敗
-	;-----------------------------------------------------------
-	IME_SET(SetSts, WinTitle:="A")    {
-		Controls := WinGetControlsHwnd(WinTitle)
-		hwnd := ControlGetHWND(Controls[1], WinTitle)
-		if (WinActive(WinTitle))    {
-			PtrSize := !A_PtrSize ? 4 : A_PtrSize
-			stGTI := Buffer(cbSize:=4+4+(PtrSize*6)+16, 0) ; V1toV2: if 'stGTI' is a UTF-16 string, use 'VarSetStrCapacity(&stGTI, cbSize:=4+4+(PtrSize*6)+16)'
-			NumPut("UInt", cbSize, stGTI, 0)   ;    DWORD   cbSize;
-			hwnd := DllCall("GetGUIThreadInfo", "Uint", 0, "Ptr", stGTI)
-					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
-		}
-		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x006, "Int", SetSts)
+	HideTrayTip()
+	{
+		TrayTip()
+		Return
 	}
 
-	; DimMonitor.ahk
-	; [URL] https://sites.google.com/site/bucuerider/autohotkey/dimmonitor
+	; 画面明るさ設定
 	InitScreenBrightness()
 	{
 		global giBrightness := giSCREEN_BRIGHTNESS_INIT
@@ -1029,11 +982,34 @@ InitWinTileMode()
 		}
 		Return
 	}
-	ApplyBrightnessWithToolTip()
+	SetBrightness(iBrightness)
 	{
+		global giBrightness
+		giBrightness := iBrightness
 		ApplyBrightness()
 		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
-		Return
+	}
+	IncrementBrightness()
+	{
+		global giBrightness
+		giBrightness += 20
+		if (giBrightness > 80)
+		{
+			giBrightness := 80
+		}
+		ApplyBrightness()
+		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
+	}
+	DecrementBrightness()
+	{
+		global giBrightness
+		giBrightness -= 20
+		if (giBrightness < 0)
+		{
+			giBrightness := 0
+		}
+		ApplyBrightness()
+		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
 	}
 	ApplyBrightness()
 	{
@@ -1046,4 +1022,42 @@ InitWinTileMode()
 		}
 		Return
 	}
-	
+
+	; IME.ahk
+	; [URL] https://github.com/s-show/AutoHotKey/blob/AutoHotKey/IME.ahk
+	;-----------------------------------------------------------
+	; IMEの状態の取得
+	;   WinTitle="A"    対象Window
+	;   戻り値          1:ON / 0:OFF
+	;-----------------------------------------------------------
+	IME_GET(WinTitle:="A")  {
+		Controls := WinGetControlsHwnd(WinTitle)
+		hwnd := ControlGetHWND(Controls[1], WinTitle)
+		if (WinActive(WinTitle))    {
+			PtrSize := !A_PtrSize ? 4 : A_PtrSize
+			stGTI := Buffer(cbSize:=4+4+(PtrSize*6)+16, 0) ; V1toV2: if 'stGTI' is a UTF-16 string, use 'VarSetStrCapacity(&stGTI, cbSize:=4+4+(PtrSize*6)+16)'
+			NumPut "UInt", cbSize, stGTI   ;    DWORD   cbSize;
+			hwnd := DllCall("GetGUIThreadInfo", "Uint", 0, "Ptr", stGTI)
+					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
+		}
+		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x0005, "Int", 0)
+	}
+	;-----------------------------------------------------------
+	; IMEの状態をセット
+	;	SetSts			1:ON / 0:OFF
+	;	WinTitle="A"	対象Window
+	;	戻り値			0:成功 / 0以外:失敗
+	;-----------------------------------------------------------
+	IME_SET(SetSts, WinTitle:="A")    {
+		Controls := WinGetControlsHwnd(WinTitle)
+		hwnd := ControlGetHWND(Controls[1], WinTitle)
+		if (WinActive(WinTitle))    {
+			PtrSize := !A_PtrSize ? 4 : A_PtrSize
+			stGTI := Buffer(cbSize:=4+4+(PtrSize*6)+16, 0) ; V1toV2: if 'stGTI' is a UTF-16 string, use 'VarSetStrCapacity(&stGTI, cbSize:=4+4+(PtrSize*6)+16)'
+			NumPut("UInt", cbSize, stGTI, 0)   ;    DWORD   cbSize;
+			hwnd := DllCall("GetGUIThreadInfo", "Uint", 0, "Ptr", stGTI)
+					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
+		}
+		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x006, "Int", SetSts)
+	}
+
