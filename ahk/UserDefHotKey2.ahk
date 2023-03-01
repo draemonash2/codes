@@ -401,19 +401,22 @@ InitWinTileMode()
 	; 今押している修飾キーと共にキー送信する
 	SendKeyWithModKeyCurPressing( sSendKey )
 	{
-		if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P") and GetKeyState("Alt","P")){
+		bIsPressShift := GetKeyState("Shift","P")
+		bIsPressCtrl := GetKeyState("Ctrl","P")
+		bIsPressAlt := GetKeyState("Alt","P")
+		if(bIsPressShift and bIsPressCtrl and bIsPressAlt){
 			Send "!^+{" . sSendKey . "}"
-		} else if(GetKeyState("Shift","P") and GetKeyState("Ctrl","P")){
+		} else if(bIsPressShift and bIsPressCtrl){
 			Send "^+{" . sSendKey . "}"
-		} else if(GetKeyState("Shift","P") and GetKeyState("Alt","P")){
+		} else if(bIsPressShift and bIsPressAlt){
 			Send "!+{" . sSendKey . "}"
-		} else if(GetKeyState("Alt","P") and GetKeyState("Ctrl","P")){
+		} else if(bIsPressAlt and bIsPressCtrl){
 			Send "!^{" . sSendKey . "}"
-		} else if(GetKeyState("Alt","P")){
+		} else if(bIsPressAlt){
 			Send "!{" . sSendKey . "}"
-		} else if(GetKeyState("Ctrl","P")){
+		} else if(bIsPressCtrl){
 			Send "^{" . sSendKey . "}"
-		} else if(GetKeyState("Shift","P")){
+		} else if(bIsPressShift){
 			Send "+{" . sSendKey . "}"
 		} else {
 			Send "{" . sSendKey . "}"
@@ -489,47 +492,48 @@ InitWinTileMode()
 		global giWinTileMode
 		GetMonitorPosInfo(1, &mainx, &mainy, &mainwidth, &mainheight )
 		GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
-		
-		winywhole := Integer(suby + ( subheight * giWIN_Y_OFFSET ))
-		winheightwhole := Integer(subheight * ( 1 - giWIN_Y_OFFSET ))
-		if ( giWinTileMode = 0 ) {			;サブ全体
-			winx		:= subx
-			winwidth	:= subwidth
-			winy		:= winywhole
-			winheight	:= winheightwhole
-		} else if ( giWinTileMode = 1 ) {	;サブ上
-			winx		:= subx
-			winwidth	:= subwidth
-			winy		:= winywhole
-			winheight	:= Integer(winheightwhole / 2)
-		} else if ( giWinTileMode = 2 ) {	;サブ下
-			winx		:= subx
-			winwidth	:= subwidth
-			winy		:= Integer(winywhole + winheightwhole / 2)
-			winheight	:= Integer(winheightwhole / 2)
-		} else if ( giWinTileMode = 3 ) {	;メイン全体
-			winx		:= mainx
-			winy		:= mainy
-			winwidth	:= mainwidth
-			winheight	:= mainheight
-		} else if ( giWinTileMode = 4 ) {	;メイン左
-			winx		:= Integer(mainx - giWIN_TILE_MODE_OFFSET)
-			winy		:= mainy
-			winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
-			winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
-		} else if ( giWinTileMode = 5 ) {	;メイン右
-			winx		:= mainx + Integer(mainwidth / 2 - giWIN_TILE_MODE_OFFSET)
-			winy		:= mainy
-			winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
-			winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
-		} else {
-			MsgBox "[error] invalid giWinTileMode.`n" . giWinTileMode
-			return
+		subywhole := Integer(suby + ( subheight * giWIN_Y_OFFSET ))
+		subheightwhole := Integer(subheight * ( 1 - giWIN_Y_OFFSET ))
+		switch giWinTileMode
+		{
+			case 0:	;サブ全体
+				winx		:= subx
+				winy		:= subywhole
+				winwidth	:= subwidth
+				winheight	:= subheightwhole
+			case 1:	;サブ上
+				winx		:= subx
+				winy		:= subywhole
+				winwidth	:= subwidth
+				winheight	:= Integer(subheightwhole / 2)
+			case 2:	;サブ下
+				winx		:= subx
+				winy		:= Integer(subywhole + subheightwhole / 2)
+				winwidth	:= subwidth
+				winheight	:= Integer(subheightwhole / 2)
+			case 3:	;メイン全体
+				winx		:= mainx
+				winy		:= mainy
+				winwidth	:= mainwidth
+				winheight	:= mainheight
+			case 4:	;メイン左
+				winx		:= Integer(mainx - giWIN_TILE_MODE_OFFSET)
+				winy		:= mainy
+				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
+				winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
+			case 5:	;メイン右
+				winx		:= mainx + Integer(mainwidth / 2 - giWIN_TILE_MODE_OFFSET)
+				winy		:= mainy
+				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
+				winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
+			default:
+				MsgBox "[error] invalid giWinTileMode.`n" . giWinTileMode
+				return
 		}
 	;	MsgBox "[DBG] ApplyWinTileMode() " .
 	;		"`ngiWinTileMode = " . giWinTileMode .
 	;		"`nmainx = " . mainx . "`nmainy = " . mainy . "`nmainwidth = " . mainwidth . "`nmainheight = " . mainheight . "`nsubx = " . subx . "`nsuby = " . suby . "`nsubwidth = " . subwidth . "`nsubheight = " . subheight .
-	;		"`nwinywhole = " . winywhole . "`nwinheightwhole = " . winheightwhole .
+	;		"`nsubywhole = " . subywhole . "`nsubheightwhole = " . subheightwhole .
 	;		"`nwinx = " . winx . "`nwiny = " . winy . "`nwinwidth = " . winwidth . "`nwinheight = " . winheight
 		WinMove winx, winy, winwidth, winheight, "A"
 		return
@@ -766,14 +770,16 @@ InitWinTileMode()
 		myGui.Destroy()
 		sTrgtPaths := GetSelFilePathAtExplorer(1)
 		sDirPath := EnvGet("MYDIRPATH_CODES")
-		If ( vAnswer == "圧縮" ) {
-			RunWait(sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths)
-		} Else If ( vAnswer == "パスワード圧縮" ) {
-			RunWait(sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths)
-		} Else If ( vAnswer == "解凍" ) {
-			RunWait(sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths)
-		} Else {
-			MsgBox "[ERROR] 圧縮/パスワード圧縮/解凍 選択"
+		switch vAnswer
+		{
+			case "圧縮":
+				RunWait(sDirPath . "\vbs\tools\7zip\ZipFile.vbs " . sTrgtPaths)
+			case "パスワード圧縮":
+				RunWait(sDirPath . "\vbs\tools\7zip\ZipPasswordFile.vbs " . sTrgtPaths)
+			case "解凍":
+				RunWait(sDirPath . "\vbs\tools\7zip\UnzipFile.vbs " . sTrgtPaths)
+			default:
+				MsgBox "[ERROR] 圧縮/パスワード圧縮/解凍 選択"
 		}
 		;FocusFileDirListAtExplorer()
 		return
@@ -799,12 +805,14 @@ InitWinTileMode()
 		myGui.Destroy()
 		sTrgtPaths := GetSelFilePathAtExplorer(1)
 		sDirPath := EnvGet("MYDIRPATH_CODES")
-		If ( vAnswer == "ショートカット作成" ) {
-			RunWait(sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths)
-		} Else If ( vAnswer == "シンボリックリンク作成" ) {
-			RunWait(sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths)
-		} Else {
-			MsgBox "[ERROR] ショートカット/シンボリックリンク作成"
+		switch vAnswer
+		{
+			case "ショートカット作成":
+				RunWait(sDirPath . "\vbs\command\CreateShortcutFile.vbs " . sTrgtPaths . ".lnk " . sTrgtPaths)
+			case "シンボリックリンク作成":
+				RunWait(sDirPath . "\vbs\tools\win\file_ope\CreateSymbolicLink.vbs " . sTrgtPaths)
+			default:
+				MsgBox "[ERROR] ショートカット/シンボリックリンク作成"
 		}
 		;FocusFileDirListAtExplorer()
 		return
@@ -829,16 +837,18 @@ InitWinTileMode()
 		vAnswer := ogcListBoxAnswer.Text
 		myGui.Destroy()
 		sDirPath := GetCurDirPathAtExplorer()
-		If ( vAnswer == "ファイル＆フォルダ一覧作成" ) {
-			RunWait(A_ComSpec " /c dir /s /b /a > `"" sDirPath "\_PathList_FileDir.txt`"", sDirPath)
-		} Else If ( vAnswer == "ファイル一覧作成" ) {
-			RunWait(A_ComSpec " /c dir *.* /b /s /a:a-d > `"" sDirPath "\_PathList_File.txt`"", sDirPath)
-		} Else If ( vAnswer == "フォルダ一覧作成" ) {
-			RunWait(A_ComSpec " /c dir /b /s /a:d > `"" sDirPath "\_PathList_Dir.txt`"", sDirPath)
-		} Else If ( vAnswer == "フォルダツリー作成" ) {
-			RunWait(A_ComSpec " /c tree /f > `"" sDirPath "\_DirTree.txt`"", sDirPath)
-		} Else {
-			MsgBox "[ERROR] パス一覧作成"
+		switch vAnswer
+		{
+			case "ファイル＆フォルダ一覧作成":
+				RunWait(A_ComSpec " /c dir /s /b /a > `"" sDirPath "\_PathList_FileDir.txt`"", sDirPath)
+			case "ファイル一覧作成":
+				RunWait(A_ComSpec " /c dir *.* /b /s /a:a-d > `"" sDirPath "\_PathList_File.txt`"", sDirPath)
+			case "フォルダ一覧作成":
+				RunWait(A_ComSpec " /c dir /b /s /a:d > `"" sDirPath "\_PathList_Dir.txt`"", sDirPath)
+			case "フォルダツリー作成":
+				RunWait(A_ComSpec " /c tree /f > `"" sDirPath "\_DirTree.txt`"", sDirPath)
+			default:
+				MsgBox "[ERROR] パス一覧作成"
 		}
 		;FocusFileDirListAtExplorer()
 	}
