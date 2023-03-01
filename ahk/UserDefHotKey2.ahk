@@ -6,30 +6,29 @@
 	#WinActivateForce				; ウィンドウのアクティブ化時に、穏やかな方法を試みるのを省略して常に強制的な方法でアクティブ化を行う。（タスクバーアイコンが点滅する現象が起こらなくなる）
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 
-
 ;* ***************************************************************
 ;* Settings
 ;* ***************************************************************
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
-global iWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
-global iWIN_TILE_MODE_MAX := 3
-global iWIN_Y_OFFSET := 2/7
-global iWIN_TILE_MODE_OFFSET := 0
-global bEnableAlwaysOnTop := 0
-
-;* ***************************************************************
-;* Define variables
-;* ***************************************************************
-global giWinTileMode := 0
-global Dim := 0
-global DimId := 0
+global giWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
+global giWIN_TILE_MODE_MAX := 3
+global giWIN_TILE_MODE_INIT := 0 ; 0～giWIN_TILE_MODE_MAX
+global giWIN_Y_OFFSET := 2/7
+global giWIN_TILE_MODE_OFFSET := 0
+global giSCREEN_BRIGHTNESS_INIT := 0 ; 0～100 [%] bright<->dark
+global gsCUR_YEAR := A_YYYY
+global gsCUR_MONTH := A_MM
+global gsCUR_MONTH_2DEG := Format("{1:02d}" , gsCUR_MONTH)
+global gsCUR_MONTH_1DEG := Format("{1:d}" , gsCUR_MONTH)
 
 ;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
-SetTimerWinTileMode()
+ShowAutoHideToolTip(A_ScriptName . " is loaded.", 2000)
 TraySetIcon "UserDefHotKey2.ico"
-DimMon_GenFilter()
+
+InitScreenBrightness()
+InitWinTileMode()
 
 ;* ***************************************************************
 ;* Keys
@@ -170,19 +169,19 @@ DimMon_GenFilter()
 	;rapture.exe
 		^+!x::
 		{
-			static DimOld := 0
-			global Dim
+			static giBrightnessOld := 0
+			global giBrightness
 			; 明るさを最大にする
-			DimOld := Dim
-			Dim := 0
-			DimMon_LoopMonitor()
+			giBrightnessOld := giBrightness
+			giBrightness := 0
+			ApplyBrightness()
 			; Rapture 起動
 			sExePath := EnvGet("MYEXEPATH_RAPTURE")
 			StartProgramAndActivateExe( sExePath )
 			; 明るさを元に戻す
 			Sleep 5000
-			Dim := DimOld
-			DimMon_LoopMonitor()
+			giBrightness := giBrightnessOld
+			ApplyBrightness()
 		}
 	;xf.exe
 	/*
@@ -244,18 +243,19 @@ DimMon_GenFilter()
 	;Window最前面化
 		Pause::
 		{
+			static bEnableAlwaysOnTop := 0
 			;HP製PCでは「Pause」は「Fn＋Shift」。
 			WinSetAlwaysOnTop -1, "A"
 			sActiveWinTitle := WinGetTitle("A")
 			if (bEnableAlwaysOnTop = 0)
 			{
 				MsgBox "Window最前面を【有効】にします`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-				global bEnableAlwaysOnTop := 1
+				bEnableAlwaysOnTop := 1
 			}
 			else
 			{
 				MsgBox "Window最前面を【解除】します`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-				global bEnableAlwaysOnTop := 0
+				bEnableAlwaysOnTop := 0
 			}
 		}
 	;Windowタイル切り替え
@@ -295,32 +295,32 @@ DimMon_GenFilter()
 	;DimMonitor
 		#Home::							; 明度100%（不透明度0%）
 		{
-			global Dim
-			Dim := 0
-			DimMon_HotKey()
+			global giBrightness
+			giBrightness := 0
+			ApplyBrightnessWithToolTip()
 		}
 		#End::							; 明度0%（不透明度100%）
 		{
-			global Dim
-			Dim := 80
-			DimMon_HotKey()
+			global giBrightness
+			giBrightness := 80
+			ApplyBrightnessWithToolTip()
 		}
 		#PgDn::							; 明度を下げる（不透明度を上げる）
 		{
-			global Dim
-			Dim += 20
-			if (Dim > 80)
-				Dim := 80
-			DimMon_HotKey()
+			global giBrightness
+			giBrightness += 20
+			if (giBrightness > 80)
+				giBrightness := 80
+			ApplyBrightnessWithToolTip()
 		}
 		
 		#PgUp::							; 明度を上げる（不透明度を下げる）
 		{
-			global Dim
-			Dim -= 20
-			if (Dim < 0)
-				Dim := 0
-			DimMon_HotKey()
+			global giBrightness
+			giBrightness -= 20
+			if (giBrightness < 0)
+				giBrightness := 0
+			ApplyBrightnessWithToolTip()
 		}
 	;テスト用
 		/*
@@ -745,6 +745,11 @@ DimMon_GenFilter()
 	}
 
 	;Windowタイル切り替え
+	InitWinTileMode()
+	{
+		global giWinTileMode := giWIN_TILE_MODE_INIT
+		SetTimerWinTileMode()
+	}
 	GetWinTileModeMin()
 	{
 		iMonitorNum := SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
@@ -758,23 +763,25 @@ DimMon_GenFilter()
 	}
 	IncrementWinTileMode()
 	{
+		global giWinTileMode
 		iWinTileModeMin := GetWinTileModeMin()
-		if ( giWinTileMode >= iWIN_TILE_MODE_MAX ) {
-			global giWinTileMode := iWinTileModeMin
+		if ( giWinTileMode >= giWIN_TILE_MODE_MAX ) {
+			giWinTileMode := iWinTileModeMin
 		} else {
-			global giWinTileMode := giWinTileMode + 1
+			giWinTileMode := giWinTileMode + 1
 		}
-	;	MsgBox, giWinTileMode: %giWinTileMode%`n iWIN_TILE_MODE_MAX: %iWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
+	;	MsgBox, giWinTileMode: %giWinTileMode%`n giWIN_TILE_MODE_MAX: %giWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
 	}
 	DecrementWinTileMode()
 	{
+		global giWinTileMode
 		iWinTileModeMin := GetWinTileModeMin()
 		if ( giWinTileMode <= iWinTileModeMin ) {
-			global giWinTileMode := iWIN_TILE_MODE_MAX
+			giWinTileMode := giWIN_TILE_MODE_MAX
 		} else {
-			global giWinTileMode := giWinTileMode - 1
+			giWinTileMode := giWinTileMode - 1
 		}
-	;	MsgBox, giWinTileMode: %giWinTileMode%`n iWIN_TILE_MODE_MAX: %iWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
+	;	MsgBox, giWinTileMode: %giWinTileMode%`n giWIN_TILE_MODE_MAX: %giWIN_TILE_MODE_MAX%`n iWinTileModeMin: %iWinTileModeMin%
 	}
 	GetMonitorPosInfo( MonitorNum, &X, &Y, &Width, &Height )
 	{
@@ -800,14 +807,16 @@ DimMon_GenFilter()
 	;	MsgBox, %MonitorNum%`n%X%`n%Y%`n%Width%`n%Height%
 	}
 	; ウィンドウサイズ切り替え
+	
 	ApplyWinTileMode()
 	{
+		global giWinTileMode
 		GetMonitorPosInfo(1, &mainx, &mainy, &mainwidth, &mainheight )
 		GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
 	;	MsgBox, mainx: %mainx%`nmainy: %mainy%`nmainwidth: %mainwidth%`nmainheight: %mainheight%`nsubx: %subx%`nsuby: %suby%`nsubwidth: %subwidth%`nsubheight: %subheight%
 		
-		winywhole := suby + ( subheight * iWIN_Y_OFFSET )
-		winheightwhole := subheight * ( 1 - iWIN_Y_OFFSET )
+		winywhole := suby + ( subheight * giWIN_Y_OFFSET )
+		winheightwhole := subheight * ( 1 - giWIN_Y_OFFSET )
 	;	MsgBox, giWinTileMode: %giWinTileMode%`nwinywhole: %winywhole%`nwinheightwhole: %winheightwhole%
 		if ( giWinTileMode = 0 ) {			;サブ全体
 			winx := subx
@@ -830,15 +839,15 @@ DimMon_GenFilter()
 			winwidth := mainwidth
 			winheight := mainheight
 		} else if ( giWinTileMode = 4 ) {	;メイン左
-			winx := mainx - iWIN_TILE_MODE_OFFSET
+			winx := mainx - giWIN_TILE_MODE_OFFSET
 			winy := mainy
-			winwidth := Integer(mainwidth / 2) + iWIN_TILE_MODE_OFFSET
-			winheight := mainheight + iWIN_TILE_MODE_OFFSET
+			winwidth := Integer(mainwidth / 2) + giWIN_TILE_MODE_OFFSET
+			winheight := mainheight + giWIN_TILE_MODE_OFFSET
 		} else if ( giWinTileMode = 5 ) {	;メイン右
-			winx := mainx + Integer(mainwidth / 2) - iWIN_TILE_MODE_OFFSET
+			winx := mainx + Integer(mainwidth / 2) - giWIN_TILE_MODE_OFFSET
 			winy := mainy
-			winwidth := Integer(mainwidth / 2) + iWIN_TILE_MODE_OFFSET
-			winheight := mainheight + iWIN_TILE_MODE_OFFSET
+			winwidth := Integer(mainwidth / 2) + giWIN_TILE_MODE_OFFSET
+			winheight := mainheight + giWIN_TILE_MODE_OFFSET
 		} else {
 			MsgBox "[error] invalid giWinTileMode.`n" . giWinTileMode
 			return
@@ -849,12 +858,12 @@ DimMon_GenFilter()
 	}
 	SetTimerWinTileMode()
 	{
-		SetTimer ClearWinTileMode, iWIN_TILE_MODE_CLEAR_INTERVAL
+		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL
 	}
 	ClearWinTileMode()
 	{
 		global giWinTileMode
-		giWinTileMode := iWIN_TILE_MODE_MAX
+		giWinTileMode := giWIN_TILE_MODE_MAX
 	;	TrayTip "タイルモードをクリアしました", "タイルモードクリアタイマー", 1
 	;	Sleep 5000
 	;	TrayTip
@@ -942,6 +951,19 @@ DimMon_GenFilter()
 		return
 	}
 
+	ShowAutoHideToolTip(sMsg, iShowPeriodMs)
+	{
+		ToolTip(sMsg)
+		SetTimer(HideToolTip, -1 * iShowPeriodMs)
+		Return
+	}
+	
+	HideToolTip()
+	{
+		ToolTip()
+		Return
+	}
+
 	; IME.ahk
 	; [URL] https://github.com/s-show/AutoHotKey/blob/AutoHotKey/IME.ahk
 	;-----------------------------------------------------------
@@ -983,60 +1005,45 @@ DimMon_GenFilter()
 
 	; DimMonitor.ahk
 	; [URL] https://sites.google.com/site/bucuerider/autohotkey/dimmonitor
-	DimMon_GenFilter()
+	InitScreenBrightness()
 	{
-		global MonitorCount := MonitorGetCount()
-		aDimGui := Array()
-		global aDimId := Array()
-	;	MsgBox "MonitorCount = " . MonitorCount
-		global DimId
-		Loop MonitorCount
+		global giBrightness := giSCREEN_BRIGHTNESS_INIT
+		global giMonitorCount := MonitorGetCount()
+		global gasDimId := Array()
+		aoDimGui := Array()
+	;	MsgBox "giMonitorCount = " . giMonitorCount
+		Loop giMonitorCount
 		{
 			MonitorGet(A_Index, &MonitorLeft, &MonitorTop, &MonitorRight, &MonitorBottom)
 			Width := MonitorRight - MonitorLeft
 			Height := MonitorBottom - MonitorTop
-			aDimGui.push Gui()
-			aDimGui[A_Index].Opt("+LastFound +ToolWindow -Disabled -SysMenu -Caption +E0x20 +AlwaysOnTop")
-			aDimGui[A_Index].BackColor := "000000"	;フィルタの色（HTMLカラーコード参照）
-			aDimGui[A_Index].Title := "DimMonitor" . A_Index
-			aDimGui[A_Index].Show("X" . MonitorLeft . " Y" . MonitorTop . " W" . Width . " H" . Height)
-			aDimId.push WinGetId("DimMonitor" . A_Index . " ahk_class AutoHotkeyGUI")
-			DimId := aDimId[A_Index]
-			WinSetTransparent(Integer(Dim * 255 / 100), "ahk_id " . DimId)
-		;	MsgBox "MonitorCount = " . MonitorCount . ", A_Index = " . A_Index . ", DimId = " . DimId
+			aoDimGui.push Gui()
+			aoDimGui[A_Index].Opt("+LastFound +ToolWindow -Disabled -SysMenu -Caption +E0x20 +AlwaysOnTop")
+			aoDimGui[A_Index].BackColor := "000000"	;フィルタの色（HTMLカラーコード参照）
+			aoDimGui[A_Index].Title := "DimMonitor" . A_Index
+			aoDimGui[A_Index].Show("X" . MonitorLeft . " Y" . MonitorTop . " W" . Width . " H" . Height)
+			gasDimId.push WinGetId("DimMonitor" . A_Index . " ahk_class AutoHotkeyGUI")
+			DimId := gasDimId[A_Index]
+			WinSetTransparent(Integer(giBrightness * 255 / 100), "ahk_id " . DimId)
+		;	MsgBox "giMonitorCount = " . giMonitorCount . ", A_Index = " . A_Index . ", DimId = " . DimId
 		}
 		Return
 	}
-	
-	DimMon_HotKey()
+	ApplyBrightnessWithToolTip()
 	{
-		DimMon_LoopMonitor()
-		DimMon_AutoHideTip("明るさ：" . 100 - Dim . "%", 500)
+		ApplyBrightness()
+		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
 		Return
 	}
-	
-	DimMon_LoopMonitor()
+	ApplyBrightness()
 	{
-		global DimId
-		global Dim
-		global MonitorCount
-		Loop MonitorCount
+		global giBrightness
+		global giMonitorCount
+		Loop giMonitorCount
 		{
-			DimId := aDimId[A_Index]
-			WinSetTransparent(Integer(Dim * 255 / 100), "ahk_id " . DimId)
+			DimId := gasDimId[A_Index]
+			WinSetTransparent(Integer(giBrightness * 255 / 100), "ahk_id " . DimId)
 		}
 		Return
 	}
 	
-	DimMon_AutoHideTip(Txt, Time)
-	{
-		ToolTip(Txt)
-		SetTimer(DimMon_HideTip, -1 * Time)
-		Return
-	}
-	
-	DimMon_HideTip()
-	{
-		ToolTip()
-		Return
-	}
