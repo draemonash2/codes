@@ -15,7 +15,10 @@ global giWIN_TILE_MODE_MAX := 3
 global giWIN_TILE_MODE_INIT := 0 ; 0～giWIN_TILE_MODE_MAX
 global giWIN_Y_OFFSET := 2/7
 global giWIN_TILE_MODE_OFFSET := 0
-global giSCREEN_BRIGHTNESS_INIT := 0 ; 0～100 [%] bright<->dark
+global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
+global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
+global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
+global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
 global gsCUR_YEAR := A_YYYY
 global gsCUR_MONTH := A_MM
 global gsCUR_MONTH_2DEG := Format("{1:02d}" , gsCUR_MONTH)
@@ -168,19 +171,8 @@ InitWinTileMode()
 	;rapture.exe
 		^+!x::
 		{
-			giBrightnessOld := 0
-			global giBrightness
-			; 明るさを最大にする
-			giBrightnessOld := giBrightness
-			giBrightness := 0
-			ApplyBrightness()
-			; Rapture 起動
-			sExePath := EnvGet("MYEXEPATH_RAPTURE")
-			StartProgramAndActivateExe( sExePath )
-			; 明るさを元に戻す
-			Sleep 5000
-			giBrightness := giBrightnessOld
-			ApplyBrightness()
+			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
+			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE") )
 		}
 	;xf.exe
 	/*
@@ -293,22 +285,10 @@ InitWinTileMode()
 		}
 		*/
 	;画面明るさ設定
-		#Home::							; 明度100%（不透明度0%）
-		{
-			SetBrightness(0)
-		}
-		#End::							; 明度0%（不透明度100%）
-		{
-			SetBrightness(80)
-		}
-		#PgDn::							; 明度を下げる（不透明度を上げる）
-		{
-			IncrementBrightness()
-		}
-		#PgUp::							; 明度を上げる（不透明度を下げる）
-		{
-			DecrementBrightness()
-		}
+		#Home::	SetBrightness(giSCREEN_BRIGHTNESS_MAX)
+		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
+		#PgDn::	DarkenScreen()
+		#PgUp::	BrightenScreen()
 	;テスト用
 		/*
 		^Pause::
@@ -611,6 +591,7 @@ InitWinTileMode()
 	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=0 )
 	{
 		;*** preprocess ***
+		;MsgBox "sExePath = " . sExePath . ", sFilePath = " . sFilePath . ", bLaunchSingleProcess = " . bLaunchSingleProcess
 		If ( sExePath == "" or sFilePath == "" )
 		{
 			MsgBox "[ERROR] please specify arguments to StartProgramAndActivate()."
@@ -651,6 +632,7 @@ InitWinTileMode()
 	StartProgramAndActivateFile( sFilePath )
 	{
 		;*** preprocess ***
+		;MsgBox "sFilePath = " . sFilePath
 		If ( sFilePath == "" )
 		{
 			MsgBox "[ERROR] please specify arguments to StartProgramAndActivateFile()."
@@ -673,6 +655,7 @@ InitWinTileMode()
 	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=0 )
 	{
 		;*** preprocess ***
+		;MsgBox "sExePath = " . sExePath . ", bLaunchSingleProcess = " . bLaunchSingleProcess
 		If ( sExePath == "" )
 		{
 			MsgBox "[ERROR] please specify arguments to StartProgramAndActivateExe()."
@@ -961,24 +944,24 @@ InitWinTileMode()
 	InitScreenBrightness()
 	{
 		global giBrightness := giSCREEN_BRIGHTNESS_INIT
-		global giMonitorCount := MonitorGetCount()
 		global gasDimId := Array()
-		aoDimGui := Array()
-	;	MsgBox "giMonitorCount = " . giMonitorCount
-		Loop giMonitorCount
+		iMonitorCount := MonitorGetCount()
+	;	MsgBox "iMonitorCount = " . iMonitorCount . ", giBrightness = " . giBrightness
+		Loop iMonitorCount
 		{
 			MonitorGet(A_Index, &MonitorLeft, &MonitorTop, &MonitorRight, &MonitorBottom)
 			Width := MonitorRight - MonitorLeft
 			Height := MonitorBottom - MonitorTop
-			aoDimGui.push Gui()
-			aoDimGui[A_Index].Opt("+LastFound +ToolWindow -Disabled -SysMenu -Caption +E0x20 +AlwaysOnTop")
-			aoDimGui[A_Index].BackColor := "000000"	;フィルタの色（HTMLカラーコード参照）
-			aoDimGui[A_Index].Title := "DimMonitor" . A_Index
-			aoDimGui[A_Index].Show("X" . MonitorLeft . " Y" . MonitorTop . " W" . Width . " H" . Height)
+			oDimGui := Gui()
+			oDimGui.Opt("+LastFound +ToolWindow -Disabled -SysMenu -Caption +E0x20 +AlwaysOnTop")
+			oDimGui.BackColor := "000000"	;フィルタの色（HTMLカラーコード参照）
+			oDimGui.Title := "DimMonitor" . A_Index
+			oDimGui.Show("X" . MonitorLeft . " Y" . MonitorTop . " W" . Width . " H" . Height)
 			gasDimId.push WinGetId("DimMonitor" . A_Index . " ahk_class AutoHotkeyGUI")
-			DimId := gasDimId[A_Index]
-			WinSetTransparent(Integer(giBrightness * 255 / 100), "ahk_id " . DimId)
-		;	MsgBox "giMonitorCount = " . giMonitorCount . ", A_Index = " . A_Index . ", DimId = " . DimId
+			iDimId := gasDimId[A_Index]
+			iTransparency := 100 - giBrightness
+			WinSetTransparent(Integer(iTransparency * 255 / 100), "ahk_id " . iDimId)
+		;	MsgBox "iMonitorCount = " . iMonitorCount . ", A_Index = " . A_Index . ", iDimId = " . iDimId
 		}
 		Return
 	}
@@ -987,38 +970,54 @@ InitWinTileMode()
 		global giBrightness
 		giBrightness := iBrightness
 		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
+		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
 	}
-	IncrementBrightness()
+	BrightenScreen()
 	{
 		global giBrightness
-		giBrightness += 20
-		if (giBrightness > 80)
+		giBrightness += giSCREEN_BRIGHTNESS_STEP
+		if (giBrightness > giSCREEN_BRIGHTNESS_MAX)
 		{
-			giBrightness := 80
+			giBrightness := giSCREEN_BRIGHTNESS_MAX
 		}
 		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
+		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
 	}
-	DecrementBrightness()
+	DarkenScreen()
 	{
 		global giBrightness
-		giBrightness -= 20
-		if (giBrightness < 0)
+		giBrightness -= giSCREEN_BRIGHTNESS_STEP
+		if (giBrightness < giSCREEN_BRIGHTNESS_MIN)
 		{
-			giBrightness := 0
+			giBrightness := giSCREEN_BRIGHTNESS_MIN
 		}
 		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . 100 - giBrightness . "%", 500)
+		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
+	}
+	SetBrightnessTemporary(iBrightness, iWaitTimeMs)
+	{
+		global giBrightness
+		global giBrightnessOld := giBrightness
+		giBrightness := iBrightness
+		ApplyBrightness()
+		SetTimer(SetOldBrightness, -1 * iWaitTimeMs)
+	}
+	SetOldBrightness()
+	{
+		global giBrightness
+		global giBrightnessOld
+		giBrightness := giBrightnessOld
+		ApplyBrightness()
 	}
 	ApplyBrightness()
 	{
 		global giBrightness
-		global giMonitorCount
-		Loop giMonitorCount
+		iMonitorCount := MonitorGetCount()
+		Loop iMonitorCount
 		{
-			DimId := gasDimId[A_Index]
-			WinSetTransparent(Integer(giBrightness * 255 / 100), "ahk_id " . DimId)
+			iDimId := gasDimId[A_Index]
+			iTransparency := 100 - giBrightness
+			WinSetTransparent(Integer(iTransparency * 255 / 100), "ahk_id " . iDimId)
 		}
 		Return
 	}
