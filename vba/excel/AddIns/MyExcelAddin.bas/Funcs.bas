@@ -1,7 +1,7 @@
 Attribute VB_Name = "Funcs"
 Option Explicit
 
-' my excel addin functions v1.12
+' my excel addin functions v1.13
 
 ' ==================================================================
 ' =  <<関数一覧>>
@@ -22,6 +22,7 @@ Option Explicit
 ' =    GetInteriorColor     背景色を返却する。(色指定版)
 ' =    GetFontColorAll      フォントカラーを返却する。(全色指定版)
 ' =    GetInteriorColorAll  背景色を返却する。(全色指定版)
+' =    GetURL               ハイパーリンクからURLを抽出する。
 ' =
 ' =    BitAndVal            ビットＡＮＤ演算を行う。（数値）
 ' =    BitAndStrHex         ビットＡＮＤ演算を行う。（文字列１６進数）
@@ -824,6 +825,33 @@ End Function
         Debug.Print "*** test finished! ***"
         
         oTrgtCellsPos01.Interior.Color = lColorBefore
+    End Sub
+
+' ==================================================================
+' = 概要    ハイパーリンクからURLを抽出する。
+' = 引数    rTrgtRange  Range     [in]  セル
+' = 戻値                String          URL
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Funcs.bas
+' ==================================================================
+Public Function GetURL( _
+    ByRef rTrgtCell As Range _
+) As String
+    Dim sAddr As String
+    If rTrgtCell.Hyperlinks.Count > 0 Then
+        If rTrgtCell.Hyperlinks(1).Address Like "http*" Then
+            sAddr = rTrgtCell.Hyperlinks(1).Address
+        End If
+    End If
+    If sAddr <> "" Then
+        GetURL = sAddr
+    Else
+        GetURL = ""
+    End If
+End Function
+    Private Sub Test_GetURL()
+        'TODO
     End Sub
 
 ' ==================================================================

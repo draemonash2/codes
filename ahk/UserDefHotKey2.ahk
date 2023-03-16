@@ -11,18 +11,14 @@
 ;* ***************************************************************
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global giWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
-global giWIN_TILE_MODE_MAX := 3
-global giWIN_TILE_MODE_INIT := 0 ; 0～giWIN_TILE_MODE_MAX
+global giWIN_TILE_MODE_MAX := 3 ; 0～giWIN_TILE_MODE_MAX
 global giWIN_Y_OFFSET := 2/7
 global giWIN_TILE_MODE_OFFSET := 0
 global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
-global gsCUR_YEAR := A_YYYY
-global gsCUR_MONTH := A_MM
-global gsCUR_MONTH_2DEG := Format("{1:02d}" , gsCUR_MONTH)
-global gsCUR_MONTH_1DEG := Format("{1:d}" , gsCUR_MONTH)
+global giSTART_PRG_TOOL_TIP_SHOW_TIME := 2000 ; [ms]
 
 ;* ***************************************************************
 ;* Preprocess
@@ -31,6 +27,8 @@ TraySetIcon "UserDefHotKey2.ico"
 ShowAutoHideTrayTip(A_ScriptName, A_ScriptName . " is loaded.", 2000)
 InitScreenBrightness()
 InitWinTileMode()
+KillOldAutoHotKey()
+GetCurYearMonths()
 
 ;* ***************************************************************
 ;* Keys
@@ -56,15 +54,14 @@ InitWinTileMode()
 	;スクリプトリロード
 		^+!F5::
 		{
-			Reload
-			Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
-			MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
+			ReloadMe()
 		}
 	;ファイルオープン
 		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
 		!^+F1::		StartProgramAndActivateFile( "C:\other\グローバルホットキー配置.vsdx" )											;ホットキー配置表示
 		^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
+		^+!Enter::																													;#todo.itmz
 		^+!Up::																														;#todo.itmz
 		{
 		;	lPID := ProcessWait("Dropbox.exe", 30) ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
@@ -153,12 +150,14 @@ InitWinTileMode()
 	;Windowタイル切り替え
 		!#LEFT::
 		{
+			;MsgBox "!#LEFT"
 			SetTimerWinTileMode()
 			IncrementWinTileMode()
 			ApplyWinTileMode()
 		}
 		!#RIGHT::
 		{
+			;MsgBox "!#RIGHT"
 			SetTimerWinTileMode()
 			DecrementWinTileMode()
 			ApplyWinTileMode()
@@ -318,10 +317,10 @@ InitWinTileMode()
 		
 		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == 1 ) {
-			PID := ProcessExist(sExeName)
-			If (PID == 0)
+			iPID := ProcessExist(sExeName)
+			If (iPID != 0)
 			{
-				WinActivate "ahk_pid " . PID
+				WinActivate "ahk_pid " . iPID
 				return
 			}
 		}
@@ -329,9 +328,12 @@ InitWinTileMode()
 		;*** start program ***
 		Try {
 			Run sExePath . " " . sFilePath, sExeDirPath, , &sOutputVarPID
-		} Catch Error {
-			MsgBox "[error] run error : " . Error
+		} Catch Error as err {
+			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
 		}
+		ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}
@@ -352,14 +354,17 @@ InitWinTileMode()
 			return
 		}
 		sFileName := ExtractFileName(sFilePath)
-		;MsgBox "sFilePath = " . sFilePath . "`nsFileName = sFileName"
+		;MsgBox "sFilePath = " . sFilePath . "`nsFileName = " . sFileName
 		
 		;*** start program ***
 		Try {
 			Run sFilePath, , , &sOutputVarPID
-		} Catch Error {
-			MsgBox "[error] run error : " . Error
+		} Catch Error as err {
+			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
 		}
+		ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}
@@ -380,10 +385,10 @@ InitWinTileMode()
 		
 		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == 1 ) {
-			PID := ProcessExist(sExeName)
-			If (PID != 0)
+			iPID := ProcessExist(sExeName)
+			If (iPID != 0)
 			{
-				WinActivate "ahk_pid " . PID
+				WinActivate "ahk_pid " . iPID
 				return
 			}
 		}
@@ -391,9 +396,12 @@ InitWinTileMode()
 		;*** start program ***
 		Try {
 			Run sExePath, sExeDirPath, , &sOutputVarPID
-		} Catch Error {
-			MsgBox "[error] run error : " . Error
+		} Catch Error as err {
+			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
 		}
+		ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}
@@ -427,19 +435,8 @@ InitWinTileMode()
 	;Windowタイル切り替え
 	InitWinTileMode()
 	{
-		global giWinTileMode := giWIN_TILE_MODE_INIT
+		global giWinTileMode := GetWinTileModeMin()
 		SetTimerWinTileMode()
-	}
-	GetWinTileModeMin()
-	{
-		iMonitorNum := SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
-		if (iMonitorNum = 2) {
-			iWinTileModeMin := 0
-		} else {
-			iWinTileModeMin := 3
-		}
-	;	MsgBox "[DBG] IncrementWinTileMode()" . "`niMonitorNum = " . iMonitorNum . "`niWinTileModeMin = " . iWinTileModeMin
-		return iWinTileModeMin
 	}
 	IncrementWinTileMode()
 	{
@@ -463,37 +460,17 @@ InitWinTileMode()
 		}
 	;	MsgBox "[DBG] DecrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode . "`n giWIN_TILE_MODE_MAX = " . giWIN_TILE_MODE_MAX . "`niWinTileModeMin = " . iWinTileModeMin
 	}
-	GetMonitorPosInfo( MonitorNum, &X, &Y, &Width, &Height )
-	{
-		try
-		{
-			ActualN := MonitorGetWorkArea(MonitorNum, &Left, &Top, &Right, &Bottom)
-		;	MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
-		}
-		catch
-		{
-			MsgBox "Monitor " . MonitorNum . " doesn't exist or an error occurred."
-			return
-		}
-		Y := Top
-		if ( Left < Right ) {
-			X := Left
-			Width := Right - Left + 1
-		} else {
-			X := Right
-			Width := Left - Right + 1
-		}
-		Height := Bottom - Top + 1
-	;	MsgBox "[DBG] GetMonitorPosInfo()" . "`nMonitorNum = " . MonitorNum . "`nX = " . X . "`nY = " . Y . "`nWidth = " . Width . "`nHeight = " . Height
-	}
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode()
 	{
 		global giWinTileMode
 		GetMonitorPosInfo(1, &mainx, &mainy, &mainwidth, &mainheight )
-		GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
-		subywhole := Integer(suby + ( subheight * giWIN_Y_OFFSET ))
-		subheightwhole := Integer(subheight * ( 1 - giWIN_Y_OFFSET ))
+		iMonitorNum := GetMonitorNum()
+		if (iMonitorNum > 1) {
+			GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
+			subywhole := Integer(suby + ( subheight * giWIN_Y_OFFSET ))
+			subheightwhole := Integer(subheight * ( 1 - giWIN_Y_OFFSET ))
+		}
 		switch giWinTileMode
 		{
 			case 0:	;サブ全体
@@ -537,6 +514,43 @@ InitWinTileMode()
 	;		"`nwinx = " . winx . "`nwiny = " . winy . "`nwinwidth = " . winwidth . "`nwinheight = " . winheight
 		WinMove winx, winy, winwidth, winheight, "A"
 		return
+	}
+	GetWinTileModeMin()
+	{
+		iMonitorNum := GetMonitorNum()
+		if (iMonitorNum = 2) {
+			iWinTileModeMin := 0
+		} else {
+			iWinTileModeMin := 3
+		}
+	;	MsgBox "[DBG] IncrementWinTileMode()" . "`niMonitorNum = " . iMonitorNum . "`niWinTileModeMin = " . iWinTileModeMin
+		return iWinTileModeMin
+	}
+	GetMonitorNum()
+	{
+		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
+	}
+	GetMonitorPosInfo( MonitorNum, &X, &Y, &Width, &Height )
+	{
+		try
+		{
+			ActualN := MonitorGetWorkArea(MonitorNum, &Left, &Top, &Right, &Bottom)
+		;	MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
+		} Catch Error as err {
+			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
+		}
+		Y := Top
+		if ( Left < Right ) {
+			X := Left
+			Width := Right - Left + 1
+		} else {
+			X := Right
+			Width := Left - Right + 1
+		}
+		Height := Bottom - Top + 1
+	;	MsgBox "[DBG] GetMonitorPosInfo()" . "`nMonitorNum = " . MonitorNum . "`nX = " . X . "`nY = " . Y . "`nWidth = " . Width . "`nHeight = " . Height
 	}
 	SetTimerWinTileMode()
 	{
@@ -896,4 +910,119 @@ InitWinTileMode()
 		}
 		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x006, "Int", SetSts)
 	}
+
+	; 本スクリプトをリロードする
+	ReloadMe()
+	{
+		Reload
+		Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
+		MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
+	}
+
+	; 旧AutoHotKeyのプログラムを終了する。
+	; （旧AutoHotKeyのスタートアッププログラムを無効にできない件の暫定対策）
+	KillOldAutoHotKey()
+	{
+		sExeName := "AutoHotkeyU64.exe"
+		iPID := ProcessExist(sExeName)
+		If (iPID != 0)
+		{
+			;MsgBox sExeName . " is exist"
+			ProcessClose iPID
+			ReloadMe()
+		}
+	}
+
+	; 今月/先月の月日を取得する
+	GetCurYearMonths()
+	{
+		global gsYearCur := ""
+		global gsMonth1DegCur := ""
+		global gsMonth2DegCur := ""
+		global gsYearLast := ""
+		global gsMonth1DegLast := ""
+		global gsMonth2DegLast := ""
+		GetYearMonth(A_YYYY, A_MM, &gsYearCur, &gsMonth1DegCur, &gsMonth2DegCur)
+		GetYearMonth(A_YYYY, A_MM, &gsYearLast, &gsMonth1DegLast, &gsMonth2DegLast, -1)
+		;MsgBox gsYearCur . "/" . gsMonth1DegCur . "," . gsMonth2DegCur . "`n" . gsYearLast . "/" . gsMonth1DegLast . "," . gsMonth2DegLast
+	}
+	; 月日を取得する
+	GetYearMonth(sInYear, sInMonth, &sOutYear, &sOutMonth1Deg, &sOutMonth2Deg, iOffset:=0 )
+	{
+		if (iOffset > 12 || iOffset < -12)
+		{
+			MsgBox "[error] GetYearMonth() iOffset is " . iOffset . ". iOffset must be keep within -12~12."
+			return
+		}
+		;MsgBox sInYear . "/" . sInMonth
+		
+		iTrgtMonth := Integer(sInMonth) + iOffset
+		iTrgtYear := Integer(sInYear)
+		if (iTrgtMonth < 1)
+		{
+			iTrgtMonth := 12 + iTrgtMonth
+			iTrgtYear := iTrgtYear - 1
+		}
+		else if (iTrgtMonth > 12)
+		{
+			iTrgtMonth := iTrgtMonth - 12
+			iTrgtYear := iTrgtYear + 1
+		}
+		else
+		{
+			; Do Nothing
+		}
+		;MsgBox String(iTrgtYear) . "/" . String(iTrgtMonth)
+		sOutYear := Format("{1:04d}" , String(iTrgtYear))
+		sOutMonth1Deg := Format("{1:d}" , String(iTrgtMonth))
+		sOutMonth2Deg := Format("{1:02d}" , String(iTrgtMonth))
+	}
+		Test_GetYearMonth() { ; {{{
+			sYear := ""
+			sMonth1Deg := ""
+			sMonth2Deg := ""
+			sOutStr := ""
+			sInYear := "2022"
+			sInMonth := "01"
+			iTestCase := 1
+			
+			if (iTestCase == 0) {
+				; normal case
+				GetYearMonth(A_YYYY, A_MM, &sYear, &sMonth1Deg, &sMonth2Deg)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, 0)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, 1)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, 2)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, 12)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, -1)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, -2)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, -12)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+			} else {
+				; error case
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, 13)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+				
+				GetYearMonth(sInYear, sInMonth, &sYear, &sMonth1Deg, &sMonth2Deg, -13)
+				sOutStr := sOutStr . "`n" . sYear . "/" . sMonth1Deg . "," . sMonth2Deg
+			}
+			
+			MsgBox sOutStr
+		} ; }}}
 
