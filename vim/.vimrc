@@ -853,7 +853,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.F90,*.vbs,*.bas,*.cls"
+	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.F90,*.vbs,*.bas,*.cls,*.py"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------

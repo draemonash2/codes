@@ -32,6 +32,7 @@
 	noremap		<silent>			<c-j>		10jzz|											" カーソル移動＋画面移動（下）
 	noremap		<silent>			<c-k>		10kzz|											" カーソル移動＋画面移動（上）
 	noremap		<silent>			<c-h>		10zh10h|										" カーソル移動＋画面移動（左）
+	noremap		<silent>			<bs>		10zh10h|										" カーソル移動＋画面移動（左） for tmux
 	noremap		<silent>			<c-l>		10zl10l|										" カーソル移動＋画面移動（右）
 
 "=== ノーマルモード ===
@@ -579,7 +580,7 @@ endif
 " ==============================================================================
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
-	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.F90,*.vbs,*.bas,*.cls"
+	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.F90,*.vbs,*.bas,*.cls,*.py"
 	let g:sGrepPath = "" "パス区切りは'/'で指定すること！
 	
 	"------------------------------------------------------
