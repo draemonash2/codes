@@ -730,6 +730,11 @@ function outputhwinfo() {
 	cmd="clinfo"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
 	cmd="nvcc -V # CUDA version"													; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
 	cmd="cat /usr/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 # cudnn version"	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
+	cmd="sudo lshw"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
+	cmd="uname -m"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
+	cmd="arch"																		; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
+	cmd="gcc -v"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
+	vim ${logfile}
 }
 
 alias cp='cp -i'
