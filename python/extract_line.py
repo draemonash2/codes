@@ -23,8 +23,10 @@ def main():
         in_file = open(in_file_name)
         lines = in_file.readlines()
         for line in lines:
+            #print(line, end="")
             matchlist = re.findall(pattern, line)
             if matchlist:
+                #print(matchlist[0][0] + matchlist[0][1] + matchlist[0][2], end="")
                 out_file.write(matchlist[0][0] + matchlist[0][1] + matchlist[0][2] + "\n")
     except Exception as e:
         print(e)
