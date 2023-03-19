@@ -587,6 +587,7 @@ endif
 "	set termwinkey=<c-n>								" ターミナルウィンドウのターミナルキー変更
 "endtry
 "	set ambiwidth=double
+	set autoread										" ファイル自動読み込み
 
 " ==============================================================================
 " ファイルパス設定
@@ -802,7 +803,7 @@ endif
 " ==============================================================================
 	augroup vimrc-checktime
 		autocmd!
-		autocmd winenter * checktime
+		autocmd WinEnter * checktime
 	augroup end
 
 " ==============================================================================
