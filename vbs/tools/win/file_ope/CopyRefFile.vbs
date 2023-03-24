@@ -12,7 +12,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\SettingFileClass.vbs" )    ' SettingFi
 '= 設定値
 '===============================================================================
 Const bEXEC_TEST = False 'テスト用
-Const sPROG_NAME = "作業ファイルとしてファイル/フォルダ複製"
+Const sPROG_NAME = "参照ファイル複製"
 Const lADD_DATE_TYPE = 1 '付与する日時の種別（1:現在日時、2:ファイル/フォルダ更新日時）
 Const lDATE_STR_TYPE = 1
 Const bEVACUATE_ORG_FILE = True
@@ -21,7 +21,7 @@ Const bCHOOSE_FILE_AT_DIALOG_BOX = True
 Const sSHORTCUT_FILE_SUFFIX = "s"
 Const sORIGINAL_FILE_PREFIX = "o"
 Const sEDIT_FILE_PREFIX     = "e"
-Const sTEMP_FILE_NAME = "CopyAsWorkFile.cfg"
+Const sTEMP_FILE_NAME = "CopyRefFile.cfg"
 
 '===============================================================================
 '= 本処理

@@ -394,6 +394,24 @@ function tmr() { # TMux Restart
 }
 	complete -F _complete_tmr tmr # {{{
 	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
+function add_session_name_to_cmplist() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : add_session_name_to_cmplist <session_name>"
+		return 1
+	fi
+	session_name=$1
+	cmpllist_tma="${cmpllist_tma} ${session_name}"
+	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
+	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
+}
+function add_session_list_to_cmplist() {
+	session_list=$(tmux list-sessions | cut -d: -f 1)
+	for session_name in "${session_list}"
+	do
+		add_session_name_to_cmplist "${session_name}"
+	done
+}
 function killjobsall() {
 	jobidlist=$(jobs | cut -d] -f -1 | cut -d[ -f 2-)
 	for jobid in ${jobidlist}
@@ -763,7 +781,8 @@ alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
-session_name=temp; cmpllist_tma="${cmpllist_tma} ${session_name}"; cmpllist_tmk="${cmpllist_tmk} ${session_name}"; cmpllist_tmr="${cmpllist_tmr} ${session_name}"
+add_session_list_to_cmplist
+add_session_name_to_cmplist temp
 alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
 
 #########################################################

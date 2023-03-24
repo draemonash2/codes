@@ -12,7 +12,7 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Url.vbs" )                ' DownloadFi
 '= 設定値
 '===============================================================================
 Const bEXEC_TEST = False 'テスト用
-Const sPROG_NAME = "ファイルダウンロード"
+Const sPROG_NAME = "Webから参照ファイル複製"
 Const lDATE_STR_TYPE = 1
 Const bEVACUATE_ORG_FILE = True
 Const bCHOOSE_DOWNLOAD_DIR_PATH = False
@@ -20,7 +20,7 @@ Const bCHOOSE_FILE_AT_DIALOG_BOX = True
 Const sSHORTCUT_FILE_SUFFIX = "s"
 Const sORIGINAL_FILE_PREFIX = "o"
 Const sEDIT_FILE_PREFIX     = "e"
-Const sTEMP_FILE_NAME = "CopyAsWorkFileFromURL.cfg"
+Const sTEMP_FILE_NAME = "CopyRefFileFromWeb.cfg"
 
 '===============================================================================
 '= 本処理
