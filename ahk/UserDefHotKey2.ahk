@@ -80,11 +80,11 @@ GetCurYearMonths()
 		^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
 		^+!t::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
 		^+!w::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
-		^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), 1 )														;cCalc.exe
+		^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
 		^+!x::																														;rapture.exe
 		{
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
-			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE") )
+			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
 	;フォルダ表示
 		!^+z::																														;ファイラ―
@@ -303,7 +303,7 @@ GetCurYearMonths()
 ;* Functions
 ;* ***************************************************************
 	; 起動＆アクティベート処理 (実行プログラム＆ファイルパス指定)
-	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=0 )
+	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=False, bShowToolTip:=True )
 	{
 		;*** preprocess ***
 		If ( sExePath == "" or sFilePath == "" )
@@ -317,7 +317,7 @@ GetCurYearMonths()
 		;MsgBox "sExePath = " . sExePath . "`nsExeName = " . sExeName . "`nsExeDirPath = " . sExeDirPath . "`nsFilePath = sFilePath" . "`nbLaunchSingleProcess = " . bLaunchSingleProcess
 		
 		;*** check if the program is running ***
-		If ( bLaunchSingleProcess == 1 ) {
+		If ( bLaunchSingleProcess == True ) {
 			iPID := ProcessExist(sExeName)
 			If (iPID != 0)
 			{
@@ -334,7 +334,9 @@ GetCurYearMonths()
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-		ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}
@@ -346,7 +348,7 @@ GetCurYearMonths()
 	;       理由）単一プロセス起動は、プログラム名を基にしたプロセスの起動有無を
 	;             確認することで実現できる。本関数はプログラム名を指定しないため、
 	;             単一プロセス起動を実現できない。
-	StartProgramAndActivateFile( sFilePath )
+	StartProgramAndActivateFile( sFilePath, bShowToolTip:=True )
 	{
 		;*** preprocess ***
 		If ( sFilePath == "" )
@@ -365,13 +367,15 @@ GetCurYearMonths()
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-		ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}
 	
 	; 起動＆アクティベート処理 (実行プログラム指定のみ)
-	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=0 )
+	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=False, bShowToolTip:=True )
 	{
 		;*** preprocess ***
 		If ( sExePath == "" )
@@ -385,7 +389,7 @@ GetCurYearMonths()
 		;MsgBox "sExePath = " . sExePath . "`nsExeName = " . sExeName . "`nsExeDirPath = " . sExeDirPath . "`nbLaunchSingleProcess = " . bLaunchSingleProcess
 		
 		;*** check if the program is running ***
-		If ( bLaunchSingleProcess == 1 ) {
+		If ( bLaunchSingleProcess == True ) {
 			iPID := ProcessExist(sExeName)
 			If (iPID != 0)
 			{
@@ -402,7 +406,9 @@ GetCurYearMonths()
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-		ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
 	}

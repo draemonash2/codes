@@ -9,16 +9,19 @@ import os
 
 def main():
     args = sys.argv
-    if len(args) == 2:
-        pass
-    else:
-        print('wrong number of arguments')
+    if len(args) != 2:
+        print('[error] wrong number of arguments')
+        print('  usage : python3 set_quote_no.py <file>')
         return 0
     
     in_file_name = args[1]
     out_file_name = args[1] + ".tmp"
     
-    pattern = r"^(.*)\[\[.*\]\](.*)"
+    if os.path.exists(in_file_name) == False:
+        print('[error] file does not exist : ' + in_file_name)
+        return 0
+    
+    pattern = r"(\[\[\d+\]\])"
     
     quote_idx = 1
     try:
@@ -26,12 +29,18 @@ def main():
         in_file = open(in_file_name)
         lines = in_file.readlines()
         for line in lines:
-            matchlist = re.findall(pattern, line)
-            if matchlist:
-                out_file.write(matchlist[0][0] + "[[" + str(quote_idx) + "]]" + matchlist[0][1] + "\n")
-                quote_idx += 1
-            else:
-                out_file.write(line)
+            matchlist = list(re.finditer(pattern, line))
+            list_num = len(matchlist)
+            list_idx = list_num
+            for matchobj in reversed(matchlist):
+                match_start_pos = matchobj.span()[0]
+                match_end_pos = matchobj.span()[1]
+                output_quote_idx = quote_idx + list_idx - 1
+                line = line[:match_start_pos] + "[[" + str(output_quote_idx) + "]]" + line[match_end_pos:]
+                list_idx -= 1
+            #print(line)
+            out_file.write(line)
+            quote_idx += list_num
     except Exception as e:
         print(e)
     finally:
