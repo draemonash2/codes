@@ -27,7 +27,6 @@ TraySetIcon "UserDefHotKey2.ico"
 ShowAutoHideTrayTip(A_ScriptName, A_ScriptName . " is loaded.", 2000)
 InitScreenBrightness()
 InitWinTileMode()
-KillOldAutoHotKey()
 GetCurYearMonths()
 
 ;* ***************************************************************
@@ -52,13 +51,10 @@ GetCurYearMonths()
 
 ;***** ホットキー（Global） *****
 	;スクリプトリロード
-		^+!F5::
-		{
-			ReloadMe()
-		}
+		^+!F5::		ReloadMe()
 	;ファイルオープン
 		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
-		!^+F1::		StartProgramAndActivateFile( "C:\other\グローバルホットキー配置.vsdx" )											;ホットキー配置表示
+		^+!F1::		StartProgramAndActivateFile( "C:\other\グローバルホットキー配置.vsdx" )											;ホットキー配置表示
 		^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Enter::																													;#todo.itmz
@@ -87,7 +83,7 @@ GetCurYearMonths()
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
 	;フォルダ表示
-		!^+z::																														;ファイラ―
+		^+!z::																														;ファイラ―
 		{
 		;	;xf.exe
 		;	StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
@@ -96,7 +92,7 @@ GetCurYearMonths()
 			Sleep 100
 			Send "+{tab}"
 		}
-		!^+F12::																													;Programsフォルダ表示
+		^+!F12::																													;Programsフォルダ表示
 		{
 			StartProgramAndActivateFile( "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" )
 			Sleep 100
@@ -113,7 +109,7 @@ GetCurYearMonths()
 		}
 	;Wifi接続
 		/*
-		^+!w::																														;Bluetoothテザリング起動
+		^+!F9::																														;Bluetoothテザリング起動
 		{
 			Run "control printers"
 			
@@ -128,13 +124,12 @@ GetCurYearMonths()
 			Sleep 5000
 			Send "!{F4}"
 		}
-		^+!w::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
+		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
 		*/
 	;Window最前面化
-		Pause::
+		^!Pause::	; HP製PC以外：Ctrl+Alt+Pause、HP製PC：Ctrl+Shift+Alt+Fn（HP製PCでは「Pause」＝「Fn＋Shift」）
 		{
 			static bEnableAlwaysOnTop := 0
-			;HP製PCでは「Pause」は「Fn＋Shift」。
 			WinSetAlwaysOnTop -1, "A"
 			sActiveWinTitle := WinGetTitle("A")
 			if (bEnableAlwaysOnTop = 0)
@@ -168,43 +163,10 @@ GetCurYearMonths()
 		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
-	;Teams一時退席抑止機能
-		/*
-		+^!F11::
-		{
-			TrayTip, Teams一時退席抑止機能, Teamsの一時退席を抑止します。`nEscキー長押し(3秒以上)で停止できます。, 5, 17
-			Loop
-			{
-				Sleep, 3000
-				GetKeyState, sPressState, Esc, P
-				If sPressState = D
-				{
-					TrayTip, Teams一時退席抑止機能, Teamsの一時退席抑止を解除します。, 5, 17
-					Break
-				}
-				Else
-				{
-					Send "{vkF3sc029}"
-				}
-			}
-		}
-		*/
 	;テスト用
 		/*
 		^Pause::	MsgBox "ctrlpause"
 		+Pause::	MsgBox "shiftpause"
-		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
-		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt" )
-		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "" )
-		+^!6::StartProgramAndActivate( "", "" )
-		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
-		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 0 )
-		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 0 )
-		+^!6::StartProgramAndActivate( "", "", 0 )
-		+^!9::StartProgramAndActivate( "", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
-		+^!8::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "C:\Users\draem\Dropbox\100_Documents\#temp.txt", 1 )
-		+^!7::StartProgramAndActivate( "C:\Users\draem\Programs\program\prg_exe\Hidemaru\Hidemaru.exe", "", 1 )
-		+^!6::StartProgramAndActivate( "", "", 1 )
 		^1::
 		{
 			MouseGetPos,x,y,hwnd,ctrl,3
@@ -316,6 +278,11 @@ GetCurYearMonths()
 		sFileName := ExtractFileName(sFilePath)
 		;MsgBox "sExePath = " . sExePath . "`nsExeName = " . sExeName . "`nsExeDirPath = " . sExeDirPath . "`nsFilePath = sFilePath" . "`nbLaunchSingleProcess = " . bLaunchSingleProcess
 		
+		;*** show tooltip ***
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
+		
 		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == True ) {
 			iPID := ProcessExist(sExeName)
@@ -333,9 +300,6 @@ GetCurYearMonths()
 			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
-		}
-		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
@@ -359,6 +323,11 @@ GetCurYearMonths()
 		sFileName := ExtractFileName(sFilePath)
 		;MsgBox "sFilePath = " . sFilePath . "`nsFileName = " . sFileName
 		
+		;*** show tooltip ***
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
+		
 		;*** start program ***
 		Try {
 			Run sFilePath, , , &sOutputVarPID
@@ -366,9 +335,6 @@ GetCurYearMonths()
 			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
-		}
-		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
@@ -388,6 +354,11 @@ GetCurYearMonths()
 		sExeDirPath := ExtractDirPath(sExePath)
 		;MsgBox "sExePath = " . sExePath . "`nsExeName = " . sExeName . "`nsExeDirPath = " . sExeDirPath . "`nbLaunchSingleProcess = " . bLaunchSingleProcess
 		
+		;*** show tooltip ***
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+		}
+		
 		;*** check if the program is running ***
 		If ( bLaunchSingleProcess == True ) {
 			iPID := ProcessExist(sExeName)
@@ -405,9 +376,6 @@ GetCurYearMonths()
 			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
-		}
-		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
 		return
@@ -924,20 +892,6 @@ GetCurYearMonths()
 		Reload
 		Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
 		MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
-	}
-
-	; 旧AutoHotKeyのプログラムを終了する。
-	; （旧AutoHotKeyのスタートアッププログラムを無効にできない件の暫定対策）
-	KillOldAutoHotKey()
-	{
-		sExeName := "AutoHotkeyU64.exe"
-		iPID := ProcessExist(sExeName)
-		If (iPID != 0)
-		{
-			;MsgBox sExeName . " is exist"
-			ProcessClose iPID
-			ReloadMe()
-		}
 	}
 
 	; 今月/先月の月日を取得する

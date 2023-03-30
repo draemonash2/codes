@@ -3,7 +3,7 @@
     "workbench.iconTheme": "vscode-icons",
     "editor.stickyScroll.enabled": true,
     "vsicons.dontShowNewVersionMessage": true,
-    "editor.fontSize": 12,
+    "editor.fontSize": 13,
     "editor.renderWhitespace": "all",
     "editor.minimap.showSlider": "always",
     "editor.minimap.renderCharacters": false,
@@ -13,5 +13,8 @@
     "terminal.integrated.confirmOnExit": "always",
     "terminal.integrated.copyOnSelection": true,
     "vim.vimrc.enable": true,
-    "vim.vimrc.path": "C:\\\\codes\\\\vscode\\\\.vimrc"
+    "vim.vimrc.path": "C:\\\\codes\\\\vscode\\\\.vimrc",
+    "[python]": {
+        "editor.formatOnType": true
+    }
 }
