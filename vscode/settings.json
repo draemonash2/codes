@@ -3,7 +3,6 @@
     "workbench.iconTheme": "vscode-icons",
     "editor.stickyScroll.enabled": true,
     "vsicons.dontShowNewVersionMessage": true,
-    "editor.fontSize": 13,
     "editor.renderWhitespace": "all",
     "editor.minimap.showSlider": "always",
     "editor.minimap.renderCharacters": false,
@@ -16,5 +15,11 @@
     "vim.vimrc.path": "C:\\\\codes\\\\vscode\\\\.vimrc",
     "[python]": {
         "editor.formatOnType": true
+    },
+    "editor.minimap.enabled": false,
+    "markdown-preview-enhanced.previewTheme": "github-dark.css",
+    "git.openRepositoryInParentFolders": "never",
+    "[markdown]": {
+        "editor.wordWrap": "off"
     }
 }
