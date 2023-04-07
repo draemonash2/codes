@@ -12,7 +12,7 @@
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
 global giWIN_TILE_MODE_MAX := 3 ; 0～5
-global giWIN_TILE_MODE_ATTACH_MERGIN_RATE := 2/7 ; 0～1
+global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
 global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -442,7 +442,7 @@ StoreCurYearMonths()
 	{
 		global giWinTileMode
 		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
-		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_ATTACH_MERGIN_RATE )
+		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_WIN_RANGE_RATE )
 	;	MsgBox "[DBG] ApplyWinTileMode() " .
 	;		"`ngiWinTileMode = " . giWinTileMode .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
@@ -475,7 +475,7 @@ StoreCurYearMonths()
 	{
 		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
 	}
-	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iMerginRate:=0 )
+	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iWinRangeRate:=0 )
 	{
 		iMonNum := GetMonitorNum()
 		if ( iMonIdx > iMonNum)
@@ -506,15 +506,15 @@ StoreCurYearMonths()
 		switch sAttachSide
 		{
 			case "Top":
-				dHeight := dHeight * ( 1 - iMerginRate )
+				dHeight := dHeight * iWinRangeRate
 			case "Bottom":
-				dY := dY + ( dHeight * iMerginRate )
-				dHeight := dHeight * ( 1 - iMerginRate )
+				dY := dY + ( dHeight * ( 1 - iWinRangeRate) )
+				dHeight := dHeight * iWinRangeRate
 			case "Left":
-				dWidth := dWidth * ( 1 - iMerginRate )
+				dWidth := dWidth * iWinRangeRate
 			case "Right":
-				dX := dX + ( dWidth * iMerginRate )
-				dWidth := dWidth * ( 1 - iMerginRate )
+				dX := dX + ( dWidth * ( 1 - iWinRangeRate) )
+				dWidth := dWidth * iWinRangeRate
 			default:
 				; Do Nothing
 		}
