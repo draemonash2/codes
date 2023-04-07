@@ -7,17 +7,23 @@
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 
 ;* ***************************************************************
-;* Settings
+;* Setting value
 ;* ***************************************************************
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
-global giWIN_TILE_MODE_MAX := 3 ; 0～5
+global giWIN_TILE_MODE_RANGE_MIN := 1 ; 1～6 (Mon1:1-3, Mon2:4-6)
+global giWIN_TILE_MODE_RANGE_MAX := 4 ; 1～6 (Mon1:1-3, Mon2:4-6)
 global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
-global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
+global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
 global giSTART_PRG_TOOLTIP_SHOW_TIME := 2000 ; [ms]
+
+;* ***************************************************************
+;* Constant value
+;* ***************************************************************
+global giWIN_TILE_MODE_INIT := 0
 
 ;* ***************************************************************
 ;* Preprocess
@@ -382,6 +388,12 @@ StoreCurYearMonths()
 		BringActiveWindowToTop()
 		return
 	}
+	BringActiveWindowToTop()
+	{
+		WinSetAlwaysOnTop 1, "A"
+	;	Sleep 100
+		WinSetAlwaysOnTop 0, "A"
+	}
 
 	; 今押している修飾キーと共にキー送信する
 	SendKeyWithModKeyCurPressing( sSendKey )
@@ -412,30 +424,65 @@ StoreCurYearMonths()
 	;Windowタイル切り替え
 	InitWinTileMode()
 	{
-		global giWinTileMode := GetWinTileModeMin()
+		ClearWinTileMode()
 		SetTimerClearWinTileMode()
 	}
 	IncrementWinTileMode()
 	{
 		global giWinTileMode
+		giWinTileMode += 1
 		iWinTileModeMin := GetWinTileModeMin()
-		if ( giWinTileMode >= giWIN_TILE_MODE_MAX ) {
+		iWinTileModeMax := GetWinTileModeMax()
+		if ( giWinTileMode > iWinTileModeMax ) {
 			giWinTileMode := iWinTileModeMin
 		} else {
-			giWinTileMode := giWinTileMode + 1
+			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
 		}
-	;	MsgBox "[DBG] IncrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode . "`niWIN_TILE_MODE_MAX = " . giWIN_TILE_MODE_MAX . "`niWinTileModeMin = " . iWinTileModeMin
+	;	MsgBox "[DBG] IncrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
 	}
 	DecrementWinTileMode()
 	{
 		global giWinTileMode
+		giWinTileMode -= 1
 		iWinTileModeMin := GetWinTileModeMin()
-		if ( giWinTileMode <= iWinTileModeMin ) {
-			giWinTileMode := giWIN_TILE_MODE_MAX
+		iWinTileModeMax := GetWinTileModeMax()
+		if ( giWinTileMode < iWinTileModeMin ) {
+			giWinTileMode := iWinTileModeMax
 		} else {
-			giWinTileMode := giWinTileMode - 1
+			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
 		}
-	;	MsgBox "[DBG] DecrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode . "`n giWIN_TILE_MODE_MAX = " . giWIN_TILE_MODE_MAX . "`niWinTileModeMin = " . iWinTileModeMin
+	;	MsgBox "[DBG] DecrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
+	}
+	GetWinTileModeMin()
+	{
+		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MIN)
+	}
+	GetWinTileModeMax()
+	{
+		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MAX)
+	}
+	CropWinTileModeWithMonNum(iInWinTileMode)
+	{
+		iOutWinTileMode := giWIN_TILE_MODE_INIT
+		iMonitorNum := GetMonitorNum()
+		switch iMonitorNum
+		{
+			case 1:		iOutWinTileMode := CropValue(iInWinTileMode, 4, 6) ; Main only
+			case 2:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 6) ; Main + Sub
+			default:	MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
+		}
+		return iOutWinTileMode
+	}
+	SetTimerClearWinTileMode()
+	{
+		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
+	}
+	ClearWinTileMode()
+	{
+		global giWinTileMode
+		giWinTileMode := giWIN_TILE_MODE_INIT
+		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
+		Return
 	}
 	; ウィンドウサイズ切り替え
 	ApplyWinTileMode()
@@ -444,32 +491,21 @@ StoreCurYearMonths()
 		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
 		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_WIN_RANGE_RATE )
 	;	MsgBox "[DBG] ApplyWinTileMode() " .
-	;		"`ngiWinTileMode = " . giWinTileMode .
+	;		"`n giWinTileMode = " . giWinTileMode .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
 	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2
 		
 		switch giWinTileMode
 		{
-			case 0:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2)
-			case 1:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
-			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
-			case 3:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
-			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Left")
-			case 5:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Right")
+			case 1:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2)
+			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
+			case 3:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
+			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
+			case 5:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Left")
+			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Right")
 			default:	MsgBox "[error] invalid giWinTileMode : " . giWinTileMode
 		}
 		return
-	}
-	GetWinTileModeMin()
-	{
-		iMonitorNum := GetMonitorNum()
-		if (iMonitorNum = 2) {
-			iWinTileModeMin := 0
-		} else {
-			iWinTileModeMin := 3
-		}
-	;	MsgBox "[DBG] IncrementWinTileMode()" . "`niMonitorNum = " . iMonitorNum . "`niWinTileModeMin = " . iWinTileModeMin
-		return iWinTileModeMin
 	}
 	GetMonitorNum()
 	{
@@ -558,23 +594,6 @@ StoreCurYearMonths()
 	;		"`n iWinHeight = " . iWinHeight . 
 	;		""
 		WinMove iWinX, iWinY, iWinWidth, iWinHeight, "A"
-	}
-	SetTimerClearWinTileMode()
-	{
-		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
-	}
-	ClearWinTileMode()
-	{
-		global giWinTileMode
-		giWinTileMode := giWIN_TILE_MODE_MAX
-		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
-		Return
-	}
-	BringActiveWindowToTop()
-	{
-		WinSetAlwaysOnTop 1, "A"
-	;	Sleep 100
-		WinSetAlwaysOnTop 0, "A"
 	}
 
 	; ファイル名取得
@@ -1015,3 +1034,15 @@ StoreCurYearMonths()
 			MsgBox sOutStr
 		} ; }}}
 
+	CropValue(iValue, iMin, iMax)
+	{
+		if ( iValue < iMin ) {
+			return iMin
+		} else {
+			if ( iValue > iMax ) {
+				return iMax
+			} else {
+				return iValue
+			}
+		}
+	}
