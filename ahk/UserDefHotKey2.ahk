@@ -12,8 +12,7 @@
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
 global giWIN_TILE_MODE_MAX := 3 ; 0～5
-global giWIN_TILE_MODE_Y_OFFSET := 2/7
-global giWIN_TILE_MODE_MERGIN := 0
+global giWIN_TILE_MODE_ATTACH_MERGIN_RATE := 2/7 ; 0～1
 global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -147,14 +146,14 @@ StoreCurYearMonths()
 		!#LEFT::
 		{
 			;MsgBox "!#LEFT"
-			SetTimerWinTileMode()
+			SetTimerClearWinTileMode()
 			IncrementWinTileMode()
 			ApplyWinTileMode()
 		}
 		!#RIGHT::
 		{
 			;MsgBox "!#RIGHT"
-			SetTimerWinTileMode()
+			SetTimerClearWinTileMode()
 			DecrementWinTileMode()
 			ApplyWinTileMode()
 		}
@@ -414,7 +413,7 @@ StoreCurYearMonths()
 	InitWinTileMode()
 	{
 		global giWinTileMode := GetWinTileModeMin()
-		SetTimerWinTileMode()
+		SetTimerClearWinTileMode()
 	}
 	IncrementWinTileMode()
 	{
@@ -442,55 +441,23 @@ StoreCurYearMonths()
 	ApplyWinTileMode()
 	{
 		global giWinTileMode
-		GetMonitorPosInfo(1, &mainx, &mainy, &mainwidth, &mainheight )
-		iMonitorNum := GetMonitorNum()
-		if (iMonitorNum > 1) {
-			GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
-			subywhole := suby + ( subheight * giWIN_TILE_MODE_Y_OFFSET )
-			subheightwhole := subheight * ( 1 - giWIN_TILE_MODE_Y_OFFSET )
-		}
-		switch giWinTileMode
-		{
-			case 0:	;サブ全体
-				winx		:= Integer(subx)
-				winy		:= Integer(subywhole)
-				winwidth	:= Integer(subwidth)
-				winheight	:= Integer(subheightwhole)
-			case 1:	;サブ上
-				winx		:= Integer(subx)
-				winy		:= Integer(subywhole)
-				winwidth	:= Integer(subwidth)
-				winheight	:= Integer(subheightwhole / 2)
-			case 2:	;サブ下
-				winx		:= Integer(subx)
-				winy		:= Integer(subywhole + subheightwhole / 2)
-				winwidth	:= Integer(subwidth)
-				winheight	:= Integer(subheightwhole / 2)
-			case 3:	;メイン全体
-				winx		:= Integer(mainx)
-				winy		:= Integer(mainy)
-				winwidth	:= Integer(mainwidth)
-				winheight	:= Integer(mainheight)
-			case 4:	;メイン左
-				winx		:= Integer(mainx - giWIN_TILE_MODE_MERGIN)
-				winy		:= Integer(mainy)
-				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_MERGIN)
-				winheight	:= Integer(mainheight + giWIN_TILE_MODE_MERGIN)
-			case 5:	;メイン右
-				winx		:= Integer(mainx + (mainwidth / 2 - giWIN_TILE_MODE_MERGIN))
-				winy		:= Integer(mainy)
-				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_MERGIN)
-				winheight	:= Integer(mainheight + giWIN_TILE_MODE_MERGIN)
-			default:
-				MsgBox "[error] invalid giWinTileMode.`n" . giWinTileMode
-				return
-		}
+		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
+		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_ATTACH_MERGIN_RATE )
 	;	MsgBox "[DBG] ApplyWinTileMode() " .
 	;		"`ngiWinTileMode = " . giWinTileMode .
-	;		"`nmainx = " . mainx . "`nmainy = " . mainy . "`nmainwidth = " . mainwidth . "`nmainheight = " . mainheight . "`nsubx = " . subx . "`nsuby = " . suby . "`nsubwidth = " . subwidth . "`nsubheight = " . subheight .
-	;		"`nsubywhole = " . subywhole . "`nsubheightwhole = " . subheightwhole .
-	;		"`nwinx = " . winx . "`nwiny = " . winy . "`nwinwidth = " . winwidth . "`nwinheight = " . winheight
-		WinMove winx, winy, winwidth, winheight, "A"
+	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
+	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2
+		
+		switch giWinTileMode
+		{
+			case 0:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2)
+			case 1:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
+			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
+			case 3:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
+			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Left")
+			case 5:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Right")
+			default:	MsgBox "[error] invalid giWinTileMode : " . giWinTileMode
+		}
 		return
 	}
 	GetWinTileModeMin()
@@ -508,29 +475,91 @@ StoreCurYearMonths()
 	{
 		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
 	}
-	GetMonitorPosInfo( MonitorNum, &X, &Y, &Width, &Height )
+	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iMerginRate:=0 )
 	{
+		iMonNum := GetMonitorNum()
+		if ( iMonIdx > iMonNum)
+		{
+			return False
+		}
+		
 		try
 		{
-			ActualN := MonitorGetWorkArea(MonitorNum, &Left, &Top, &Right, &Bottom)
+			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
 		;	MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
 		} Catch Error as err {
 			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-		Y := Top
+		dY := Top
 		if ( Left < Right ) {
-			X := Left
-			Width := Right - Left + 1
+			dX := Left
+			dWidth := Right - Left + 1
 		} else {
-			X := Right
-			Width := Left - Right + 1
+			dX := Right
+			dWidth := Left - Right + 1
 		}
-		Height := Bottom - Top + 1
-	;	MsgBox "[DBG] GetMonitorPosInfo()" . "`nMonitorNum = " . MonitorNum . "`nX = " . X . "`nY = " . Y . "`nWidth = " . Width . "`nHeight = " . Height
+		dHeight := Bottom - Top + 1
+	;	MsgBox "[DBG] GetMonitorPosInfo() 01" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
+		
+		switch sAttachSide
+		{
+			case "Top":
+				dHeight := dHeight * ( 1 - iMerginRate )
+			case "Bottom":
+				dY := dY + ( dHeight * iMerginRate )
+				dHeight := dHeight * ( 1 - iMerginRate )
+			case "Left":
+				dWidth := dWidth * ( 1 - iMerginRate )
+			case "Right":
+				dX := dX + ( dWidth * iMerginRate )
+				dWidth := dWidth * ( 1 - iMerginRate )
+			default:
+				; Do Nothing
+		}
+	;	MsgBox "[DBG] GetMonitorPosInfo() 02" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
+		return True
 	}
-	SetTimerWinTileMode()
+	MoveActiveWin(iInX, iInY, iInWidth, iInHeight, sOutputSide:="")
+	{
+		switch sOutputSide
+		{
+			case "Top":
+				iWinX		:= Integer(iInX)
+				iWinY		:= Integer(iInY)
+				iWinWidth	:= Integer(iInWidth)
+				iWinHeight	:= Integer(iInHeight / 2)
+			case "Bottom":
+				iWinX		:= Integer(iInX)
+				iWinY		:= Integer(iInY + iInHeight / 2)
+				iWinWidth	:= Integer(iInWidth)
+				iWinHeight	:= Integer(iInHeight / 2)
+			case "Left":
+				iWinX		:= Integer(iInX)
+				iWinY		:= Integer(iInY)
+				iWinWidth	:= Integer(iInWidth / 2)
+				iWinHeight	:= Integer(iInHeight)
+			case "Right":
+				iWinX		:= Integer(iInX + (iInWidth / 2))
+				iWinY		:= Integer(iInY)
+				iWinWidth	:= Integer(iInWidth / 2)
+				iWinHeight	:= Integer(iInHeight)
+			default:
+				iWinX		:= Integer(iInX)
+				iWinY		:= Integer(iInY)
+				iWinWidth	:= Integer(iInWidth)
+				iWinHeight	:= Integer(iInHeight)
+		}
+	;	MsgBox "[DBG] MoveActiveWin() " .
+	;		"`n iWinX = " . iWinX . 
+	;		"`n iWinY = " . iWinY . 
+	;		"`n iWinWidth = " . iWinWidth . 
+	;		"`n iWinHeight = " . iWinHeight . 
+	;		""
+		WinMove iWinX, iWinY, iWinWidth, iWinHeight, "A"
+	}
+	SetTimerClearWinTileMode()
 	{
 		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
 	}
