@@ -10,24 +10,24 @@
 ;* Settings
 ;* ***************************************************************
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
-global giWIN_TILE_MODE_CLEAR_INTERVAL := 10000 ; [ms]
-global giWIN_TILE_MODE_MAX := 3 ; 0～giWIN_TILE_MODE_MAX
-global giWIN_Y_OFFSET := 2/7
-global giWIN_TILE_MODE_OFFSET := 0
+global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
+global giWIN_TILE_MODE_MAX := 3 ; 0～5
+global giWIN_TILE_MODE_Y_OFFSET := 2/7
+global giWIN_TILE_MODE_MERGIN := 0
 global giSCREEN_BRIGHTNESS_STEP := 20 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
-global giSTART_PRG_TOOL_TIP_SHOW_TIME := 2000 ; [ms]
+global giSTART_PRG_TOOLTIP_SHOW_TIME := 2000 ; [ms]
 
 ;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
 TraySetIcon "UserDefHotKey2.ico"
-ShowAutoHideTrayTip(A_ScriptName, A_ScriptName . " is loaded.", 2000)
+ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 InitScreenBrightness()
 InitWinTileMode()
-GetCurYearMonths()
+StoreCurYearMonths()
 
 ;* ***************************************************************
 ;* Keys
@@ -280,7 +280,7 @@ GetCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
 		}
 		
 		;*** check if the program is running ***
@@ -302,6 +302,7 @@ GetCurYearMonths()
 			return
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
+		BringActiveWindowToTop()
 		return
 	}
 	
@@ -325,7 +326,7 @@ GetCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
 		}
 		
 		;*** start program ***
@@ -337,6 +338,7 @@ GetCurYearMonths()
 			return
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
+		BringActiveWindowToTop()
 		return
 	}
 	
@@ -356,7 +358,7 @@ GetCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOL_TIP_SHOW_TIME)
+			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
 		}
 		
 		;*** check if the program is running ***
@@ -378,6 +380,7 @@ GetCurYearMonths()
 			return
 		}
 	;	WinActivate "ahk_pid " . sOutputVarPID
+		BringActiveWindowToTop()
 		return
 	}
 
@@ -443,41 +446,41 @@ GetCurYearMonths()
 		iMonitorNum := GetMonitorNum()
 		if (iMonitorNum > 1) {
 			GetMonitorPosInfo(2, &subx, &suby, &subwidth, &subheight )
-			subywhole := Integer(suby + ( subheight * giWIN_Y_OFFSET ))
-			subheightwhole := Integer(subheight * ( 1 - giWIN_Y_OFFSET ))
+			subywhole := suby + ( subheight * giWIN_TILE_MODE_Y_OFFSET )
+			subheightwhole := subheight * ( 1 - giWIN_TILE_MODE_Y_OFFSET )
 		}
 		switch giWinTileMode
 		{
 			case 0:	;サブ全体
-				winx		:= subx
-				winy		:= subywhole
-				winwidth	:= subwidth
-				winheight	:= subheightwhole
+				winx		:= Integer(subx)
+				winy		:= Integer(subywhole)
+				winwidth	:= Integer(subwidth)
+				winheight	:= Integer(subheightwhole)
 			case 1:	;サブ上
-				winx		:= subx
-				winy		:= subywhole
-				winwidth	:= subwidth
+				winx		:= Integer(subx)
+				winy		:= Integer(subywhole)
+				winwidth	:= Integer(subwidth)
 				winheight	:= Integer(subheightwhole / 2)
 			case 2:	;サブ下
-				winx		:= subx
+				winx		:= Integer(subx)
 				winy		:= Integer(subywhole + subheightwhole / 2)
-				winwidth	:= subwidth
+				winwidth	:= Integer(subwidth)
 				winheight	:= Integer(subheightwhole / 2)
 			case 3:	;メイン全体
-				winx		:= mainx
-				winy		:= mainy
-				winwidth	:= mainwidth
-				winheight	:= mainheight
+				winx		:= Integer(mainx)
+				winy		:= Integer(mainy)
+				winwidth	:= Integer(mainwidth)
+				winheight	:= Integer(mainheight)
 			case 4:	;メイン左
-				winx		:= Integer(mainx - giWIN_TILE_MODE_OFFSET)
-				winy		:= mainy
-				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
-				winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
+				winx		:= Integer(mainx - giWIN_TILE_MODE_MERGIN)
+				winy		:= Integer(mainy)
+				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_MERGIN)
+				winheight	:= Integer(mainheight + giWIN_TILE_MODE_MERGIN)
 			case 5:	;メイン右
-				winx		:= mainx + Integer(mainwidth / 2 - giWIN_TILE_MODE_OFFSET)
-				winy		:= mainy
-				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_OFFSET)
-				winheight	:= Integer(mainheight + giWIN_TILE_MODE_OFFSET)
+				winx		:= Integer(mainx + (mainwidth / 2 - giWIN_TILE_MODE_MERGIN))
+				winy		:= Integer(mainy)
+				winwidth	:= Integer(mainwidth / 2 + giWIN_TILE_MODE_MERGIN)
+				winheight	:= Integer(mainheight + giWIN_TILE_MODE_MERGIN)
 			default:
 				MsgBox "[error] invalid giWinTileMode.`n" . giWinTileMode
 				return
@@ -529,7 +532,7 @@ GetCurYearMonths()
 	}
 	SetTimerWinTileMode()
 	{
-		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL
+		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
 	}
 	ClearWinTileMode()
 	{
@@ -537,6 +540,12 @@ GetCurYearMonths()
 		giWinTileMode := giWIN_TILE_MODE_MAX
 		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
 		Return
+	}
+	BringActiveWindowToTop()
+	{
+		WinSetAlwaysOnTop 1, "A"
+	;	Sleep 100
+		WinSetAlwaysOnTop 0, "A"
 	}
 
 	; ファイル名取得
@@ -624,12 +633,7 @@ GetCurYearMonths()
 	ShowAutoHideToolTip(sMsg, iShowPeriodMs)
 	{
 		ToolTip(sMsg)
-		SetTimer(HideToolTip, -1 * iShowPeriodMs)
-		Return
-	}
-	HideToolTip()
-	{
-		ToolTip()
+		SetTimer () => ToolTip(), -1 * iShowPeriodMs
 		Return
 	}
 
@@ -637,12 +641,7 @@ GetCurYearMonths()
 	ShowAutoHideTrayTip(sTitle, sMsg, iShowPeriodMs)
 	{
 		TrayTip sMsg, sTitle, 1
-		SetTimer(HideTrayTip, -1 * iShowPeriodMs)
-		Return
-	}
-	HideTrayTip()
-	{
-		TrayTip()
+		SetTimer () => TrayTip(), -1 * iShowPeriodMs
 		Return
 	}
 
@@ -671,13 +670,6 @@ GetCurYearMonths()
 		}
 		Return
 	}
-	SetBrightness(iBrightness)
-	{
-		global giBrightness
-		giBrightness := iBrightness
-		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
-	}
 	BrightenScreen()
 	{
 		global giBrightness
@@ -686,8 +678,7 @@ GetCurYearMonths()
 		{
 			giBrightness := giSCREEN_BRIGHTNESS_MAX
 		}
-		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
+		ApplyBrightness(True)
 	}
 	DarkenScreen()
 	{
@@ -697,15 +688,20 @@ GetCurYearMonths()
 		{
 			giBrightness := giSCREEN_BRIGHTNESS_MIN
 		}
-		ApplyBrightness()
-		ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
+		ApplyBrightness(True)
+	}
+	SetBrightness(iBrightness)
+	{
+		global giBrightness
+		giBrightness := iBrightness
+		ApplyBrightness(True)
 	}
 	SetBrightnessTemporary(iBrightness, iWaitTimeMs)
 	{
 		global giBrightness
 		global giBrightnessOld := giBrightness
 		giBrightness := iBrightness
-		ApplyBrightness()
+		ApplyBrightness(False)
 		SetTimer(SetOldBrightness, -1 * iWaitTimeMs)
 	}
 	SetOldBrightness()
@@ -713,9 +709,9 @@ GetCurYearMonths()
 		global giBrightness
 		global giBrightnessOld
 		giBrightness := giBrightnessOld
-		ApplyBrightness()
+		ApplyBrightness(False)
 	}
-	ApplyBrightness()
+	ApplyBrightness(bShowToolTip:=True)
 	{
 		global giBrightness
 		iMonitorCount := MonitorGetCount()
@@ -724,6 +720,9 @@ GetCurYearMonths()
 			iDimId := gasDimId[A_Index]
 			iTransparency := 100 - giBrightness
 			WinSetTransparent(Integer(iTransparency * 255 / 100), "ahk_id " . iDimId)
+		}
+		If ( bShowToolTip == True ) {
+			ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
 		}
 		Return
 	}
@@ -739,24 +738,24 @@ GetCurYearMonths()
 	; GUI
 	CreateSlctCmndWindowZip()
 	{
-		global myGui
-		global ogcListBoxAnswer
-		myGui := Gui()
-		myGui.Add("Text", , "圧縮/パスワード圧縮/解凍を実行します。`n処理を選択してください。")
-		ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R3", ["圧縮", "パスワード圧縮", "解凍"])
-		ogcButtonZipEnter := myGui.Add("Button", "Hidden w0 h0 Default", "ZipEnter")
+		global gmyGui
+		global gogcListBoxAnswer
+		gmyGui := Gui()
+		gmyGui.Add("Text", , "圧縮/パスワード圧縮/解凍を実行します。`n処理を選択してください。")
+		gogcListBoxAnswer := gmyGui.Add("ListBox", "vAnswer Choose1 R3", ["圧縮", "パスワード圧縮", "解凍"])
+		ogcButtonZipEnter := gmyGui.Add("Button", "Hidden w0 h0 Default", "ZipEnter")
 		ogcButtonZipEnter.OnEvent("Click", EventClickAtZip.Bind("Normal"))
-		myGui.OnEvent("Close", EventEscape)
-		myGui.OnEvent("Escape", EventEscape)
-		myGui.Show("Center")
+		gmyGui.OnEvent("Close", EventEscape)
+		gmyGui.OnEvent("Escape", EventEscape)
+		gmyGui.Show("Center")
 	}
 	EventClickAtZip(A_GuiEvent, GuiCtrlObj, Info, *)
 	{
-		global myGui
-		global ogcListBoxAnswer
-		vAnswer := ogcListBoxAnswer.Text
+		global gmyGui
+		global gogcListBoxAnswer
+		vAnswer := gogcListBoxAnswer.Text
 		;MsgBox vAnswer
-		myGui.Destroy()
+		gmyGui.Destroy()
 		sTrgtPaths := GetSelFilePathAtExplorer(1)
 		sDirPath := EnvGet("MYDIRPATH_CODES")
 		switch vAnswer
@@ -775,23 +774,23 @@ GetCurYearMonths()
 	}
 	CreateSlctCmndWindowLink()
 	{
-		global myGui
-		global ogcListBoxAnswer
-		myGui := Gui()
-		myGui.Add("Text", , "ショートカット/シンボリックリンクを作成します。`n処理を選択してください。")
-		ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R2", ["ショートカット作成", "シンボリックリンク作成"])
-		ogcButtonSelLinkEnter := myGui.Add("Button", "Hidden w0 h0 Default", "SelLinkEnter")
+		global gmyGui
+		global gogcListBoxAnswer
+		gmyGui := Gui()
+		gmyGui.Add("Text", , "ショートカット/シンボリックリンクを作成します。`n処理を選択してください。")
+		gogcListBoxAnswer := gmyGui.Add("ListBox", "vAnswer Choose1 R2", ["ショートカット作成", "シンボリックリンク作成"])
+		ogcButtonSelLinkEnter := gmyGui.Add("Button", "Hidden w0 h0 Default", "SelLinkEnter")
 		ogcButtonSelLinkEnter.OnEvent("Click", EventClickAtLink.Bind("Normal"))
-		myGui.OnEvent("Close", EventEscape)
-		myGui.OnEvent("Escape", EventEscape)
-		myGui.Show("Center")
+		gmyGui.OnEvent("Close", EventEscape)
+		gmyGui.OnEvent("Escape", EventEscape)
+		gmyGui.Show("Center")
 	}
 	EventClickAtLink(A_GuiEvent, GuiCtrlObj, Info, *)
 	{
-		global myGui
-		global ogcListBoxAnswer
-		vAnswer := ogcListBoxAnswer.Text
-		myGui.Destroy()
+		global gmyGui
+		global gogcListBoxAnswer
+		vAnswer := gogcListBoxAnswer.Text
+		gmyGui.Destroy()
 		sTrgtPaths := GetSelFilePathAtExplorer(1)
 		sDirPath := EnvGet("MYDIRPATH_CODES")
 		switch vAnswer
@@ -808,23 +807,23 @@ GetCurYearMonths()
 	}
 	CreateSlctCmndWindowPathList()
 	{
-		global myGui
-		global ogcListBoxAnswer
-		myGui := Gui()
-		myGui.Add("Text", , "パス一覧を作成します。`n処理を選択してください。")
-		ogcListBoxAnswer := myGui.Add("ListBox", "vAnswer Choose1 R4", ["ファイル＆フォルダ一覧作成", "ファイル一覧作成", "フォルダ一覧作成", "フォルダツリー作成"])
-		ogcButtonPathListEnter := myGui.Add("Button", "Hidden w0 h0 Default", "PathListEnter")
+		global gmyGui
+		global gogcListBoxAnswer
+		gmyGui := Gui()
+		gmyGui.Add("Text", , "パス一覧を作成します。`n処理を選択してください。")
+		gogcListBoxAnswer := gmyGui.Add("ListBox", "vAnswer Choose1 R4", ["ファイル＆フォルダ一覧作成", "ファイル一覧作成", "フォルダ一覧作成", "フォルダツリー作成"])
+		ogcButtonPathListEnter := gmyGui.Add("Button", "Hidden w0 h0 Default", "PathListEnter")
 		ogcButtonPathListEnter.OnEvent("Click", EventClickPathList.Bind("Normal"))
-		myGui.OnEvent("Close", EventEscape)
-		myGui.OnEvent("Escape", EventEscape)
-		myGui.Show("Center")
+		gmyGui.OnEvent("Close", EventEscape)
+		gmyGui.OnEvent("Escape", EventEscape)
+		gmyGui.Show("Center")
 	}
 	EventClickPathList(A_GuiEvent, GuiCtrlObj, Info, *)
 	{
-		global myGui
-		global ogcListBoxAnswer
-		vAnswer := ogcListBoxAnswer.Text
-		myGui.Destroy()
+		global gmyGui
+		global gogcListBoxAnswer
+		vAnswer := gogcListBoxAnswer.Text
+		gmyGui.Destroy()
 		sDirPath := GetCurDirPathAtExplorer()
 		switch vAnswer
 		{
@@ -843,9 +842,9 @@ GetCurYearMonths()
 	}
 	EventEscape(*)
 	{
-		global myGui
+		global gmyGui
 	;	MsgBox "エスケープされました"
-		myGui.Destroy()
+		gmyGui.Destroy()
 	}
 
 	; IME.ahk
@@ -895,7 +894,7 @@ GetCurYearMonths()
 	}
 
 	; 今月/先月の月日を取得する
-	GetCurYearMonths()
+	StoreCurYearMonths()
 	{
 		global gsYearCur := ""
 		global gsMonth1DegCur := ""
