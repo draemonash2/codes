@@ -69,18 +69,23 @@ function _update_ps1() {
 	PS1="${PS1}\[\e[0;39;049m\] "								# reset
 	PS1="${PS1}\n\$ "
 }
+show_prompt_branch_name=1
 function _puts_prompt_git_branch() {
-	branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
-	if [ ! "${branch_name}" = "" ]; then
-		result_staged=`git status | grep "Changes to be committed:"`
-		result_notstaged=`git status | grep "Changes not staged for commit:"`
-		if [ "${result_staged}" != "" ] || [ "${result_notstaged}" != "" ]; then
-			echo "${branch_name} +"
+	if [ ${show_prompt_branch_name} -eq 1 ]; then
+		branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+		if [ ! "${branch_name}" = "" ]; then
+			result_staged=`git status | grep "Changes to be committed:"`
+			result_notstaged=`git status | grep "Changes not staged for commit:"`
+			if [ "${result_staged}" != "" ] || [ "${result_notstaged}" != "" ]; then
+				echo "${branch_name} +"
+			else
+				echo "${branch_name}"
+			fi
 		else
-			echo "${branch_name}"
+			echo "-"
 		fi
 	else
-		echo "-"
+		echo " "
 	fi
 }
 if [ "$color_prompt" = yes ]; then
@@ -238,6 +243,14 @@ function gr() {
 		return 1
 	fi
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
+}
+function grw() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : grw <keyword>"
+		return 1
+	fi
+	grep -nrIRw "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 }
 function cdex() {
 	\cd "$@"			# cdがaliasでループするので\をつける

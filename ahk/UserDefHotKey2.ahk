@@ -132,7 +132,7 @@ StoreCurYearMonths()
 		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
 		*/
 	;Window最前面化
-		^!Pause::	; HP製PC以外：Ctrl+Alt+Pause、HP製PC：Ctrl+Shift+Alt+Fn（HP製PCでは「Pause」＝「Fn＋Shift」）
+		!Pause::	; HP製PC以外：Alt+Pause、HP製PC：Shift+Alt+Fn（HP製PCでは「Pause」＝「Fn＋Shift」）
 		{
 			static bEnableAlwaysOnTop := 0
 			WinSetAlwaysOnTop -1, "A"
