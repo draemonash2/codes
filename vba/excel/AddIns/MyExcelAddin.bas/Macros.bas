@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.16
+' my excel addin macros v2.17
 
 ' =============================================================================
 ' =  <<ƒ}ƒNƒˆê——>>
@@ -3215,7 +3215,7 @@ End Function
 Private Function ConvFormuraIndentation( _
     ByVal sInputCellFormula As String, _
     ByVal bExecIndentation As Boolean, _
-    Optional ByVal lIndentWidth As Long = 4 _
+    Optional ByVal lIndentWidth As Long = 2 _
 ) As String
     Dim sOutputCellFormula As String
     sOutputCellFormula = ""
