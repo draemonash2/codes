@@ -21,5 +21,11 @@
     "git.openRepositoryInParentFolders": "never",
     "[markdown]": {
         "editor.wordWrap": "off"
-    }
+    },
+    "markdownlint.config": {
+       // "MD007": false,
+        "MD007": { "indent": 4 }
+    },
+    "alt-editor.binary": "C:\\prg_exe\\Vim\\gvim.exe",
+    "alt-editor.args": "{filename}"
 }

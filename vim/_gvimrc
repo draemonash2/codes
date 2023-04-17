@@ -85,6 +85,7 @@
 "	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
 "	nnoremap	<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
+	nnoremap	<silent>			<F7>		:call OpenCurFileWithVSCode()<cr>|				" VSCodeで開く
 	nnoremap	<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
 	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap	<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
@@ -1476,6 +1477,20 @@ endif
 	function! DeleteWronglyMadeBrackets()
 		call delete("]")
 		echom "']' file is deleted."
+	endfunction
+
+" ==============================================================================
+" 現在ファイルをVSCodeで開く
+" ==============================================================================
+	function! OpenCurFileWithVSCode()
+		if has('win32')
+			let sEditerPath = $MYEXEPATH_VSCODE
+			let sFilePath = fnameescape( GetCurFilePath() )
+		"	echo sFilePath
+			execute "!start " . sEditerPath . " " . sFilePath
+		else
+			echo "[error] OpenCurFileWithVSCode() can only be executed on windows."
+		endif
 	endfunction
 
 " **************************************************************************************************
