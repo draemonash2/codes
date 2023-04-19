@@ -589,6 +589,7 @@ endif
 "endtry
 "	set ambiwidth=double
 	set autoread										" ファイル自動読み込み
+	let g:vim_json_conceal = 0							" Jsonファイルのダブルクウォート非表示設定解除（参考:Vim/vim82/syntax/json.vim）
 
 " ==============================================================================
 " ファイルパス設定

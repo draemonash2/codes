@@ -1,5 +1,4 @@
 {
-    "C_Cpp.updateChannel": "Insiders",
     "workbench.iconTheme": "vscode-icons",
     "editor.stickyScroll.enabled": true,
     "vsicons.dontShowNewVersionMessage": true,
@@ -23,9 +22,13 @@
         "editor.wordWrap": "off"
     },
     "markdownlint.config": {
-       // "MD007": false,
-        "MD007": { "indent": 4 }
+        //"MD007": false,                                           // https://github.com/DavidAnson/markdownlint/blob/v0.27.0/doc/md007.md
+        "MD007": { "indent": 4 },                                   // https://github.com/DavidAnson/markdownlint/blob/v0.27.0/doc/md007.md
+        "MD013": { "line_length": 9999 },                           // https://github.com/DavidAnson/markdownlint/blob/v0.27.0/doc/md013.md
+        "MD033": { "allowed_elements": ["details", "summary"] },    // https://github.com/DavidAnson/markdownlint/blob/v0.27.0/doc/md033.md
+        "MD046": { "style": "fenced" }                              // https://github.com/DavidAnson/markdownlint/blob/v0.27.0/doc/md046.md
     },
     "alt-editor.binary": "C:\\prg_exe\\Vim\\gvim.exe",
-    "alt-editor.args": "{filename}"
+    "alt-editor.args": "{filename}",
+    "editor.fontFamily": "\"Source Han Code JP\", monospace"
 }
