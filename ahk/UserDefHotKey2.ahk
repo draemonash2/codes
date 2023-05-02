@@ -19,6 +19,8 @@ global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
 global giSTART_PRG_TOOLTIP_SHOW_TIME := 2000 ; [ms]
+global giTVNC_ACT_INTERVAL := 180000 ; [ms]
+global giTVNC_EXE_NAME := "javaw.exe"
 
 ;* ***************************************************************
 ;* Constant value
@@ -42,6 +44,8 @@ StoreCurYearMonths()
 ;*			+）		Shift
 ;*			!）		Alt
 ;*			#）		Windowsロゴキー
+;*  [備考]
+;*		Pause … HP製PC以外) Alt+Pause(Fn＋Shift)、HP製PC) Shift+Alt+Fn
 ;* ***************************************************************
 
 ;***** キー置き換え *****
@@ -107,11 +111,7 @@ StoreCurYearMonths()
 		^+!1::	Run "https://draemonash2.github.io/"																				;Github.io
 		^+!2::	Run "https://draemonash2.github.io/linux_sft/linux.html"															;Github.io linux
 		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"													;Github.io git command
-		^+!h::																														;翻訳サイト
-		{
-		;	Run "https://translate.google.com/?sl=en&tl=ja&op=translate&hl=ja"
-			Run "https://www.deepl.com//translator"
-		}
+		^+!h::	Run "https://www.deepl.com//translator"																				;翻訳サイト
 	;Wifi接続
 		/*
 		^+!F9::																														;Bluetoothテザリング起動
@@ -131,23 +131,6 @@ StoreCurYearMonths()
 		}
 		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
 		*/
-	;Window最前面化
-		!Pause::	; HP製PC以外：Alt+Pause、HP製PC：Shift+Alt+Fn（HP製PCでは「Pause」＝「Fn＋Shift」）
-		{
-			static bEnableAlwaysOnTop := 0
-			WinSetAlwaysOnTop -1, "A"
-			sActiveWinTitle := WinGetTitle("A")
-			if (bEnableAlwaysOnTop = 0)
-			{
-				MsgBox "Window最前面を【有効】にします`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-				bEnableAlwaysOnTop := 1
-			}
-			else
-			{
-				MsgBox "Window最前面を【解除】します`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-				bEnableAlwaysOnTop := 0
-			}
-		}
 	;Windowタイル切り替え
 		!#LEFT::
 		{
@@ -168,6 +151,9 @@ StoreCurYearMonths()
 		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
+	;その他
+		^+!r::		ToggleSleepPreventingEnable(giTVNC_EXE_NAME, giTVNC_ACT_INTERVAL)												;TurboVNCスリープ抑制
+		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
 	;テスト用
 		/*
 		^Pause::	MsgBox "ctrlpause"
@@ -1033,6 +1019,59 @@ StoreCurYearMonths()
 			
 			MsgBox sOutStr
 		} ; }}}
+
+	; Window最前面化
+	ToggleAlwaysOnTopEnable()
+	{
+		static bEnableAlwaysOnTop := 0
+		WinSetAlwaysOnTop -1, "A"
+		sActiveWinTitle := WinGetTitle("A")
+		if (bEnableAlwaysOnTop = 0)
+		{
+			MsgBox "Window最前面を【有効】にします`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
+			bEnableAlwaysOnTop := 1
+		}
+		else
+		{
+			MsgBox "Window最前面を【解除】します`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
+			bEnableAlwaysOnTop := 0
+		}
+	}
+
+	; スリープ抑制
+	ToggleSleepPreventingEnable(sExeName, iIntervalTimeMs)
+	{
+		global gsSleepPreventingExeName := sExeName
+		static bEnablePreventWindow := 0
+		if (bEnablePreventWindow = 0)
+		{
+			MsgBox "「" . sExeName . "のスリープ抑制を【有効化】します", "Windowスリープ抑制", 0x43000
+			SetTimer ExecSleepPreventing, iIntervalTimeMs
+			bEnablePreventWindow := 1
+		}
+		else
+		{
+			MsgBox "「" . sExeName . "」のスリープ抑制を【解除】します", "Windowスリープ抑制", 0x43000
+			SetTimer ExecSleepPreventing, 0
+			bEnablePreventWindow := 0
+		}
+	}
+	ExecSleepPreventing()
+	{
+		global gsSleepPreventingExeName
+		Try
+		{
+			;ShowAutoHideTrayTip("", "スリープ抑制用Windowアクティベート実行", 2000)
+			iActiveWindowIdOld := WinGetID("A")
+			WinActivate "ahk_exe " . gsSleepPreventingExeName
+			Send "{F13}"
+			sleep 200
+			WinActivate "ahk_id " . iActiveWindowIdOld
+		} Catch Error as err {
+			;MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+			;	, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+		}
+	}
 
 	CropValue(iValue, iMin, iMax)
 	{
