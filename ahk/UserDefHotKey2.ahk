@@ -18,9 +18,11 @@ global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
-global giSTART_PRG_TOOLTIP_SHOW_TIME := 2000 ; [ms]
-global giTVNC_ACT_INTERVAL := 180000 ; [ms]
-global giTVNC_EXE_NAME := "javaw.exe"
+global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
+;global giSLEEPPREVENT_INTERVAL_TIME_MS := 180000
+global giSLEEPPREVENT_INTERVAL_TIME_MS := 3000
+global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
+global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
 
 ;* ***************************************************************
 ;* Constant value
@@ -152,7 +154,7 @@ StoreCurYearMonths()
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
 	;その他
-		^+!r::		ToggleSleepPreventingEnable(giTVNC_EXE_NAME, giTVNC_ACT_INTERVAL)												;TurboVNCスリープ抑制
+		^+!r::		ToggleSleepPreventingEnable()																					;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
 	;テスト用
 		/*
@@ -271,7 +273,7 @@ StoreCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
 		}
 		
 		;*** check if the program is running ***
@@ -317,7 +319,7 @@ StoreCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
+			ShowAutoHideToolTip(sFileName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
 		}
 		
 		;*** start program ***
@@ -349,7 +351,7 @@ StoreCurYearMonths()
 		
 		;*** show tooltip ***
 		If ( bShowToolTip == True ) {
-			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME)
+			ShowAutoHideToolTip(sExeName . " is starting...", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
 		}
 		
 		;*** check if the program is running ***
@@ -1038,34 +1040,32 @@ StoreCurYearMonths()
 		}
 	}
 
-	; スリープ抑制
-	ToggleSleepPreventingEnable(sExeName, iIntervalTimeMs)
+	; ウィンドウスリープ抑制
+	ToggleSleepPreventingEnable()
 	{
-		global gsSleepPreventingExeName := sExeName
 		static bEnablePreventWindow := 0
 		if (bEnablePreventWindow = 0)
 		{
-			MsgBox "「" . sExeName . "のスリープ抑制を【有効化】します", "Windowスリープ抑制", 0x43000
-			SetTimer ExecSleepPreventing, iIntervalTimeMs
+			MsgBox giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【有効化】します", "Windowスリープ抑制", 0x43000
+			SetTimer ExecSleepPreventing, giSLEEPPREVENT_INTERVAL_TIME_MS
 			bEnablePreventWindow := 1
 		}
 		else
 		{
-			MsgBox "「" . sExeName . "」のスリープ抑制を【解除】します", "Windowスリープ抑制", 0x43000
+			MsgBox giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【解除】します", "Windowスリープ抑制", 0x43000
 			SetTimer ExecSleepPreventing, 0
 			bEnablePreventWindow := 0
 		}
 	}
 	ExecSleepPreventing()
 	{
-		global gsSleepPreventingExeName
+		;ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
 		Try
 		{
-			;ShowAutoHideTrayTip("", "スリープ抑制用Windowアクティベート実行", 2000)
 			iActiveWindowIdOld := WinGetID("A")
-			WinActivate "ahk_exe " . gsSleepPreventingExeName
-			Send "{F13}"
-			sleep 200
+			WinActivate "ahk_exe " . giSLEEPPREVENT_EXE_NAME
+			Send " "
+			Sleep 200
 			WinActivate "ahk_id " . iActiveWindowIdOld
 		} Catch Error as err {
 			;MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
