@@ -19,10 +19,10 @@ global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
 global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
-;global giSLEEPPREVENT_INTERVAL_TIME_MS := 180000
-global giSLEEPPREVENT_INTERVAL_TIME_MS := 3000
+global giSLEEPPREVENT_INTERVAL_TIME_MS := 120000
 global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
 global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
+global giSLEEPPREVENT_EXE_NAME := " "
 
 ;* ***************************************************************
 ;* Constant value
@@ -37,6 +37,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 InitScreenBrightness()
 InitWinTileMode()
 StoreCurYearMonths()
+ToggleSleepPreventingEnable(False)
 
 ;* ***************************************************************
 ;* Keys
@@ -1025,36 +1026,40 @@ StoreCurYearMonths()
 	; Window最前面化
 	ToggleAlwaysOnTopEnable()
 	{
-		static bEnableAlwaysOnTop := 0
+		static bEnableAlwaysOnTop := False
 		WinSetAlwaysOnTop -1, "A"
 		sActiveWinTitle := WinGetTitle("A")
-		if (bEnableAlwaysOnTop = 0)
+		if (bEnableAlwaysOnTop == False)
 		{
-			MsgBox "Window最前面を【有効】にします`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-			bEnableAlwaysOnTop := 1
+			ShowAutoHideTrayTip("", "Window最前面を【有効】にします`n`n" . sActiveWinTitle, 2000)
+			bEnableAlwaysOnTop := True
 		}
 		else
 		{
-			MsgBox "Window最前面を【解除】します`n`n" . sActiveWinTitle, "Window最前面化", 0x43000
-			bEnableAlwaysOnTop := 0
+			ShowAutoHideTrayTip("", "Window最前面を【解除】します`n`n" . sActiveWinTitle, 2000)
+			bEnableAlwaysOnTop := False
 		}
 	}
 
 	; ウィンドウスリープ抑制
-	ToggleSleepPreventingEnable()
+	ToggleSleepPreventingEnable(bShowToolTip:=True)
 	{
-		static bEnablePreventWindow := 0
-		if (bEnablePreventWindow = 0)
+		static bEnablePreventWindow := False
+		if (bEnablePreventWindow = False)
 		{
-			MsgBox giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【有効化】します", "Windowスリープ抑制", 0x43000
+			if (bShowToolTip == True) {
+				ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【有効化】します", 2000)
+			}
 			SetTimer ExecSleepPreventing, giSLEEPPREVENT_INTERVAL_TIME_MS
-			bEnablePreventWindow := 1
+			bEnablePreventWindow := True
 		}
 		else
 		{
-			MsgBox giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【解除】します", "Windowスリープ抑制", 0x43000
+			if (bShowToolTip == True) {
+				ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【解除】します", 2000)
+			}
 			SetTimer ExecSleepPreventing, 0
-			bEnablePreventWindow := 0
+			bEnablePreventWindow := False
 		}
 	}
 	ExecSleepPreventing()
@@ -1064,7 +1069,7 @@ StoreCurYearMonths()
 		{
 			iActiveWindowIdOld := WinGetID("A")
 			WinActivate "ahk_exe " . giSLEEPPREVENT_EXE_NAME
-			Send " "
+			Send giSLEEPPREVENT_EXE_NAME
 			Sleep 200
 			WinActivate "ahk_id " . iActiveWindowIdOld
 		} Catch Error as err {
