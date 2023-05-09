@@ -17,7 +17,10 @@ global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
-global giSCREEN_BRIGHTNESS_INIT := giSCREEN_BRIGHTNESS_MAX
+global giSCREEN_BRIGHTNESS_INIT_DAY := giSCREEN_BRIGHTNESS_MAX
+global giSCREEN_BRIGHTNESS_INIT_NIGHT := 50
+global giSCREEN_BRIGHTNESS_DAY_START_TIME := 7
+global giSCREEN_BRIGHTNESS_DAY_END_TIME := 20
 global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
 global giSLEEPPREVENT_INTERVAL_TIME_MS := 120000
 global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
@@ -685,7 +688,14 @@ ToggleSleepPreventingEnable(False)
 	; 画面明るさ設定
 	InitScreenBrightness()
 	{
-		global giBrightness := giSCREEN_BRIGHTNESS_INIT
+		global giBrightness
+		iNowHour := Integer(FormatTime(A_Now, "H"))
+		if (giSCREEN_BRIGHTNESS_DAY_START_TIME < iNowHour && iNowHour < giSCREEN_BRIGHTNESS_DAY_END_TIME)
+		{
+			giBrightness := giSCREEN_BRIGHTNESS_INIT_DAY
+		} else {
+			giBrightness := giSCREEN_BRIGHTNESS_INIT_NIGHT
+		}
 		global gasDimId := Array()
 		iMonitorCount := MonitorGetCount()
 	;	MsgBox "iMonitorCount = " . iMonitorCount . ", giBrightness = " . giBrightness
