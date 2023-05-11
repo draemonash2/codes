@@ -1,4 +1,4 @@
-﻿;	[Help] https://www.autohotkey.com/docs/v2/index.htm
+﻿; [Help] https://www.autohotkey.com/docs/v2/index.htm
 
 ;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
 	#Warn All						; Enable warnings to assist with detecting common errors.
@@ -14,6 +14,7 @@ global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
 global giWIN_TILE_MODE_RANGE_MIN := 1 ; 1～6 (Mon1:1-3, Mon2:4-6)
 global giWIN_TILE_MODE_RANGE_MAX := 4 ; 1～6 (Mon1:1-3, Mon2:4-6)
 global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
+global giWIN_TILE_MODE_INIT := 0
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -28,19 +29,14 @@ global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
 global giSLEEPPREVENT_EXE_NAME := " "
 
 ;* ***************************************************************
-;* Constant value
-;* ***************************************************************
-global giWIN_TILE_MODE_INIT := 0
-
-;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
 TraySetIcon "UserDefHotKey2.ico"
 ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
+StoreCurYearMonths()
 InitScreenBrightness()
 InitWinTileMode()
-StoreCurYearMonths()
-ToggleSleepPreventingEnable(False)
+InitSleepPreventing()
 
 ;* ***************************************************************
 ;* Keys
@@ -158,7 +154,7 @@ ToggleSleepPreventingEnable(False)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
 	;その他
-		^+!r::		ToggleSleepPreventingEnable()																					;TurboVNCスリープ抑制
+		^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
 	;テスト用
 		/*
@@ -259,7 +255,7 @@ ToggleSleepPreventingEnable(False)
 	#HotIf
 
 ;* ***************************************************************
-;* Functions
+;* Functions (macro)
 ;* ***************************************************************
 	; 起動＆アクティベート処理 (実行プログラム＆ファイルパス指定)
 	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=False, bShowToolTip:=True )
@@ -1052,31 +1048,44 @@ ToggleSleepPreventingEnable(False)
 	}
 
 	; ウィンドウスリープ抑制
-	ToggleSleepPreventingEnable(bShowToolTip:=True)
+	InitSleepPreventing()
 	{
-		static bEnablePreventWindow := False
-		if (bEnablePreventWindow = False)
-		{
+		SetSleepPreventingMode("Disable", False)
+	}
+	SetSleepPreventingMode(sMode, bShowToolTip:=True)
+	{
+		static bEnablePreventWindow
+		switch sMode {
+			case "Toggle":
+				if (bEnablePreventWindow = False) {
+					bEnablePreventWindow := True
+				} else {
+					bEnablePreventWindow := False
+				}
+			case "Enable":
+				bEnablePreventWindow := True
+			case "Disable":
+				bEnablePreventWindow := False
+			default:
+				MsgBox "[ERROR] SetSleepPreventing() unknown mode : " . sMode
+		}
+		
+		if (bEnablePreventWindow = True) {
 			if (bShowToolTip == True) {
 				ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【有効化】します", 2000)
 			}
-			SetTimer ExecSleepPreventing, giSLEEPPREVENT_INTERVAL_TIME_MS
-			bEnablePreventWindow := True
-		}
-		else
-		{
+			SetTimer ActivateTargetWindow, giSLEEPPREVENT_INTERVAL_TIME_MS
+		} else {
 			if (bShowToolTip == True) {
 				ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " のスリープ抑制を【解除】します", 2000)
 			}
-			SetTimer ExecSleepPreventing, 0
-			bEnablePreventWindow := False
+			SetTimer ActivateTargetWindow, 0
 		}
 	}
-	ExecSleepPreventing()
+	ActivateTargetWindow()
 	{
-		;ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
-		Try
-		{
+		ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
+		Try {
 			iActiveWindowIdOld := WinGetID("A")
 			WinActivate "ahk_exe " . giSLEEPPREVENT_EXE_NAME
 			Send giSLEEPPREVENT_EXE_NAME
@@ -1088,6 +1097,10 @@ ToggleSleepPreventingEnable(False)
 		}
 	}
 
+;* ***************************************************************
+;* Functions (common)
+;* ***************************************************************
+	; 値のクリッピング
 	CropValue(iValue, iMin, iMax)
 	{
 		if ( iValue < iMin ) {
@@ -1100,3 +1113,4 @@ ToggleSleepPreventingEnable(False)
 			}
 		}
 	}
+
