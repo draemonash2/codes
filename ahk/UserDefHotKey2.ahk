@@ -26,7 +26,8 @@ global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
 global giSLEEPPREVENT_INTERVAL_TIME_MS := 120000
 global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
 global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
-global giSLEEPPREVENT_EXE_NAME := " "
+global giSLEEPPREVENT_KEY_NAME := " "
+global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
 
 ;* ***************************************************************
 ;* Preprocess
@@ -1084,11 +1085,13 @@ InitSleepPreventing()
 	}
 	ActivateTargetWindow()
 	{
-		ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
+		if (gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT == True) {
+			ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
+		}
 		Try {
 			iActiveWindowIdOld := WinGetID("A")
 			WinActivate "ahk_exe " . giSLEEPPREVENT_EXE_NAME
-			Send giSLEEPPREVENT_EXE_NAME
+			Send giSLEEPPREVENT_KEY_NAME
 			Sleep 200
 			WinActivate "ahk_id " . iActiveWindowIdOld
 		} Catch Error as err {
