@@ -9,7 +9,7 @@ Set dEnvVars = CreateObject("Scripting.Dictionary")
 
 '▼▼▼ 設定ここから ▼▼▼
 Const lEXEC_MODE = 1			'1:追加 2:削除
-Const sENV_TARGET = "System"	'System:システム環境変数 User:ユーザ環境変数
+Const sENV_TARGET = "User"	'System:システム環境変数 User:ユーザ環境変数
 																											' +------+------+------+------------+--------------+
 																											' |  xf  |	ahk |  vim | codes(vbs) | updatecodes  |
 With dEnvVars																								' +------+------+------+------------+--------------+
