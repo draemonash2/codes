@@ -1,4 +1,4 @@
-connect 'localhost:22 /ssh /auth=password /user=draemon_ash3 /passwd=Endo4353'
+connect 'localhost:10022 /ssh /auth=password /user=draemon_ash3 /passwd=Endo4353'
 wait "$"
 sendln "\cp -f ${HOME}/.vim/_plugins_user/osc52/plugin/osc52.vim{.teraterm,}"
 wait "$"
