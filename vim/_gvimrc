@@ -297,6 +297,7 @@ if has('mouse')
 endif
 	set iminsert=0										" 挿入モードでのデフォルトのIME状態設定（IM オフ）
 	set imsearch=0										" 検索モードでのデフォルトのIME状態設定（IM オフ）
+	set encoding=utf-8									" vim内部エンコーディング変更
 if has('unix')
 	set fencs=ucs-bom,utf-8,shift-jis,euc-jp,default,latin1	"自動判別対象文字コード設定
 endif
