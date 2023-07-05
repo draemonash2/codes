@@ -1402,7 +1402,7 @@ endif
 " 端末の Vim でも Alt キーを使う
 " [参照] https://thinca.hatenablog.com/entry/20101215/1292340358
 " ==============================================================================
-let s:alt_enable = 0 " Vim起動時にカーソル位置の文字が"4"に変えられる問題を引き起こすため、無効化する
+let s:alt_enable = 0 " 本設定はLinux環境にてVim起動時にカーソル位置の文字が"4"に変えられる問題を引き起こす。そのため、無効化する。
 if s:alt_enable
 	if has('unix') && !has('gui_running')
 		" Use meta keys in console.
