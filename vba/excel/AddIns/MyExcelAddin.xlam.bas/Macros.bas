@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.17
+' my excel addin macros v2.18
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -11,8 +11,9 @@ Option Explicit
 ' =     ・マクロ設定
 ' =         マクロショートカットキー全て有効化          マクロショートカットキー全て有効化
 ' =         マクロショートカットキー全て無効化          マクロショートカットキー全て無効化
-' =         vbeplus出力bas移動                          vbeplusで出力した.basをAddInsフォルダに格納
 ' =         アドインマクロ実行                          アドインマクロ実行
+' =         モジュール一括エクスポート_アドイン         本アドイン内の全マクロ/プロシージャをエクスポートする
+' =         モジュール一括エクスポート_アクティブブック アクティブブック内の全マクロ/プロシージャをエクスポートする
 ' =         CtrlShiftFマクロ                            ショートカットキー重複時の振り分け処理(Ctrl + Shift + F)
 ' =
 ' =     ・ブック操作
@@ -223,8 +224,9 @@ Private Sub SwitchMacroShortcutKeysActivation( _
     'マクロ設定
 '   dMacroShortcutKeys.Add "", "マクロショートカットキー全て有効化"
 '   dMacroShortcutKeys.Add "", "マクロショートカットキー全て無効化"
-'   dMacroShortcutKeys.Add "", "vbeplus出力bas移動"
     dMacroShortcutKeys.Add "+%{F8}", "アドインマクロ実行"
+'   dMacroShortcutKeys.Add "", "モジュール一括エクスポート_アドイン"
+'   dMacroShortcutKeys.Add "", "モジュール一括エクスポート_アクティブブック"
     dMacroShortcutKeys.Add "^+f", "CtrlShiftFマクロ"
     
     'ブック操作
@@ -365,71 +367,6 @@ Public Sub マクロショートカットキー全て無効化()
 End Sub
 
 ' =============================================================================
-' = 概要    vbeplusで出力した.basをAddInsフォルダに格納
-' = 覚書    なし
-' = 依存    Macros.bas/GetFileListCmdClct()
-' = 所属    Macros.bas
-' =============================================================================
-Public Sub vbeplus出力bas移動()
-    Const sMACRO_NAME As String = "vbeplus出力bas移動"
-    
-    'アドインフォルダパス取得
-    Dim sAddinDirPath As String
-    sAddinDirPath = ThisWorkbook.Path
-    
-    'フォルダパス一覧取得
-    Dim cDirPathList As Object
-    Set cDirPathList = CreateObject("System.Collections.ArrayList")
-    Call GetFileListCmdClct(sAddinDirPath, cDirPathList, 2, "")
-    
-    'コピー元フォルダ判定
-    Dim sSrcDirPath As String
-    sSrcDirPath = ""
-    Dim vDirPathTmp As Variant
-    For Each vDirPathTmp In cDirPathList
-        Dim oRegExp As Object
-        Dim sTargetStr As String
-        Dim sSearchPattern As String
-        Set oRegExp = CreateObject("VBScript.RegExp")
-        sTargetStr = vDirPathTmp
-        sSearchPattern = "\Tmp\d{8}$"
-        oRegExp.Pattern = sSearchPattern
-        oRegExp.IgnoreCase = True
-        oRegExp.Global = True
-        Dim oMatchResult As Object
-        Set oMatchResult = oRegExp.Execute(sTargetStr)
-        If oMatchResult.Count > 0 Then
-            sSrcDirPath = vDirPathTmp
-            Exit For
-        End If
-    Next
-    If sSrcDirPath = "" Then
-        MsgBox "コピー元フォルダが見つからないため、処理を中断します", vbOKOnly, sMACRO_NAME
-        Exit Sub
-    End If
-    
-    'コピー元フォルダ内のファイルリスト取得
-    Dim cSrcFilePathList As Object
-    Set cSrcFilePathList = CreateObject("System.Collections.ArrayList")
-    Call GetFileListCmdClct(sSrcDirPath, cSrcFilePathList, 1, "")
-    
-    'コピー元フォルダ内のファイルをコピー先フォルダへコピー
-    Dim objFSO As Object
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim vSrcFilePath As Variant
-    Dim sDstDirPath As String
-    sDstDirPath = sAddinDirPath & "\MyExcelAddin.bas\"
-    For Each vSrcFilePath In cSrcFilePathList
-        objFSO.CopyFile vSrcFilePath, sDstDirPath
-    Next
-    
-    'コピー元フォルダ削除
-    objFSO.DeleteFolder sSrcDirPath, True
-    
-    MsgBox "更新完了！", vbOKOnly, sMACRO_NAME
-End Sub
-
-' =============================================================================
 ' = 概要    アドインマクロ実行
 ' = 覚書    なし
 ' = 依存    なし
@@ -437,6 +374,32 @@ End Sub
 ' =============================================================================
 Public Sub アドインマクロ実行()
     ExecAddInMacro.Show
+End Sub
+
+' =============================================================================
+' = 概要    本アドイン内の全マクロ/プロシージャをエクスポートする
+' = 覚書    ・以下の参照設定を追加する必要あり。
+' =           - [ツール] -> [参照設定] ->「Microsoft Visual Basic for Applications Extensibility」
+' = 依存    Macros.bas/ExportAllModules()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub モジュール一括エクスポート_アドイン()
+    Const sMACRO_NAME As String = "モジュール一括エクスポート_アドイン"
+    Call ExportAllModules(ThisWorkbook)
+    MsgBox "アドイン内の全モジュールをエクスポートしました！", vbOKOnly, sMACRO_NAME
+End Sub
+
+' =============================================================================
+' = 概要    アクティブブック内の全マクロ/プロシージャをエクスポートする
+' = 覚書    ・以下の参照設定を追加する必要あり。
+' =           - [ツール] -> [参照設定] ->「Microsoft Visual Basic for Applications Extensibility」
+' = 依存    Macros.bas/ExportAllModules()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub モジュール一括エクスポート_アクティブブック()
+    Const sMACRO_NAME As String = "モジュール一括エクスポート_アクティブブック"
+    Call ExportAllModules(ActiveWorkbook)
+    MsgBox "アクティブブック内の全モジュールをエクスポートしました！", vbOKOnly, sMACRO_NAME
 End Sub
 
 ' =============================================================================
@@ -3672,4 +3635,51 @@ End Function
         Stop
     End Sub
 
-
+' ==================================================================
+' = 概要    全てのマクロ/プロシージャをエクスポートする
+' = 引数    bTargetBook     Workbook    [in]    エクスポート対象ブック
+' = 戻値    なし
+' = 覚書    ・以下の参照設定を追加する必要あり。
+' =           - [ツール] -> [参照設定] ->「Microsoft Visual Basic for Applications Extensibility」
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Private Function ExportAllModules( _
+    ByRef bTargetBook As Workbook _
+)
+    ' フォルダ作成
+    Dim objFSO As Object
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim sExportDirPath As String
+    sExportDirPath = bTargetBook.Path & "\" & bTargetBook.Name & ".bas"
+    If Not objFSO.FolderExists(sExportDirPath) Then
+        objFSO.CreateFolder (sExportDirPath)
+    End If
+    
+    Debug.Print "*** Export all macros ***"
+    Debug.Print "Target book : " & bTargetBook.Name
+    Debug.Print "Export path : " & bTargetBook.Path
+    Dim objModule As VBComponent
+    For Each objModule In bTargetBook.VBProject.VBComponents
+        ' モジュール種別判定
+        Dim sExtension
+        Select Case objModule.Type
+            Case vbext_ct_ClassModule:  sExtension = "cls"
+            Case vbext_ct_MSForm:       sExtension = "frm"
+            Case vbext_ct_StdModule:    sExtension = "bas"
+            Case vbext_ct_Document:     sExtension = "cls"
+            Case Else:                  sExtension = ""
+        End Select
+        
+        ' エクスポート実施
+        Dim sExportDstFilePath
+        sExportDstFilePath = sExportDirPath & "\" & objModule.Name & "." & sExtension
+        If sExtension = "" Then
+            Debug.Print "[Ignore  ] " & objModule.Name
+        Else
+            Call objModule.Export(sExportDstFilePath)
+            Debug.Print "[Exported] " & objModule.Name & "." & sExtension
+        End If
+    Next
+    Debug.Print ""
+End Function
