@@ -194,7 +194,7 @@ InitSleepPreventing()
 		^+F11::	CreateSlctCmndWindowPathList()																						; パス一覧作成
 		^+c::	SetClipboard(GetSelFilePathAtExplorer(0))																			; ファイルパスコピー
 		^+d::	SetClipboard(GetSelFileNameAtExplorer())																			; ファイル名コピー
-		^+g::	Run EnvGet("MYEXEPATH_TRESGREP") . " " . GetCurDirPathAtExplorer()													; Grep検索＠TresGrep
+		^+g::	StartProgramAndActivate( EnvGet("MYEXEPATH_TRESGREP"), GetCurDirPathAtExplorer() )									; Grep検索＠TresGrep
 		^+z::	CreateSlctCmndWindowZip()																							; 圧縮/パスワード圧縮/解凍
 		^+l::	CreateSlctCmndWindowLink()																							; ショートカット/シンボリックリンク作成
 		^+r::	RunWait EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CreateRenameBat.vbs " . GetSelFilePathAtExplorer(1)	; リネーム用バッチファイル作成

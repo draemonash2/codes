@@ -69,7 +69,7 @@ function _update_ps1() {
 	PS1="${PS1}\[\e[0;39;049m\] "								# reset
 	PS1="${PS1}\n\$ "
 }
-show_prompt_branch_name=1
+show_prompt_branch_name=0
 function _puts_prompt_git_branch() {
 	if [ ${show_prompt_branch_name} -eq 1 ]; then
 		branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
