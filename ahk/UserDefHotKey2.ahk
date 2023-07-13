@@ -19,7 +19,7 @@ global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT_DAY := giSCREEN_BRIGHTNESS_MAX
-global giSCREEN_BRIGHTNESS_INIT_NIGHT := 50
+global giSCREEN_BRIGHTNESS_INIT_NIGHT := 30
 global giSCREEN_BRIGHTNESS_DAY_START_TIME := 7
 global giSCREEN_BRIGHTNESS_DAY_END_TIME := 20
 global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
@@ -28,6 +28,7 @@ global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
 global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
 global giSLEEPPREVENT_KEY_NAME := " "
 global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
+global giMOVECURSOL_KEYPRESS_NUM := 3
 
 ;* ***************************************************************
 ;* Preprocess
@@ -157,6 +158,19 @@ InitSleepPreventing()
 	;その他
 		^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
+		Ctrl::																														;モニタ中心にカーソル移動
+		{
+			Loop giMOVECURSOL_KEYPRESS_NUM - 1
+			{
+				Sleep 100
+				iIsTimeout := KeyWait("Ctrl", "D T0.2")
+				If (iIsTimeout == 0){
+					Return
+				}
+			}
+			;MsgBox "Ctrlキーが" . giMOVECURSOL_KEYPRESS_NUM . "回押されました"
+			MoveCursolToMonitorCenter()
+		}
 	;テスト用
 		/*
 		^Pause::	MsgBox "ctrlpause"
@@ -1097,6 +1111,28 @@ InitSleepPreventing()
 		} Catch Error as err {
 			;MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 			;	, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+		}
+	}
+
+	;モニタ中心にカーソル移動
+	MoveCursolToMonitorCenter() {
+		static iMoveTrgtMonNum := 1
+		GetMonitorPosInfo( iMoveTrgtMonNum, &dX, &dY, &dWidth, &dHeight )
+		dCurX := dX + Integer(dWidth / 2)
+		dCurY := dY + Integer(dHeight / 2)
+		CoordMode "Mouse", "Screen"
+		MouseMove dCurX, dCurY
+		CoordMode "Mouse"
+		Sleep 100
+		Send("{Ctrl down}")
+		Sleep 100
+		Send("{Ctrl up}")
+		
+		iMonNum := GetMonitorNum()
+		If ( iMoveTrgtMonNum >= iMonNum ) {
+			iMoveTrgtMonNum := 1
+		} Else {
+			iMoveTrgtMonNum := iMoveTrgtMonNum + 1
 		}
 	}
 
