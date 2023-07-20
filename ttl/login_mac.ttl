@@ -1,0 +1,6 @@
+connect '192.168.0.25:22 /ssh /auth=password /user=tatsuyaendo /passwd=Endo4353'
+wait "$"
+sendln "\cp -f ${HOME}/.vim/_plugins_user/osc52/plugin/osc52.vim{.teraterm,}"
+wait "$"
+sendln "ll ${HOME}/.vim/_plugins_user/osc52/plugin/"
+
