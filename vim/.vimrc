@@ -577,10 +577,10 @@ endif
 if has('unix')
 	set shell=bash										" ターミナルウィンドウ(:terminal)のデフォルトシェルをbashにする
 endif
-	set diffopt+=internal								" diff時に内部diffライブラリを使用する
-	set diffopt+=filler									" diff時に片方に行挿入されていた場合に片方に追加行を表示する
-	set diffopt+=algorithm:histogram					" diff時のアルゴリズムをhistogram差分アルゴリズムに変更する
-	set diffopt+=indent-heuristic						" diff時に内部diffライブラリのインデントヒューリスティックを使用する
+"	set diffopt+=internal								" diff時に内部diffライブラリを使用する
+"	set diffopt+=filler									" diff時に片方に行挿入されていた場合に片方に追加行を表示する
+"	set diffopt+=algorithm:histogram					" diff時のアルゴリズムをhistogram差分アルゴリズムに変更する
+"	set diffopt+=indent-heuristic						" diff時に内部diffライブラリのインデントヒューリスティックを使用する
 "	set diffopt+=iwhite									" diff時に空白数の違いを無視する
 "	set diffopt+=icase									" diff時に大文字小文字の違いを無視する
 "try

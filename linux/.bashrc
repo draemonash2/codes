@@ -749,23 +749,27 @@ function aggregate() {
 	rm -f ${tmpfile}
 }
 function outputhwinfo() {
-	logfile=~/_hwinfo.log
-	rm -f ${logfile}
-	cmd="cat /etc/lsb-release"														; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="cat /proc/cpuinfo"															; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="cat /proc/meminfo"															; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="df -h"																		; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="lspci | grep VGA"															; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="nvidia-smi"																; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="nvidia-smi --query-gpu=name --format=csv,noheader"							; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="clinfo"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="nvcc -V # CUDA version"													; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="cat /usr/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 # cudnn version"	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="sudo lshw"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="uname -m"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="arch"																		; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	cmd="gcc -v"																	; echo "### ${cmd}" &>> ${logfile}; ${cmd} &>> ${logfile}
-	vim ${logfile}
+	if [ "$(uname)" == 'Darwin' ]; then
+		:
+	else
+		logfile=~/_hwinfo.log
+		rm -f ${logfile}
+		cmd="cat /etc/lsb-release"														; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="cat /proc/cpuinfo"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="cat /proc/meminfo"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="df -h"																		; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="lspci | grep VGA"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="nvidia-smi"																; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="nvidia-smi --query-gpu=name --format=csv,noheader"							; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="clinfo"																	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="nvcc -V # CUDA version"													; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="cat /usr/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 # cudnn version"	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="sudo lshw"																	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="uname -m"																	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="arch"																		; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="gcc -v"																	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		vim ${logfile}
+	fi
 }
 
 alias cp='cp -i'
@@ -803,7 +807,7 @@ alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
 #########################################################
 # WSL
 unixname=$(uname -r)
-unixname=${unixname,,}
+unixname=$(tr '[:upper:]' '[:lower:]' <<< $unixname)
 if [[ "${unixname}" == *microsoft* ]]; then
 	alias cdw='cd /mnt/c/'
 fi
