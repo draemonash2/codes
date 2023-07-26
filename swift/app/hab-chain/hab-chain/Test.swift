@@ -8,10 +8,16 @@
 import Foundation
 import SwiftUI
 
+enum ItemStatus {
+    case NotYet
+    case Finish
+    case Skip
+}
+
 struct Item {
     let item_id: String = UUID().uuidString
     var item_name: String = ""
-    var status:Dictionary<Date, Int> = [:]
+    var status:Dictionary<Date, ItemStatus> = [:]
     var skip_num: Int = 999
     var color: Color = Color.red
     var is_archived: Bool = false
@@ -26,7 +32,7 @@ var hab_chain_data: HabChainData = HabChainData()
 
 func Test2() -> String
 {
-    var dicStatus:Dictionary<Date, Int> = [:]
+    var dicStatus:Dictionary<Date, ItemStatus> = [:]
     
     let today = Date()
     let yesterday = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
@@ -35,8 +41,8 @@ func Test2() -> String
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: Locale(identifier: "ja_JP"))
 
-    dicStatus.updateValue(1, forKey: today)
-    dicStatus.updateValue(2, forKey: yesterday)
+    dicStatus.updateValue(.Skip, forKey: today)
+    dicStatus.updateValue(.Finish, forKey: yesterday)
     for (key,value) in dicStatus {
         print("\(dateFormatter.string(from: key)) : \(value)")
     }

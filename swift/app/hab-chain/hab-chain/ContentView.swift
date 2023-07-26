@@ -11,7 +11,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                let str = Test3()
+                let str = Test2()
                 Text(str)
                     .padding()
             }

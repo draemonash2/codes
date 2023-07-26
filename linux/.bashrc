@@ -375,6 +375,8 @@ function tma() { # TMux Attach
 		echo "[error] cannot be run on tmux."
 		return 1
 	fi
+	config_path=~/.tmux.conf
+	tmux source-file ${config_path}
 	if [ $# -eq 1 ]; then
 		session_name=${1}
 		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
@@ -384,6 +386,22 @@ function tma() { # TMux Attach
 }
 	complete -F _complete_tma tma # {{{
 	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
+function tmam() { # TMux Attach Mac
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	config_path=~/.tmux.conf.mac
+	tmux source-file ${config_path}
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
+	fi
+}
+	complete -F _complete_tmam tmam # {{{
+	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
 function tmk() { # TMux Kill
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -407,6 +425,18 @@ function tmr() { # TMux Restart
 }
 	complete -F _complete_tmr tmr # {{{
 	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
+function tmrm() { # TMux Restart Mac
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmrm <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tmam ${session_name}
+}
+	complete -F _complete_tmrm tmrm # {{{
+	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
 function add_session_name_to_cmplist() {
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -415,8 +445,10 @@ function add_session_name_to_cmplist() {
 	fi
 	session_name=$1
 	cmpllist_tma="${cmpllist_tma} ${session_name}"
+	cmpllist_tmam="${cmpllist_tmam} ${session_name}"
 	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
 	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
+	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
 }
 function add_session_list_to_cmplist() {
 	session_list=$(tmux list-sessions | cut -d: -f 1)
@@ -790,6 +822,7 @@ alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
 alias tgr='vim ~/.tigrc'
 alias tmc='vim ~/.tmux.conf'
+alias tmcm='vim ~/.tmux.conf.mac'
 
 alias tml='tmux list-sessions'
 
