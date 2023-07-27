@@ -26,7 +26,7 @@
 	set -s copy-command 'pbcopy'
 
 # === キーバインド（プレフィクス） ===
-	unbind C-b ; set -g prefix C-b ; bind C-b send-prefix										# Prefix変更
+	unbind C-b ; set -g prefix C-Space ; bind C-Space send-prefix								# Prefix変更
 	bind r source-file ~/.tmux.conf \; display "Reloaded!"										# 設定ファイルリロード
 	bind p paste-buffer																			# ペースト
 	bind B setw synchronize-panes \; display "synchronize-panes #{?pane_synchronized,on,off}"	# グローバルキー送信 有効/無効トグル
