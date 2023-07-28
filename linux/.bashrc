@@ -391,7 +391,7 @@ function tmam() { # TMux Attach Mac
 		echo "[error] cannot be run on tmux."
 		return 1
 	fi
-	config_path=~/.tmux.conf.mac
+	config_path=~/.tmux.conf.mac.conf
 	tmux source-file ${config_path}
 	if [ $# -eq 1 ]; then
 		session_name=${1}
@@ -402,6 +402,22 @@ function tmam() { # TMux Attach Mac
 }
 	complete -F _complete_tmam tmam # {{{
 	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
+function tmau() { # TMux Attach Ubuntu
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	config_path=~/.tmux.conf.ubuntu.conf
+	tmux source-file ${config_path}
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
+	fi
+}
+	complete -F _complete_tmau tmau # {{{
+	function _complete_tmau() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmau}" -- "${cur}") ); } # }}}
 function tmk() { # TMux Kill
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -437,6 +453,18 @@ function tmrm() { # TMux Restart Mac
 }
 	complete -F _complete_tmrm tmrm # {{{
 	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
+function tmru() { # TMux Restart Ubuntu
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmru <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tmau ${session_name}
+}
+	complete -F _complete_tmru tmru # {{{
+	function _complete_tmru() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmru}" -- "${cur}") ); } # }}}
 function add_session_name_to_cmplist() {
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -446,9 +474,11 @@ function add_session_name_to_cmplist() {
 	session_name=$1
 	cmpllist_tma="${cmpllist_tma} ${session_name}"
 	cmpllist_tmam="${cmpllist_tmam} ${session_name}"
+	cmpllist_tmau="${cmpllist_tmau} ${session_name}"
 	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
 	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
 	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
+	cmpllist_tmru="${cmpllist_tmru} ${session_name}"
 }
 function add_session_list_to_cmplist() {
 	session_list=$(tmux list-sessions | cut -d: -f 1)
@@ -744,12 +774,14 @@ function syncscpto() {
 	syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}
 }
 function syncdotfiles() {
-	file=".bashrc";		syncscpto a ${file} ${file}
-	file=".gdbinit";	syncscpto a ${file} ${file}
-	file=".inputrc";	syncscpto a ${file} ${file}
-	file=".tigrc";		syncscpto a ${file} ${file}
-	file=".tmux.conf";	syncscpto a ${file} ${file}
-	file=".vimrc";		syncscpto a ${file} ${file}
+	file=".bashrc";					syncscpto a ${file} ${file}
+	file=".gdbinit";				syncscpto a ${file} ${file}
+	file=".inputrc";				syncscpto a ${file} ${file}
+	file=".tigrc";					syncscpto a ${file} ${file}
+	file=".tmux.conf";				syncscpto a ${file} ${file}
+	file=".tmux.conf.mac.conf";		syncscpto a ${file} ${file}
+	file=".tmux.conf.ubuntu.conf";	syncscpto a ${file} ${file}
+	file=".vimrc";					syncscpto a ${file} ${file}
 }
 function convunixtimetodate() {
 	if [ $# -ne 1 ]; then
@@ -822,7 +854,8 @@ alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
 alias tgr='vim ~/.tigrc'
 alias tmc='vim ~/.tmux.conf'
-alias tmcm='vim ~/.tmux.conf.mac'
+alias tmcm='vim ~/.tmux.conf.mac.conf'
+alias tmcu='vim ~/.tmux.conf.ubuntu.conf'
 
 alias tml='tmux list-sessions'
 
