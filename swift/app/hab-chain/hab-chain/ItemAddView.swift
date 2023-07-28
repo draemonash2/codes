@@ -8,19 +8,26 @@
 import SwiftUI
 
 struct ItemAddView: View {
+    enum ErrorKind {
+        case none
+        case blank_item_name
+        case exist_item_name
+    }
     @Binding var hab_chain_data: HabChainData
-    @Binding var isShowItemAddView: Bool
-    @State var is_cancel: Bool = false
+    @Binding var is_show_item_add_view: Bool
     @State var new_item_name: String = ""
     @State var new_skip_num: Int = 10
     @State var new_color: Color = Color.red
-
+    @State private var is_show_alert: Bool = false
+    @State private var error_kind: ErrorKind = .none
+    
     var body: some View {
+        let _ = Self._printChanges()
         NavigationView {
             Form {
-            //VStack {
                 Section {
-                    TextField("e.g. 勉強", text: $new_item_name)
+                    TextField("e.g. プログラミングの勉強", text: $new_item_name)
+                        .autocapitalization(.none)
                 } header: {
                     Text("項目名")
                 }
@@ -30,7 +37,7 @@ struct ItemAddView: View {
                     Text("スキップ可能数")
                 }
                 Section {
-                    Picker("色", selection: $new_color) {
+                    Picker("", selection: $new_color) {
                         Text("red").tag(Color.red)
                         Text("green").tag(Color.green)
                         Text("blue").tag(Color.blue)
@@ -39,34 +46,63 @@ struct ItemAddView: View {
                     Text("色")
                 }
             }
+            .navigationTitle("アイテム追加")
         }
-        .navigationTitle("新規アイテム")
         Button(action: {
-            isShowItemAddView = false
+            pressAddButtonAction()
         }) {
             Text("Add")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .multilineTextAlignment(.center)
+                .background(Color.blue)
+                .foregroundColor(Color.white)
+        }
+        .alert(isPresented: $is_show_alert) {
+            switch error_kind {
+                case .blank_item_name:
+                    return Alert(title: Text("項目名を入力してください"))
+                case .exist_item_name:
+                    return Alert(title: Text("同じ名前の項目名が存在します"))
+                default:
+                    return Alert(title: Text("[内部エラー] 不明なエラー"))
+            }
         }
         .padding()
         Button(action: {
-            is_cancel = true
-            isShowItemAddView = false
+            pressCancelButtonAction()
         }) {
             Text("Cancel")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .multilineTextAlignment(.center)
+                .background(Color.blue)
+                .foregroundColor(Color.white)
         }
-        //.padding(20)
-        //.frame(width: 350, height: 500)
+        .padding()
         .onDisappear() {
-            if is_cancel == false {
-                let item = Item(item_name: new_item_name, skip_num: new_skip_num, color: new_color)
-                hab_chain_data.addItem(new_item_id: hab_chain_data.generateItemId(), new_item: item)
-            }
+            hab_chain_data.printAll()
         }
-        
+    }
+    func pressAddButtonAction() {
+        if new_item_name == "" {
+            is_show_alert = true
+            error_kind = .blank_item_name
+        } else if hab_chain_data.existItemName(item_name: new_item_name) {
+            is_show_alert = true
+            error_kind = .exist_item_name
+        } else {
+            let item = Item(
+                item_name: new_item_name,
+                skip_num: new_skip_num,
+                color: new_color
+            )
+            hab_chain_data.addItem(new_item_id: hab_chain_data.generateItemId(), new_item: item)
+            is_show_item_add_view = false
+            is_show_alert = false
+        }
+    }
+    func pressCancelButtonAction() {
+        is_show_item_add_view = false
     }
 }
-
-//struct ItemAddView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ItemAddView(item_id: "aaa")
-//    }
-//}
