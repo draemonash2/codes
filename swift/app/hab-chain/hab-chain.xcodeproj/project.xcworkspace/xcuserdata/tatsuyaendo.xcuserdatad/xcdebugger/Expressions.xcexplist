@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dateFormat(date: date)">
+            </PersistentString>
+            <PersistentString
+               value = "dateFormat(date: key)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.setValueForTest():DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
