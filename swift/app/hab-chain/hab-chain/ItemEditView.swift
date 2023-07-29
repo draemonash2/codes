@@ -52,7 +52,7 @@ struct ItemEditView: View {
         Button(action: {
             pressEditButtonAction()
         }) {
-            Text("Edit")
+            Text("Done")
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .multilineTextAlignment(.center)

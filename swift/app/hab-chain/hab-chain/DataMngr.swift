@@ -10,13 +10,13 @@ import SwiftUI
 
 enum ItemStatus {
     case NotYet
-    case Finish
+    case Done
     case Skip
 }
 
 struct Item {
     var item_name: String = ""
-    var status:Dictionary<Date, ItemStatus> = [:]
+    var status:Dictionary<String, ItemStatus> = [:]
     var skip_num: Int = 999
     var color: Color = Color.red
     var is_archived: Bool = false
@@ -25,12 +25,13 @@ struct Item {
 struct HabChainData {
     var item_id_list: [String] = []
     var items: Dictionary<String, Item> = [:]
-    var id = UUID()
 
     init() {
         self.setValueForTest()
         self.printAll()
-        self._test_calcContinuationCount()
+        //self._test_calcContinuationCount()
+        //_test_convDateToStr()
+        //self._test_toggleItemStatus()
     }
     func generateItemId() -> String
     {
@@ -64,7 +65,6 @@ struct HabChainData {
         if is_matched == true {
             self.item_id_list.remove(at: remove_index)
         }
-        self.id = UUID() // for refresh view
     }
     func getItem(item_id: String) -> Item {
         return self.items[item_id]!
@@ -98,22 +98,29 @@ struct HabChainData {
         item_status: ItemStatus
     )
     {
-        self.id = UUID() // for refresh view
-        self.items[item_id]!.status = [date : item_status]
+        self.items[item_id]!.status = [convDateToStr(date: date) : item_status]
     }
     mutating func toggleItemStatus(
         item_id: String,
         date: Date
     )
     {
-        self.id = UUID() // for refresh view
-        let cur_itemstatus = self.items[item_id]!.status[date]
+        let date_str = convDateToStr(date: date)
+        let cur_itemstatus = self.items[item_id]!.status[date_str]
         switch cur_itemstatus {
-            case .NotYet: self.items[item_id]!.status = [date : .Finish]
-            case .Finish: self.items[item_id]!.status = [date : .Skip]
-            case .Skip:   self.items[item_id]!.status = [date : .NotYet]
-            default:      print("[error] unknown itemstatus.")
+            case .NotYet: self.items[item_id]!.status.updateValue(.Done, forKey: date_str)
+            case .Done:   self.items[item_id]!.status.updateValue(.Skip, forKey: date_str)
+            case .Skip:   self.items[item_id]!.status.updateValue(.NotYet, forKey: date_str)
+            default:      self.items[item_id]!.status.updateValue(.Done, forKey: date_str)
         }
+    }
+    mutating func _test_toggleItemStatus() {
+        let item_id: String = self.getItemId(item_name: "bbb")
+        self.printAll()
+        self.toggleItemStatus(item_id: item_id, date: Date()); self.printAll()
+        self.toggleItemStatus(item_id: item_id, date: Date()); self.printAll()
+        self.toggleItemStatus(item_id: item_id, date: Date()); self.printAll()
+        self.toggleItemStatus(item_id: item_id, date: Date()); self.printAll()
     }
     func calcContinuationCount(
         base_date: Date,
@@ -123,16 +130,15 @@ struct HabChainData {
         var date_offset: Int = 0
         var continuation_count: Int = 0
         var is_coutinue: Bool = true
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: Locale(identifier: "ja_JP"))
         if let unwrapped_item = self.items[item_id] {
-            for (item_date, value) in unwrapped_item.status.sorted(by: { $0.key > $1.key }) {
+            for (item_date, item_status) in unwrapped_item.status.sorted(by: { $0.key > $1.key }) {
                 let date = Calendar.current.date(byAdding: .day,value: date_offset, to: base_date)!
-                //print("\(dateFormatter.string(from: date))")
-                if item_date <= date {
-                    if dateFormat(date: item_date) == dateFormat(date: date) {
-                        switch value {
-                            case .Finish:
+                let date_str = convDateToStr(date: date)
+                //print("\(date_str)")
+                if item_date <= date_str {
+                    if item_date == date_str {
+                        switch item_status {
+                            case .Done:
                                 continuation_count += 1
                                 is_coutinue = true
                             case .Skip:
@@ -166,21 +172,44 @@ struct HabChainData {
         print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
         print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
     }
+    func convDateToStr(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: Locale(identifier: "ja_JP"))
+        return dateFormatter.string(from: date)
+    }
+    func _test_convDateToStr() {
+        print(convDateToStr(date: Date()))
+    }
     mutating func setValueForTest() {
         let item1: Item = Item(item_name: "aa", skip_num: 10)
-        let item3: Item = Item(item_name: "cccc", skip_num: 30)
+        let item3: Item = Item(
+            item_name: "cccc",
+            status: [
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -6, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)    : .Done
+            ],
+            skip_num: 30
+        )
         let item2: Item = Item(
             item_name: "bbb",
             status: [
-                Calendar.current.date(byAdding: .day,value: 0, to: Date())!     : .Finish,
-                Calendar.current.date(byAdding: .day,value: -1, to: Date())!    : .NotYet,
-                Calendar.current.date(byAdding: .day,value: -2, to: Date())!    : .Skip,
-                Calendar.current.date(byAdding: .day,value: -3, to: Date())!    : .Finish,
-                Calendar.current.date(byAdding: .day,value: -4, to: Date())!    : .Finish,
-                Calendar.current.date(byAdding: .day,value: -5, to: Date())!    : .Finish,
-                Calendar.current.date(byAdding: .day,value: -7, to: Date())!    : .NotYet,
-                Calendar.current.date(byAdding: .day,value: -8, to: Date())!    : .Skip,
-                Calendar.current.date(byAdding: .day,value: -9, to: Date())!    : .Finish
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .NotYet,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Done,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .NotYet,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Skip,
+                convDateToStr(date: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)    : .Done
             ],
             skip_num: 20
         )
@@ -197,33 +226,28 @@ struct HabChainData {
         print("### items ###")
         for (key,value) in self.items {
             print("\(key) : \(value.item_name)")
+            for (key,value) in value.status.sorted(by: { $0.key > $1.key }) {
+                print("\(key) : \(value)")
+            }
         }
         print("")
     }
 }
 
-func dateFormat(date: Date) -> String {
-    let f = DateFormatter()
-    f.dateStyle = .long
-    f.timeStyle = .none
-    return f.string(from: date)
-}
 
+#if false
 func Test2() -> String
 {
-    var dicStatus:Dictionary<Date, ItemStatus> = [:]
+    var dicStatus:Dictionary<String, ItemStatus> = [:]
     
     let today = Date()
     let yesterday = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
     let yesterday_1 = Calendar.current.date(byAdding: .day,value: -2, to: Date())!
 
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: Locale(identifier: "ja_JP"))
-
     dicStatus.updateValue(.Skip, forKey: today)
-    dicStatus.updateValue(.Finish, forKey: yesterday)
+    dicStatus.updateValue(.Done, forKey: yesterday)
     for (key,value) in dicStatus {
-        print("\(dateFormatter.string(from: key)) : \(value)")
+        print("\(convDateToStr(key)) : \(value)")
     }
     print("\(dicStatus[today]!)")
     print("\(dicStatus[yesterday]!)")
@@ -234,7 +258,6 @@ func Test2() -> String
     return "1"
 }
 
-#if false
 func Test3() -> String
 {
     //let item_id_tmp: String = UUID().uuidString

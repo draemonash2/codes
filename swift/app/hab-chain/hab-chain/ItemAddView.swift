@@ -51,7 +51,7 @@ struct ItemAddView: View {
         Button(action: {
             pressAddButtonAction()
         }) {
-            Text("Add")
+            Text("Done")
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .multilineTextAlignment(.center)

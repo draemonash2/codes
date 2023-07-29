@@ -12,14 +12,14 @@ struct ContentView: View {
     var add_item: Item?
     var body: some View {
         let _ = Self._printChanges()
-        let color_idx: Int = 5
         NavigationView {
             VStack {
-                Text("test!!!")
-                    .padding()
+                Text("hab-chain")
+                    .font(.largeTitle)
                     .onAppear() {
                         hab_chain_data.printAll()
                     }
+                    .padding()
                 List {
                     ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
                         if let unwraped_item = hab_chain_data.items[item_id] {
@@ -30,52 +30,75 @@ struct ContentView: View {
 
                                 Button {
                                     print("pressed \(unwraped_item.item_name) 3day before button")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -3, to: Date())!
+                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
                                 } label: {
-                                    Text("3")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -3, to: Date())!
+                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
+                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
+                                    Text(String(continuation_cnt))
                                         //.bold()
                                         //.padding()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(Color.white)
-                                        .background(Color("color_red" + String(color_idx)))
+                                        .background(Color(color_str))
                                         .clipShape(Circle())
+
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 Button {
                                     print("pressed \(unwraped_item.item_name) 2day before button")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -2, to: Date())!
+                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
                                 } label: {
-                                    Text("2")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -2, to: Date())!
+                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
+                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
+                                    Text(String(continuation_cnt))
                                         //.bold()
                                         //.padding()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(Color.white)
-                                        .background(Color.yellow)
+                                        .background(Color(color_str))
                                         .clipShape(Circle())
+
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 Button {
                                     print("pressed \(unwraped_item.item_name) 1day before button")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
+                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
+                                    hab_chain_data.printAll()
                                 } label: {
-                                    Text("1")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
+                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
+                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
+                                    Text(String(continuation_cnt))
                                         //.bold()
                                         //.padding()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(Color.white)
-                                        .background(Color.yellow)
+                                        .background(Color(color_str))
                                         .clipShape(Circle())
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 Button {
                                     print("pressed \(unwraped_item.item_name) today button")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: 0, to: Date())!
+                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
                                 } label: {
-                                    Text("0")
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: 0, to: Date())!
+                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
+                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
+                                    Text(String(continuation_cnt))
                                         //.bold()
                                         //.padding()
                                         .frame(width: 40, height: 40)
                                         .foregroundColor(Color.white)
-                                        .background(Color.yellow)
+                                        .background(Color(color_str))
                                         .clipShape(Circle())
                                 }
                                 .buttonStyle(PlainButtonStyle())
@@ -89,28 +112,31 @@ struct ContentView: View {
                     //.onMove(perform: moveRow)
                     //.onDelete(perform: removeRow)
                 }
-                .frame(height: 300)
+                //.frame(height: 300)
                 .environment(\.editMode, .constant(.active))
-                Text("test!!!!!!")
-                    .padding()
-                Button(action: {
-                    hab_chain_data.printAll()
-                }) {
-                    Text("button")
-                        .padding()
-                }
+                //Text("test!!!!!!")
+                //    .padding()
+                //Button(action: {
+                //    hab_chain_data.printAll()
+                //}) {
+                //    Text("button")
+                //        .padding()
+                //}
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(
                         destination: ItemSettingView(hab_chain_data: $hab_chain_data)
                     ) {
-                        Text("Edit")
+                        Image("pencil")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 30)
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(
-                        destination: ItemSettingView(hab_chain_data: $hab_chain_data)
+                        destination: AppSettingView()
                     ) {
                         Image("setting")
                             .resizable()
@@ -120,9 +146,10 @@ struct ContentView: View {
                 }
             }
         }
-        //.onAppear {
-        //    hab_chain_data.setValueForTest()
-        //}
+        .onAppear {
+            //hab_chain_data.setValueForTest()
+            //_test_getColorString()
+        }
         .navigationViewStyle(StackNavigationViewStyle()) // for iPad
     }
     func moveRow(from source: IndexSet, to destination: Int) {
@@ -136,13 +163,37 @@ struct ContentView: View {
         }
     }
     
-    func getColorString(color: Color) -> String {
+    func getColorString(color: Color, continuation_count: Int) -> String {
+        var color_name: String = ""
         switch color {
-            case Color.red: return "color_red"
-            case Color.blue: return "color_blue"
-            case Color.green: return "color_green"
+            case Color.red: color_name = "color_red"
+            case Color.blue: color_name = "color_blue"
+            case Color.green: color_name = "color_green"
             default: return ""
         }
+        
+        var color_index: Int = 0
+        let min: Int = 0
+        let max: Int = 5
+        if continuation_count < min {
+            color_index = min
+        } else if min <= continuation_count && continuation_count <= max {
+            color_index = continuation_count
+        } else {
+            color_index = max
+        }
+        
+        return String(color_name) + String(color_index)
+    }
+    func _test_getColorString() {
+        print(getColorString(color: Color.red, continuation_count: 0))
+        print(getColorString(color: Color.red, continuation_count: 1))
+        print(getColorString(color: Color.red, continuation_count: 3))
+        print(getColorString(color: Color.red, continuation_count: 5))
+        print(getColorString(color: Color.red, continuation_count: 6))
+        print(getColorString(color: Color.blue, continuation_count: 3))
+        print(getColorString(color: Color.green, continuation_count: 3))
+        print(getColorString(color: Color.white, continuation_count: 3))
     }
 }
 

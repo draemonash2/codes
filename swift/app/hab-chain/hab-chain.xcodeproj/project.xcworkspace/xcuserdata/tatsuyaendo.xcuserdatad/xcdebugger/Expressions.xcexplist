@@ -3,27 +3,38 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "dateFormat(date: date)">
-            </PersistentString>
-            <PersistentString
-               value = "dateFormat(date: key)">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
       </ContextState>
       <ContextState
-         contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
+         contextName = "HabChainData.toggleItemStatus(item_id:date:):DataMngr.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.items[item_id]!">
+            </PersistentString>
+            <PersistentString
+               value = "self.items[item_id]!.status[date]">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "HabChainData.setValueForTest():DataMngr.swift">
       </ContextState>
       <ContextState
+         contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
+      </ContextState>
+      <ContextState
          contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
       </ContextState>
       <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
+         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dateFormat(date: key)">
+            </PersistentString>
+            <PersistentString
+               value = "dateFormat(date: date)">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>
