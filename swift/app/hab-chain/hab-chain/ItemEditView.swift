@@ -14,8 +14,9 @@ struct ItemEditView: View {
     }
     @Binding var hab_chain_data: HabChainData
     @Binding var is_show_item_edit_view: Bool
-    var trgt_item_id: String?
-    @State var new_item_name: String = ""
+    @Binding var trgt_item_id: String
+    @FocusState private var focusState
+    @State var new_item_name: String = "abc"
     @State var new_skip_num: Int = 10
     @State var new_color: Color = Color.red
     @State private var is_show_alert: Bool = false
@@ -23,16 +24,27 @@ struct ItemEditView: View {
     
     var body: some View {
         let _ = Self._printChanges()
+        
         NavigationView {
             Form {
                 Section {
                     TextField("e.g. プログラミングの勉強", text: $new_item_name)
                         .autocapitalization(.none)
+                        .onAppear {
+                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                                self.new_item_name = unwrapped_item.item_name
+                            }
+                        }
                 } header: {
                     Text("項目名")
                 }
                 Section {
                     TextField("e.g. 10", value: $new_skip_num, format: .number)
+                        .onAppear {
+                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                                self.new_skip_num = unwrapped_item.skip_num
+                            }
+                        }
                 } header: {
                     Text("スキップ可能数")
                 }
@@ -42,12 +54,20 @@ struct ItemEditView: View {
                         Text("green").tag(Color.green)
                         Text("blue").tag(Color.blue)
                     }
+                    .onAppear {
+                        if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                            self.new_color = unwrapped_item.color
+                        }
+                    }
                 } header: {
                     Text("色")
                 }
             }
             .navigationTitle("アイテム編集")
         }
+        //.onDisappear() {
+        //    hab_chain_data.printAll()
+        //}
         Button(action: {
             pressEditButtonAction()
         }) {
@@ -78,34 +98,15 @@ struct ItemEditView: View {
                 .foregroundColor(Color.white)
         }
         .padding()
-        .onAppear() {
-            if let uwrapped_trgt_item_id = trgt_item_id {
-                if let unwrapped_item = hab_chain_data.items[uwrapped_trgt_item_id] {
-                    new_item_name = unwrapped_item.item_name
-                    new_skip_num = unwrapped_item.skip_num
-                    new_color = unwrapped_item.color
-                }
-            }
-        }
-        .onDisappear() {
-            hab_chain_data.printAll()
-        }
     }
     func pressEditButtonAction() {
         if new_item_name == "" {
             is_show_alert = true
             error_kind = .blank_item_name
         } else {
-            //let item = Item(
-            //    item_name: new_item_name,
-            //    skip_num: new_skip_num,
-            //    color: new_color
-            //)
-            if let unwrapped_trgt_item_id = trgt_item_id {
-                hab_chain_data.items[unwrapped_trgt_item_id]!.item_name = new_item_name
-                hab_chain_data.items[unwrapped_trgt_item_id]!.skip_num = new_skip_num
-                hab_chain_data.items[unwrapped_trgt_item_id]!.color = new_color
-            }
+            hab_chain_data.items[trgt_item_id]!.item_name = new_item_name
+            hab_chain_data.items[trgt_item_id]!.skip_num = new_skip_num
+            hab_chain_data.items[trgt_item_id]!.color = new_color
             is_show_item_edit_view = false
             is_show_alert = false
         }

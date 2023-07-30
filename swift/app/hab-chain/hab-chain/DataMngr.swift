@@ -100,6 +100,23 @@ struct HabChainData {
     {
         self.items[item_id]!.status = [convDateToStr(date: date) : item_status]
     }
+    func getItemStatusStr(
+        item_id: String,
+        date: Date
+    ) -> String {
+        var ret: String = ""
+        if let unwrapped_item_id = self.items[item_id] {
+            let date_str: String = self.convDateToStr(date: date)
+            if let unwrapped_status = unwrapped_item_id.status[date_str] {
+                switch unwrapped_status {
+                    case .NotYet: ret = "NotYet"
+                    case .Done: ret = "Done"
+                    case .Skip: ret = "Skip"
+                }
+            }
+        }
+        return ret
+    }
     mutating func toggleItemStatus(
         item_id: String,
         date: Date
@@ -129,7 +146,7 @@ struct HabChainData {
     {
         var date_offset: Int = 0
         var continuation_count: Int = 0
-        var is_coutinue: Bool = true
+        #if false
         if let unwrapped_item = self.items[item_id] {
             for (item_date, item_status) in unwrapped_item.status.sorted(by: { $0.key > $1.key }) {
                 let date = Calendar.current.date(byAdding: .day,value: date_offset, to: base_date)!
@@ -157,20 +174,47 @@ struct HabChainData {
                 }
             }
         }
+        #else
+        if let unwrapped_item = self.items[item_id] {
+            while true {
+                var is_coutinue: Bool = true
+                let date = Calendar.current.date(byAdding: .day,value: date_offset, to: base_date)!
+                let date_str = convDateToStr(date: date)
+                if unwrapped_item.status.keys.contains(date_str) {
+                    switch unwrapped_item.status[date_str]! {
+                        case .Done:
+                            continuation_count += 1
+                            is_coutinue = true
+                        case .Skip:
+                            is_coutinue = true
+                        case .NotYet:
+                            is_coutinue = false
+                    }
+                } else {
+                    is_coutinue = false
+                }
+                if is_coutinue == true {
+                    date_offset -= 1
+                } else {
+                    break
+                }
+            }
+        }
+        #endif
         return continuation_count
     }
     func _test_calcContinuationCount() {
         var offset: Int = 0
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
-        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 0
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 3
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 3
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 2
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 0
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 0
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
+        print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
     }
     func convDateToStr(date: Date) -> String {
         let dateFormatter = DateFormatter()
@@ -203,7 +247,8 @@ struct HabChainData {
                 convDateToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Done,
                 convDateToStr(date: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)    : .Done
             ],
-            skip_num: 30
+            skip_num: 30,
+            color: Color.green
         )
         let item2: Item = Item(
             item_name: "bbb",

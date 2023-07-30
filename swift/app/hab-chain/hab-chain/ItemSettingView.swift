@@ -13,7 +13,8 @@ struct ItemSettingView: View {
     @Binding var hab_chain_data: HabChainData
     @State var is_show_item_add_view: Bool = false
     @State var is_show_item_edit_view: Bool = false
-    @State private var trgt_item_id: String = ""
+    @State var trgt_item_id: String = ""
+    @State var trgt_item_name: String = ""
 
     var body: some View {
         let _ = Self._printChanges()
@@ -31,6 +32,7 @@ struct ItemSettingView: View {
                             Button {
                                 print("pressed \(unwraped_item.item_name) button")
                                 trgt_item_id = item_id
+                                trgt_item_name = unwraped_item.item_name
                                 is_show_item_edit_view = true
                             } label: {
                                 Image(colorScheme == .light ? "pencil_light": "pencil_dark")
@@ -69,10 +71,17 @@ struct ItemSettingView: View {
             }
             .padding()
             .sheet(isPresented: $is_show_item_add_view) {
-                ItemAddView(hab_chain_data: $hab_chain_data, is_show_item_add_view: $is_show_item_add_view)
+                ItemAddView(
+                    hab_chain_data: $hab_chain_data,
+                    is_show_item_add_view: $is_show_item_add_view
+                )
             }
             .sheet(isPresented: $is_show_item_edit_view) {
-                ItemEditView(hab_chain_data: $hab_chain_data, is_show_item_edit_view: $is_show_item_edit_view, trgt_item_id: trgt_item_id)
+                ItemEditView(
+                    hab_chain_data: $hab_chain_data,
+                    is_show_item_edit_view: $is_show_item_edit_view,
+                    trgt_item_id: $trgt_item_id
+                )
             }
         }
     }
