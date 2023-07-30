@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\ .colorScheme) var colorScheme
     @State var hab_chain_data: HabChainData = HabChainData()
     var add_item: Item?
     var body: some View {
@@ -21,6 +22,16 @@ struct ContentView: View {
                     }
                     .padding()
                 List {
+                    HStack {
+                        Spacer()
+                        ForEach(-3..<1) { i in
+                            let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                            Text(hab_chain_data.convDateToMmdd(date: date))
+                                .font(.caption)
+                                .frame(width: 40, height: 40)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
                     ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
                         if let unwraped_item = hab_chain_data.items[item_id] {
                             HStack {
@@ -28,80 +39,25 @@ struct ContentView: View {
                                 
                                 Spacer()
 
-                                Button {
-                                    print("pressed \(unwraped_item.item_name) 3day before button")
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -3, to: Date())!
-                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
-                                } label: {
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -3, to: Date())!
-                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
-                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
-                                    Text(String(continuation_cnt))
-                                        //.bold()
-                                        //.padding()
-                                        .frame(width: 40, height: 40)
-                                        .foregroundColor(Color.white)
-                                        .background(Color(color_str))
-                                        .clipShape(Circle())
-
+                                ForEach(-3..<1) { i in
+                                    Button {
+                                        print("pressed \(unwraped_item.item_name) \(i) day button")
+                                        let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                        hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
+                                    } label: {
+                                        let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                        let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
+                                        let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
+                                        Text(String(continuation_cnt))
+                                            .font(.caption)
+                                            .frame(width: 40, height: 40)
+                                            .multilineTextAlignment(.center)
+                                            .foregroundColor(Color.white)
+                                            .background(Color(color_str))
+                                            .clipShape(Circle())
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
-                                .buttonStyle(PlainButtonStyle())
-                                
-                                Button {
-                                    print("pressed \(unwraped_item.item_name) 2day before button")
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -2, to: Date())!
-                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
-                                } label: {
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -2, to: Date())!
-                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
-                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
-                                    Text(String(continuation_cnt))
-                                        //.bold()
-                                        //.padding()
-                                        .frame(width: 40, height: 40)
-                                        .foregroundColor(Color.white)
-                                        .background(Color(color_str))
-                                        .clipShape(Circle())
-
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                
-                                Button {
-                                    print("pressed \(unwraped_item.item_name) 1day before button")
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
-                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
-                                    hab_chain_data.printAll()
-                                } label: {
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: -1, to: Date())!
-                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
-                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
-                                    Text(String(continuation_cnt))
-                                        //.bold()
-                                        //.padding()
-                                        .frame(width: 40, height: 40)
-                                        .foregroundColor(Color.white)
-                                        .background(Color(color_str))
-                                        .clipShape(Circle())
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                
-                                Button {
-                                    print("pressed \(unwraped_item.item_name) today button")
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: 0, to: Date())!
-                                    hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
-                                } label: {
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: 0, to: Date())!
-                                    let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
-                                    let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
-                                    Text(String(continuation_cnt))
-                                        //.bold()
-                                        //.padding()
-                                        .frame(width: 40, height: 40)
-                                        .foregroundColor(Color.white)
-                                        .background(Color(color_str))
-                                        .clipShape(Circle())
-                                }
-                                .buttonStyle(PlainButtonStyle())
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -128,7 +84,7 @@ struct ContentView: View {
                     NavigationLink(
                         destination: ItemSettingView(hab_chain_data: $hab_chain_data)
                     ) {
-                        Image("pencil")
+                        Image(colorScheme == .light ? "pencil_light": "pencil_dark")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 30)
@@ -138,7 +94,7 @@ struct ContentView: View {
                     NavigationLink(
                         destination: AppSettingView()
                     ) {
-                        Image("setting")
+                        Image(colorScheme == .light ? "setting_light": "setting_dark")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 30)

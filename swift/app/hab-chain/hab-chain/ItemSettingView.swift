@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ItemSettingView: View {
+    @Environment(\ .colorScheme) var colorScheme
     @Environment(\.dismiss) var dismiss
     @Binding var hab_chain_data: HabChainData
     @State var is_show_item_add_view: Bool = false
@@ -32,7 +33,7 @@ struct ItemSettingView: View {
                                 trgt_item_id = item_id
                                 is_show_item_edit_view = true
                             } label: {
-                                Image("pencil")
+                                Image(colorScheme == .light ? "pencil_light": "pencil_dark")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 20)

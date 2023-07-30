@@ -11,7 +11,6 @@ struct ItemEditView: View {
     enum ErrorKind {
         case none
         case blank_item_name
-        case exist_item_name
     }
     @Binding var hab_chain_data: HabChainData
     @Binding var is_show_item_edit_view: Bool
@@ -63,8 +62,6 @@ struct ItemEditView: View {
             switch error_kind {
                 case .blank_item_name:
                     return Alert(title: Text("項目名を入力してください"))
-                case .exist_item_name:
-                    return Alert(title: Text("同じ名前の項目名が存在します"))
                 default:
                     return Alert(title: Text("[内部エラー] 不明なエラー"))
             }
@@ -98,9 +95,6 @@ struct ItemEditView: View {
         if new_item_name == "" {
             is_show_alert = true
             error_kind = .blank_item_name
-        } else if hab_chain_data.existItemName(item_name: new_item_name) {
-            is_show_alert = true
-            error_kind = .exist_item_name
         } else {
             //let item = Item(
             //    item_name: new_item_name,

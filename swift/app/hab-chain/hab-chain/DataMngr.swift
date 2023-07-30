@@ -180,6 +180,13 @@ struct HabChainData {
     func _test_convDateToStr() {
         print(convDateToStr(date: Date()))
     }
+    func convDateToMmdd(date: Date) -> String {
+        let formatMd = DateFormatter()
+        let formatEee = DateFormatter()
+        formatMd.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0, locale: Locale(identifier: "ja_JP"))
+        formatEee.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEE", options: 0, locale: Locale(identifier: "ja_JP"))
+        return formatMd.string(from: date) + "\n" + formatEee.string(from: date)
+    }
     mutating func setValueForTest() {
         let item1: Item = Item(item_name: "aa", skip_num: 10)
         let item3: Item = Item(
