@@ -1,5 +1,5 @@
 //
-//  SettingView.swift
+//  ItemSettingView.swift
 //  hab-chain
 //
 //  Created by Tatsuya Endo on 2023/07/25.
