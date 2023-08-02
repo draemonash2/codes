@@ -8,13 +8,36 @@
 import SwiftUI
 
 struct AppSettingView: View {
+    @Binding var hab_chain_data: HabChainData
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button(action: {
+            hab_chain_data.readJson()
+        }) {
+            Text("Json読み出し")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .multilineTextAlignment(.center)
+                .background(Color.blue)
+                .foregroundColor(Color.white)
+        }
+        .padding()
+        Button(action: {
+            hab_chain_data.writeJson()
+        }) {
+            Text("Json書き込み")
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .multilineTextAlignment(.center)
+                .background(Color.blue)
+                .foregroundColor(Color.white)
+        }
+        .padding()
     }
 }
 
 struct AppSettingView_Previews: PreviewProvider {
+    @State static var dummy_hab_chain_data: HabChainData = HabChainData()
     static var previews: some View {
-        AppSettingView()
+        AppSettingView(hab_chain_data: $dummy_hab_chain_data)
     }
 }

@@ -7,20 +7,8 @@
 
 import Foundation
 
-struct ItemStr: Codable {
-    var item_name: String = ""
-    var status: Dictionary<String, String> = [:]
-    var skip_num: Int = 10
-    var color: String = "red"
-    var is_archived: String = "false"
-}
 
-struct HabChainDataStr: Codable {
-    var item_id_list: [String] = []
-    var items: Dictionary<String, ItemStr> = [:]
-}
-
-
+#if false
 func readJson() {
     guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
         fatalError("フォルダURL取得エラー")
@@ -97,7 +85,6 @@ func writeJson() {
     }
 }
 
-#if false
 //https://softmoco.com/swift/swift-how-to-parse-json-with-dictionary.php
 func testJsonDict() {
     let jsonString = """

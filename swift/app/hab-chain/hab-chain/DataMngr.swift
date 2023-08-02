@@ -26,14 +26,38 @@ struct HabChainData {
     var item_id_list: [String] = []
     var items: Dictionary<String, Item> = [:]
 
+    /* for Json <TOP> */
+    struct ItemJson: Codable {
+        var item_name: String = ""
+        var status: Dictionary<String, String> = [:]
+        var skip_num: Int = 10
+        var color: String = "red"
+        var is_archived: String = "false"
+    }
+
+    struct HabChainDataJson: Codable {
+        var item_id_list: [String] = []
+        var items: Dictionary<String, ItemJson> = [:]
+    }
+    /* for Json <TOP> */
+
     init() {
-        self.setValueForTest()
-        self.printAll()
+        //self.setValueForTest()
+        //self.printAll()
         //self._test_calcContinuationCount()
         //_test_convDateToStr()
         //self._test_toggleItemStatus()
         //self._test_calcTotalItemStatus()
         //self._test_calcContinuationCountAll()
+        //writeJson()
+        //readJson()
+        //testJsonDict()
+        //testJsonDict2()
+    }
+    mutating func clear()
+    {
+        self.item_id_list.removeAll()
+        self.items.removeAll()
     }
     func generateItemId() -> String
     {
@@ -110,12 +134,12 @@ struct HabChainData {
         if let unwrapped_item_id = self.items[item_id] {
             let date_str: String = self.convDateToStr(date: date)
             if let unwrapped_status = unwrapped_item_id.status[date_str] {
-                ret = convItemStatusToStr(item_status: unwrapped_status)
+                ret = convToStr(item_status: unwrapped_status)
             }
         }
         return ret
     }
-    func convItemStatusToStr(
+    func convToStr(
         item_status: ItemStatus
     ) -> String
     {
@@ -124,6 +148,68 @@ struct HabChainData {
             case .NotYet: ret = "NotYet"
             case .Done: ret = "Done"
             case .Skip: ret = "Skip"
+        }
+        return ret
+    }
+    func convToStr(
+        color: Color
+    ) -> String
+    {
+        var ret: String = ""
+        switch color {
+            case Color.red: ret = "red"
+            case Color.green: ret = "green"
+            case Color.blue: ret = "blue"
+            default: fatalError("[error] convToStr()へ不明なcolorが指定されました。")
+        }
+        return ret
+    }
+    func convToStr(
+        variable: Bool
+    ) -> String
+    {
+        var ret: String = ""
+        switch variable {
+            case true: ret = "true"
+            case false: ret = "false"
+        }
+        return ret
+    }
+    func convFromStr(
+        item_status: String
+    ) -> ItemStatus
+    {
+        var ret: ItemStatus
+        switch item_status {
+            case "NotYet": ret = .NotYet
+            case "Done": ret = .Done
+            case "Skip": ret = .Skip
+            default: fatalError("[error] convFromStr()へ不明なitem_statusが指定されました。")
+        }
+        return ret
+    }
+    func convFromStr(
+        color: String
+    ) -> Color
+    {
+        var ret: Color
+        switch color {
+            case "red": ret = Color.red
+            case "green": ret = Color.green
+            case "blue": ret = Color.blue
+            default: fatalError("[error] convFromStr()へ不明なcolorが指定されました。")
+        }
+        return ret
+    }
+    func convFromStr(
+        variable: String
+    ) -> Bool
+    {
+        var ret: Bool
+        switch variable {
+            case "true": ret = true
+            case "false": ret = false
+            default: fatalError("[error] convFromStr()へ不明なvariableが指定されました。")
         }
         return ret
     }
@@ -206,35 +292,39 @@ struct HabChainData {
         date: Date
     ) -> ItemStatus
     {
-        let date_str: String = convDateToStr(date: date)
-        var is_continue: Bool = true
-        var is_skip_all: Bool = true
-        for (_, item) in self.items {
-            if item.status.keys.contains(date_str) {
-                switch item.status[date_str]! {
-                    case .Done:
-                        is_continue = true
-                        is_skip_all = false
-                    case .Skip:
-                        is_continue = true
-                    case .NotYet:
-                        is_continue = false
-                        is_skip_all = false
+        var total_item_status: ItemStatus = .Done
+        if self.items.count > 0 {
+            let date_str: String = convDateToStr(date: date)
+            var is_continue: Bool = true
+            var is_skip_all: Bool = true
+            for (_, item) in self.items {
+                if item.status.keys.contains(date_str) {
+                    switch item.status[date_str]! {
+                        case .Done:
+                            is_continue = true
+                            is_skip_all = false
+                        case .Skip:
+                            is_continue = true
+                        case .NotYet:
+                            is_continue = false
+                            is_skip_all = false
+                    }
+                } else {
+                    is_continue = false
+                    is_skip_all = false
+                }
+                if is_continue == false {
+                    break
+                }
+            }
+            if is_continue == true {
+                if is_skip_all == true {
+                    total_item_status = .Skip
+                } else {
+                    total_item_status = .Done
                 }
             } else {
-                is_continue = false
-                is_skip_all = false
-            }
-            if is_continue == false {
-                break
-            }
-        }
-        var total_item_status: ItemStatus = .Done
-        if is_continue == true {
-            if is_skip_all == true {
-                total_item_status = .Skip
-            } else {
-                total_item_status = .Done
+                total_item_status = .NotYet
             }
         } else {
             total_item_status = .NotYet
@@ -244,12 +334,12 @@ struct HabChainData {
     private func _test_calcTotalItemStatus() {
         var offset: Int = 0
         print("### calcTotalItemStatus() test start ###")
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
-        print("\(offset) : \(convItemStatusToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
+        print("\(offset) : \(convToStr(item_status: calcTotalItemStatus(date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!)))"); offset -= 1 // 1
         print("### calcTotalItemStatus() test finished ###")
         print("")
     }
@@ -312,6 +402,7 @@ struct HabChainData {
         return formatMd.string(from: date) + "\n" + formatEee.string(from: date)
     }
     mutating func setValueForTest() {
+        #if false
         let item1: Item = Item(
             item_name: "aa",
             status: [
@@ -359,6 +450,10 @@ struct HabChainData {
         self.addItem(new_item_id: generateItemId(), new_item: item2)
         self.addItem(new_item_id: generateItemId(), new_item: item3)
         self.addItem(new_item_id: generateItemId(), new_item: item1)
+        #else
+        let item1: Item = Item(item_name: "aa")
+        self.addItem(new_item_id: generateItemId(), new_item: item1)
+        #endif
     }
     func printAll() {
         print("### item_id_list ###")
@@ -374,4 +469,130 @@ struct HabChainData {
         }
         print("")
     }
+    /* for Json <TOP> */
+    func convToJson() -> HabChainDataJson
+    {
+        var hab_chain_data_json: HabChainDataJson = HabChainDataJson()
+        for (_, item_id_self) in self.item_id_list.enumerated() {
+            hab_chain_data_json.item_id_list.append(item_id_self)
+        }
+        for (item_id_self, item_self) in self.items {
+            var item_json: ItemJson = ItemJson()
+            item_json.item_name = item_self.item_name
+            item_json.skip_num = item_self.skip_num
+            item_json.color = convToStr(color: item_self.color)
+            item_json.is_archived = convToStr(variable: item_self.is_archived)
+            for (date_self, status_self) in item_self.status {
+                item_json.status.updateValue(convToStr(item_status: status_self), forKey: date_self)
+            }
+            hab_chain_data_json.items.updateValue(item_json, forKey: item_id_self)
+        }
+        return hab_chain_data_json
+    }
+    mutating func convFromJson(hab_chain_data_json: HabChainDataJson) {
+        self.clear()
+        
+        for (_, item_id_json) in hab_chain_data_json.item_id_list.enumerated() {
+            self.item_id_list.append(item_id_json)
+        }
+        for (item_id_json, item_json) in hab_chain_data_json.items {
+            var item_self: Item = Item()
+            item_self.item_name = item_json.item_name
+            item_self.skip_num = item_json.skip_num
+            item_self.color = convFromStr(color: item_json.color)
+            item_self.is_archived = convFromStr(variable: item_json.is_archived)
+            for (date_json, status_json) in item_json.status {
+                item_self.status.updateValue(convFromStr(item_status: status_json), forKey: date_json)
+            }
+            self.items.updateValue(item_self, forKey: item_id_json)
+        }
+    }
+    func writeJson() {
+        #if false
+        let hab_chain_data_json: HabChainDataJson =
+        HabChainDataJson(
+            item_id_list:[
+              "ABC",
+              "BCD"
+            ],
+            items: [
+                "ABC": ItemJson(
+                    item_name: "aa",
+                    status: [
+                        "2023/07/25": "NotYet",
+                        "2023/07/29": "Done",
+                        "2023/08/01": "Skip"
+                    ],
+                    skip_num: 999,
+                    color: "red",
+                    is_archived: "false"
+                ),
+                "BCD": ItemJson(
+                    item_name: "bbb",
+                    status: [
+                        "2023/07/25": "NotYet",
+                        "2023/07/29": "Done",
+                        "2023/08/01": "Skip"
+                    ],
+                    skip_num: 10,
+                    color: "green",
+                    is_archived: "false"
+                )
+            ]
+        )
+        #else
+        let hab_chain_data_json: HabChainDataJson = convToJson()
+        #endif
+        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("フォルダURL取得エラー")
+        }
+
+        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
+        print(fileURL.path)
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
+        guard let jsonValue = try? encoder.encode(hab_chain_data_json) else {
+            fatalError("JSONエンコードエラー")
+        }
+        
+        do {
+            try jsonValue.write(to: fileURL)
+        } catch {
+            fatalError("JSON書き込みエラー")
+        }
+    }
+    mutating func readJson()
+    {
+        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("フォルダURL取得エラー")
+        }
+
+        if !FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/" + "hab_chain_data.json"){
+            fatalError("JSONが存在しない")
+        }
+
+        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
+
+        guard let data = try? Data(contentsOf: fileURL) else
+        {
+            fatalError("JSON読み込みエラー")
+        }
+             
+        let decoder = JSONDecoder()
+        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: data) else {
+            fatalError("JSONデコードエラー")
+        }
+        //print(hab_chain_data_json.item_id_list[0])
+        //print(hab_chain_data_json.items["ABC"]!.item_name)
+        //print(hab_chain_data_json.items["BCD"]!.status["2023/08/01"]!)
+        
+        self.clear()
+        convFromJson(hab_chain_data_json: hab_chain_data_json)
+    }
+
+    /* for Json <END> */
 }
+
+
+

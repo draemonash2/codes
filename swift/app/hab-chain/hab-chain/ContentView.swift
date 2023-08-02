@@ -22,10 +22,6 @@ struct ContentView: View {
                         .font(.largeTitle)
                         .onAppear() {
                             //hab_chain_data.printAll()
-                            writeJson()
-                            readJson()
-                            //testJsonDict()
-                            //testJsonDict2()
                         }
                         .padding()
                     List {
@@ -42,6 +38,7 @@ struct ContentView: View {
                         HStack {
                             Spacer()
                             ForEach(-3..<1) { i in
+                                #if true
                                 let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
                                 let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
                                 let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
@@ -52,6 +49,12 @@ struct ContentView: View {
                                     .foregroundColor(Color.white)
                                     .background(Color(color_str))
                                     .clipShape(Circle())
+                                #else
+                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
+                                let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
+                                Text(color_str)
+                                #endif
                             }
                         }
                         ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
@@ -129,7 +132,7 @@ struct ContentView: View {
                     }
                     ToolbarItem(placement: .navigationBarLeading) {
                         NavigationLink(
-                            destination: AppSettingView()
+                            destination: AppSettingView(hab_chain_data: $hab_chain_data)
                         ) {
                             Image(colorScheme == .light ? "setting_light": "setting_dark")
                                 .resizable()
