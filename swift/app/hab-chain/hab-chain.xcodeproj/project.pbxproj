@@ -16,7 +16,6 @@
 		526DBD962A6F817F00E677A7 /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD952A6F817F00E677A7 /* DataMngr.swift */; };
 		5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298109C2A724B0B00CFA397 /* ItemAddView.swift */; };
 		52A3D24F2A7787A6004D38CC /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A3D24E2A7787A6004D38CC /* ColorMngr.swift */; };
-		52A3D2512A779437004D38CC /* JsonMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A3D2502A779437004D38CC /* JsonMngr.swift */; };
 		52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F96EC92A7380B800C2226E /* ItemEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 		526DBD952A6F817F00E677A7 /* DataMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMngr.swift; sourceTree = "<group>"; };
 		5298109C2A724B0B00CFA397 /* ItemAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemAddView.swift; sourceTree = "<group>"; };
 		52A3D24E2A7787A6004D38CC /* ColorMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMngr.swift; sourceTree = "<group>"; };
-		52A3D2502A779437004D38CC /* JsonMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonMngr.swift; sourceTree = "<group>"; };
 		52F96EC92A7380B800C2226E /* ItemEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,7 +71,6 @@
 				52F96EC92A7380B800C2226E /* ItemEditView.swift */,
 				52A3D24E2A7787A6004D38CC /* ColorMngr.swift */,
 				526DBD952A6F817F00E677A7 /* DataMngr.swift */,
-				52A3D2502A779437004D38CC /* JsonMngr.swift */,
 				526DBD892A6F7ACB00E677A7 /* Assets.xcassets */,
 				526DBD8B2A6F7ACB00E677A7 /* Preview Content */,
 			);
@@ -163,7 +160,6 @@
 				52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */,
 				526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */,
 				5265E3942A75472D0054012F /* AppSettingView.swift in Sources */,
-				52A3D2512A779437004D38CC /* JsonMngr.swift in Sources */,
 				52A3D24F2A7787A6004D38CC /* ColorMngr.swift in Sources */,
 				526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */,
 				5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */,

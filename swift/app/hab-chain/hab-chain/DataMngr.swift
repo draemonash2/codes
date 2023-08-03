@@ -401,6 +401,91 @@ struct HabChainData {
         formatEee.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEE", options: 0, locale: Locale(identifier: "ja_JP"))
         return formatMd.string(from: date) + "\n" + formatEee.string(from: date)
     }
+    /* for Json <TOP> */
+    func convToJson() -> HabChainDataJson
+    {
+        var hab_chain_data_json: HabChainDataJson = HabChainDataJson()
+        for (_, item_id_self) in self.item_id_list.enumerated() {
+            hab_chain_data_json.item_id_list.append(item_id_self)
+        }
+        for (item_id_self, item_self) in self.items {
+            var item_json: ItemJson = ItemJson()
+            item_json.item_name = item_self.item_name
+            item_json.skip_num = item_self.skip_num
+            item_json.color = convToStr(color: item_self.color)
+            item_json.is_archived = convToStr(variable: item_self.is_archived)
+            for (date_self, status_self) in item_self.status {
+                item_json.status.updateValue(convToStr(item_status: status_self), forKey: date_self)
+            }
+            hab_chain_data_json.items.updateValue(item_json, forKey: item_id_self)
+        }
+        return hab_chain_data_json
+    }
+    mutating func convFromJson(hab_chain_data_json: HabChainDataJson) {
+        self.clear()
+        
+        for (_, item_id_json) in hab_chain_data_json.item_id_list.enumerated() {
+            self.item_id_list.append(item_id_json)
+        }
+        for (item_id_json, item_json) in hab_chain_data_json.items {
+            var item_self: Item = Item()
+            item_self.item_name = item_json.item_name
+            item_self.skip_num = item_json.skip_num
+            item_self.color = convFromStr(color: item_json.color)
+            item_self.is_archived = convFromStr(variable: item_json.is_archived)
+            for (date_json, status_json) in item_json.status {
+                item_self.status.updateValue(convFromStr(item_status: status_json), forKey: date_json)
+            }
+            self.items.updateValue(item_self, forKey: item_id_json)
+        }
+    }
+    func writeJson() {
+        let hab_chain_data_json: HabChainDataJson = convToJson()
+        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("フォルダURL取得エラー")
+        }
+        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
+        print("writeJson() URL = " + fileURL.path)
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
+        guard let jsonValue = try? encoder.encode(hab_chain_data_json) else {
+            fatalError("JSONエンコードエラー")
+        }
+        
+        do {
+            try jsonValue.write(to: fileURL)
+        } catch {
+            fatalError("JSON書き込みエラー")
+        }
+    }
+    mutating func readJson()
+    {
+        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("フォルダURL取得エラー")
+        }
+        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
+        print("readJson() URL = " + fileURL.path)
+
+        if !FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/" + "hab_chain_data.json"){
+            fatalError("JSONが存在しない")
+        }
+
+        guard let data = try? Data(contentsOf: fileURL) else
+        {
+            fatalError("JSON読み込みエラー")
+        }
+             
+        let decoder = JSONDecoder()
+        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: data) else {
+            fatalError("JSONデコードエラー")
+        }
+        
+        self.clear()
+        convFromJson(hab_chain_data_json: hab_chain_data_json)
+    }
+    /* for Json <END> */
+    
     mutating func setValueForTest() {
         #if false
         let item1: Item = Item(
@@ -469,129 +554,6 @@ struct HabChainData {
         }
         print("")
     }
-    /* for Json <TOP> */
-    func convToJson() -> HabChainDataJson
-    {
-        var hab_chain_data_json: HabChainDataJson = HabChainDataJson()
-        for (_, item_id_self) in self.item_id_list.enumerated() {
-            hab_chain_data_json.item_id_list.append(item_id_self)
-        }
-        for (item_id_self, item_self) in self.items {
-            var item_json: ItemJson = ItemJson()
-            item_json.item_name = item_self.item_name
-            item_json.skip_num = item_self.skip_num
-            item_json.color = convToStr(color: item_self.color)
-            item_json.is_archived = convToStr(variable: item_self.is_archived)
-            for (date_self, status_self) in item_self.status {
-                item_json.status.updateValue(convToStr(item_status: status_self), forKey: date_self)
-            }
-            hab_chain_data_json.items.updateValue(item_json, forKey: item_id_self)
-        }
-        return hab_chain_data_json
-    }
-    mutating func convFromJson(hab_chain_data_json: HabChainDataJson) {
-        self.clear()
-        
-        for (_, item_id_json) in hab_chain_data_json.item_id_list.enumerated() {
-            self.item_id_list.append(item_id_json)
-        }
-        for (item_id_json, item_json) in hab_chain_data_json.items {
-            var item_self: Item = Item()
-            item_self.item_name = item_json.item_name
-            item_self.skip_num = item_json.skip_num
-            item_self.color = convFromStr(color: item_json.color)
-            item_self.is_archived = convFromStr(variable: item_json.is_archived)
-            for (date_json, status_json) in item_json.status {
-                item_self.status.updateValue(convFromStr(item_status: status_json), forKey: date_json)
-            }
-            self.items.updateValue(item_self, forKey: item_id_json)
-        }
-    }
-    func writeJson() {
-        #if false
-        let hab_chain_data_json: HabChainDataJson =
-        HabChainDataJson(
-            item_id_list:[
-              "ABC",
-              "BCD"
-            ],
-            items: [
-                "ABC": ItemJson(
-                    item_name: "aa",
-                    status: [
-                        "2023/07/25": "NotYet",
-                        "2023/07/29": "Done",
-                        "2023/08/01": "Skip"
-                    ],
-                    skip_num: 999,
-                    color: "red",
-                    is_archived: "false"
-                ),
-                "BCD": ItemJson(
-                    item_name: "bbb",
-                    status: [
-                        "2023/07/25": "NotYet",
-                        "2023/07/29": "Done",
-                        "2023/08/01": "Skip"
-                    ],
-                    skip_num: 10,
-                    color: "green",
-                    is_archived: "false"
-                )
-            ]
-        )
-        #else
-        let hab_chain_data_json: HabChainDataJson = convToJson()
-        #endif
-        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("フォルダURL取得エラー")
-        }
-
-        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
-        print(fileURL.path)
-
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
-        guard let jsonValue = try? encoder.encode(hab_chain_data_json) else {
-            fatalError("JSONエンコードエラー")
-        }
-        
-        do {
-            try jsonValue.write(to: fileURL)
-        } catch {
-            fatalError("JSON書き込みエラー")
-        }
-    }
-    mutating func readJson()
-    {
-        guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("フォルダURL取得エラー")
-        }
-
-        if !FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/" + "hab_chain_data.json"){
-            fatalError("JSONが存在しない")
-        }
-
-        let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
-
-        guard let data = try? Data(contentsOf: fileURL) else
-        {
-            fatalError("JSON読み込みエラー")
-        }
-             
-        let decoder = JSONDecoder()
-        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: data) else {
-            fatalError("JSONデコードエラー")
-        }
-        //print(hab_chain_data_json.item_id_list[0])
-        //print(hab_chain_data_json.items["ABC"]!.item_name)
-        //print(hab_chain_data_json.items["BCD"]!.status["2023/08/01"]!)
-        
-        self.clear()
-        convFromJson(hab_chain_data_json: hab_chain_data_json)
-    }
-
-    /* for Json <END> */
 }
 
 

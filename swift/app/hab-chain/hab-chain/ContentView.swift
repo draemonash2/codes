@@ -38,7 +38,6 @@ struct ContentView: View {
                         HStack {
                             Spacer()
                             ForEach(-3..<1) { i in
-                                #if true
                                 let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
                                 let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
                                 let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
@@ -49,12 +48,6 @@ struct ContentView: View {
                                     .foregroundColor(Color.white)
                                     .background(Color(color_str))
                                     .clipShape(Circle())
-                                #else
-                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                                let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
-                                let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
-                                Text(color_str)
-                                #endif
                             }
                         }
                         ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
@@ -63,7 +56,7 @@ struct ContentView: View {
                                     Text(unwraped_item.item_name)
                                     
                                     Spacer()
-
+                                    
                                     ForEach(-3..<1) { i in
                                         let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
                                         let date_str: String = hab_chain_data.convDateToStr(date: date)

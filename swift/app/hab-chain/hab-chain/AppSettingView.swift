@@ -9,27 +9,53 @@ import SwiftUI
 
 struct AppSettingView: View {
     @Binding var hab_chain_data: HabChainData
+    @State private var showingAlertBackup = false
+    @State private var showingAlertRestore = false
     var body: some View {
         Button(action: {
-            hab_chain_data.readJson()
+            showingAlertBackup = true
         }) {
-            Text("Json読み出し")
+            Text("バックアップ実行")
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
         }
+        .alert(isPresented: $showingAlertBackup) {
+            Alert(
+                title: Text("確認"),
+                message: Text("バックアップを行います。よろしいですか？"),
+                primaryButton: .default(Text("はい"), action: {
+                    hab_chain_data.writeJson()
+                }),
+                secondaryButton: .destructive(Text("いいえ"), action: {
+                    print("処理を中断します。")
+                })
+            )
+        }
         .padding()
         Button(action: {
-            hab_chain_data.writeJson()
+            showingAlertRestore = true
         }) {
-            Text("Json書き込み")
+            Text("バックアップデータ復旧")
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
+        }
+        .alert(isPresented: $showingAlertRestore) {
+            Alert(
+                title: Text("確認"),
+                message: Text("バックアップデータの復旧を行います。よろしいですか？"),
+                primaryButton: .default(Text("はい"), action: {
+                    hab_chain_data.readJson()
+                }),
+                secondaryButton: .destructive(Text("いいえ"), action: {
+                    print("処理を中断します。")
+                })
+            )
         }
         .padding()
     }
