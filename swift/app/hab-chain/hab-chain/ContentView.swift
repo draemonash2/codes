@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\ .colorScheme) var colorScheme
     @State var hab_chain_data: HabChainData = HabChainData()
+    @AppStorage("testval", store: UserDefaults(suiteName: "group.hab_chain")) var testval: String = ""
     @State private var is_overlay_presented = false
     @State private var trgt_status: String = ""
     var add_item: Item?
@@ -21,6 +22,7 @@ struct ContentView: View {
                     Text("hab-chain")
                         .font(.largeTitle)
                         .onAppear() {
+                            testval = hab_chain_data.json_string
                             //hab_chain_data.printAll()
                         }
                         .padding()

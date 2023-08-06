@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AppSettingView: View {
     @Binding var hab_chain_data: HabChainData
+    @AppStorage("hab_chain_data_jsonstr") var hab_chain_data_jsonstr: String = ""
     @State private var showingAlertBackup = false
     @State private var showingAlertRestore = false
     var body: some View {
@@ -28,6 +29,7 @@ struct AppSettingView: View {
                 message: Text("バックアップを行います。よろしいですか？"),
                 primaryButton: .default(Text("はい"), action: {
                     hab_chain_data.writeJson()
+                    hab_chain_data_jsonstr = hab_chain_data.json_string
                 }),
                 secondaryButton: .destructive(Text("いいえ"), action: {
                     print("処理を中断します。")

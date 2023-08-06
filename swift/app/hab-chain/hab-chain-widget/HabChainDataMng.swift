@@ -1,8 +1,8 @@
 //
-//  DataMngr.swift
-//  hab-chain
+//  HabChainDataMng.swift
+//  hab-chain-widgetExtension
 //
-//  Created by Tatsuya Endo on 2023/07/25.
+//  Created by Tatsuya Endo on 2023/08/04.
 //
 
 import Foundation
@@ -25,7 +25,6 @@ struct Item {
 struct HabChainData {
     var item_id_list: [String] = []
     var items: Dictionary<String, Item> = [:]
-    var json_string: String = ""
 
     /* for Json <TOP> */
     struct ItemJson: Codable {
@@ -440,7 +439,7 @@ struct HabChainData {
             self.items.updateValue(item_self, forKey: item_id_json)
         }
     }
-    mutating func writeJson() {
+    func writeJson() {
         let hab_chain_data_json: HabChainDataJson = convToJson()
         guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("フォルダURL取得エラー")
@@ -454,24 +453,11 @@ struct HabChainData {
             fatalError("JSONエンコードエラー")
         }
         
-#if false
         do {
             try jsonValue.write(to: fileURL)
         } catch {
             fatalError("JSON書き込みエラー")
         }
-#else
-        let jsonString = String(data: jsonValue, encoding: .utf8)
-        if let unwrapped_jsonstr = jsonString {
-            print(unwrapped_jsonstr)
-            self.json_string = unwrapped_jsonstr
-            do {
-                try unwrapped_jsonstr.write(toFile: fileURL.path, atomically: true, encoding: .utf8)
-            } catch {
-                fatalError("JSON書き込みエラー")
-            }
-        }
-#endif
     }
     mutating func readJson()
     {
@@ -485,27 +471,15 @@ struct HabChainData {
             fatalError("JSONが存在しない")
         }
 
-#if false
         guard let data = try? Data(contentsOf: fileURL) else
         {
             fatalError("JSON読み込みエラー")
         }
-        
+             
         let decoder = JSONDecoder()
         guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: data) else {
             fatalError("JSONデコードエラー")
         }
-#else
-        guard let jsonString = try? String(contentsOf: fileURL, encoding: .utf8) else {
-            fatalError("JSON読み込みエラー")
-        }
-        print(jsonString)
-        let jsonData = jsonString.data(using: .utf8)!
-        let decoder = JSONDecoder()
-        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: jsonData) else {
-            fatalError("JSONデコードエラー")
-        }
-#endif
         
         self.clear()
         convFromJson(hab_chain_data_json: hab_chain_data_json)
