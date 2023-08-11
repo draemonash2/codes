@@ -2,7 +2,7 @@
 //  DataMngr.swift
 //  hab-chain
 //
-//  Created by Tatsuya Endo on 2023/07/25.
+//  Created by Tatsuya Endo on 2023/07/25.aaa
 //
 
 import Foundation
@@ -25,7 +25,6 @@ struct Item {
 struct HabChainData {
     var item_id_list: [String] = []
     var items: Dictionary<String, Item> = [:]
-    var json_string: String = ""
 
     /* for Json <TOP> */
     struct ItemJson: Codable {
@@ -46,7 +45,7 @@ struct HabChainData {
         //self.setValueForTest()
         //self.printAll()
         //self._test_calcContinuationCount()
-        //_test_convDateToStr()
+        //self._test_convDateToStr()
         //self._test_toggleItemStatus()
         //self._test_calcTotalItemStatus()
         //self._test_calcContinuationCountAll()
@@ -54,6 +53,7 @@ struct HabChainData {
         //readJson()
         //testJsonDict()
         //testJsonDict2()
+        //self._test_convDateToD()
     }
     mutating func clear()
     {
@@ -402,8 +402,19 @@ struct HabChainData {
         formatEee.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEE", options: 0, locale: Locale(identifier: "ja_JP"))
         return formatMd.string(from: date) + "\n" + formatEee.string(from: date)
     }
+    func convDateToD(date: Date) -> String {
+        let formatD = DateFormatter()
+        formatD.dateFormat = DateFormatter.dateFormat(fromTemplate: "d", options: 0, locale: Locale(identifier: "en_US"))
+        return formatD.string(from: date)
+    }
+    func _test_convDateToD() {
+        print("### convDateToD() test start ###")
+        print(convDateToD(date: Date()))
+        print("### convDateToD() test finished ###")
+        print("")
+    }
     /* for Json <TOP> */
-    func convToJson() -> HabChainDataJson
+    func convRawStruct2JsonStruct() -> HabChainDataJson
     {
         var hab_chain_data_json: HabChainDataJson = HabChainDataJson()
         for (_, item_id_self) in self.item_id_list.enumerated() {
@@ -422,13 +433,13 @@ struct HabChainData {
         }
         return hab_chain_data_json
     }
-    mutating func convFromJson(hab_chain_data_json: HabChainDataJson) {
+    mutating func convJsonStruct2RawStruct(hab_chain_data_jsonstruct: HabChainDataJson) {
         self.clear()
         
-        for (_, item_id_json) in hab_chain_data_json.item_id_list.enumerated() {
+        for (_, item_id_json) in hab_chain_data_jsonstruct.item_id_list.enumerated() {
             self.item_id_list.append(item_id_json)
         }
-        for (item_id_json, item_json) in hab_chain_data_json.items {
+        for (item_id_json, item_json) in hab_chain_data_jsonstruct.items {
             var item_self: Item = Item()
             item_self.item_name = item_json.item_name
             item_self.skip_num = item_json.skip_num
@@ -440,75 +451,73 @@ struct HabChainData {
             self.items.updateValue(item_self, forKey: item_id_json)
         }
     }
-    mutating func writeJson() {
-        let hab_chain_data_json: HabChainDataJson = convToJson()
+    mutating func convJsonStruct2JsonString(hab_chain_data_jsonstruct: HabChainDataJson) -> String
+    {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
+        guard let json_value = try? encoder.encode(hab_chain_data_jsonstruct) else {
+            fatalError("JSONエンコードエラー")
+        }
+        
+        let json_string = String(data: json_value, encoding: .utf8)
+        var ret_json_string: String = ""
+        if let unwrapped_jsonstring = json_string {
+            print(unwrapped_jsonstring)
+            ret_json_string = unwrapped_jsonstring
+        }
+        return ret_json_string
+    }
+    mutating func convJsonString2JsonStruct(hab_chain_data_jsonstring: String) -> HabChainDataJson
+    {
+        let json_data = hab_chain_data_jsonstring.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        guard let hab_chain_data_jsonstruct = try? decoder.decode(HabChainDataJson.self, from: json_data) else {
+            fatalError("JSONデコードエラー")
+        }
+        return hab_chain_data_jsonstruct
+    }
+    mutating func getRawStruct2JsonString() -> String
+    {
+        let hab_chain_data_jsonstruct: HabChainDataJson = self.convRawStruct2JsonStruct()
+        return self.convJsonStruct2JsonString(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+    }
+    mutating func setJsonString2RawStruct(json_string: String)
+    {
+        let hab_chain_data_jsonstruct = self.convJsonString2JsonStruct(hab_chain_data_jsonstring: json_string)
+        self.convJsonStruct2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+    }
+    mutating func saveJsonString() {
+        let hab_chain_data_jsonstring: String = self.getRawStruct2JsonString()
+        
         guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("フォルダURL取得エラー")
         }
         let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
-        print("writeJson() URL = " + fileURL.path)
+        print("saveJsonString() URL = " + fileURL.path)
 
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
-        guard let jsonValue = try? encoder.encode(hab_chain_data_json) else {
-            fatalError("JSONエンコードエラー")
-        }
-        
-#if false
         do {
-            try jsonValue.write(to: fileURL)
+            try hab_chain_data_jsonstring.write(toFile: fileURL.path, atomically: true, encoding: .utf8)
         } catch {
             fatalError("JSON書き込みエラー")
         }
-#else
-        let jsonString = String(data: jsonValue, encoding: .utf8)
-        if let unwrapped_jsonstr = jsonString {
-            print(unwrapped_jsonstr)
-            self.json_string = unwrapped_jsonstr
-            do {
-                try unwrapped_jsonstr.write(toFile: fileURL.path, atomically: true, encoding: .utf8)
-            } catch {
-                fatalError("JSON書き込みエラー")
-            }
-        }
-#endif
     }
-    mutating func readJson()
+    mutating func loadJsonString()
     {
         guard let dirURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             fatalError("フォルダURL取得エラー")
         }
         let fileURL = dirURL.appendingPathComponent("hab_chain_data.json")
-        print("readJson() URL = " + fileURL.path)
+        print("loadJsonString() URL = " + fileURL.path)
 
         if !FileManager.default.fileExists(atPath: NSHomeDirectory() + "/Documents/" + "hab_chain_data.json"){
             fatalError("JSONが存在しない")
         }
-
-#if false
-        guard let data = try? Data(contentsOf: fileURL) else
-        {
+        guard let json_string = try? String(contentsOf: fileURL, encoding: .utf8) else {
             fatalError("JSON読み込みエラー")
         }
+        //print(json_string)
         
-        let decoder = JSONDecoder()
-        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: data) else {
-            fatalError("JSONデコードエラー")
-        }
-#else
-        guard let jsonString = try? String(contentsOf: fileURL, encoding: .utf8) else {
-            fatalError("JSON読み込みエラー")
-        }
-        print(jsonString)
-        let jsonData = jsonString.data(using: .utf8)!
-        let decoder = JSONDecoder()
-        guard let hab_chain_data_json = try? decoder.decode(HabChainDataJson.self, from: jsonData) else {
-            fatalError("JSONデコードエラー")
-        }
-#endif
-        
-        self.clear()
-        convFromJson(hab_chain_data_json: hab_chain_data_json)
+        self.setJsonString2RawStruct(json_string: json_string)
     }
     /* for Json <END> */
     

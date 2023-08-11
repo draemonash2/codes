@@ -6,17 +6,22 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct ItemSettingView: View {
     @Environment(\ .colorScheme) var colorScheme
     @Environment(\.dismiss) var dismiss
     @Binding var hab_chain_data: HabChainData
+    @AppStorage("app_json_string", store: UserDefaults(suiteName: "group.hab_chain")) var app_json_string: String = ""
     @State var is_show_item_add_view: Bool = false
     @State var is_show_item_edit_view: Bool = false
     @State var trgt_item_id: String = ""
     @State var trgt_item_name: String = ""
 
     var body: some View {
+        let ICON_SIZE_PX: CGFloat = 20
+        let BUTTON_HEIGHT_PX: CGFloat = 50
+        
         let _ = Self._printChanges()
         VStack {
             Text("アイテム設定")
@@ -38,7 +43,7 @@ struct ItemSettingView: View {
                                 Image(colorScheme == .light ? "pencil_light": "pencil_dark")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: 20)
+                                    .frame(height: ICON_SIZE_PX)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
@@ -61,10 +66,12 @@ struct ItemSettingView: View {
             .environment(\.editMode, .constant(.active))
             Button(action:{
                 dismiss()
+                app_json_string = hab_chain_data.getRawStruct2JsonString()
+                WidgetCenter.shared.reloadAllTimelines()
             }) {
                 Text("Done")
                     .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+                    .frame(height: BUTTON_HEIGHT_PX)
                     .multilineTextAlignment(.center)
                     .background(Color.blue)
                     .foregroundColor(Color.white)

@@ -14,14 +14,15 @@
 		526DBD8D2A6F7ACB00E677A7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 526DBD8C2A6F7ACB00E677A7 /* Preview Assets.xcassets */; };
 		526DBD942A6F7B9D00E677A7 /* ItemSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */; };
 		5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298109C2A724B0B00CFA397 /* ItemAddView.swift */; };
-		52A3D24F2A7787A6004D38CC /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A3D24E2A7787A6004D38CC /* ColorMngr.swift */; };
+		52A064752A80B8FF0047BACA /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A064742A80B8FF0047BACA /* DataMngr.swift */; };
+		52A064762A80B8FF0047BACA /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A064742A80B8FF0047BACA /* DataMngr.swift */; };
 		52AB823D2A7CD41C003052F8 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AB823C2A7CD41C003052F8 /* WidgetKit.framework */; };
 		52AB823F2A7CD41C003052F8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AB823E2A7CD41C003052F8 /* SwiftUI.framework */; };
 		52AB82422A7CD41C003052F8 /* hab_chain_widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AB82412A7CD41C003052F8 /* hab_chain_widget.swift */; };
 		52AB82442A7CD41D003052F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52AB82432A7CD41D003052F8 /* Assets.xcassets */; };
 		52AB82482A7CD41D003052F8 /* hab-chain-widgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 52AB823A2A7CD41C003052F8 /* hab-chain-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		52AB82562A7D31BF003052F8 /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD952A6F817F00E677A7 /* DataMngr.swift */; };
-		52AB82582A7D31DB003052F8 /* HabChainDataMng.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AB82572A7D31DB003052F8 /* HabChainDataMng.swift */; };
+		52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
+		52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
 		52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F96EC92A7380B800C2226E /* ItemEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -57,18 +58,17 @@
 		526DBD892A6F7ACB00E677A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		526DBD8C2A6F7ACB00E677A7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemSettingView.swift; sourceTree = "<group>"; };
-		526DBD952A6F817F00E677A7 /* DataMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMngr.swift; sourceTree = "<group>"; };
 		5298109C2A724B0B00CFA397 /* ItemAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemAddView.swift; sourceTree = "<group>"; };
-		52A3D24E2A7787A6004D38CC /* ColorMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMngr.swift; sourceTree = "<group>"; };
+		52A064742A80B8FF0047BACA /* DataMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataMngr.swift; sourceTree = "<group>"; };
 		52AB823A2A7CD41C003052F8 /* hab-chain-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "hab-chain-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52AB823C2A7CD41C003052F8 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		52AB823E2A7CD41C003052F8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		52AB82412A7CD41C003052F8 /* hab_chain_widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hab_chain_widget.swift; sourceTree = "<group>"; };
 		52AB82432A7CD41D003052F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "hab-chain-widget/Assets.xcassets"; sourceTree = SOURCE_ROOT; };
 		52AB82452A7CD41D003052F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52AB82572A7D31DB003052F8 /* HabChainDataMng.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabChainDataMng.swift; sourceTree = "<group>"; };
 		52AB82592A7E1D79003052F8 /* hab-chain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain.entitlements"; sourceTree = "<group>"; };
 		52AB825A2A7E1DC7003052F8 /* hab-chain-widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain-widgetExtension.entitlements"; sourceTree = "<group>"; };
+		52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorMngr.swift; sourceTree = "<group>"; };
 		52F96EC92A7380B800C2226E /* ItemEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,6 +95,7 @@
 		526DBD792A6F7AC700E677A7 = {
 			isa = PBXGroup;
 			children = (
+				52A064732A80B8C30047BACA /* share */,
 				52AB825A2A7E1DC7003052F8 /* hab-chain-widgetExtension.entitlements */,
 				526DBD842A6F7AC700E677A7 /* hab-chain */,
 				52AB82402A7CD41C003052F8 /* hab-chain-widget */,
@@ -122,8 +123,6 @@
 				5265E3932A75472D0054012F /* AppSettingView.swift */,
 				5298109C2A724B0B00CFA397 /* ItemAddView.swift */,
 				52F96EC92A7380B800C2226E /* ItemEditView.swift */,
-				52A3D24E2A7787A6004D38CC /* ColorMngr.swift */,
-				526DBD952A6F817F00E677A7 /* DataMngr.swift */,
 				526DBD892A6F7ACB00E677A7 /* Assets.xcassets */,
 				526DBD8B2A6F7ACB00E677A7 /* Preview Content */,
 			);
@@ -136,6 +135,15 @@
 				526DBD8C2A6F7ACB00E677A7 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		52A064732A80B8C30047BACA /* share */ = {
+			isa = PBXGroup;
+			children = (
+				52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */,
+				52A064742A80B8FF0047BACA /* DataMngr.swift */,
+			);
+			path = share;
 			sourceTree = "<group>";
 		};
 		52AB823B2A7CD41C003052F8 /* Frameworks */ = {
@@ -151,7 +159,6 @@
 			isa = PBXGroup;
 			children = (
 				52AB82412A7CD41C003052F8 /* hab_chain_widget.swift */,
-				52AB82572A7D31DB003052F8 /* HabChainDataMng.swift */,
 				52AB82432A7CD41D003052F8 /* Assets.xcassets */,
 				52AB82452A7CD41D003052F8 /* Info.plist */,
 			);
@@ -263,10 +270,10 @@
 				52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */,
 				526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */,
 				5265E3942A75472D0054012F /* AppSettingView.swift in Sources */,
-				52A3D24F2A7787A6004D38CC /* ColorMngr.swift in Sources */,
 				526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */,
+				52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
 				5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */,
-				52AB82562A7D31BF003052F8 /* DataMngr.swift in Sources */,
+				52A064752A80B8FF0047BACA /* DataMngr.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,8 +281,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52AB82582A7D31DB003052F8 /* HabChainDataMng.swift in Sources */,
 				52AB82422A7CD41C003052F8 /* hab_chain_widget.swift in Sources */,
+				52A064762A80B8FF0047BACA /* DataMngr.swift in Sources */,
+				52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

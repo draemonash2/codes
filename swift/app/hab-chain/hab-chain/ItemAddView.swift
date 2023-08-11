@@ -22,6 +22,7 @@ struct ItemAddView: View {
     @State private var error_kind: ErrorKind = .none
     
     var body: some View {
+        let BUTTON_HEIGHT_PX: CGFloat = 50
         let _ = Self._printChanges()
         NavigationView {
             Form {
@@ -53,7 +54,7 @@ struct ItemAddView: View {
         }) {
             Text("Done")
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
@@ -74,7 +75,7 @@ struct ItemAddView: View {
         }) {
             Text("Cancel")
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)

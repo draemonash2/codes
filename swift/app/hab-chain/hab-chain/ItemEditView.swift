@@ -23,6 +23,7 @@ struct ItemEditView: View {
     @State private var error_kind: ErrorKind = .none
     
     var body: some View {
+        let BUTTON_HEIGHT_PX: CGFloat = 50
         let _ = Self._printChanges()
         
         NavigationView {
@@ -73,7 +74,7 @@ struct ItemEditView: View {
         }) {
             Text("Done")
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
@@ -92,7 +93,7 @@ struct ItemEditView: View {
         }) {
             Text("Cancel")
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
