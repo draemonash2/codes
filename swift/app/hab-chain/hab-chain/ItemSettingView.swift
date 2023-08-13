@@ -15,11 +15,12 @@ struct ItemSettingView: View {
     @AppStorage("app_json_string", store: UserDefaults(suiteName: "group.hab_chain")) var app_json_string: String = ""
     @State var is_show_item_add_view: Bool = false
     @State var is_show_item_edit_view: Bool = false
+    @State var is_show_item_status_edit_view: Bool = false
     @State var trgt_item_id: String = ""
     @State var trgt_item_name: String = ""
 
     var body: some View {
-        let ICON_SIZE_PX: CGFloat = 20
+        let ICON_SIZE_PX: CGFloat = 17
         let BUTTON_HEIGHT_PX: CGFloat = 50
         
         let _ = Self._printChanges()
@@ -33,7 +34,26 @@ struct ItemSettingView: View {
                             Text(unwraped_item.item_name)
                             
                             Spacer()
-
+                            
+                            if unwraped_item.is_archived == true {
+                                let icon_name: String = "archive"
+                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: ICON_SIZE_PX)
+                            }
+                            Button {
+                                print("pressed \(unwraped_item.item_name) cal button")
+                                trgt_item_id = item_id
+                                is_show_item_status_edit_view = true
+                            } label: {
+                                let icon_name: String = "cal"
+                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: ICON_SIZE_PX)
+                            }
+                            .buttonStyle(PlainButtonStyle())
                             Button {
                                 print("pressed \(unwraped_item.item_name) button")
                                 trgt_item_id = item_id
@@ -87,6 +107,13 @@ struct ItemSettingView: View {
                 ItemEditView(
                     hab_chain_data: $hab_chain_data,
                     is_show_item_edit_view: $is_show_item_edit_view,
+                    trgt_item_id: $trgt_item_id
+                )
+            }
+            .sheet(isPresented: $is_show_item_status_edit_view) {
+                ItemStatusEditView(
+                    hab_chain_data: $hab_chain_data,
+                    is_show_item_status_edit_view: $is_show_item_status_edit_view,
                     trgt_item_id: $trgt_item_id
                 )
             }

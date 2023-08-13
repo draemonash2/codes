@@ -16,6 +16,7 @@
 		5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5298109C2A724B0B00CFA397 /* ItemAddView.swift */; };
 		52A064752A80B8FF0047BACA /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A064742A80B8FF0047BACA /* DataMngr.swift */; };
 		52A064762A80B8FF0047BACA /* DataMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A064742A80B8FF0047BACA /* DataMngr.swift */; };
+		52A3B40F2A8742EF00B7F286 /* ItemStatusEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A3B40E2A8742EF00B7F286 /* ItemStatusEditView.swift */; };
 		52AB823D2A7CD41C003052F8 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AB823C2A7CD41C003052F8 /* WidgetKit.framework */; };
 		52AB823F2A7CD41C003052F8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AB823E2A7CD41C003052F8 /* SwiftUI.framework */; };
 		52AB82422A7CD41C003052F8 /* hab_chain_widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AB82412A7CD41C003052F8 /* hab_chain_widget.swift */; };
@@ -60,6 +61,7 @@
 		526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemSettingView.swift; sourceTree = "<group>"; };
 		5298109C2A724B0B00CFA397 /* ItemAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemAddView.swift; sourceTree = "<group>"; };
 		52A064742A80B8FF0047BACA /* DataMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataMngr.swift; sourceTree = "<group>"; };
+		52A3B40E2A8742EF00B7F286 /* ItemStatusEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemStatusEditView.swift; sourceTree = "<group>"; };
 		52AB823A2A7CD41C003052F8 /* hab-chain-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "hab-chain-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52AB823C2A7CD41C003052F8 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		52AB823E2A7CD41C003052F8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -121,6 +123,7 @@
 				526DBD872A6F7AC700E677A7 /* ContentView.swift */,
 				526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */,
 				5265E3932A75472D0054012F /* AppSettingView.swift */,
+				52A3B40E2A8742EF00B7F286 /* ItemStatusEditView.swift */,
 				5298109C2A724B0B00CFA397 /* ItemAddView.swift */,
 				52F96EC92A7380B800C2226E /* ItemEditView.swift */,
 				526DBD892A6F7ACB00E677A7 /* Assets.xcassets */,
@@ -266,6 +269,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52A3B40F2A8742EF00B7F286 /* ItemStatusEditView.swift in Sources */,
 				526DBD942A6F7B9D00E677A7 /* ItemSettingView.swift in Sources */,
 				52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */,
 				526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */,

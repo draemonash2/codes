@@ -19,9 +19,11 @@ struct ItemEditView: View {
     @State var new_item_name: String = "abc"
     @State var new_skip_num: Int = 10
     @State var new_color: Color = Color.red
+    @State var new_is_archived: Bool = false
     @State private var is_show_alert: Bool = false
     @State private var error_kind: ErrorKind = .none
-    
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
     var body: some View {
         let BUTTON_HEIGHT_PX: CGFloat = 50
         let _ = Self._printChanges()
@@ -49,19 +51,33 @@ struct ItemEditView: View {
                 } header: {
                     Text("スキップ可能数")
                 }
+                if FUNC_SETTING.color_select_enable == true {
+                    Section {
+                        Picker("", selection: $new_color) {
+                            Text("red").tag(Color.red)
+                            Text("green").tag(Color.green)
+                            Text("blue").tag(Color.blue)
+                        }
+                        .onAppear {
+                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                                self.new_color = unwrapped_item.color
+                            }
+                        }
+                    } header: {
+                        Text("色")
+                    }
+                }
                 Section {
-                    Picker("", selection: $new_color) {
-                        Text("red").tag(Color.red)
-                        Text("green").tag(Color.green)
-                        Text("blue").tag(Color.blue)
+                    Toggle(isOn: $new_is_archived) {
+                        //Text(new_is_archived ? "ON" : "OFF")
                     }
                     .onAppear {
                         if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                            self.new_color = unwrapped_item.color
+                            self.new_is_archived = unwrapped_item.is_archived
                         }
                     }
                 } header: {
-                    Text("色")
+                    Text("アーカイブ")
                 }
             }
             .navigationTitle("アイテム編集")
@@ -108,6 +124,7 @@ struct ItemEditView: View {
             hab_chain_data.items[trgt_item_id]!.item_name = new_item_name
             hab_chain_data.items[trgt_item_id]!.skip_num = new_skip_num
             hab_chain_data.items[trgt_item_id]!.color = new_color
+            hab_chain_data.items[trgt_item_id]!.is_archived = new_is_archived
             is_show_item_edit_view = false
             is_show_alert = false
         }

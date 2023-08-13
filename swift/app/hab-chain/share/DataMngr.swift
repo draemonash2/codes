@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum ItemStatus {
+enum ItemStatus: String {
     case NotYet
     case Done
     case Skip
@@ -239,6 +239,18 @@ struct HabChainData {
         print("### toggleItemStatus() test finished ###")
         print("")
     }
+    func getVisibleItemIdList() -> [String]
+    {
+        var ret_item_id_list: [String] = []
+        for (_, item_id) in self.item_id_list.enumerated() {
+            if let unwraped_item: Item = self.items[item_id] {
+                if unwraped_item.is_archived == false {
+                    ret_item_id_list.append(item_id)
+                }
+            }
+        }
+        return ret_item_id_list
+    }
     func calcContinuationCount(
         base_date: Date,
         item_id: String
@@ -247,27 +259,29 @@ struct HabChainData {
         var date_offset: Int = 0
         var continuation_count: Int = 0
         if let unwrapped_item = self.items[item_id] {
-            while true {
-                var is_continue: Bool = true
-                let date = Calendar.current.date(byAdding: .day,value: date_offset, to: base_date)!
-                let date_str = convDateToStr(date: date)
-                if unwrapped_item.status.keys.contains(date_str) {
-                    switch unwrapped_item.status[date_str]! {
-                        case .Done:
-                            continuation_count += 1
-                            is_continue = true
-                        case .Skip:
-                            is_continue = true
-                        case .NotYet:
-                            is_continue = false
+            if unwrapped_item.is_archived == false {
+                while true {
+                    var is_continue: Bool = true
+                    let date = Calendar.current.date(byAdding: .day,value: date_offset, to: base_date)!
+                    let date_str = convDateToStr(date: date)
+                    if unwrapped_item.status.keys.contains(date_str) {
+                        switch unwrapped_item.status[date_str]! {
+                            case .Done:
+                                continuation_count += 1
+                                is_continue = true
+                            case .Skip:
+                                is_continue = true
+                            case .NotYet:
+                                is_continue = false
+                        }
+                    } else {
+                        is_continue = false
                     }
-                } else {
-                    is_continue = false
-                }
-                if is_continue == true {
-                    date_offset -= 1
-                } else {
-                    break
+                    if is_continue == true {
+                        date_offset -= 1
+                    } else {
+                        break
+                    }
                 }
             }
         }
@@ -299,23 +313,25 @@ struct HabChainData {
             var is_continue: Bool = true
             var is_skip_all: Bool = true
             for (_, item) in self.items {
-                if item.status.keys.contains(date_str) {
-                    switch item.status[date_str]! {
-                        case .Done:
-                            is_continue = true
-                            is_skip_all = false
-                        case .Skip:
-                            is_continue = true
-                        case .NotYet:
-                            is_continue = false
-                            is_skip_all = false
+                if item.is_archived == false {
+                    if item.status.keys.contains(date_str) {
+                        switch item.status[date_str]! {
+                            case .Done:
+                                is_continue = true
+                                is_skip_all = false
+                            case .Skip:
+                                is_continue = true
+                            case .NotYet:
+                                is_continue = false
+                                is_skip_all = false
+                        }
+                    } else {
+                        is_continue = false
+                        is_skip_all = false
                     }
-                } else {
-                    is_continue = false
-                    is_skip_all = false
-                }
-                if is_continue == false {
-                    break
+                    if is_continue == false {
+                        break
+                    }
                 }
             }
             if is_continue == true {
@@ -395,12 +411,12 @@ struct HabChainData {
         print("### convDateToStr() test finished ###")
         print("")
     }
-    func convDateToMmdd(date: Date) -> String {
+    func convDateToMmdd(date: Date, delimiter: String = "") -> String {
         let formatMd = DateFormatter()
         let formatEee = DateFormatter()
         formatMd.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0, locale: Locale(identifier: "ja_JP"))
         formatEee.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEE", options: 0, locale: Locale(identifier: "ja_JP"))
-        return formatMd.string(from: date) + "\n" + formatEee.string(from: date)
+        return formatMd.string(from: date) + delimiter + formatEee.string(from: date)
     }
     func convDateToD(date: Date) -> String {
         let formatD = DateFormatter()
@@ -453,14 +469,15 @@ struct HabChainData {
     }
     mutating func convJsonStruct2JsonString(hab_chain_data_jsonstruct: HabChainDataJson) -> String
     {
+        var ret_json_string: String = ""
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted //JSONデータを整形する
         guard let json_value = try? encoder.encode(hab_chain_data_jsonstruct) else {
-            fatalError("JSONエンコードエラー")
+            //fatalError("JSONエンコードエラー")
+            return ret_json_string
         }
         
         let json_string = String(data: json_value, encoding: .utf8)
-        var ret_json_string: String = ""
         if let unwrapped_jsonstring = json_string {
             print(unwrapped_jsonstring)
             ret_json_string = unwrapped_jsonstring
@@ -469,6 +486,9 @@ struct HabChainData {
     }
     mutating func convJsonString2JsonStruct(hab_chain_data_jsonstring: String) -> HabChainDataJson
     {
+        if hab_chain_data_jsonstring == "" {
+            return HabChainDataJson()
+        }
         let json_data = hab_chain_data_jsonstring.data(using: .utf8)!
         let decoder = JSONDecoder()
         guard let hab_chain_data_jsonstruct = try? decoder.decode(HabChainDataJson.self, from: json_data) else {

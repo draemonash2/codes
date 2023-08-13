@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+struct FunctionSetting {
+    let color_select_enable: Bool = true
+}
+
 @main
 struct hab_chainApp: App {
     var body: some Scene {

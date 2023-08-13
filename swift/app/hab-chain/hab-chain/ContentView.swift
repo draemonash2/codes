@@ -9,9 +9,9 @@ import SwiftUI
 import WidgetKit
 
 struct ContentViewSetting {
-    let BUTTON_NUM :Int = 5
-    let BUTTON_SIZE_PX :CGFloat? = 40
-    let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 35
+    let BUTTON_NUM :Int = 4
+    let BUTTON_SIZE_PX :CGFloat? = 35
+    let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
     let ICON_SIZE_PX :CGFloat? = 30
 }
 
@@ -36,12 +36,36 @@ struct ContentView: View {
                             //hab_chain_data.printAll()
                         }
                         .padding()
-                    List {
+                    //List {
                         HStack {
                             Spacer()
                             ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                                 let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                                Text(hab_chain_data.convDateToMmdd(date: date))
+                                Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
+                                    .font(.caption)
+                                    .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        .padding([.trailing, .leading], 40)
+                        HStack {
+                            Spacer()
+                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                                WholeItemStatusTextCircle(
+                                    hab_chain_data: $hab_chain_data,
+                                    date_offset: i
+                                )
+                            }
+                        }
+                    //}
+                        .padding([.trailing, .leading], 40)
+                    List {
+                        #if false
+                        HStack {
+                            Spacer()
+                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
                                     .font(.caption)
                                     .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
                                     .multilineTextAlignment(.center)
@@ -56,30 +80,34 @@ struct ContentView: View {
                                 )
                             }
                         }
+                        #endif
                         ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
                             if let unwraped_item: Item = hab_chain_data.items[item_id] {
-                                HStack {
-                                    Text(unwraped_item.item_name)
-                                    
-                                    Spacer()
-                                    
-                                    ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
-                                        IndivItemStatusChangeButton(
-                                            hab_chain_data: $hab_chain_data,
-                                            is_overlay_presented: $is_overlay_presented,
-                                            trgt_status: $trgt_status,
-                                            item_id: item_id,
-                                            date_offset: i
-                                        )
+                                if unwraped_item.is_archived == false {
+                                    HStack {
+                                        Text(unwraped_item.item_name)
+                                        
+                                        Spacer()
+                                        
+                                        ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                                            IndivItemStatusChangeButton(
+                                                hab_chain_data: $hab_chain_data,
+                                                is_overlay_presented: $is_overlay_presented,
+                                                trgt_status: $trgt_status,
+                                                item_id: item_id,
+                                                date_offset: i
+                                            )
+                                        }
                                     }
-                                }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    print("pressed \(unwraped_item.item_name) item")
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        print("pressed \(unwraped_item.item_name) item")
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(0)
                     .environment(\.editMode, .constant(.active))
                 }
                 .toolbar {
