@@ -74,40 +74,36 @@ struct hab_chain_widgetEntryView : View {
     var body: some View {
         VStack (spacing : 1) {
             #if false
-            HStack (spacing : 1) {
-                Spacer()
-                ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
-                    let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                    Text(entry.hab_chain_data.convDateToD(date: date))
-                        .font(.caption2)
-                        .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
-                        .multilineTextAlignment(.center)
+            Group {
+                HStack (spacing : 1) {
+                    Spacer()
+                    ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                        let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                        Text(entry.hab_chain_data.convDateToD(date: date))
+                            .font(.caption2)
+                            .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                HStack (spacing : 1) {
+                    Spacer()
+                    ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                        let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                        let continuation_cnt: Int = entry.hab_chain_data.calcContinuationCountAll(base_date: date)
+                        let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
+                        //Text(String(continuation_cnt))
+                        Text("")
+                            .font(.caption)
+                            .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(Color.white)
+                            .background(Color(color_str))
+                            .clipShape(Circle())
+                    }
                 }
             }
-            .padding(.leading, CVIEW_SETTING.PADDING_SIZE_PX)
-            .padding(.trailing, CVIEW_SETTING.PADDING_SIZE_PX)
-            HStack (spacing : 1) {
-                Spacer()
-                ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
-                    let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                    let continuation_cnt: Int = entry.hab_chain_data.calcContinuationCountAll(base_date: date)
-                    let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
-                    //Text(String(continuation_cnt))
-                    Text("")
-                        .font(.caption)
-                        .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(Color.white)
-                        .background(Color(color_str))
-                        .clipShape(Circle())
-                }
-            }
-            .padding(.leading, CVIEW_SETTING.PADDING_SIZE_PX)
-            .padding(.trailing, CVIEW_SETTING.PADDING_SIZE_PX)
+            .padding([.leading, .trailing], CVIEW_SETTING.PADDING_SIZE_PX)
             #endif
-            //ForEach(entry.hab_chain_data.item_id_list, id: \.self) { item_id in
-            //ForEach(monsters.indexed(), id: \.index) { monsterIndex, monster in
-            //ForEach(entry.hab_chain_data.item_id_list.indexed(), id: \.index) { item_id_idx, item_id in
             let item_id_list: [String] = entry.hab_chain_data.getVisibleItemIdList()
             ForEach((0...(CVIEW_SETTING.LIST_NUM_MAX-1)), id: \.self) { i in
                 if i < item_id_list.count {

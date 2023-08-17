@@ -13,6 +13,7 @@ struct ContentViewSetting {
     let BUTTON_SIZE_PX :CGFloat? = 35
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
     let ICON_SIZE_PX :CGFloat? = 30
+    let LIST_PADDING_PX :CGFloat? = 20
 }
 
 struct ContentView: View {
@@ -21,7 +22,6 @@ struct ContentView: View {
     @State var hab_chain_data: HabChainData = HabChainData()
     @State var is_overlay_presented: Bool = false
     @State var trgt_status: String = ""
-    var add_item: Item?
     private let CVIEW_SETTING: ContentViewSetting = ContentViewSetting()
     var body: some View {
         let _ = Self._printChanges()
@@ -33,10 +33,11 @@ struct ContentView: View {
                         .onAppear() {
                             hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
                             WidgetCenter.shared.reloadAllTimelines()
-                            //hab_chain_data.printAll()
                         }
                         .padding()
-                    //List {
+                    Text("ハビットチェーンの力で習慣を継続させましょう！")
+                        .font(.caption)
+                    Group {
                         HStack {
                             Spacer()
                             ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
@@ -47,7 +48,6 @@ struct ContentView: View {
                                     .multilineTextAlignment(.center)
                             }
                         }
-                        .padding([.trailing, .leading], 40)
                         HStack {
                             Spacer()
                             ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
@@ -57,30 +57,9 @@ struct ContentView: View {
                                 )
                             }
                         }
-                    //}
-                        .padding([.trailing, .leading], 40)
+                    }
+                    .padding([.leading, .trailing], CVIEW_SETTING.LIST_PADDING_PX )
                     List {
-                        #if false
-                        HStack {
-                            Spacer()
-                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
-                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                                Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
-                                    .font(.caption)
-                                    .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
-                                    .multilineTextAlignment(.center)
-                            }
-                        }
-                        HStack {
-                            Spacer()
-                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
-                                WholeItemStatusTextCircle(
-                                    hab_chain_data: $hab_chain_data,
-                                    date_offset: i
-                                )
-                            }
-                        }
-                        #endif
                         ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
                             if let unwraped_item: Item = hab_chain_data.items[item_id] {
                                 if unwraped_item.is_archived == false {
@@ -100,6 +79,7 @@ struct ContentView: View {
                                         }
                                     }
                                     .contentShape(Rectangle())
+                                    .listRowInsets(EdgeInsets())
                                     .onTapGesture {
                                         print("pressed \(unwraped_item.item_name) item")
                                     }
@@ -107,7 +87,8 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .padding(0)
+                    .padding([.leading, .trailing], CVIEW_SETTING.LIST_PADDING_PX )
+                    .listStyle(.plain)
                     .environment(\.editMode, .constant(.active))
                 }
                 .toolbar {
@@ -161,13 +142,15 @@ struct IndivItemStatusChangeButton: View {
                     print("pressed \(unwraped_item.item_name) \(date_offset) day button")
                     hab_chain_data.toggleItemStatus(item_id: item_id, date: date)
                     // output popup message
-                    withAnimation(.easeIn(duration: 0.2)) {
-                        trgt_status = hab_chain_data.getItemStatusStr(item_id: item_id, date: date)
-                        is_overlay_presented = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        withAnimation(.easeOut(duration: 0.1)) {
-                            is_overlay_presented = false
+                    if hab_chain_data.is_show_status_popup == true {
+                        withAnimation(.easeIn(duration: 0.2)) {
+                            trgt_status = hab_chain_data.getItemStatusStr(item_id: item_id, date: date)
+                            is_overlay_presented = true
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            withAnimation(.easeOut(duration: 0.1)) {
+                                is_overlay_presented = false
+                            }
                         }
                     }
                     app_json_string = hab_chain_data.getRawStruct2JsonString()
@@ -208,7 +191,7 @@ struct WholeItemStatusTextCircle: View {
     var body:some View {
         let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
         let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
-        let color_str: String = getColorString(color: Color.red, continuation_count: continuation_cnt)
+        let color_str: String = getColorString(color: hab_chain_data.whole_color, continuation_count: continuation_cnt)
         Text(String(continuation_cnt))
             .font(.caption)
             .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)

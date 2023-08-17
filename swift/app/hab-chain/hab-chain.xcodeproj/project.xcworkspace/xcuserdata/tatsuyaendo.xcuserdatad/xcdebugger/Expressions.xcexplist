@@ -3,13 +3,29 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
-      </ContextState>
-      <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
+         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "new_item_name">
+               value = "trgt_item_id">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #5 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "trgt_item_id">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #2 in AppSettingView.body.getter:AppSettingView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ItemStatusEditView.body.getter:ItemStatusEditView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "trgt_item_id">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -28,6 +44,39 @@
          contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
       </ContextState>
       <ContextState
+         contextName = "HabChainData.setJsonString2RawStruct(json_string:):DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #2 in ItemEditView.body.getter:ItemEditView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "new_item_name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "AppSettingView.pressDoneButtonAction():AppSettingView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "new_item_name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dateFormat(date: date)">
+            </PersistentString>
+            <PersistentString
+               value = "dateFormat(date: key)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "closure #1 in closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
          <PersistentStrings>
             <PersistentString
@@ -39,45 +88,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "dateFormat(date: key)">
-            </PersistentString>
-            <PersistentString
-               value = "dateFormat(date: date)">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
       </ContextState>
       <ContextState
          contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
       </ContextState>
       <ContextState
-         contextName = "closure #5 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "trgt_item_id">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "ItemStatusEditView.body.getter:ItemStatusEditView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "trgt_item_id">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "HabChainData.setValueForTest():DataMngr.swift">
-      </ContextState>
-      <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "trgt_item_id">
-            </PersistentString>
-         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>

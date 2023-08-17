@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+struct ItemAddViewSetting {
+    let BUTTON_HEIGHT_PX: CGFloat = 50
+}
+
 struct ItemAddView: View {
     enum ErrorKind {
         case none
@@ -22,9 +26,9 @@ struct ItemAddView: View {
     @State private var is_show_alert: Bool = false
     @State private var error_kind: ErrorKind = .none
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
-    
+    private let VIEW_SETTING: ItemAddViewSetting = ItemAddViewSetting()
+
     var body: some View {
-        let BUTTON_HEIGHT_PX: CGFloat = 50
         let _ = Self._printChanges()
         NavigationView {
             Form {
@@ -52,7 +56,6 @@ struct ItemAddView: View {
                 }
                 Section {
                     Toggle(isOn: $new_is_archived) {
-                        //Text(new_is_archived ? "ON" : "OFF")
                     }
                 } header: {
                     Text("アーカイブ")
@@ -60,12 +63,13 @@ struct ItemAddView: View {
             }
             .navigationTitle("アイテム追加")
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         Button(action: {
             pressAddButtonAction()
         }) {
             Text("Done")
                 .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
+                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
@@ -86,7 +90,7 @@ struct ItemAddView: View {
         }) {
             Text("Cancel")
                 .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
+                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)

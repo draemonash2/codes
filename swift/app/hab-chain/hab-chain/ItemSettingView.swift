@@ -8,6 +8,12 @@
 import SwiftUI
 import WidgetKit
 
+struct ItemSettingViewSetting {
+    let ICON_SIZE_PX: CGFloat = 17
+    let COLOR_INDI_SIZE_PX: CGFloat = 10
+    let BUTTON_HEIGHT_PX: CGFloat = 50
+}
+
 struct ItemSettingView: View {
     @Environment(\ .colorScheme) var colorScheme
     @Environment(\.dismiss) var dismiss
@@ -18,11 +24,9 @@ struct ItemSettingView: View {
     @State var is_show_item_status_edit_view: Bool = false
     @State var trgt_item_id: String = ""
     @State var trgt_item_name: String = ""
+    private let VIEW_SETTING: ItemSettingViewSetting = ItemSettingViewSetting()
 
     var body: some View {
-        let ICON_SIZE_PX: CGFloat = 17
-        let BUTTON_HEIGHT_PX: CGFloat = 50
-        
         let _ = Self._printChanges()
         VStack {
             Text("アイテム設定")
@@ -35,12 +39,30 @@ struct ItemSettingView: View {
                             
                             Spacer()
                             
+                            Button {
+                            } label: {
+                                let color_str: String = getColorString(color: unwraped_item.color, continuation_count: 3)
+                                Text("")
+                                    .font(.caption)
+                                    .frame(width: VIEW_SETTING.COLOR_INDI_SIZE_PX, height: VIEW_SETTING.COLOR_INDI_SIZE_PX)
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(Color.white)
+                                    .background(Color(color_str))
+                                    .clipShape(Circle())
+                            }
                             if unwraped_item.is_archived == true {
                                 let icon_name: String = "archive"
                                 Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                            } else {
+                                let icon_name: String = "archive"
+                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .opacity(0)
                             }
                             Button {
                                 print("pressed \(unwraped_item.item_name) cal button")
@@ -51,7 +73,7 @@ struct ItemSettingView: View {
                                 Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
                             }
                             .buttonStyle(PlainButtonStyle())
                             Button {
@@ -63,7 +85,7 @@ struct ItemSettingView: View {
                                 Image(colorScheme == .light ? "pencil_light": "pencil_dark")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
@@ -91,7 +113,7 @@ struct ItemSettingView: View {
             }) {
                 Text("Done")
                     .frame(maxWidth: .infinity)
-                    .frame(height: BUTTON_HEIGHT_PX)
+                    .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                     .multilineTextAlignment(.center)
                     .background(Color.blue)
                     .foregroundColor(Color.white)

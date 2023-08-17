@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+struct ItemEditViewSetting {
+    let BUTTON_HEIGHT_PX: CGFloat = 50
+}
+
 struct ItemEditView: View {
     enum ErrorKind {
         case none
@@ -15,66 +19,40 @@ struct ItemEditView: View {
     @Binding var hab_chain_data: HabChainData
     @Binding var is_show_item_edit_view: Bool
     @Binding var trgt_item_id: String
-    @FocusState private var focusState
-    @State var new_item_name: String = "abc"
-    @State var new_skip_num: Int = 10
-    @State var new_color: Color = Color.red
-    @State var new_is_archived: Bool = false
     @State private var is_show_alert: Bool = false
     @State private var error_kind: ErrorKind = .none
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+    private let VIEW_SETTING: ItemEditViewSetting = ItemEditViewSetting()
 
     var body: some View {
-        let BUTTON_HEIGHT_PX: CGFloat = 50
         let _ = Self._printChanges()
         
         NavigationView {
             Form {
                 Section {
-                    TextField("e.g. プログラミングの勉強", text: $new_item_name)
+                    TextField("e.g. プログラミングの勉強", text: Binding($hab_chain_data.items[trgt_item_id])!.item_name)
                         .autocapitalization(.none)
-                        .onAppear {
-                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                                self.new_item_name = unwrapped_item.item_name
-                            }
-                        }
                 } header: {
                     Text("項目名")
                 }
                 Section {
-                    TextField("e.g. 10", value: $new_skip_num, format: .number)
-                        .onAppear {
-                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                                self.new_skip_num = unwrapped_item.skip_num
-                            }
-                        }
+                    TextField("e.g. 10", value: Binding($hab_chain_data.items[trgt_item_id])!.skip_num, format: .number)
                 } header: {
                     Text("スキップ可能数")
                 }
                 if FUNC_SETTING.color_select_enable == true {
                     Section {
-                        Picker("", selection: $new_color) {
+                        Picker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.color) {
                             Text("red").tag(Color.red)
                             Text("green").tag(Color.green)
                             Text("blue").tag(Color.blue)
-                        }
-                        .onAppear {
-                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                                self.new_color = unwrapped_item.color
-                            }
                         }
                     } header: {
                         Text("色")
                     }
                 }
                 Section {
-                    Toggle(isOn: $new_is_archived) {
-                        //Text(new_is_archived ? "ON" : "OFF")
-                    }
-                    .onAppear {
-                        if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                            self.new_is_archived = unwrapped_item.is_archived
-                        }
+                    Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_archived) {
                     }
                 } header: {
                     Text("アーカイブ")
@@ -82,15 +60,13 @@ struct ItemEditView: View {
             }
             .navigationTitle("アイテム編集")
         }
-        //.onDisappear() {
-        //    hab_chain_data.printAll()
-        //}
+        .navigationViewStyle(StackNavigationViewStyle())
         Button(action: {
             pressEditButtonAction()
         }) {
             Text("Done")
                 .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
+                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
@@ -104,32 +80,14 @@ struct ItemEditView: View {
             }
         }
         .padding()
-        Button(action: {
-            pressCancelButtonAction()
-        }) {
-            Text("Cancel")
-                .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
-                .multilineTextAlignment(.center)
-                .background(Color.blue)
-                .foregroundColor(Color.white)
-        }
-        .padding()
     }
     func pressEditButtonAction() {
-        if new_item_name == "" {
+        if hab_chain_data.items[trgt_item_id]!.item_name == "" {
             is_show_alert = true
             error_kind = .blank_item_name
         } else {
-            hab_chain_data.items[trgt_item_id]!.item_name = new_item_name
-            hab_chain_data.items[trgt_item_id]!.skip_num = new_skip_num
-            hab_chain_data.items[trgt_item_id]!.color = new_color
-            hab_chain_data.items[trgt_item_id]!.is_archived = new_is_archived
             is_show_item_edit_view = false
             is_show_alert = false
         }
-    }
-    func pressCancelButtonAction() {
-        is_show_item_edit_view = false
     }
 }

@@ -7,60 +7,107 @@
 
 import SwiftUI
 
+struct AppSettingViewSetting {
+    let BUTTON_WIDTH_PX: CGFloat = 100
+    let BUTTON_HEIGHT_PX: CGFloat = 50
+    let BUTTON_CORNER_RADIUS: CGFloat = 10
+}
+
 struct AppSettingView: View {
     @Binding var hab_chain_data: HabChainData
-    @AppStorage("hab_chain_data_jsonstr") var hab_chain_data_jsonstr: String = ""
+    @AppStorage("app_json_string", store: UserDefaults(suiteName: "group.hab_chain")) var app_json_string: String = ""
+    @Environment(\.dismiss) var dismiss
     @State private var showingAlertBackup = false
     @State private var showingAlertRestore = false
+    private let VIEW_SETTING: AppSettingViewSetting = AppSettingViewSetting()
     var body: some View {
-        let BUTTON_HEIGHT_PX: CGFloat = 50
-
+        //NavigationView {
+            Form {
+                Section {
+                    Picker("", selection: $hab_chain_data.whole_color) {
+                        Text("red").tag(Color.red)
+                        Text("green").tag(Color.green)
+                        Text("blue").tag(Color.blue)
+                    }
+                } header: {
+                    Text("色")
+                }
+                Section {
+                    Toggle(isOn: $hab_chain_data.is_show_status_popup) {
+                    }
+                } header: {
+                    Text("Popup表示")
+                }
+                Section {
+                    HStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            showingAlertBackup = true
+                        }) {
+                            Text("バックアップ")
+                                .bold()
+                                .padding()
+                                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                                .foregroundColor(Color.white)
+                                .background(Color.blue)
+                                .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
+                        }
+                        .alert(isPresented: $showingAlertBackup) {
+                            Alert(
+                                title: Text("確認"),
+                                message: Text("バックアップを行います。よろしいですか？"),
+                                primaryButton: .default(Text("はい"), action: {
+                                    hab_chain_data.saveJsonString()
+                                }),
+                                secondaryButton: .destructive(Text("いいえ"), action: {
+                                    print("処理を中断します。")
+                                })
+                            )
+                        }
+                        Button(action: {
+                            showingAlertRestore = true
+                        }) {
+                            Text("復旧")
+                                .bold()
+                                .padding()
+                                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                                .foregroundColor(Color.white)
+                                .background(Color.blue)
+                                .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
+                        }
+                        .alert(isPresented: $showingAlertRestore) {
+                            Alert(
+                                title: Text("確認"),
+                                message: Text("バックアップデータの復旧を行います。よろしいですか？"),
+                                primaryButton: .default(Text("はい"), action: {
+                                    hab_chain_data.loadJsonString()
+                                }),
+                                secondaryButton: .destructive(Text("いいえ"), action: {
+                                    print("処理を中断します。")
+                                })
+                            )
+                        }
+                    }
+                } header: {
+                    Text("バックアップ")
+                }
+            }
         Button(action: {
-            showingAlertBackup = true
+            pressDoneButtonAction()
         }) {
-            Text("バックアップ実行")
+            Text("Done")
                 .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
+                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                 .multilineTextAlignment(.center)
                 .background(Color.blue)
                 .foregroundColor(Color.white)
         }
-        .alert(isPresented: $showingAlertBackup) {
-            Alert(
-                title: Text("確認"),
-                message: Text("バックアップを行います。よろしいですか？"),
-                primaryButton: .default(Text("はい"), action: {
-                    hab_chain_data.saveJsonString()
-                }),
-                secondaryButton: .destructive(Text("いいえ"), action: {
-                    print("処理を中断します。")
-                })
-            )
-        }
         .padding()
-        Button(action: {
-            showingAlertRestore = true
-        }) {
-            Text("バックアップデータ復旧")
-                .frame(maxWidth: .infinity)
-                .frame(height: BUTTON_HEIGHT_PX)
-                .multilineTextAlignment(.center)
-                .background(Color.blue)
-                .foregroundColor(Color.white)
-        }
-        .alert(isPresented: $showingAlertRestore) {
-            Alert(
-                title: Text("確認"),
-                message: Text("バックアップデータの復旧を行います。よろしいですか？"),
-                primaryButton: .default(Text("はい"), action: {
-                    hab_chain_data.loadJsonString()
-                }),
-                secondaryButton: .destructive(Text("いいえ"), action: {
-                    print("処理を中断します。")
-                })
-            )
-        }
-        .padding()
+    }
+    func pressDoneButtonAction() {
+        app_json_string = hab_chain_data.getRawStruct2JsonString()
+        dismiss()
     }
 }
 

@@ -25,6 +25,8 @@ struct Item {
 struct HabChainData {
     var item_id_list: [String] = []
     var items: Dictionary<String, Item> = [:]
+    var whole_color: Color = Color.green
+    var is_show_status_popup: Bool = true
 
     /* for Json <TOP> */
     struct ItemJson: Codable {
@@ -38,6 +40,8 @@ struct HabChainData {
     struct HabChainDataJson: Codable {
         var item_id_list: [String] = []
         var items: Dictionary<String, ItemJson> = [:]
+        var whole_color: String = "red"
+        var is_show_status_popup: String = "true"
     }
     /* for Json <TOP> */
 
@@ -59,6 +63,8 @@ struct HabChainData {
     {
         self.item_id_list.removeAll()
         self.items.removeAll()
+        self.is_show_status_popup = true
+        self.whole_color = Color.red
     }
     func generateItemId() -> String
     {
@@ -447,6 +453,8 @@ struct HabChainData {
             }
             hab_chain_data_json.items.updateValue(item_json, forKey: item_id_self)
         }
+        hab_chain_data_json.whole_color = self.convToStr(color: self.whole_color)
+        hab_chain_data_json.is_show_status_popup = self.convToStr(variable: self.is_show_status_popup)
         return hab_chain_data_json
     }
     mutating func convJsonStruct2RawStruct(hab_chain_data_jsonstruct: HabChainDataJson) {
@@ -466,6 +474,8 @@ struct HabChainData {
             }
             self.items.updateValue(item_self, forKey: item_id_json)
         }
+        self.whole_color = self.convFromStr(color: hab_chain_data_jsonstruct.whole_color)
+        self.is_show_status_popup = self.convFromStr(variable: hab_chain_data_jsonstruct.is_show_status_popup)
     }
     mutating func convJsonStruct2JsonString(hab_chain_data_jsonstruct: HabChainDataJson) -> String
     {
@@ -492,7 +502,8 @@ struct HabChainData {
         let json_data = hab_chain_data_jsonstring.data(using: .utf8)!
         let decoder = JSONDecoder()
         guard let hab_chain_data_jsonstruct = try? decoder.decode(HabChainDataJson.self, from: json_data) else {
-            fatalError("JSONデコードエラー")
+            print("JSONデコードエラー")
+            return HabChainDataJson()
         }
         return hab_chain_data_jsonstruct
     }
