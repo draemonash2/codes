@@ -11,7 +11,9 @@ import WidgetKit
 struct ContentViewSetting {
     let BUTTON_NUM :Int = 4
     let BUTTON_SIZE_PX :CGFloat? = 35
+    let BUTTON_SPACING_PX :CGFloat? = 8
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
+    let ITEM_TEXT_WIDTH_PX :CGFloat? = 150
     let ICON_SIZE_PX :CGFloat? = 30
     let LIST_PADDING_PX :CGFloat? = 20
 }
@@ -22,12 +24,17 @@ struct ContentView: View {
     @State var hab_chain_data: HabChainData = HabChainData()
     @State var is_overlay_presented: Bool = false
     @State var trgt_status: String = ""
-    private let CVIEW_SETTING: ContentViewSetting = ContentViewSetting()
+    private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
     var body: some View {
         let _ = Self._printChanges()
         NavigationView {
-            ZStack {
+            GeometryReader { geometry in
                 VStack {
+                    let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                    let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
+                    //Text("button_num_tmp = \(button_num_tmp)")
+                    //Text("button num = \(button_num)")
+                    //Text("geometry.size.width = \(Int(geometry.size.width))")
                     Text("hab-chain")
                         .font(.largeTitle)
                         .onAppear() {
@@ -38,19 +45,21 @@ struct ContentView: View {
                     Text("ハビットチェーンの力で習慣を継続させましょう！")
                         .font(.caption)
                     Group {
-                        HStack {
+                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                             Spacer()
-                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                            //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                 let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
                                 Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
                                     .font(.caption)
-                                    .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+                                    .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
                                     .multilineTextAlignment(.center)
                             }
                         }
-                        HStack {
+                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                             Spacer()
-                            ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                            //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                 WholeItemStatusTextCircle(
                                     hab_chain_data: $hab_chain_data,
                                     date_offset: i
@@ -58,17 +67,18 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .padding([.leading, .trailing], CVIEW_SETTING.LIST_PADDING_PX )
+                    .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
                     List {
                         ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
                             if let unwraped_item: Item = hab_chain_data.items[item_id] {
                                 if unwraped_item.is_archived == false {
-                                    HStack {
+                                    HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                                         Text(unwraped_item.item_name)
-                                        
+
                                         Spacer()
                                         
-                                        ForEach(-(CVIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                                        //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
+                                        ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                             IndivItemStatusChangeButton(
                                                 hab_chain_data: $hab_chain_data,
                                                 is_overlay_presented: $is_overlay_presented,
@@ -87,7 +97,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .padding([.leading, .trailing], CVIEW_SETTING.LIST_PADDING_PX )
+                    .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
                     .listStyle(.plain)
                     .environment(\.editMode, .constant(.active))
                 }
@@ -99,7 +109,7 @@ struct ContentView: View {
                             Image(colorScheme == .light ? "pencil_light": "pencil_dark")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(height: CVIEW_SETTING.ICON_SIZE_PX)
+                                .frame(height: VIEW_SETTING.ICON_SIZE_PX)
                         }
                     }
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -109,7 +119,7 @@ struct ContentView: View {
                             Image(colorScheme == .light ? "setting_light": "setting_dark")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(height: CVIEW_SETTING.ICON_SIZE_PX)
+                                .frame(height: VIEW_SETTING.ICON_SIZE_PX)
                         }
                     }
                 }
@@ -129,7 +139,7 @@ struct IndivItemStatusChangeButton: View {
     @Binding var trgt_status: String
     let item_id: String
     let date_offset: Int
-    let CVIEW_SETTING: ContentViewSetting = ContentViewSetting()
+    let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
 
     var body:some View {
         if let unwraped_item: Item = hab_chain_data.items[item_id] {
@@ -157,7 +167,7 @@ struct IndivItemStatusChangeButton: View {
                 } label: {
                     Text(String(continuation_cnt))
                         .font(.caption)
-                        .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+                        .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color.white)
                         .background(Color(color_str))
@@ -169,11 +179,11 @@ struct IndivItemStatusChangeButton: View {
                     if unwrapped_item_status == .Done {
                         Circle()
                             .stroke(Color.white, lineWidth: 1)
-                            .frame(width: CVIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: CVIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
+                            .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                     } else if unwrapped_item_status == .Skip {
                         Circle()
                             .stroke(Color.white, style: StrokeStyle(lineWidth: 1, dash: [4]))
-                            .frame(width: CVIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: CVIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
+                            .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                     } else {
                         // Do Nothing
                     }
@@ -186,7 +196,7 @@ struct IndivItemStatusChangeButton: View {
 struct WholeItemStatusTextCircle: View {
     @Binding var hab_chain_data: HabChainData
     let date_offset: Int
-    let CVIEW_SETTING: ContentViewSetting = ContentViewSetting()
+    let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
 
     var body:some View {
         let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
@@ -194,7 +204,7 @@ struct WholeItemStatusTextCircle: View {
         let color_str: String = getColorString(color: hab_chain_data.whole_color, continuation_count: continuation_cnt)
         Text(String(continuation_cnt))
             .font(.caption)
-            .frame(width: CVIEW_SETTING.BUTTON_SIZE_PX, height: CVIEW_SETTING.BUTTON_SIZE_PX)
+            .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
             .multilineTextAlignment(.center)
             .foregroundColor(Color.white)
             .background(Color(color_str))

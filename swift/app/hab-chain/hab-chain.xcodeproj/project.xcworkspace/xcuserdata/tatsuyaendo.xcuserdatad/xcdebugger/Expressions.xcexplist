@@ -22,10 +22,43 @@
          contextName = "closure #2 in AppSettingView.body.getter:AppSettingView.swift">
       </ContextState>
       <ContextState
+         contextName = "closure #5 in ItemEditView.body.getter:ItemEditView.swift">
+      </ContextState>
+      <ContextState
          contextName = "ItemStatusEditView.body.getter:ItemStatusEditView.swift">
          <PersistentStrings>
             <PersistentString
                value = "trgt_item_id">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #2 in closure #1 in closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "VIEW_SETTING">
+            </PersistentString>
+            <PersistentString
+               value = "geometry.size.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "geometry.size.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "geometry.size.width">
+            </PersistentString>
+            <PersistentString
+               value = "(geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2)">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
