@@ -9,7 +9,6 @@ import SwiftUI
 import WidgetKit
 
 struct ContentViewSetting {
-    let BUTTON_NUM :Int = 4
     let BUTTON_SIZE_PX :CGFloat? = 35
     let BUTTON_SPACING_PX :CGFloat? = 8
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
@@ -32,9 +31,6 @@ struct ContentView: View {
                 VStack {
                     let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                     let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
-                    //Text("button_num_tmp = \(button_num_tmp)")
-                    //Text("button num = \(button_num)")
-                    //Text("geometry.size.width = \(Int(geometry.size.width))")
                     Text("hab-chain")
                         .font(.largeTitle)
                         .onAppear() {
@@ -47,7 +43,6 @@ struct ContentView: View {
                     Group {
                         HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                             Spacer()
-                            //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                             ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                 let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
                                 Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
@@ -58,7 +53,6 @@ struct ContentView: View {
                         }
                         HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                             Spacer()
-                            //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                             ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                 WholeItemStatusTextCircle(
                                     hab_chain_data: $hab_chain_data,
@@ -77,7 +71,6 @@ struct ContentView: View {
 
                                         Spacer()
                                         
-                                        //ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                                         ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                             IndivItemStatusChangeButton(
                                                 hab_chain_data: $hab_chain_data,
