@@ -84,7 +84,7 @@ struct hab_chain_widgetEntryView : View {
                         Spacer()
                         ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                             let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                            Text(entry.hab_chain_data.convDateToD(date: date))
+                            Text(entry.hab_chain_data.formatDateD(date: date))
                                 .font(.caption2)
                                 .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
                                 .multilineTextAlignment(.center)
@@ -124,7 +124,7 @@ struct hab_chain_widgetEntryView : View {
                                     
                                     ForEach(-(button_num - 1)..<1, id: \.self) { btn_idx in
                                         let date: Date = Calendar.current.date(byAdding: .day,value: btn_idx, to: Date())!
-                                        let date_str: String = entry.hab_chain_data.convDateToStr(date: date)
+                                        let date_str: String = entry.hab_chain_data.convToStr(date: date)
                                         let continuation_cnt: Int = entry.hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
                                         let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
                                         ZStack {

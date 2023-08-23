@@ -28,96 +28,114 @@ struct ContentView: View {
         let _ = Self._printChanges()
         NavigationView {
             GeometryReader { geometry in
-                VStack {
-                    let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
-                    let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
-                    Text("hab-chain")
-                        .font(.largeTitle)
-                        .onAppear() {
-                            hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
-                            WidgetCenter.shared.reloadAllTimelines()
-                        }
-                        .padding()
-                    Text("ハビットチェーンの力で習慣を継続させましょう！")
-                        .font(.caption)
-                    Group {
-                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                            Spacer()
-                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
-                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                                Text(hab_chain_data.convDateToMmdd(date: date, delimiter: "\n"))
-                                    .font(.caption)
-                                    .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
-                                    .multilineTextAlignment(.center)
+                ZStack {
+                    VStack {
+                        let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                        let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
+                        Text("hab-chain")
+                            .font(.largeTitle)
+                            .onAppear() {
+                                hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
+                                WidgetCenter.shared.reloadAllTimelines()
+                            }
+                            .padding()
+                        Text("ハビットチェーンの力で習慣を継続させましょう！")
+                            .font(.caption)
+                        Group {
+                            HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                                Spacer()
+                                ForEach(-(button_num - 1)..<1, id: \.self) { i in
+                                    let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                    Text(hab_chain_data.formatDateMmdd(date: date, delimiter: "\n"))
+                                        .font(.caption)
+                                        .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
+                            HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                                Spacer()
+                                ForEach(-(button_num - 1)..<1, id: \.self) { i in
+                                    WholeItemStatusTextCircle(
+                                        hab_chain_data: $hab_chain_data,
+                                        date_offset: i
+                                    )
+                                }
                             }
                         }
-                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                            Spacer()
-                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
-                                WholeItemStatusTextCircle(
-                                    hab_chain_data: $hab_chain_data,
-                                    date_offset: i
-                                )
-                            }
-                        }
-                    }
-                    .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
-                    List {
-                        ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
-                            if let unwraped_item: Item = hab_chain_data.items[item_id] {
-                                if unwraped_item.is_archived == false {
-                                    HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                                        Text(unwraped_item.item_name)
+                        .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
+                        List {
+                            ForEach(hab_chain_data.item_id_list, id: \.self) { item_id in
+                                if let unwraped_item: Item = hab_chain_data.items[item_id] {
+                                    if unwraped_item.is_archived == false {
+                                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                                            Text(unwraped_item.item_name)
 
-                                        Spacer()
-                                        
-                                        ForEach(-(button_num - 1)..<1, id: \.self) { i in
-                                            IndivItemStatusChangeButton(
-                                                hab_chain_data: $hab_chain_data,
-                                                is_overlay_presented: $is_overlay_presented,
-                                                trgt_status: $trgt_status,
-                                                item_id: item_id,
-                                                date_offset: i
-                                            )
+                                            Spacer()
+                                            
+                                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
+                                                IndivItemStatusChangeButton(
+                                                    hab_chain_data: $hab_chain_data,
+                                                    is_overlay_presented: $is_overlay_presented,
+                                                    trgt_status: $trgt_status,
+                                                    item_id: item_id,
+                                                    date_offset: i
+                                                )
+                                            }
                                         }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .listRowInsets(EdgeInsets())
-                                    .onTapGesture {
-                                        print("pressed \(unwraped_item.item_name) item")
+                                        .contentShape(Rectangle())
+                                        .listRowInsets(EdgeInsets())
+                                        .onTapGesture {
+                                            print("pressed \(unwraped_item.item_name) item")
+                                        }
                                     }
                                 }
                             }
                         }
+                        .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
+                        .listStyle(.plain)
+                        .environment(\.editMode, .constant(.active))
                     }
-                    .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
-                    .listStyle(.plain)
-                    .environment(\.editMode, .constant(.active))
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(
-                            destination: ItemSettingView(hab_chain_data: $hab_chain_data)
-                        ) {
-                            Image(colorScheme == .light ? "pencil_light": "pencil_dark")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            NavigationLink(
+                                destination: AppSettingView(hab_chain_data: $hab_chain_data)
+                            ) {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "gearshape")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
+                            }
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(
+                                destination: InformationView()
+                            ) {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "info.circle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
+                            }
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(
+                                destination: ItemSettingView(hab_chain_data: $hab_chain_data)
+                            ) {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "pencil")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
+                            }
                         }
                     }
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        NavigationLink(
-                            destination: AppSettingView(hab_chain_data: $hab_chain_data)
-                        ) {
-                            Image(colorScheme == .light ? "setting_light": "setting_dark")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: VIEW_SETTING.ICON_SIZE_PX)
-                        }
+                    if is_overlay_presented {
+                        PopupView(is_presented: $is_overlay_presented, trgt_status: $trgt_status)
                     }
-                }
-                if is_overlay_presented {
-                    PopupView(is_presented: $is_overlay_presented, trgt_status: $trgt_status)
                 }
             }
         }
@@ -137,7 +155,7 @@ struct IndivItemStatusChangeButton: View {
     var body:some View {
         if let unwraped_item: Item = hab_chain_data.items[item_id] {
             let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
-            let date_str: String = hab_chain_data.convDateToStr(date: date)
+            let date_str: String = hab_chain_data.convToStr(date: date)
             let continuation_cnt: Int = hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
             let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
             ZStack {
@@ -147,7 +165,12 @@ struct IndivItemStatusChangeButton: View {
                     // output popup message
                     if hab_chain_data.is_show_status_popup == true {
                         withAnimation(.easeIn(duration: 0.2)) {
-                            trgt_status = hab_chain_data.getItemStatusStr(item_id: item_id, date: date)
+                            if let unwrapped_item = hab_chain_data.items[item_id] {
+                                let date_str: String = hab_chain_data.convToStr(date: date)
+                                if let unwrapped_status = unwrapped_item.daily_statuses[date_str] {
+                                    trgt_status = hab_chain_data.convToStr(item_status: unwrapped_status)
+                                }
+                            }
                             is_overlay_presented = true
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -168,7 +191,7 @@ struct IndivItemStatusChangeButton: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                if let unwrapped_item_status: ItemStatus = unwraped_item.status[date_str] {
+                if let unwrapped_item_status: ItemStatus = unwraped_item.daily_statuses[date_str] {
                     if unwrapped_item_status == .Done {
                         Circle()
                             .stroke(Color.white, lineWidth: 1)

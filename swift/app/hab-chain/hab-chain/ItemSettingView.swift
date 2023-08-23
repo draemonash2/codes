@@ -40,6 +40,7 @@ struct ItemSettingView: View {
                             Spacer()
                             
                             Button {
+                                print("pressed \(unwraped_item.item_name) color button")
                             } label: {
                                 let color_str: String = getColorString(color: unwraped_item.color, continuation_count: 3)
                                 Text("")
@@ -50,30 +51,43 @@ struct ItemSettingView: View {
                                     .background(Color(color_str))
                                     .clipShape(Circle())
                             }
-                            if unwraped_item.is_archived == true {
-                                let icon_name: String = "archive"
-                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
-                            } else {
-                                let icon_name: String = "archive"
-                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
-                                    .opacity(0)
+                            .buttonStyle(PlainButtonStyle())
+                            Button {
+                                print("pressed \(unwraped_item.item_name) archive button")
+                                if unwraped_item.is_archived {
+                                    hab_chain_data.items[item_id]!.is_archived = false
+                                } else {
+                                    hab_chain_data.items[item_id]!.is_archived = true
+                                }
+                            } label: {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                if unwraped_item.is_archived == true {
+                                    Image(systemName: "tray.and.arrow.down")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                        .foregroundColor(icon_color)
+                                } else {
+                                    Image(systemName: "tray.and.arrow.down")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                        .foregroundColor(icon_color)
+                                        .opacity(0.2)
+                                }
                             }
+                            .buttonStyle(PlainButtonStyle())
                             Button {
                                 print("pressed \(unwraped_item.item_name) cal button")
                                 trgt_item_id = item_id
                                 is_show_item_status_edit_view = true
                             } label: {
-                                let icon_name: String = "cal"
-                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "calendar")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
                             }
                             .buttonStyle(PlainButtonStyle())
                             Button {
@@ -82,10 +96,12 @@ struct ItemSettingView: View {
                                 trgt_item_name = unwraped_item.item_name
                                 is_show_item_edit_view = true
                             } label: {
-                                Image(colorScheme == .light ? "pencil_light": "pencil_dark")
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "pencil")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }

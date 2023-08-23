@@ -21,6 +21,12 @@ struct ItemStatusEditView: View {
     @Binding var is_show_item_status_edit_view: Bool
     @Binding var trgt_item_id: String
     private let VIEW_SETTING: ItemStatusEditViewSetting = ItemStatusEditViewSetting()
+    let icon_name_dic: Dictionary<ItemStatus, String> = [
+        .Done: "checkmark.square",
+        .NotYet: "square",
+        .Skip: "clear"
+    ]
+
     var body: some View {
         if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
             Text(unwrapped_item.item_name)
@@ -31,26 +37,27 @@ struct ItemStatusEditView: View {
                     let date_offset: Int = -i
                     let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
                     HStack {
-                        Text(hab_chain_data.convDateToMmdd(date: date, delimiter: " "))
+                        Text(hab_chain_data.formatDateMmdd(date: date, delimiter: " "))
                         Spacer()
                         Button(action:{
                             hab_chain_data.toggleItemStatus(item_id: trgt_item_id, date: date)
                         }) {
-                            let date_str = hab_chain_data.convDateToStr(date: date)
-                            if unwrapped_item.status.keys.contains(date_str) {
-                                if let unwrapped_item_status = unwrapped_item.status[date_str] {
-                                    let icon_name: String = "check_" + unwrapped_item_status.rawValue.lowercased()
-                                    Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                            let date_str = hab_chain_data.convToStr(date: date)
+                            let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                            if unwrapped_item.daily_statuses.keys.contains(date_str) {
+                                if let unwrapped_item_status = unwrapped_item.daily_statuses[date_str] {
+                                    Image(systemName: icon_name_dic[unwrapped_item_status]!)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                        .foregroundColor(icon_color)
                                 }
                             } else {
-                                let icon_name: String = "check_notyet"
-                                Image(colorScheme == .light ? icon_name + "_light": icon_name + "_dark")
+                                Image(systemName: icon_name_dic[.NotYet]!)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
                             }
                         }
                     }
