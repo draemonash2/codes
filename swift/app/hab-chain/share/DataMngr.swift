@@ -254,6 +254,7 @@ struct HabChainData {
         item_id: String
     ) -> Int
     {
+        let CNT_MAX: Int = 999
         var date_offset: Int = 0
         var continuation_count: Int = 0
         if let unwrapped_item = self.items[item_id] {
@@ -282,6 +283,9 @@ struct HabChainData {
                     }
                 }
             }
+        }
+        if continuation_count >= CNT_MAX {
+            continuation_count = CNT_MAX
         }
         return continuation_count
     }
