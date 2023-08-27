@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		524868DA2A93392600FB5B32 /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524868D92A93392600FB5B32 /* InformationView.swift */; };
+		524868DC2A99D42400FB5B32 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524868DB2A99D42400FB5B32 /* StatisticsView.swift */; };
 		5265E3942A75472D0054012F /* AppSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5265E3932A75472D0054012F /* AppSettingView.swift */; };
 		526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */; };
 		526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD872A6F7AC700E677A7 /* ContentView.swift */; };
@@ -54,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		524868D92A93392600FB5B32 /* InformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationView.swift; sourceTree = "<group>"; };
+		524868DB2A99D42400FB5B32 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		5265E3932A75472D0054012F /* AppSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingView.swift; sourceTree = "<group>"; };
 		526DBD822A6F7AC700E677A7 /* hab-chain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hab-chain.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hab_chainApp.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */,
 				524868D92A93392600FB5B32 /* InformationView.swift */,
 				526DBD872A6F7AC700E677A7 /* ContentView.swift */,
+				524868DB2A99D42400FB5B32 /* StatisticsView.swift */,
 				526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */,
 				5265E3932A75472D0054012F /* AppSettingView.swift */,
 				52A3B40E2A8742EF00B7F286 /* ItemStatusEditView.swift */,
@@ -280,6 +283,7 @@
 				524868DA2A93392600FB5B32 /* InformationView.swift in Sources */,
 				526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */,
 				52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
+				524868DC2A99D42400FB5B32 /* StatisticsView.swift in Sources */,
 				5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */,
 				52A064752A80B8FF0047BACA /* DataMngr.swift in Sources */,
 			);

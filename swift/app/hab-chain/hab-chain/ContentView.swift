@@ -110,6 +110,18 @@ struct ContentView: View {
                         }
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink(
+                                destination: StatisticsView(hab_chain_data: $hab_chain_data)
+                            ) {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "chart.line.uptrend.xyaxis")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
+                            }
+                        }
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(
                                 destination: InformationView()
                             ) {
                                 let icon_color :Color = colorScheme == .light ? Color.black: Color.white
