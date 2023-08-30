@@ -21,78 +21,77 @@ struct AppSettingView: View {
     @State private var showingAlertRestore = false
     private let VIEW_SETTING: AppSettingViewSetting = AppSettingViewSetting()
     var body: some View {
-        //NavigationView {
-            Form {
-                Section {
-                    Picker("", selection: $hab_chain_data.whole_color) {
-                        Text("red").tag(Color.red)
-                        Text("green").tag(Color.green)
-                        Text("blue").tag(Color.blue)
-                    }
-                } header: {
-                    Text("色")
+        Form {
+            Section {
+                Picker("", selection: $hab_chain_data.whole_color) {
+                    Text("red").tag(Color.red)
+                    Text("green").tag(Color.green)
+                    Text("blue").tag(Color.blue)
                 }
-                Section {
-                    Toggle(isOn: $hab_chain_data.is_show_status_popup) {
-                    }
-                } header: {
-                    Text("Popup表示")
-                }
-                Section {
-                    HStack {
-                        Spacer()
-                        
-                        Button(action: {
-                            showingAlertBackup = true
-                        }) {
-                            Text("バックアップ")
-                                .bold()
-                                .padding()
-                                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
-                                .foregroundColor(Color.white)
-                                .background(Color.blue)
-                                .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
-                        }
-                        .alert(isPresented: $showingAlertBackup) {
-                            Alert(
-                                title: Text("確認"),
-                                message: Text("バックアップを行います。よろしいですか？"),
-                                primaryButton: .default(Text("はい"), action: {
-                                    hab_chain_data.saveJsonString()
-                                }),
-                                secondaryButton: .destructive(Text("いいえ"), action: {
-                                    print("処理を中断します。")
-                                })
-                            )
-                        }
-                        Button(action: {
-                            showingAlertRestore = true
-                        }) {
-                            Text("復旧")
-                                .bold()
-                                .padding()
-                                .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
-                                .foregroundColor(Color.white)
-                                .background(Color.blue)
-                                .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
-                        }
-                        .alert(isPresented: $showingAlertRestore) {
-                            Alert(
-                                title: Text("確認"),
-                                message: Text("バックアップデータの復旧を行います。よろしいですか？"),
-                                primaryButton: .default(Text("はい"), action: {
-                                    hab_chain_data.loadJsonString()
-                                }),
-                                secondaryButton: .destructive(Text("いいえ"), action: {
-                                    print("処理を中断します。")
-                                })
-                            )
-                        }
-                    }
-                } header: {
-                    Text("バックアップ")
-                }
+            } header: {
+                Text("色")
             }
+            Section {
+                Toggle(isOn: $hab_chain_data.is_show_status_popup) {
+                }
+            } header: {
+                Text("Popup表示")
+            }
+            Section {
+                HStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        showingAlertBackup = true
+                    }) {
+                        Text("バックアップ")
+                            .bold()
+                            .padding()
+                            .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                            .foregroundColor(Color.white)
+                            .background(Color.blue)
+                            .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
+                    }
+                    .alert(isPresented: $showingAlertBackup) {
+                        Alert(
+                            title: Text("確認"),
+                            message: Text("バックアップを行います。よろしいですか？"),
+                            primaryButton: .default(Text("はい"), action: {
+                                hab_chain_data.saveJsonString()
+                            }),
+                            secondaryButton: .destructive(Text("いいえ"), action: {
+                                print("処理を中断します。")
+                            })
+                        )
+                    }
+                    Button(action: {
+                        showingAlertRestore = true
+                    }) {
+                        Text("復旧")
+                            .bold()
+                            .padding()
+                            .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                            .foregroundColor(Color.white)
+                            .background(Color.blue)
+                            .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
+                    }
+                    .alert(isPresented: $showingAlertRestore) {
+                        Alert(
+                            title: Text("確認"),
+                            message: Text("バックアップデータの復旧を行います。よろしいですか？"),
+                            primaryButton: .default(Text("はい"), action: {
+                                hab_chain_data.loadJsonString()
+                            }),
+                            secondaryButton: .destructive(Text("いいえ"), action: {
+                                print("処理を中断します。")
+                            })
+                        )
+                    }
+                }
+            } header: {
+                Text("バックアップ")
+            }
+        }
         Button(action: {
             pressDoneButtonAction()
         }) {

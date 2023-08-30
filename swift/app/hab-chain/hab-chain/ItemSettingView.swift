@@ -12,6 +12,7 @@ struct ItemSettingViewSetting {
     let ICON_SIZE_PX: CGFloat = 17
     let COLOR_INDI_SIZE_PX: CGFloat = 10
     let BUTTON_HEIGHT_PX: CGFloat = 50
+    let ARCHIVE_ICON_OPACITY: CGFloat = 0.2
 }
 
 struct ItemSettingView: View {
@@ -73,7 +74,7 @@ struct ItemSettingView: View {
                                         .aspectRatio(contentMode: .fit)
                                         .frame(height: VIEW_SETTING.ICON_SIZE_PX)
                                         .foregroundColor(icon_color)
-                                        .opacity(0.2)
+                                        .opacity(VIEW_SETTING.ARCHIVE_ICON_OPACITY)
                                 }
                             }
                             .buttonStyle(PlainButtonStyle())

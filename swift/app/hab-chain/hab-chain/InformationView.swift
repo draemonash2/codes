@@ -10,6 +10,7 @@ import SwiftUI
 struct InformationViewSetting {
     let BUTTON_SIZE_PX :CGFloat? = 35
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
+    let BUTTON_INCIRCLE_LINEWIDTH :CGFloat? = 1
 }
 
 struct InformationView: View {
@@ -47,14 +48,13 @@ struct InformationView: View {
                                 .background(Color(color_str))
                                 .clipShape(Circle())
                             Circle()
-                                .stroke(Color.white, lineWidth: 1)
+                                .stroke(Color.white, lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!)
                                 .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                         }
                         Text(" : 完了 (N=連続達成回数)")
                         Spacer()
                     }
                     .frame(alignment: .leading)
-                    //.padding()
                     HStack {
                         ZStack {
                             let color_str: String = "color_red3"
@@ -66,14 +66,13 @@ struct InformationView: View {
                                 .background(Color(color_str))
                                 .clipShape(Circle())
                             Circle()
-                                .stroke(Color.white, style: StrokeStyle(lineWidth: 1, dash: [4]))
+                                .stroke(Color.white, style: StrokeStyle(lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!, dash: [4]))
                                 .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                         }
                         Text(" : スキップ (N=連続達成回数)")
                         Spacer()
                     }
                     .frame(alignment: .leading)
-                    //.padding()
                     Text("")
                     Text("習慣が続けば続くほどボタンの色が濃くなり、習慣が切れると色がリセットされます。\n(スキップした場合は色が保持されます)")
                     HStack {

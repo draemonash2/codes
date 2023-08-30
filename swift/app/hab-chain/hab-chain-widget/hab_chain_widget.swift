@@ -9,8 +9,10 @@ import WidgetKit
 import SwiftUI
 
 struct ContentViewSetting {
+    let BUTTON_NUM_MIN :Int = 3
     let BUTTON_SIZE_PX :CGFloat? = 15
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 10
+    let BUTTON_INCIRCLE_LINEWIDTH :CGFloat? = 1
     let BUTTON_SPACING_PX: CGFloat? = 1
     let PADDING_SIZE_PX :CGFloat? = 10
     let LIST_SPACING_PX :CGFloat? = 1
@@ -75,7 +77,7 @@ struct hab_chain_widgetEntryView : View {
         GeometryReader { geometry in
             VStack (spacing : VIEW_SETTING.LIST_SPACING_PX) {
                 let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
-                let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
+                let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
                 let list_num_max_tmp: Int = Int((geometry.size.height - VIEW_SETTING.LIST_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.LIST_SPACING_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let list_num_max: Int = list_num_max_tmp > 1 ? list_num_max_tmp : 1
                 #if false
@@ -140,11 +142,11 @@ struct hab_chain_widgetEntryView : View {
                                             if let unwrapped_item_status = unwraped_item.status[date_str] {
                                                 if unwrapped_item_status == .Done {
                                                     Circle()
-                                                        .stroke(Color.white, lineWidth: 1)
+                                                        .stroke(Color.white, lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!)
                                                         .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                                                 } else if unwrapped_item_status == .Skip {
                                                     Circle()
-                                                        .stroke(Color.white, style: StrokeStyle(lineWidth: 1, dash: [4]))
+                                                        .stroke(Color.white, style: StrokeStyle(lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!, dash: [4]))
                                                         .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                                                 } else {
                                                     // Do Nothing

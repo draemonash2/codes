@@ -113,12 +113,6 @@ struct ItemStatusEditView: View {
     }
 }
 
-//struct ItemStatusEditView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ItemStatusEditView()
-//    }
-//}
-
 struct PopUpDialogView: View {
 
     @Environment(\ .colorScheme) var colorScheme
@@ -188,16 +182,6 @@ struct PopUpDialogView: View {
         }
     }
 }
-//extension PopUpDialogView {
-//
-//    init(isPresented: Binding<Bool>,
-//         isEnabledToCloseByBackgroundTap: Bool = true,
-//         @ViewBuilder _ content: () -> Content) {
-//        _isPresented = isPresented
-//        self.isEnabledToCloseByBackgroundTap = isEnabledToCloseByBackgroundTap
-//        self.content = content()
-//    }
-//}
 
 struct BackgroundView: View {
     let color: Color
@@ -225,3 +209,9 @@ struct CloseButton: View {
         .foregroundColor(color)
     }
 }
+
+//struct ItemStatusEditView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ItemStatusEditView()
+//    }
+//}

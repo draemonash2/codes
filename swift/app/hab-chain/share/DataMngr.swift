@@ -53,11 +53,8 @@ struct HabChainData {
         //self._test_toggleItemStatus()
         //self._test_calcTotalItemStatus()
         //self._test_calcContinuationCountAll()
-        //writeJson()
-        //readJson()
-        //testJsonDict()
-        //testJsonDict2()
         //self._test_formatDateD()
+        //self._test_calcAchievementRate()
     }
     mutating func clear()
     {
@@ -402,6 +399,73 @@ struct HabChainData {
             print("\(offset) : \(calcContinuationCountAll(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!))"); offset -= 1 // 1
             print("\(offset) : \(calcContinuationCountAll(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!))"); offset -= 1 // 1
             print("### calcContinuationCountAll() test finished ###")
+            print("")
+        }
+    func calcAchievementRate(
+        item_id: String,
+        date_num: Int
+    ) -> Int
+    {
+        var achievement_cnt: Int = 0
+        var is_ongoing: Bool = false
+        if date_num < 1 {
+            return 0
+        }
+        if let unwrapped_item = self.items[item_id] {
+            for date_offset in -(date_num-1)...0 {
+                let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
+                let date_str: String = self.convToStr(date: date)
+                if unwrapped_item.daily_statuses.keys.contains(date_str) {
+                    if let unwrapped_status = unwrapped_item.daily_statuses[date_str] {
+                        switch unwrapped_status {
+                        case .NotYet:
+                            is_ongoing = false
+                        case .Done:
+                            is_ongoing = true
+                            achievement_cnt += 1
+                        case .Skip:
+                            if is_ongoing == true {
+                                achievement_cnt += 1
+                            }
+                        }
+                    }
+                } else {
+                    is_ongoing = false
+                }
+            }
+        } else {
+            fatalError("[error] 未定義のitem_id")
+        }
+        return Int(Float32(achievement_cnt) / Float32(date_num) * 100)
+    }
+        private mutating func _test_calcAchievementRate()
+        {
+            print("### calcAchievementRate() test start ###")
+            let item_id: String = generateItemId()
+            let item: Item = Item(
+                item_name: "aaa",
+                daily_statuses: [
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .NotYet,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Done,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Done,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .NotYet,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Skip,
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)    : .Done
+                ],
+                skip_num: 20
+            )
+
+            self.addItem(new_item_id: item_id, new_item: item)
+
+            print(self.calcAchievementRate(item_id: item_id, date_num: 0))
+            print(self.calcAchievementRate(item_id: item_id, date_num: 1))
+            print(self.calcAchievementRate(item_id: item_id, date_num: 7))
+            print(self.calcAchievementRate(item_id: item_id, date_num: 30))
+            print(self.calcAchievementRate(item_id: item_id, date_num: 365))
+            print("### calcAchievementRate() test finished ###")
             print("")
         }
     func formatDateMmdd(
