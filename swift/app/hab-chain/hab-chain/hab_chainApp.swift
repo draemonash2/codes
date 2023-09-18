@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FunctionSetting {
     let color_select_enable: Bool = true
+    let debug_mode: Bool = false
 }
 
 @main

@@ -9,12 +9,16 @@ import WidgetKit
 import SwiftUI
 
 struct ContentViewSetting {
+    let BUTTON_NUM_MIN :Int = 3
     let BUTTON_SIZE_PX :CGFloat? = 15
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 10
+    let BUTTON_INCIRCLE_LINEWIDTH :CGFloat? = 1
     let BUTTON_SPACING_PX: CGFloat? = 1
     let PADDING_SIZE_PX :CGFloat? = 10
     let LIST_SPACING_PX :CGFloat? = 1
+    let ITEM_ICON_SIZE_PX :CGFloat? = 15
     let ITEM_TEXT_WIDTH_PX: CGFloat? = 120
+    let LIST_TOP_SPACING_PX :CGFloat? = 0
 }
 
 struct Provider: TimelineProvider {
@@ -69,13 +73,14 @@ struct SimpleEntry: TimelineEntry {
 
 struct hab_chain_widgetEntryView : View {
     var entry: Provider.Entry
+    @Environment(\ .colorScheme) var colorScheme
     private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
 
     var body: some View {
         GeometryReader { geometry in
             VStack (spacing : VIEW_SETTING.LIST_SPACING_PX) {
-                let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
-                let button_num: Int = button_num_tmp > 3 ? button_num_tmp : 3
+                let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2 - VIEW_SETTING.ITEM_ICON_SIZE_PX! - VIEW_SETTING.BUTTON_SPACING_PX! - VIEW_SETTING.LIST_TOP_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
                 let list_num_max_tmp: Int = Int((geometry.size.height - VIEW_SETTING.LIST_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.LIST_SPACING_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let list_num_max: Int = list_num_max_tmp > 1 ? list_num_max_tmp : 1
                 #if false
@@ -84,7 +89,7 @@ struct hab_chain_widgetEntryView : View {
                         Spacer()
                         ForEach(-(VIEW_SETTING.BUTTON_NUM - 1)..<1, id: \.self) { i in
                             let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                            Text(entry.hab_chain_data.convDateToD(date: date))
+                            Text(entry.hab_chain_data.formatDateD(date: date))
                                 .font(.caption2)
                                 .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
                                 .multilineTextAlignment(.center)
@@ -117,14 +122,31 @@ struct hab_chain_widgetEntryView : View {
                         if let unwraped_item = entry.hab_chain_data.items[item_id] {
                             if unwraped_item.is_archived == false {
                                 HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                                    let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                    if unwraped_item.icon_name != "" {
+                                        Image(systemName: unwraped_item.icon_name)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                                            .foregroundColor(icon_color)
+                                    } else {
+                                        Image(systemName: unwraped_item.icon_name)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                                            .foregroundColor(icon_color)
+                                            .opacity(0)
+                                    }
+
                                     Text(unwraped_item.item_name)
                                         .font(.caption)
+                                        .frame(width: VIEW_SETTING.ITEM_TEXT_WIDTH_PX, alignment: .leading)
                                     
                                     Spacer()
                                     
                                     ForEach(-(button_num - 1)..<1, id: \.self) { btn_idx in
                                         let date: Date = Calendar.current.date(byAdding: .day,value: btn_idx, to: Date())!
-                                        let date_str: String = entry.hab_chain_data.convDateToStr(date: date)
+                                        let date_str: String = entry.hab_chain_data.convToStr(date: date)
                                         let continuation_cnt: Int = entry.hab_chain_data.calcContinuationCount(base_date: date, item_id: item_id)
                                         let color_str: String = getColorString(color: unwraped_item.color, continuation_count: continuation_cnt)
                                         ZStack {
@@ -140,11 +162,11 @@ struct hab_chain_widgetEntryView : View {
                                             if let unwrapped_item_status = unwraped_item.status[date_str] {
                                                 if unwrapped_item_status == .Done {
                                                     Circle()
-                                                        .stroke(Color.white, lineWidth: 1)
+                                                        .stroke(Color.white, lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!)
                                                         .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                                                 } else if unwrapped_item_status == .Skip {
                                                     Circle()
-                                                        .stroke(Color.white, style: StrokeStyle(lineWidth: 1, dash: [4]))
+                                                        .stroke(Color.white, style: StrokeStyle(lineWidth: VIEW_SETTING.BUTTON_INCIRCLE_LINEWIDTH!, dash: [4]))
                                                         .frame(width: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX, height: VIEW_SETTING.BUTTON_INCIRCLE_SIZE_PX)
                                                 } else {
                                                     // Do Nothing
@@ -164,9 +186,36 @@ struct hab_chain_widgetEntryView : View {
                 }
                 Spacer()
             }
+            .padding(.top, VIEW_SETTING.LIST_TOP_SPACING_PX)
+            .padding(.bottom, VIEW_SETTING.LIST_TOP_SPACING_PX)
         }
     }
 }
+
+struct ItemIcon: View {
+    @Environment(\ .colorScheme) var colorScheme
+    let icon_name: String = ""
+    let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
+
+    var body:some View {
+        let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+        if icon_name != "" {
+            Image(systemName: icon_name)
+                .resizable()
+                .scaledToFit()
+                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                .foregroundColor(icon_color)
+        } else {
+            Image(systemName: icon_name)
+                .resizable()
+                .scaledToFit()
+                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                .foregroundColor(icon_color)
+                .opacity(0)
+        }
+    }
+}
+
 
 @main
 struct hab_chain_widget: Widget {

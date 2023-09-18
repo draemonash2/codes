@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		524868DA2A93392600FB5B32 /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524868D92A93392600FB5B32 /* InformationView.swift */; };
+		524868DC2A99D42400FB5B32 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524868DB2A99D42400FB5B32 /* StatisticsView.swift */; };
 		5265E3942A75472D0054012F /* AppSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5265E3932A75472D0054012F /* AppSettingView.swift */; };
 		526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */; };
 		526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DBD872A6F7AC700E677A7 /* ContentView.swift */; };
@@ -24,6 +26,10 @@
 		52AB82482A7CD41D003052F8 /* hab-chain-widgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 52AB823A2A7CD41C003052F8 /* hab-chain-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
 		52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
+		52E6801C2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */; };
+		52E6801D2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */; };
+		52E6801F2AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
+		52E680202AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
 		52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F96EC92A7380B800C2226E /* ItemEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +58,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		524868D92A93392600FB5B32 /* InformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationView.swift; sourceTree = "<group>"; };
+		524868DB2A99D42400FB5B32 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		5265E3932A75472D0054012F /* AppSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingView.swift; sourceTree = "<group>"; };
 		526DBD822A6F7AC700E677A7 /* hab-chain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "hab-chain.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hab_chainApp.swift; sourceTree = "<group>"; };
@@ -71,6 +79,8 @@
 		52AB82592A7E1D79003052F8 /* hab-chain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain.entitlements"; sourceTree = "<group>"; };
 		52AB825A2A7E1DC7003052F8 /* hab-chain-widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain-widgetExtension.entitlements"; sourceTree = "<group>"; };
 		52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorMngr.swift; sourceTree = "<group>"; };
+		52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SfSymbolMngr.swift; sourceTree = "<group>"; };
+		52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectIconView.swift; sourceTree = "<group>"; };
 		52F96EC92A7380B800C2226E /* ItemEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,8 +129,11 @@
 			isa = PBXGroup;
 			children = (
 				52AB82592A7E1D79003052F8 /* hab-chain.entitlements */,
+				52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */,
 				526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */,
+				524868D92A93392600FB5B32 /* InformationView.swift */,
 				526DBD872A6F7AC700E677A7 /* ContentView.swift */,
+				524868DB2A99D42400FB5B32 /* StatisticsView.swift */,
 				526DBD932A6F7B9D00E677A7 /* ItemSettingView.swift */,
 				5265E3932A75472D0054012F /* AppSettingView.swift */,
 				52A3B40E2A8742EF00B7F286 /* ItemStatusEditView.swift */,
@@ -145,6 +158,7 @@
 			children = (
 				52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */,
 				52A064742A80B8FF0047BACA /* DataMngr.swift */,
+				52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */,
 			);
 			path = share;
 			sourceTree = "<group>";
@@ -186,6 +200,8 @@
 				52AB82472A7CD41D003052F8 /* PBXTargetDependency */,
 			);
 			name = "hab-chain";
+			packageProductDependencies = (
+			);
 			productName = "hab-chain";
 			productReference = 526DBD822A6F7AC700E677A7 /* hab-chain.app */;
 			productType = "com.apple.product-type.application";
@@ -234,6 +250,8 @@
 				Base,
 			);
 			mainGroup = 526DBD792A6F7AC700E677A7;
+			packageReferences = (
+			);
 			productRefGroup = 526DBD832A6F7AC700E677A7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -269,13 +287,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E6801C2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */,
 				52A3B40F2A8742EF00B7F286 /* ItemStatusEditView.swift in Sources */,
 				526DBD942A6F7B9D00E677A7 /* ItemSettingView.swift in Sources */,
 				52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */,
+				52E6801F2AA2FBE800B0C82B /* SelectIconView.swift in Sources */,
 				526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */,
 				5265E3942A75472D0054012F /* AppSettingView.swift in Sources */,
+				524868DA2A93392600FB5B32 /* InformationView.swift in Sources */,
 				526DBD862A6F7AC700E677A7 /* hab_chainApp.swift in Sources */,
 				52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
+				524868DC2A99D42400FB5B32 /* StatisticsView.swift in Sources */,
 				5298109D2A724B0B00CFA397 /* ItemAddView.swift in Sources */,
 				52A064752A80B8FF0047BACA /* DataMngr.swift in Sources */,
 			);
@@ -285,9 +307,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E6801D2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */,
 				52AB82422A7CD41C003052F8 /* hab_chain_widget.swift in Sources */,
 				52A064762A80B8FF0047BACA /* DataMngr.swift in Sources */,
 				52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
+				52E680202AA2FBE800B0C82B /* SelectIconView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
