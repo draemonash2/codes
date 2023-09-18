@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.18
+' my excel addin macros v2.19
 
 ' =============================================================================
 ' =  <<ƒ}ƒNƒˆê——>>
@@ -2589,7 +2589,8 @@ Private Function ExecDosCmd( _
 ) As String
     Dim oExeResult As Object
     Dim sStrOut As String
-    Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c " & sCommand)
+    'Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c " & sCommand)
+    Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c """ & sCommand & """")
     Do While Not (oExeResult.StdOut.AtEndOfStream)
       sStrOut = sStrOut & vbNewLine & oExeResult.StdOut.ReadLine
     Loop

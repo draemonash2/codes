@@ -879,3 +879,40 @@ if [[ "${unixname}" == *microsoft* ]]; then
 fi
 alias sht='sudo shutdown -h now'
 
+alias gsetup="source /opt/ros/humble/setup.bash"
+alias lsetup="source install/setup.bash"
+
+function cbuild() {
+	# colcon build --continue-on-error --executor sequential --symlink-install --packages-select <pkg_name>
+		#--symlink-install
+	if [ $# -eq 0 ]; then
+		pkg_sel_opt=""
+	elif [ $# -eq 1 ]; then
+		pkg_sel_opt="--packages-select ${1}"
+	else
+		echo "[error] wrong number of arguments."
+		echo "  usage : cbuild [<package_name>]"
+		return 1
+	fi
+	gsetup
+	#lsetup || return 1
+	colcon build \
+		--continue-on-error \
+		--executor sequential \
+		--symlink-install \
+		${pkg_sel_opt}
+}
+
+function test_urdf_run() {
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : urdf_tutorial_run <urdfdir> <urdfname>"
+		return 1
+	fi
+	urdfdir=${1}
+	urdfname=${2}
+	xacro ${urdfdir}/${urdfname}.xacro > ${urdfdir}/${urdfname} &&
+	colcon build --symlink-install --continue-on-error --executor sequential --packages-select urdf_tutorial &&
+	source install/setup.bash &&
+	ros2 launch urdf_tutorial display.launch.py model:=urdf/${urdfname}
+}

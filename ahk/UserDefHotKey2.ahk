@@ -10,6 +10,7 @@
 ;* Setting value
 ;* ***************************************************************
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
+global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
 global giWIN_TILE_MODE_RANGE_MIN := 1 ; 1～6 (Mon1:1-3, Mon2:4-6)
 global giWIN_TILE_MODE_RANGE_MAX := 4 ; 1～6 (Mon1:1-3, Mon2:4-6)
@@ -67,9 +68,7 @@ InitSleepPreventing()
 		^+!F5::		ReloadMe()
 	;ファイルオープン
 		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
-		^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		^+!Enter::																													;#todo.itmz
 		^+!Up::																														;#todo.itmz
 		{
 		;	lPID := ProcessWait("Dropbox.exe", 30) ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
@@ -84,6 +83,10 @@ InitSleepPreventing()
 		^+!c::		StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
 		^+!s::		StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー
 		^+!o::		StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
+	;仕事用
+		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
+		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
+		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 	;プログラム起動
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 		^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
@@ -98,12 +101,12 @@ InitSleepPreventing()
 	;フォルダ表示
 		^+!z::																														;ファイラ―
 		{
-		;	;xf.exe
-		;	StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
-			;エクスプローラー
-			StartProgramAndActivateFile( gsDOC_DIR_PATH )
-			Sleep 100
-			Send "+{tab}"
+			;xf.exe
+			StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
+		;	;エクスプローラー
+		;	StartProgramAndActivateFile( gsDOC_DIR_PATH )
+		;	Sleep 100
+		;	Send "+{tab}"
 		}
 		^+!F12::																													;Programsフォルダ表示
 		{
@@ -191,6 +194,19 @@ InitSleepPreventing()
 ;***** ホットキー(Software local) *****
 	#HotIf !WinActive("ahk_exe WindowsTerminal.exe")
 		RAlt::Send "{AppsKey}"	;右Altキーをコンテキストメニュー表示に変更
+	#HotIf
+	
+	#HotIf WinActive("ahk_exe msedge.exe")
+		^!t::	;タブを複製して和訳
+		{
+			;タブを複製
+			SendInput "^+k"
+			sleep 1000
+			;和訳
+			SendInput "{AppsKey}"
+			sleep 500
+			SendInput "+t"
+		}
 	#HotIf
 	
 	#HotIf WinActive("ahk_exe explorer.exe")
