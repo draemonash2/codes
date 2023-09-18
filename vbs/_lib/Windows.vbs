@@ -66,7 +66,7 @@ Public Function ExecDosCmd( _
 )
     Dim oExeResult
     Dim sStrOut
-    Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c " & sCommand)
+    Set oExeResult = CreateObject("WScript.Shell").Exec("%ComSpec% /c """ & sCommand & """")
     Do While Not (oExeResult.StdOut.AtEndOfStream)
         sStrOut = sStrOut & vbNewLine & oExeResult.StdOut.ReadLine
     Loop
