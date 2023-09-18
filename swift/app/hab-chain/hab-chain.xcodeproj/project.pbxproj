@@ -30,8 +30,6 @@
 		52E6801D2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */; };
 		52E6801F2AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
 		52E680202AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
-		52E680232AA3062100B0C82B /* SFUserFriendlySymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 52E680222AA3062100B0C82B /* SFUserFriendlySymbols */; };
-		52E680262AA3068700B0C82B /* SFUserFriendlySymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 52E680252AA3068700B0C82B /* SFUserFriendlySymbols */; };
 		52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F96EC92A7380B800C2226E /* ItemEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -91,8 +89,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52E680232AA3062100B0C82B /* SFUserFriendlySymbols in Frameworks */,
-				52E680262AA3068700B0C82B /* SFUserFriendlySymbols in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,8 +201,6 @@
 			);
 			name = "hab-chain";
 			packageProductDependencies = (
-				52E680222AA3062100B0C82B /* SFUserFriendlySymbols */,
-				52E680252AA3068700B0C82B /* SFUserFriendlySymbols */,
 			);
 			productName = "hab-chain";
 			productReference = 526DBD822A6F7AC700E677A7 /* hab-chain.app */;
@@ -257,8 +251,6 @@
 			);
 			mainGroup = 526DBD792A6F7AC700E677A7;
 			packageReferences = (
-				52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */,
-				52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */,
 			);
 			productRefGroup = 526DBD832A6F7AC700E677A7 /* Products */;
 			projectDirPath = "";
@@ -597,38 +589,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/littleossa/SFUserFriendlySymbols.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.0;
-			};
-		};
-		52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/littleossa/SFUserFriendlySymbols.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		52E680222AA3062100B0C82B /* SFUserFriendlySymbols */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */;
-			productName = SFUserFriendlySymbols;
-		};
-		52E680252AA3068700B0C82B /* SFUserFriendlySymbols */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */;
-			productName = SFUserFriendlySymbols;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 526DBD7A2A6F7AC700E677A7 /* Project object */;
 }

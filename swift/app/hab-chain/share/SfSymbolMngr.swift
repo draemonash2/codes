@@ -4500,17 +4500,3 @@ let sf_symbols: [String] = [
     "50.square.fill",
     "apple.logo"
 ]
-#if false
-let dummy_icon: [String] = [
-""
-]
-#endif
-
-//func extractValidSfSymbols() -> [String]
-//{
-//    var extracted_sf_symbols: [String]?
-//    Image(systemName: sf_symbols[idx])
-//
-//
-//
-//}
