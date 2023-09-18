@@ -2,7 +2,7 @@
 //  DataMngr.swift
 //  hab-chain
 //
-//  Created by Tatsuya Endo on 2023/07/25.aaa
+//  Created by Tatsuya Endo on 2023/07/25
 //
 
 import Foundation
@@ -20,6 +20,14 @@ struct Item {
     var skip_num: Int = 999
     var color: Color = Color.red
     var is_archived: Bool = false
+    var icon_name: String = ""
+    var start_date: Date = Date()
+    var finish_date: Date = Date()
+    var is_start_date_enb: Bool = false
+    var is_finish_date_enb: Bool = false
+    var trgt_weekday: [Bool] = [true, true, true, true, true, true, true] //0:Sun,1:Mon,...,6:Sat
+    var purpose: String = ""
+    var note: String = ""
 }
 
 struct HabChainData {
@@ -35,6 +43,14 @@ struct HabChainData {
         var skip_num: Int = 10
         var color: String = "red"
         var is_archived: String = "false"
+        var icon_name: String = ""
+        var start_date: String = ""
+        var finish_date: String = ""
+        var is_start_date_enb: String = "false"
+        var is_finish_date_enb: String = "false"
+        var trgt_weekday: [String] = ["true", "true", "true", "true", "true", "true", "true"] //0:Sun,1:Mon,...,6:Sat
+        var purpose: String = ""
+        var note: String = ""
     }
 
     struct HabChainDataJson: Codable {
@@ -55,6 +71,8 @@ struct HabChainData {
         //self._test_calcContinuationCountAll()
         //self._test_formatDateD()
         //self._test_calcAchievementRate()
+        //self._test_weekday()
+        //self._test_convFromStrDate()
     }
     mutating func clear()
     {
@@ -204,6 +222,24 @@ struct HabChainData {
         }
         return ret
     }
+    func convFromStr(
+        date: String
+    ) -> Date
+    {
+        let calendar = Calendar(identifier: .gregorian)
+        let year: Int = Int(date.prefix(4))!
+        let start_idx = date.index(date.startIndex, offsetBy: 5, limitedBy: date.endIndex) ?? date.endIndex
+        let end_idx = date.index(date.startIndex, offsetBy: 6 + 1, limitedBy: date.endIndex) ?? date.endIndex
+        let month: Int = Int(date[start_idx..<end_idx])!
+        let day: Int = Int(date.suffix(2))!
+        //print("\(year)/\(month)/\(day)")
+        let ret = calendar.date(from: DateComponents(year: year, month: month, day: day))!
+        return ret
+    }
+        private func _test_convFromStrDate() {
+            print(convToStr(date: convFromStr(date: "2023/04/11")))
+            print(convToStr(date: convFromStr(date: "2023/12/31")))
+        }
     mutating func toggleItemStatus(
         item_id: String,
         date: Date
@@ -507,6 +543,16 @@ struct HabChainData {
             item_json.skip_num = item_self.skip_num
             item_json.color = convToStr(color: item_self.color)
             item_json.is_archived = convToStr(variable: item_self.is_archived)
+            item_json.icon_name = item_self.icon_name
+            item_json.start_date = convToStr(date: item_self.start_date)
+            item_json.finish_date = convToStr(date: item_self.finish_date)
+            item_json.is_start_date_enb = convToStr(variable: item_self.is_start_date_enb)
+            item_json.is_finish_date_enb = convToStr(variable: item_self.is_finish_date_enb)
+            item_json.purpose = item_self.purpose
+            item_json.note = item_self.note
+            for weekday_idx in 0...6 {
+                item_json.trgt_weekday[weekday_idx] = convToStr(variable: item_self.trgt_weekday[weekday_idx])
+            }
             for (date_self, status_self) in item_self.daily_statuses {
                 item_json.daily_statuses.updateValue(convToStr(item_status: status_self), forKey: date_self)
             }
@@ -531,6 +577,16 @@ struct HabChainData {
             item_self.skip_num = item_json.skip_num
             item_self.color = convFromStr(color: item_json.color)
             item_self.is_archived = convFromStr(variable: item_json.is_archived)
+            item_self.icon_name = item_json.icon_name
+            item_self.start_date = convFromStr(date: item_json.start_date)
+            item_self.finish_date = convFromStr(date: item_json.finish_date)
+            item_self.is_start_date_enb = convFromStr(variable: item_json.is_start_date_enb)
+            item_self.is_finish_date_enb = convFromStr(variable: item_json.is_finish_date_enb)
+            item_self.purpose = item_json.purpose
+            item_self.note = item_json.note
+            for weekday_idx in 0...6 {
+                item_self.trgt_weekday[weekday_idx] = convFromStr(variable: item_json.trgt_weekday[weekday_idx])
+            }
             for (date_json, status_json) in item_json.daily_statuses {
                 item_self.daily_statuses.updateValue(convFromStr(item_status: status_json), forKey: date_json)
             }
@@ -553,7 +609,7 @@ struct HabChainData {
         
         let json_string = String(data: json_value, encoding: .utf8)
         if let unwrapped_jsonstring = json_string {
-            print(unwrapped_jsonstring)
+            //print(unwrapped_jsonstring)
             ret_json_string = unwrapped_jsonstring
         }
         return ret_json_string
@@ -621,6 +677,22 @@ struct HabChainData {
     }
     /* for Json <END> */
     
+    func _test_weekday()
+    {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -6, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)))
+        print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -10, to: Date())!)))
+    }
     mutating func setValueForTest()
     {
         #if false

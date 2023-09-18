@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct AppSettingViewSetting {
     let BUTTON_WIDTH_PX: CGFloat = 100
@@ -52,6 +53,7 @@ struct AppSettingView: View {
                             .background(Color.blue)
                             .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .alert(isPresented: $showingAlertBackup) {
                         Alert(
                             title: Text("確認"),
@@ -75,6 +77,7 @@ struct AppSettingView: View {
                             .background(Color.blue)
                             .cornerRadius(VIEW_SETTING.BUTTON_CORNER_RADIUS)
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .alert(isPresented: $showingAlertRestore) {
                         Alert(
                             title: Text("確認"),
@@ -106,6 +109,7 @@ struct AppSettingView: View {
     }
     func pressDoneButtonAction() {
         app_json_string = hab_chain_data.getRawStruct2JsonString()
+        WidgetCenter.shared.reloadAllTimelines()
         dismiss()
     }
 }

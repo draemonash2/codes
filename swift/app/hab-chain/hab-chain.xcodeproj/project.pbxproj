@@ -26,6 +26,12 @@
 		52AB82482A7CD41D003052F8 /* hab-chain-widgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 52AB823A2A7CD41C003052F8 /* hab-chain-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		52AC46CC2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
 		52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */; };
+		52E6801C2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */; };
+		52E6801D2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */; };
+		52E6801F2AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
+		52E680202AA2FBE800B0C82B /* SelectIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */; };
+		52E680232AA3062100B0C82B /* SFUserFriendlySymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 52E680222AA3062100B0C82B /* SFUserFriendlySymbols */; };
+		52E680262AA3068700B0C82B /* SFUserFriendlySymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 52E680252AA3068700B0C82B /* SFUserFriendlySymbols */; };
 		52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F96EC92A7380B800C2226E /* ItemEditView.swift */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +81,8 @@
 		52AB82592A7E1D79003052F8 /* hab-chain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain.entitlements"; sourceTree = "<group>"; };
 		52AB825A2A7E1DC7003052F8 /* hab-chain-widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hab-chain-widgetExtension.entitlements"; sourceTree = "<group>"; };
 		52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorMngr.swift; sourceTree = "<group>"; };
+		52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SfSymbolMngr.swift; sourceTree = "<group>"; };
+		52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectIconView.swift; sourceTree = "<group>"; };
 		52F96EC92A7380B800C2226E /* ItemEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,6 +91,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E680232AA3062100B0C82B /* SFUserFriendlySymbols in Frameworks */,
+				52E680262AA3068700B0C82B /* SFUserFriendlySymbols in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				52AB82592A7E1D79003052F8 /* hab-chain.entitlements */,
+				52E6801E2AA2FBE800B0C82B /* SelectIconView.swift */,
 				526DBD852A6F7AC700E677A7 /* hab_chainApp.swift */,
 				524868D92A93392600FB5B32 /* InformationView.swift */,
 				526DBD872A6F7AC700E677A7 /* ContentView.swift */,
@@ -151,6 +162,7 @@
 			children = (
 				52AC46CB2A80BF29004DDD95 /* ColorMngr.swift */,
 				52A064742A80B8FF0047BACA /* DataMngr.swift */,
+				52E6801B2AA2FB7B00B0C82B /* SfSymbolMngr.swift */,
 			);
 			path = share;
 			sourceTree = "<group>";
@@ -192,6 +204,10 @@
 				52AB82472A7CD41D003052F8 /* PBXTargetDependency */,
 			);
 			name = "hab-chain";
+			packageProductDependencies = (
+				52E680222AA3062100B0C82B /* SFUserFriendlySymbols */,
+				52E680252AA3068700B0C82B /* SFUserFriendlySymbols */,
+			);
 			productName = "hab-chain";
 			productReference = 526DBD822A6F7AC700E677A7 /* hab-chain.app */;
 			productType = "com.apple.product-type.application";
@@ -240,6 +256,10 @@
 				Base,
 			);
 			mainGroup = 526DBD792A6F7AC700E677A7;
+			packageReferences = (
+				52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */,
+				52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */,
+			);
 			productRefGroup = 526DBD832A6F7AC700E677A7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -275,9 +295,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E6801C2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */,
 				52A3B40F2A8742EF00B7F286 /* ItemStatusEditView.swift in Sources */,
 				526DBD942A6F7B9D00E677A7 /* ItemSettingView.swift in Sources */,
 				52F96ECA2A7380B800C2226E /* ItemEditView.swift in Sources */,
+				52E6801F2AA2FBE800B0C82B /* SelectIconView.swift in Sources */,
 				526DBD882A6F7AC700E677A7 /* ContentView.swift in Sources */,
 				5265E3942A75472D0054012F /* AppSettingView.swift in Sources */,
 				524868DA2A93392600FB5B32 /* InformationView.swift in Sources */,
@@ -293,9 +315,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E6801D2AA2FB7B00B0C82B /* SfSymbolMngr.swift in Sources */,
 				52AB82422A7CD41C003052F8 /* hab_chain_widget.swift in Sources */,
 				52A064762A80B8FF0047BACA /* DataMngr.swift in Sources */,
 				52AC46CD2A80BF29004DDD95 /* ColorMngr.swift in Sources */,
+				52E680202AA2FBE800B0C82B /* SelectIconView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +597,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/littleossa/SFUserFriendlySymbols.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+		52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/littleossa/SFUserFriendlySymbols.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		52E680222AA3062100B0C82B /* SFUserFriendlySymbols */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 52E680212AA3062100B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */;
+			productName = SFUserFriendlySymbols;
+		};
+		52E680252AA3068700B0C82B /* SFUserFriendlySymbols */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 52E680242AA3068700B0C82B /* XCRemoteSwiftPackageReference "SFUserFriendlySymbols" */;
+			productName = SFUserFriendlySymbols;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 526DBD7A2A6F7AC700E677A7 /* Project object */;
 }

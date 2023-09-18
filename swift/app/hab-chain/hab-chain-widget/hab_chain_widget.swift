@@ -16,7 +16,9 @@ struct ContentViewSetting {
     let BUTTON_SPACING_PX: CGFloat? = 1
     let PADDING_SIZE_PX :CGFloat? = 10
     let LIST_SPACING_PX :CGFloat? = 1
+    let ITEM_ICON_SIZE_PX :CGFloat? = 15
     let ITEM_TEXT_WIDTH_PX: CGFloat? = 120
+    let LIST_TOP_SPACING_PX :CGFloat? = 0
 }
 
 struct Provider: TimelineProvider {
@@ -71,12 +73,13 @@ struct SimpleEntry: TimelineEntry {
 
 struct hab_chain_widgetEntryView : View {
     var entry: Provider.Entry
+    @Environment(\ .colorScheme) var colorScheme
     private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
 
     var body: some View {
         GeometryReader { geometry in
             VStack (spacing : VIEW_SETTING.LIST_SPACING_PX) {
-                let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2 - VIEW_SETTING.ITEM_ICON_SIZE_PX! - VIEW_SETTING.BUTTON_SPACING_PX! - VIEW_SETTING.LIST_TOP_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
                 let list_num_max_tmp: Int = Int((geometry.size.height - VIEW_SETTING.LIST_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.LIST_SPACING_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let list_num_max: Int = list_num_max_tmp > 1 ? list_num_max_tmp : 1
@@ -119,8 +122,25 @@ struct hab_chain_widgetEntryView : View {
                         if let unwraped_item = entry.hab_chain_data.items[item_id] {
                             if unwraped_item.is_archived == false {
                                 HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                                    let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                    if unwraped_item.icon_name != "" {
+                                        Image(systemName: unwraped_item.icon_name)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                                            .foregroundColor(icon_color)
+                                    } else {
+                                        Image(systemName: unwraped_item.icon_name)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                                            .foregroundColor(icon_color)
+                                            .opacity(0)
+                                    }
+
                                     Text(unwraped_item.item_name)
                                         .font(.caption)
+                                        .frame(width: VIEW_SETTING.ITEM_TEXT_WIDTH_PX, alignment: .leading)
                                     
                                     Spacer()
                                     
@@ -166,9 +186,36 @@ struct hab_chain_widgetEntryView : View {
                 }
                 Spacer()
             }
+            .padding(.top, VIEW_SETTING.LIST_TOP_SPACING_PX)
+            .padding(.bottom, VIEW_SETTING.LIST_TOP_SPACING_PX)
         }
     }
 }
+
+struct ItemIcon: View {
+    @Environment(\ .colorScheme) var colorScheme
+    let icon_name: String = ""
+    let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
+
+    var body:some View {
+        let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+        if icon_name != "" {
+            Image(systemName: icon_name)
+                .resizable()
+                .scaledToFit()
+                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                .foregroundColor(icon_color)
+        } else {
+            Image(systemName: icon_name)
+                .resizable()
+                .scaledToFit()
+                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                .foregroundColor(icon_color)
+                .opacity(0)
+        }
+    }
+}
+
 
 @main
 struct hab_chain_widget: Widget {

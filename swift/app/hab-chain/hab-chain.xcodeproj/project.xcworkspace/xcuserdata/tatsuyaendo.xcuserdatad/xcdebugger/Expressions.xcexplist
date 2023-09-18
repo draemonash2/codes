@@ -3,7 +3,13 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
+         contextName = "HabChainData.setJsonString2RawStruct(json_string:):DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "AppSettingView.pressDoneButtonAction():AppSettingView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "ItemStatusEditView.body.getter:ItemStatusEditView.swift">
          <PersistentStrings>
             <PersistentString
                value = "trgt_item_id">
@@ -19,14 +25,69 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #2 in AppSettingView.body.getter:AppSettingView.swift">
-      </ContextState>
-      <ContextState
          contextName = "closure #5 in ItemEditView.body.getter:ItemEditView.swift">
       </ContextState>
       <ContextState
-         contextName = "ItemStatusEditView.body.getter:ItemStatusEditView.swift">
+         contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
          <PersistentStrings>
+            <PersistentString
+               value = "dateFormat(date: date)">
+            </PersistentString>
+            <PersistentString
+               value = "dateFormat(date: key)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.setValueForTest():DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "geometry.size.width">
+            </PersistentString>
+            <PersistentString
+               value = "(geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2 - VIEW_SETTING.ITEM_ICON_SIZE_PX! - VIEW_SETTING.BUTTON_SPACING_PX!)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData.convFromStr(date:):DataMngr.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "date[start_idx..&lt;end_idx]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in closure #1 in ItemSettingView.body.getter:ItemSettingView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "trgt_item_id">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "new_item_name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "unwrapped_item.item_name">
+            </PersistentString>
             <PersistentString
                value = "trgt_item_id">
             </PersistentString>
@@ -44,10 +105,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         contextName = "closure #2 in AppSettingView.body.getter:AppSettingView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #2 in ItemEditView.body.getter:ItemEditView.swift">
          <PersistentStrings>
             <PersistentString
-               value = "geometry.size.width">
+               value = "new_item_name">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -63,6 +127,17 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in ContentView.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "geometry.size.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "HabChainData.toggleItemStatus(item_id:date:):DataMngr.swift">
          <PersistentStrings>
             <PersistentString
@@ -72,62 +147,6 @@
                value = "self.items[item_id]!.status[date]">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
-      </ContextState>
-      <ContextState
-         contextName = "HabChainData.setJsonString2RawStruct(json_string:):DataMngr.swift">
-      </ContextState>
-      <ContextState
-         contextName = "closure #2 in ItemEditView.body.getter:ItemEditView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "new_item_name">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "AppSettingView.pressDoneButtonAction():AppSettingView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "new_item_name">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "dateFormat(date: date)">
-            </PersistentString>
-            <PersistentString
-               value = "dateFormat(date: key)">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "closure #1 in closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "unwrapped_item.item_name">
-            </PersistentString>
-            <PersistentString
-               value = "trgt_item_id">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "HabChainData.calcContinuationCount(base_date:):DataMngr.swift">
-      </ContextState>
-      <ContextState
-         contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "HabChainData.setValueForTest():DataMngr.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct StatisticsViewSetting {
-    let BUTTON_SIZE_PX :CGFloat? = 15
+    let BUTTON_SIZE_PX :CGFloat? = 10
     let BUTTON_SPACING_PX :CGFloat? = 1
     let BUTTON_NUM_MIN :Int = 3
     let LIST_PADDING_PX :CGFloat? = 5

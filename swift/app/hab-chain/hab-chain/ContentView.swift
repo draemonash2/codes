@@ -14,8 +14,9 @@ struct ContentViewSetting {
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 30
     let BUTTON_INCIRCLE_LINEWIDTH :CGFloat? = 1
     let BUTTON_NUM_MIN :Int = 3
-    let ITEM_TEXT_WIDTH_PX :CGFloat? = 150
-    let ICON_SIZE_PX :CGFloat? = 30
+    let ITEM_TEXT_WIDTH_PX :CGFloat? = 170
+    let NAV_ICON_SIZE_PX :CGFloat? = 30
+    let ITEM_ICON_SIZE_PX :CGFloat? = 25
     let LIST_PADDING_PX :CGFloat? = 20
 }
 
@@ -26,13 +27,16 @@ struct ContentView: View {
     @State var is_overlay_presented: Bool = false
     @State var trgt_status: String = ""
     private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
     var body: some View {
-        let _ = Self._printChanges()
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         NavigationView {
             GeometryReader { geometry in
                 ZStack {
                     VStack {
-                        let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                        let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.LIST_PADDING_PX!*2 - VIEW_SETTING.ITEM_ICON_SIZE_PX! - VIEW_SETTING.BUTTON_SPACING_PX!) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                         let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
                         Text("hab-chain")
                             .font(.largeTitle)
@@ -70,10 +74,15 @@ struct ContentView: View {
                                 if let unwraped_item: Item = hab_chain_data.items[item_id] {
                                     if unwraped_item.is_archived == false {
                                         HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                                            Text(unwraped_item.item_name)
+                                            ItemIcon(hab_chain_data: $hab_chain_data, item_id: item_id)
+                                                .padding(0)
 
-                                            Spacer()
-                                            
+                                            Text(unwraped_item.item_name)
+                                                .frame(width: VIEW_SETTING.ITEM_TEXT_WIDTH_PX, alignment: .leading)
+                                                .padding(0)
+
+                                            Spacer(minLength: 1)
+
                                             ForEach(-(button_num - 1)..<1, id: \.self) { i in
                                                 IndivItemStatusChangeButton(
                                                     hab_chain_data: $hab_chain_data,
@@ -82,6 +91,7 @@ struct ContentView: View {
                                                     item_id: item_id,
                                                     date_offset: i
                                                 )
+                                                .padding(0)
                                             }
                                         }
                                         .contentShape(Rectangle())
@@ -106,7 +116,7 @@ struct ContentView: View {
                                 Image(systemName: "gearshape")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.NAV_ICON_SIZE_PX)
                                     .foregroundColor(icon_color)
                             }
                         }
@@ -118,10 +128,24 @@ struct ContentView: View {
                                 Image(systemName: "chart.line.uptrend.xyaxis")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.NAV_ICON_SIZE_PX)
                                     .foregroundColor(icon_color)
                             }
                         }
+                        #if false
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(
+                                destination: SelectIconView()
+                            ) {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                Image(systemName: "info.circle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: VIEW_SETTING.NAV_ICON_SIZE_PX)
+                                    .foregroundColor(icon_color)
+                            }
+                        }
+                        #endif
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink(
                                 destination: InformationView()
@@ -130,7 +154,7 @@ struct ContentView: View {
                                 Image(systemName: "info.circle")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.NAV_ICON_SIZE_PX)
                                     .foregroundColor(icon_color)
                             }
                         }
@@ -142,7 +166,7 @@ struct ContentView: View {
                                 Image(systemName: "pencil")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                    .frame(height: VIEW_SETTING.NAV_ICON_SIZE_PX)
                                     .foregroundColor(icon_color)
                             }
                         }
@@ -194,6 +218,7 @@ struct IndivItemStatusChangeButton: View {
                         }
                     }
                     app_json_string = hab_chain_data.getRawStruct2JsonString()
+                    WidgetCenter.shared.reloadAllTimelines()
                 } label: {
                     Text(String(continuation_cnt))
                         .font(.caption)
@@ -239,6 +264,33 @@ struct WholeItemStatusTextCircle: View {
             .foregroundColor(Color.white)
             .background(Color(color_str))
             .clipShape(Circle())
+    }
+}
+
+struct ItemIcon: View {
+    @Environment(\ .colorScheme) var colorScheme
+    @Binding var hab_chain_data: HabChainData
+    let item_id: String
+    let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
+
+    var body:some View {
+        if let unwraped_item: Item = hab_chain_data.items[item_id] {
+            let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+            if unwraped_item.icon_name != "" {
+                Image(systemName: unwraped_item.icon_name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                    .foregroundColor(icon_color)
+            } else {
+                Image(systemName: unwraped_item.icon_name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
+                    .foregroundColor(icon_color)
+                    .opacity(0)
+            }
+        }
     }
 }
 

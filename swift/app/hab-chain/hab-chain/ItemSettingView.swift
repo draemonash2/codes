@@ -26,9 +26,12 @@ struct ItemSettingView: View {
     @State var trgt_item_id: String = ""
     @State var trgt_item_name: String = ""
     private let VIEW_SETTING: ItemSettingViewSetting = ItemSettingViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
 
     var body: some View {
-        let _ = Self._printChanges()
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         VStack {
             Text("アイテム設定")
                 .font(.largeTitle)
