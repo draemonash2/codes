@@ -410,7 +410,7 @@ InitSleepPreventing()
 	BringActiveWindowToTop()
 	{
 		WinSetAlwaysOnTop 1, "A"
-	;	Sleep 100
+		Sleep 100
 		WinSetAlwaysOnTop 0, "A"
 	}
 
