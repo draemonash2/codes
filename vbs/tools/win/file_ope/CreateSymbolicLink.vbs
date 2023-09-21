@@ -1,27 +1,36 @@
 'Option Explicit
 'Const EXECUTION_MODE = 255 '0:Explorerから実行、1:X-Finderから実行、other:デバッグ実行
 
-'【注意事項】X-Finderから実行する場合は、管理者権限にて起動したX-Finderから起動すること
+'【注意事項】
+'   ・本スクリプトを実行するには、同階層に「CreateSymbolicLinkExec.vbs」を格納する必要がある。
+'     
+'     <CreateSymbolicLinkExec.vbs を設けた理由>
+'       シンボリックリンクの作成は管理者権限が必須。
+'       X-Finderから管理者権限で実行するには、シンボリックリンクを作成する処理を
+'       別のスクリプト（CreateSymbolicLinkExec.vbs）として切り出し、そのスクリプトを
+'       管理者権限として実行する必要がある。
+'       なお、管理者権限で実行する場合は引数を渡せないため、引数をテキストファイルとして
+'       書き出してから、呼び出す。
 
 '####################################################################
 '### 設定
 '####################################################################
-Const OBJECT_SUFFIX = ".symlink"
+Const sARG_FILE_NAME = "CreateSymbolicLinkExecArg.txt" '名前は「CreateSymbolicLinkExec.vbs」内の設定値と合わせること
+Const sEXEC_SCRIPT_FILE_NAME = "CreateSymbolicLinkExec.vbs"
 
 '####################################################################
 '### 事前処理
 '####################################################################
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )    'ExecRunas()
-                                                            'ExecDosCmd()
-Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'GetFileOrFolder()
+Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )    'ExecRunas2()
 
 '####################################################################
 '### 本処理
 '####################################################################
-Const sPROG_NAME = "シンボリックリンク作成"
+Const sPROG_NAME = "シンボリックリンク作成（事前処理）"
 
-'*** ファイル/フォルダ名取得 ***
+'*** 対象ファイル/フォルダパス取得 ***
 DIm cFilePaths
+Dim sCurDirPath
 If EXECUTION_MODE = 0 Then 'Explorerから実行
     Set cFilePaths = CreateObject("System.Collections.ArrayList")
     Dim sArg
@@ -32,9 +41,10 @@ If EXECUTION_MODE = 0 Then 'Explorerから実行
             cFilePaths.add sArg
         End If
     Next
-    Call ExecRunas() '管理者として実行
+    sCurDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 ElseIf EXECUTION_MODE = 1 Then 'X-Finderから実行
     Set cFilePaths = WScript.Col( WScript.Env("Selected") )
+    sCurDirPath = WScript.Env( "%MYDIRPATH_CODES%\vbs\tools\win\file_ope" )
 Else 'デバッグ実行
     MsgBox "デバッグモードです。"
     Set cFilePaths = CreateObject("System.Collections.ArrayList")
@@ -46,55 +56,32 @@ Else 'デバッグ実行
     objWshShell.Run "cmd /c mkdir """ & sDesktop & "\test2""", 0, True
     cFilePaths.Add sDesktop & "\test.txt"
     cFilePaths.Add sDesktop & "\test2"
-    Call ExecRunas() '管理者として実行
+    sCurDirPath = Replace( WScript.ScriptFullName, "\" & WScript.ScriptName, "" )
 End If
 '▼▼▼debug▼▼▼
 'For Each sArg In cFilePaths
-'    msgbox sArg
+'    MsgBox sArg, vbYes, sPROG_NAME
 'Next
 '▲▲▲debug▲▲▲
 
-'*** ファイルパスチェック ***
-If cFilePaths.Count = 0 Then
-    MsgBox "オブジェクトが選択されていません", vbYes, sPROG_NAME
-    MsgBox "処理を中断します", vbYes, sPROG_NAME
-    WScript.Quit
-End If
-
-'*** シンボリックリンク作成 ***
+'*** 対象ファイル/フォルダパス書出し ***
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
-
+Dim sTrgtFilePath
+sTrgtFilePath = objFSO.GetSpecialFolder(2) & "\" & sARG_FILE_NAME
+Dim objTxtFile
+Set objTxtFile = objFSO.OpenTextFile(sTrgtFilePath, 2, True)
 Dim oObjPath
-Dim lObjType '0:notexists 1:file 2:folder
 For Each oObjPath In cFilePaths
-    lObjType = GetFileOrFolder( oObjPath )
-    
-    Dim sDstPath
-    Dim sSrcPath
-    sDstPath = oObjPath
-    Dim sCmd
-    If lObjType = 1 Then 'file
-       'sSrcPath = objFSO.GetParentFolderName( oObjPath ) & "\" & _
-       '           objFSO.GetBaseName( oObjPath ) & OBJECT_SUFFIX & "." & _
-       '           objFSO.GetExtensionName( oObjPath )
-        sSrcPath = oObjPath & OBJECT_SUFFIX & "." & objFSO.GetExtensionName( oObjPath )
-        sCmd = "mklink """ & sSrcPath & """ """ & sDstPath & """"
-    ElseIf lObjType = 2 Then 'folder
-        sSrcPath = oObjPath & OBJECT_SUFFIX
-        sCmd = "mklink /d """ & sSrcPath & """ """ & sDstPath & """"
-    Else 'not exists
-        MsgBox "オブジェクトが存在しません", vbYes, sPROG_NAME
-        MsgBox "処理を中断します", vbYes, sPROG_NAME
-        WScript.Quit
-    End If
-    '▼▼▼debug▼▼▼
-    'msgbox sCmd
-    '▲▲▲debug▲▲▲
-    call ExecDosCmd( sCmd )
+    'MsgBox oObjPath, vbYes, sPROG_NAME
+    objTxtFile.WriteLine oObjPath
 Next
+objTxtFile.Close
 
-'MsgBox "シンボリックリンクを作成しました", vbYes, sPROG_NAME
+'*** 管理者権限でスクリプト実行 ***
+Dim sScriptPath
+sScriptPath = sCurDirPath & "\" & sEXEC_SCRIPT_FILE_NAME
+Call ExecRunas2(sScriptPath)
 
 '####################################################################
 '### インクルード関数
