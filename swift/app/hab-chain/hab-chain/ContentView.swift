@@ -43,6 +43,7 @@ struct ContentView: View {
                             .onAppear() {
                                 hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
                                 WidgetCenter.shared.reloadAllTimelines()
+                                hab_chain_data.autoskipUntrgtWeekday(date: Date())
                             }
                             .padding()
                         Text("ハビットチェーンの力で習慣を継続させましょう！")

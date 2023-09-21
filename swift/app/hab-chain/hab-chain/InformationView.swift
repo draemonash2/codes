@@ -15,7 +15,12 @@ struct InformationViewSetting {
 
 struct InformationView: View {
     private let VIEW_SETTING: InformationViewSetting = InformationViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
     var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         VStack (alignment: .leading) {
             Text("hab-chainについて")
                 .font(.largeTitle)

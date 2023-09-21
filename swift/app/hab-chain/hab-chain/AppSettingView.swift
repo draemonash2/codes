@@ -21,7 +21,12 @@ struct AppSettingView: View {
     @State private var showingAlertBackup = false
     @State private var showingAlertRestore = false
     private let VIEW_SETTING: AppSettingViewSetting = AppSettingViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
     var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         Form {
             Section {
                 Picker("", selection: $hab_chain_data.whole_color) {

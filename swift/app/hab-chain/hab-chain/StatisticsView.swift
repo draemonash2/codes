@@ -18,7 +18,12 @@ struct StatisticsViewSetting {
 struct StatisticsView: View {
     @Binding var hab_chain_data: HabChainData
     private let VIEW_SETTING: StatisticsViewSetting = StatisticsViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
     var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         GeometryReader { geometry in
             VStack {
                 let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.LIST_PADDING_PX!*2 - VIEW_SETTING.WIDTH_PADDING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))

@@ -19,8 +19,12 @@ struct SelectIconView: View {
     //@Binding var item_id: String
     @Binding var icon_name: String
     private let VIEW_SETTING: SelectIconViewSetting = SelectIconViewSetting()
-    
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
     var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         VStack {
             List {
                 let symbol_num: Int = sf_symbols.count
