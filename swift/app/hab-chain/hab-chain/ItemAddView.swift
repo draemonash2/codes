@@ -10,6 +10,7 @@ import SwiftUI
 struct ItemAddViewSetting {
     let ICON_SIZE_PX: CGFloat = 25
     let BUTTON_HEIGHT_PX: CGFloat = 50
+    let TEXT_EDITER_HEIGHT_PX: CGFloat = 80
 }
 
 struct ItemAddView: View {
@@ -135,8 +136,10 @@ struct ItemAddView: View {
                     Text("曜日")
                 }
                 Section {
-                    TextField("", text: $new_note)
-                        .autocapitalization(.none)
+                    //TextField("", text: $new_note)
+                    //    .autocapitalization(.none)
+                    TextEditor(text: $new_note)
+                        .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
                 } header: {
                     Text("備考")
                 }

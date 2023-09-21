@@ -73,6 +73,8 @@ struct HabChainData {
         //self._test_calcAchievementRate()
         //self._test_weekday()
         //self._test_convFromStrDate()
+        //self._test_getWeekdayIndex()
+        //self._test_autoskipUntrgtWeekday()
     }
     mutating func clear()
     {
@@ -146,7 +148,8 @@ struct HabChainData {
     {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMMdd", options: 0, locale: Locale(identifier: "ja_JP"))
-        return dateFormatter.string(from: date)
+        let date_str :String = dateFormatter.string(from: date)
+        return date_str
     }
         private func _test_convToStr()
         {
@@ -226,7 +229,9 @@ struct HabChainData {
         date: String
     ) -> Date
     {
-        let calendar = Calendar(identifier: .gregorian)
+        #if false
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
         let year: Int = Int(date.prefix(4))!
         let start_idx = date.index(date.startIndex, offsetBy: 5, limitedBy: date.endIndex) ?? date.endIndex
         let end_idx = date.index(date.startIndex, offsetBy: 6 + 1, limitedBy: date.endIndex) ?? date.endIndex
@@ -234,6 +239,13 @@ struct HabChainData {
         let day: Int = Int(date.suffix(2))!
         //print("\(year)/\(month)/\(day)")
         let ret = calendar.date(from: DateComponents(year: year, month: month, day: day))!
+        #else
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = Locale(identifier: "ja_JP")
+        dateFormatter.dateFormat = "yyyy/MM/dd"
+        let ret :Date = dateFormatter.date(from: date)!
+        #endif
         return ret
     }
         private func _test_convFromStrDate() {
@@ -290,6 +302,7 @@ struct HabChainData {
         let CNT_MAX: Int = 999
         var date_offset: Int = 0
         var continuation_count: Int = 0
+        var skip_continuation_count: Int = 0
         if let unwrapped_item = self.items[item_id] {
             if unwrapped_item.is_archived == false {
                 while true {
@@ -300,10 +313,17 @@ struct HabChainData {
                         switch unwrapped_item.daily_statuses[date_str]! {
                             case .Done:
                                 continuation_count += 1
+                                skip_continuation_count = 0
                                 is_continue = true
                             case .Skip:
-                                is_continue = true
+                                skip_continuation_count += 1
+                                if skip_continuation_count > unwrapped_item.skip_num {
+                                    is_continue = false
+                                } else {
+                                    is_continue = true
+                                }
                             case .NotYet:
+                                skip_continuation_count = 0
                                 is_continue = false
                         }
                     } else {
@@ -322,9 +342,10 @@ struct HabChainData {
         }
         return continuation_count
     }
-        private func _test_calcContinuationCount()
+        mutating private func _test_calcContinuationCount()
         {
             var offset: Int = 0
+            self.setValueForTest()
             print("### calcContinuationCount() test start ###")
             print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
             print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 0
@@ -336,6 +357,28 @@ struct HabChainData {
             print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 0
             print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
             print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "bbb"))))"); offset -= 1 // 1
+            print("")
+            offset = 0
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 3
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 1
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 1
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 0
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "ddddd"))))"); offset -= 1 // 1
+            print("")
+            offset = 0
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 6
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 5
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 4
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 4
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 3
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 3
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 2
+            print("\(offset) : \(String(calcContinuationCount(base_date: Calendar.current.date(byAdding: .day,value: offset, to: Date())!, item_id: self.getItemId(item_name: "eeee"))))"); offset -= 1 // 1
             print("### calcContinuationCount() test finished ###")
             print("")
         }
@@ -693,12 +736,102 @@ struct HabChainData {
         print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)))
         print(String(calendar.component(.weekday, from: Calendar.current.date(byAdding: .day,value: -10, to: Date())!)))
     }
+    func getWeekdayIndex(
+        date: Date
+    ) -> Int
+    {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        let weekday_num: Int = calendar.component(.weekday, from: date) - 1
+        if weekday_num < 0 || 6 < weekday_num {
+            fatalError("[error] unknown weekday : \(weekday_num)")
+        }
+        return weekday_num // 0:Sun, 1:Mon, ... , 6:Sat
+    }
+        func _test_getWeekdayIndex() {
+            let date_str :String = "2023/04/02"
+            let date: Date = self.convFromStr(date: date_str)
+            print("### getWeekdayIndex() test start ###")
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 0, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 1, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 2, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 3, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 4, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 5, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 6, to: date)!)))
+            print(String(self.getWeekdayIndex(date: Calendar.current.date(byAdding: .day,value: 7, to: date)!)))
+            print("### getWeekdayIndex() test finished ###")
+            print("")
+        }
+    mutating func autoskipUntrgtWeekday (
+        date: Date
+    )
+    {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ja_JP")
+        //let weekday_num: Int = calendar.component(.weekday, from: date)
+        //let weekday_num: Int = calendar.component(.weekday, from: date) - 1
+        let weekday_num: Int = self.getWeekdayIndex(date: date)
+        for (_, item_id) in self.item_id_list.enumerated() {
+            if self.items[item_id]!.is_archived == false {
+                let date_str: String = self.convToStr(date: date)
+                if self.items[item_id]!.daily_statuses.keys.contains(date_str) == false {
+                    let is_trgt_weekday: Bool = self.items[item_id]!.trgt_weekday[weekday_num]
+                    if is_trgt_weekday == false {
+                        self.items[item_id]!.daily_statuses.updateValue(.Skip, forKey: date_str)
+                    }
+                }
+            }
+        }
+    }
+        mutating func _test_autoskipUntrgtWeekday() {
+            let date_str :String = "2023/04/02" // 2023/4/2(Sun)
+            let date: Date = self.convFromStr(date: date_str)
+            //let weekday_num: Int = self.getWeekdayIndex(date: date)
+            let item1: Item = Item(
+                item_name: "aa",
+                daily_statuses: [
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: date)!)    : .Skip,   // 4/2(Sun)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 1, to: date)!)    : .Done,   // 4/3(Mon)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 2, to: date)!)    : .NotYet, // 4/4(Tue)
+                  //convToStr(date: Calendar.current.date(byAdding: .day,value: 3, to: date)!)    :          // 4/5(Wed)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 4, to: date)!)    : .Skip,   // 4/6(Thu)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 5, to: date)!)    : .Done,   // 4/7(Fri)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 6, to: date)!)    : .NotYet  // 4/8(Sat)
+                ],
+                trgt_weekday: [false, false, false, false, true, true, true]
+            )
+            let item2: Item = Item(
+                item_name: "bb",
+                daily_statuses: [
+                  //convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: date)!)    :          // 4/2(Sun)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 1, to: date)!)    : .Skip,   // 4/3(Mon)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 2, to: date)!)    : .Done,   // 4/4(Tue)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 3, to: date)!)    : .NotYet, // 4/5(Wed)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 4, to: date)!)    : .Skip,   // 4/6(Thu)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 5, to: date)!)    : .Done,   // 4/7(Fri)
+                    convToStr(date: Calendar.current.date(byAdding: .day,value: 6, to: date)!)    : .NotYet  // 4/8(Sat)
+                ],
+                trgt_weekday: [true, true, true, true, false, false, false]
+            )
+            self.addItem(new_item_id: generateItemId(), new_item: item1)
+            self.addItem(new_item_id: generateItemId(), new_item: item2)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 0, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 1, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 2, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 3, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 4, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 5, to: date)!)
+            self.autoskipUntrgtWeekday(date: Calendar.current.date(byAdding: .day,value: 6, to: date)!)
+        }
     mutating func setValueForTest()
     {
-        #if false
+        #if true
         let item1: Item = Item(
             item_name: "aa",
-            status: [
+            daily_statuses: [
+              //convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : 
+              //convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : 
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Skip,
@@ -709,7 +842,7 @@ struct HabChainData {
         )
         let item3: Item = Item(
             item_name: "cccc",
-            status: [
+            daily_statuses: [
                 convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
@@ -726,23 +859,58 @@ struct HabChainData {
         )
         let item2: Item = Item(
             item_name: "bbb",
-            status: [
+            daily_statuses: [
                 convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .NotYet,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Done,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Done,
+              //convToStr(date: Calendar.current.date(byAdding: .day,value: -6, to: Date())!)    : 
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .NotYet,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Skip,
                 convToStr(date: Calendar.current.date(byAdding: .day,value: -9, to: Date())!)    : .Done
             ],
             skip_num: 20
         )
+        let item4: Item = Item(
+            item_name: "ddddd",
+            daily_statuses: [
+                convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -6, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Done
+            ],
+            skip_num: 2,
+            color: Color.green
+        )
+        let item5: Item = Item(
+            item_name: "eeee",
+            daily_statuses: [
+                convToStr(date: Calendar.current.date(byAdding: .day,value: 0, to: Date())!)     : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -1, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -2, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -3, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -4, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -5, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -6, to: Date())!)    : .Skip,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -7, to: Date())!)    : .Done,
+                convToStr(date: Calendar.current.date(byAdding: .day,value: -8, to: Date())!)    : .Done
+            ],
+            skip_num: 2,
+            color: Color.green
+        )
 
         self.addItem(new_item_id: generateItemId(), new_item: item2)
         self.addItem(new_item_id: generateItemId(), new_item: item3)
         self.addItem(new_item_id: generateItemId(), new_item: item1)
+        self.addItem(new_item_id: generateItemId(), new_item: item4)
+        self.addItem(new_item_id: generateItemId(), new_item: item5)
         #else
         let item1: Item = Item(item_name: "aa")
         self.addItem(new_item_id: generateItemId(), new_item: item1)

@@ -10,6 +10,7 @@ import SwiftUI
 struct ItemEditViewSetting {
     let ICON_SIZE_PX: CGFloat = 25
     let BUTTON_HEIGHT_PX: CGFloat = 50
+    let TEXT_EDITER_HEIGHT_PX: CGFloat = 80
 }
 
 struct ItemEditView: View {
@@ -52,6 +53,8 @@ struct ItemEditView: View {
                 Section {
                     TextField("e.g. スキルアップして転職に成功するため", text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
                         .autocapitalization(.none)
+                    //TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
+                    //    .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
                 } header: {
                     Text("目的")
                 }
@@ -88,6 +91,7 @@ struct ItemEditView: View {
                             Text("green").tag(Color.green)
                             Text("blue").tag(Color.blue)
                         }
+                        .pickerStyle(DefaultPickerStyle())
                     } header: {
                         Text("色")
                     }
@@ -134,8 +138,10 @@ struct ItemEditView: View {
                     Text("曜日")
                 }
                 Section {
-                    TextField("", text: Binding($hab_chain_data.items[trgt_item_id])!.note)
-                        .autocapitalization(.none)
+                    //TextField("", text: Binding($hab_chain_data.items[trgt_item_id])!.note)
+                    //    .autocapitalization(.none)
+                    TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.note)
+                        .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
                 } header: {
                     Text("備考")
                 }

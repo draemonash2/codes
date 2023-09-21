@@ -28,8 +28,12 @@ struct ItemStatusEditView: View {
     @Binding var trgt_item_id: String
     @State var shouldPresentPopUpDialog: Bool = false
     private let VIEW_SETTING: ItemStatusEditViewSetting = ItemStatusEditViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
 
     var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
         ZStack {
             VStack {
                 if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
