@@ -34,6 +34,7 @@ struct ItemEditView: View {
     @State private var selected_finish_date: Date = Date()
     @State private var is_start_date_valid = false
     @State private var is_finish_date_valid = false
+    @State private var is_show_item_status_edit_view: Bool = false
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
     private let VIEW_SETTING: ItemEditViewSetting = ItemEditViewSetting()
 
@@ -151,6 +152,16 @@ struct ItemEditView: View {
                 } header: {
                     Text("アーカイブ")
                 }
+                //Section {
+                //    ItemStatusEditView(
+                //        hab_chain_data: $hab_chain_data,
+                //        is_show_item_status_edit_view: $is_show_item_status_edit_view,
+                //        trgt_item_id: $trgt_item_id
+                //    )
+                //    //Text("aaa")
+                //} header: {
+                //    Text("ステータス")
+                //}
             }
             .navigationTitle("アイテム編集")
         }
