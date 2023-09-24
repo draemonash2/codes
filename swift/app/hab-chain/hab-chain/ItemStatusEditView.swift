@@ -27,6 +27,7 @@ struct ItemStatusEditView: View {
     @Binding var is_show_item_status_edit_view: Bool
     @Binding var trgt_item_id: String
     @State var shouldPresentPopUpDialog: Bool = false
+    @State var is_show_item_status_range_edit_view: Bool = false
     private let VIEW_SETTING: ItemStatusEditViewSetting = ItemStatusEditViewSetting()
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
 
@@ -34,13 +35,17 @@ struct ItemStatusEditView: View {
         if FUNC_SETTING.debug_mode {
             let _ = Self._printChanges()
         }
+        #if false
         ZStack {
             VStack {
                 if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                    //Text("ステータス一括入力")
+                    //    .font(.largeTitle)
+                    //    .padding(.all)
                     HStack {
                         Text(unwrapped_item.item_name)
-                            .font(.largeTitle)
-                            .padding(.all)
+                            .font(.title)
+                            //.padding(.all)
                         #if false
                         Button {
                             withAnimation {
@@ -56,6 +61,17 @@ struct ItemStatusEditView: View {
                         }
                         #endif
                     }
+                    Button(action: {
+                        is_show_item_status_range_edit_view = true
+                    }) {
+                        Text("日付範囲入力")
+                            //.frame(maxWidth: .infinity)
+                            .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                            .multilineTextAlignment(.center)
+                            //.background(Color.blue)
+                            .foregroundColor(Color.blue)
+                    }
+                    .padding(0)
                     List {
                         ForEach(0..<VIEW_SETTING.DATE_NUM, id: \.self) { i in
                             let date_offset: Int = -i
@@ -114,6 +130,20 @@ struct ItemStatusEditView: View {
                 PopUpDialogView(isPresented: $shouldPresentPopUpDialog)
             }
         }
+        .sheet(isPresented: $is_show_item_status_range_edit_view) {
+            ItemStatusRangeEditView(
+                hab_chain_data: $hab_chain_data,
+                is_show_item_status_range_edit_view: $is_show_item_status_range_edit_view,
+                trgt_item_id: $trgt_item_id
+            )
+        }
+        #else
+        ItemStatusIndivDateEditView(
+            hab_chain_data: $hab_chain_data,
+            is_show_item_status_edit_view: $is_show_item_status_edit_view,
+            trgt_item_id: $trgt_item_id
+        )
+        #endif
     }
 }
 
@@ -219,3 +249,114 @@ struct CloseButton: View {
 //        ItemStatusEditView()
 //    }
 //}
+
+struct ItemStatusIndivDateEditView: View {
+    @Environment(\ .colorScheme) var colorScheme
+    @Binding var hab_chain_data: HabChainData
+    @Binding var is_show_item_status_edit_view: Bool
+    @Binding var trgt_item_id: String
+    @State var shouldPresentPopUpDialog: Bool = false
+    @State var is_show_item_status_range_edit_view: Bool = false
+    private let VIEW_SETTING: ItemStatusEditViewSetting = ItemStatusEditViewSetting()
+    private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+
+    var body: some View {
+        if FUNC_SETTING.debug_mode {
+            let _ = Self._printChanges()
+        }
+        ZStack {
+            VStack {
+                if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                    //Text("ステータス一括入力")
+                    //    .font(.largeTitle)
+                    //    .padding(.all)
+                    HStack {
+                        Text(unwrapped_item.item_name)
+                            .font(.title)
+                            //.padding(.all)
+                        #if false
+                        Button {
+                            withAnimation {
+                                shouldPresentPopUpDialog = true
+                            }
+                        } label: {
+                            let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                            Image(systemName: "info.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 15)
+                                .foregroundColor(icon_color)
+                        }
+                        #endif
+                    }
+                    Button(action: {
+                        is_show_item_status_range_edit_view = true
+                    }) {
+                        Text("日付範囲入力")
+                            //.frame(maxWidth: .infinity)
+                            .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                            .multilineTextAlignment(.center)
+                            //.background(Color.blue)
+                            .foregroundColor(Color.blue)
+                    }
+                    .padding(0)
+                    List {
+                        ForEach(0..<VIEW_SETTING.DATE_NUM, id: \.self) { i in
+                            let date_offset: Int = -i
+                            let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
+                            HStack {
+                                Text(hab_chain_data.formatDateMmdd(date: date, delimiter: " "))
+                                Spacer()
+                                Button(action:{
+                                    hab_chain_data.toggleItemStatus(item_id: trgt_item_id, date: date)
+                                }) {
+                                    let date_str = hab_chain_data.convToStr(date: date)
+                                    let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                    if unwrapped_item.daily_statuses.keys.contains(date_str) {
+                                        if let unwrapped_item_status = unwrapped_item.daily_statuses[date_str] {
+                                            Image(systemName: VIEW_SETTING.ICON_NAME_DIC[unwrapped_item_status]!)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                                .foregroundColor(icon_color)
+                                        }
+                                    } else {
+                                        Image(systemName: VIEW_SETTING.ICON_NAME_DIC[.NotYet]!)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(height: VIEW_SETTING.ICON_SIZE_PX)
+                                            .foregroundColor(icon_color)
+                                    }
+                                }
+                                let date_str = hab_chain_data.convToStr(date: date)
+                                if unwrapped_item.daily_statuses.keys.contains(date_str) {
+                                    if let unwrapped_item_status = unwrapped_item.daily_statuses[date_str] {
+                                        Text(hab_chain_data.convToStr(item_status: unwrapped_item_status))
+                                            .frame(width: VIEW_SETTING.STATUS_TEXT_WIDTH_PX, alignment: .leading)
+                                    }
+                                } else {
+                                    Text(hab_chain_data.convToStr(item_status: .NotYet))
+                                        .frame(width: VIEW_SETTING.STATUS_TEXT_WIDTH_PX, alignment: .leading)
+                                }
+                            }
+                        }
+                    }
+                }
+                Button(action: {
+                    is_show_item_status_edit_view = false
+                }) {
+                    Text("Done")
+                        .frame(maxWidth: .infinity)
+                        .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
+                        .multilineTextAlignment(.center)
+                        .background(Color.blue)
+                        .foregroundColor(Color.white)
+                }
+                .padding()
+            }
+            if shouldPresentPopUpDialog {
+                PopUpDialogView(isPresented: $shouldPresentPopUpDialog)
+            }
+        }
+    }
+}

@@ -24,22 +24,10 @@ struct ItemAddView: View {
     @Environment(\ .colorScheme) var colorScheme
     @Binding var hab_chain_data: HabChainData
     @Binding var is_show_item_add_view: Bool
-    @State var new_item_name: String = ""
-    @State var new_skip_num: Int = 10
-    @State var new_color: Color = Color.red
-    @State var new_is_archived: Bool = false
-    @State var new_icon_name: String = ""
-    @State var new_start_date: Date = Date()
-    @State var new_finish_date: Date = Date()
-    @State var new_is_start_date_enb: Bool = false
-    @State var new_is_finish_date_enb: Bool = false
-    @State var new_weekday: [Bool] = [true, true, true, true, true, true, true]
-    @State var new_purpose: String = ""
-    @State var new_note: String = ""
+    @State var new_item: Item = Item()
     @State private var is_show_alert: Bool = false
     @State private var error_kind: ErrorKind = .none
     @State var is_show_select_icon_view: Bool = false
-    @State var item_id_child: String = ""
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
     private let VIEW_SETTING: ItemAddViewSetting = ItemAddViewSetting()
 
@@ -50,13 +38,13 @@ struct ItemAddView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("e.g. プログラミングの勉強", text: $new_item_name)
+                    TextField("e.g. プログラミングの勉強", text: $new_item.item_name)
                         .autocapitalization(.none)
                 } header: {
                     Text("項目名")
                 }
                 Section {
-                    TextField("e.g. スキルアップして転職に成功するため", text: $new_purpose)
+                    TextField("e.g. スキルアップして転職に成功するため", text: $new_item.purpose)
                         .autocapitalization(.none)
                 } header: {
                     Text("目的")
@@ -66,8 +54,8 @@ struct ItemAddView: View {
                         is_show_select_icon_view = true
                     }) {
                         let icon_color :Color = colorScheme == .light ? Color.black: Color.white
-                        if new_icon_name != "" {
-                            Image(systemName: new_icon_name)
+                        if new_item.icon_name != "" {
+                            Image(systemName: new_item.icon_name)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: VIEW_SETTING.ICON_SIZE_PX, height: VIEW_SETTING.ICON_SIZE_PX)
@@ -81,13 +69,13 @@ struct ItemAddView: View {
                     Text("アイコン")
                 }
                 Section {
-                    TextField("e.g. 10", value: $new_skip_num, format: .number)
+                    TextField("e.g. 10", value: $new_item.skip_num, format: .number)
                 } header: {
                     Text("スキップ可能数")
                 }
                 if FUNC_SETTING.color_select_enable == true {
                     Section {
-                        Picker("", selection: $new_color) {
+                        Picker("", selection: $new_item.color) {
                             Text("red").tag(Color.red)
                             Text("green").tag(Color.green)
                             Text("blue").tag(Color.blue)
@@ -98,10 +86,10 @@ struct ItemAddView: View {
                 }
                 Section {
                     HStack {
-                        Toggle(isOn: $new_is_start_date_enb) {}
+                        Toggle(isOn: $new_item.is_start_date_enb) {}
                             .labelsHidden()
-                        if new_is_start_date_enb {
-                            DatePicker("", selection: $new_start_date, displayedComponents: [.date])
+                        if new_item.is_start_date_enb {
+                            DatePicker("", selection: $new_item.start_date, displayedComponents: [.date])
                                 .datePickerStyle(CompactDatePickerStyle())
                         }
                     }
@@ -110,10 +98,10 @@ struct ItemAddView: View {
                 }
                 Section {
                     HStack {
-                        Toggle(isOn: $new_is_finish_date_enb) {}
+                        Toggle(isOn: $new_item.is_finish_date_enb) {}
                             .labelsHidden()
-                        if new_is_finish_date_enb {
-                            DatePicker("", selection: $new_finish_date, displayedComponents: [.date])
+                        if new_item.is_finish_date_enb {
+                            DatePicker("", selection: $new_item.finish_date, displayedComponents: [.date])
                                 .datePickerStyle(CompactDatePickerStyle())
                         }
                     }
@@ -125,7 +113,7 @@ struct ItemAddView: View {
                         Spacer()
                         let weekdays :[String] = ["日", "月", "火", "水", "木", "金", "土"]
                         ForEach(0...6, id: \.self) { weekday_idx in
-                            Toggle(isOn: $new_weekday[weekday_idx]) {
+                            Toggle(isOn: $new_item.trgt_weekday[weekday_idx]) {
                                 Text(weekdays[weekday_idx])
                             }
                             .toggleStyle(.button)
@@ -136,15 +124,15 @@ struct ItemAddView: View {
                     Text("曜日")
                 }
                 Section {
-                    //TextField("", text: $new_note)
+                    //TextField("", text: $new_item.note)
                     //    .autocapitalization(.none)
-                    TextEditor(text: $new_note)
+                    TextEditor(text: $new_item.note)
                         .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
                 } header: {
                     Text("備考")
                 }
                 Section {
-                    Toggle(isOn: $new_is_archived) {
+                    Toggle(isOn: $new_item.is_archived) {
                     }
                 } header: {
                     Text("アーカイブ")
@@ -180,7 +168,7 @@ struct ItemAddView: View {
         .sheet(isPresented: $is_show_select_icon_view) {
             SelectIconView(
                 is_show_select_icon_view: $is_show_select_icon_view,
-                icon_name: $new_icon_name
+                icon_name: $new_item.icon_name
             )
         }
         .padding()
@@ -202,9 +190,9 @@ struct ItemAddView: View {
     func pressAddButtonAction() {
         var new_start_date_str :String = ""
         var new_finish_date_str :String = ""
-        if new_is_start_date_enb && new_is_finish_date_enb {
-            new_start_date_str = hab_chain_data.convToStr(date: new_start_date)
-            new_finish_date_str = hab_chain_data.convToStr(date: new_finish_date)
+        if new_item.is_start_date_enb && new_item.is_finish_date_enb {
+            new_start_date_str = hab_chain_data.convToStr(date: new_item.start_date)
+            new_finish_date_str = hab_chain_data.convToStr(date: new_item.finish_date)
         } else {
             new_start_date_str = ""
             new_finish_date_str = ""
@@ -213,16 +201,16 @@ struct ItemAddView: View {
         
         var is_exist_valid_weekday: Bool = false
         for weekday_idx in 0...6 {
-            if new_weekday[weekday_idx] {
+            if new_item.trgt_weekday[weekday_idx] {
                 is_exist_valid_weekday = true
                 break
             }
         }
         
-        if new_item_name == "" {
+        if new_item.item_name == "" {
             is_show_alert = true
             error_kind = .blank_item_name
-        } else if hab_chain_data.existItemName(item_name: new_item_name) {
+        } else if hab_chain_data.existItemName(item_name: new_item.item_name) {
             is_show_alert = true
             error_kind = .exist_item_name
         } else if new_start_date_str > new_finish_date_str {
@@ -232,21 +220,7 @@ struct ItemAddView: View {
             is_show_alert = true
             error_kind = .invalid_weekday_all
         } else {
-            let item = Item(
-                item_name: new_item_name,
-                skip_num: new_skip_num,
-                color: new_color,
-                is_archived: new_is_archived,
-                icon_name: new_icon_name,
-                start_date: new_start_date,
-                finish_date: new_finish_date,
-                is_start_date_enb: new_is_start_date_enb,
-                is_finish_date_enb: new_is_finish_date_enb,
-                trgt_weekday: new_weekday,
-                purpose: new_purpose,
-                note: new_note
-            )
-            hab_chain_data.addItem(new_item_id: hab_chain_data.generateItemId(), new_item: item)
+            hab_chain_data.addItem(new_item_id: hab_chain_data.generateItemId(), new_item: new_item)
             is_show_item_add_view = false
             is_show_alert = false
         }

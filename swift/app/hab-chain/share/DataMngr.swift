@@ -17,7 +17,7 @@ enum ItemStatus: String {
 struct Item {
     var item_name: String = ""
     var daily_statuses: Dictionary<String, ItemStatus> = [:]
-    var skip_num: Int = 999
+    var skip_num: Int = 10
     var color: Color = Color.red
     var is_archived: Bool = false
     var icon_name: String = ""
