@@ -547,6 +547,14 @@ struct HabChainData {
             print("### calcAchievementRate() test finished ###")
             print("")
         }
+    func formatDateYyyyMmdd(
+        date: Date
+    ) -> String
+    {
+        let formatDate = DateFormatter()
+        formatDate.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMd (EEE)", options: 0, locale: Locale(identifier: "ja_JP"))
+        return formatDate.string(from: date)
+    }
     func formatDateMmdd(
         date: Date,
         delimiter: String = ""
