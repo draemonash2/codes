@@ -87,6 +87,7 @@ InitSleepPreventing()
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
+		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_XACRO作成\#memo_XACRO作成.xlsm" )
 	;プログラム起動
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 		^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
@@ -320,13 +321,15 @@ InitSleepPreventing()
 		;*** start program ***
 		Try {
 			Run sExePath . " " . sFilePath, sExeDirPath, , &sOutputVarPID
+			WinWait("ahk_pid " . sOutputVarPID, , 1)
+			WinActivate "ahk_pid " . sOutputVarPID
+		;	BringActiveWindowToTop()
 		} Catch Error as err {
-			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
-				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+		;	MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-	;	WinActivate "ahk_pid " . sOutputVarPID
-		BringActiveWindowToTop()
+		ToolTip()
 		return
 	}
 	
@@ -356,13 +359,15 @@ InitSleepPreventing()
 		;*** start program ***
 		Try {
 			Run sFilePath, , , &sOutputVarPID
+			WinWait("ahk_pid " . sOutputVarPID, , 1)
+			WinActivate "ahk_pid " . sOutputVarPID
+		;	BringActiveWindowToTop()
 		} Catch Error as err {
-			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
-				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+		;	MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-	;	WinActivate "ahk_pid " . sOutputVarPID
-		BringActiveWindowToTop()
+		ToolTip()
 		return
 	}
 	
@@ -398,20 +403,24 @@ InitSleepPreventing()
 		;*** start program ***
 		Try {
 			Run sExePath, sExeDirPath, , &sOutputVarPID
+			WinWait("ahk_pid " . sOutputVarPID, , 1)
+			WinActivate "ahk_pid " . sOutputVarPID
+		;	BringActiveWindowToTop()
 		} Catch Error as err {
-			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
-				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+		;	MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-	;	WinActivate "ahk_pid " . sOutputVarPID
-		BringActiveWindowToTop()
+		ToolTip()
 		return
 	}
 	BringActiveWindowToTop()
 	{
-		WinSetAlwaysOnTop 1, "A"
+		;常に最前面ON→OFFにより、アクティブウィンドウを最前面に設定する
 		Sleep 100
-		WinSetAlwaysOnTop 0, "A"
+		WinSetAlwaysOnTop 1, "A" ; 常に最前面ON
+		Sleep 100
+		WinSetAlwaysOnTop 0, "A" ; 常に最前面OFF
 	}
 
 	; 今押している修飾キーと共にキー送信する
