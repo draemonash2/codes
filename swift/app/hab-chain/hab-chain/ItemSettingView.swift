@@ -24,7 +24,6 @@ struct ItemSettingView: View {
     @State var is_show_item_edit_view: Bool = false
     @State var is_show_item_status_edit_view: Bool = false
     @State var trgt_item_id: String = ""
-    @State var trgt_item_name: String = ""
     private let VIEW_SETTING: ItemSettingViewSetting = ItemSettingViewSetting()
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
 
@@ -97,7 +96,6 @@ struct ItemSettingView: View {
                             Button {
                                 print("pressed \(unwraped_item.item_name) button")
                                 trgt_item_id = item_id
-                                trgt_item_name = unwraped_item.item_name
                                 is_show_item_edit_view = true
                             } label: {
                                 let icon_color :Color = colorScheme == .light ? Color.black: Color.white

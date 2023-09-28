@@ -25,7 +25,9 @@ struct ContentView: View {
     @AppStorage("app_json_string", store: UserDefaults(suiteName: "group.hab_chain")) var app_json_string: String = ""
     @State var hab_chain_data: HabChainData = HabChainData()
     @State var is_overlay_presented: Bool = false
+    @State var is_show_item_edit_view: Bool = false
     @State var trgt_status: String = ""
+    @State var trgt_item_id: String = ""
     private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
     var body: some View {
@@ -99,6 +101,8 @@ struct ContentView: View {
                                         .listRowInsets(EdgeInsets())
                                         .onTapGesture {
                                             print("pressed \(unwraped_item.item_name) item")
+                                            trgt_item_id = item_id
+                                            is_show_item_edit_view = true
                                         }
                                     }
                                 }
@@ -107,6 +111,13 @@ struct ContentView: View {
                         .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
                         .listStyle(.plain)
                         .environment(\.editMode, .constant(.active))
+                        .sheet(isPresented: $is_show_item_edit_view) {
+                            ItemEditView(
+                                hab_chain_data: $hab_chain_data,
+                                is_show_item_edit_view: $is_show_item_edit_view,
+                                trgt_item_id: $trgt_item_id
+                            )
+                        }
                     }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {

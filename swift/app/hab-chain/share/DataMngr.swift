@@ -17,7 +17,7 @@ enum ItemStatus: String {
 struct Item {
     var item_name: String = ""
     var daily_statuses: Dictionary<String, ItemStatus> = [:]
-    var skip_num: Int = 999
+    var skip_num: Int = 10
     var color: Color = Color.red
     var is_archived: Bool = false
     var icon_name: String = ""
@@ -547,6 +547,14 @@ struct HabChainData {
             print("### calcAchievementRate() test finished ###")
             print("")
         }
+    func formatDateYyyyMmdd(
+        date: Date
+    ) -> String
+    {
+        let formatDate = DateFormatter()
+        formatDate.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyyMd (EEE)", options: 0, locale: Locale(identifier: "ja_JP"))
+        return formatDate.string(from: date)
+    }
     func formatDateMmdd(
         date: Date,
         delimiter: String = ""
