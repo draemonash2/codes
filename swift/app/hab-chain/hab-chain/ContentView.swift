@@ -50,25 +50,24 @@ struct ContentView: View {
                             .padding()
                         Text("ハビットチェーンの力で習慣を継続させましょう！")
                             .font(.caption)
-                        Group {
-                            HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                                Spacer()
-                                ForEach(-(button_num - 1)..<1, id: \.self) { i in
-                                    let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
-                                    Text(hab_chain_data.formatDateMmdd(date: date, delimiter: "\n"))
-                                        .font(.caption)
-                                        .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
-                                        .multilineTextAlignment(.center)
-                                }
+                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                            Spacer()
+                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
+                                let date: Date = Calendar.current.date(byAdding: .day,value: i, to: Date())!
+                                Text(hab_chain_data.formatDateMmdd(date: date, delimiter: "\n"))
+                                    .font(.caption)
+                                    .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                                    .multilineTextAlignment(.center)
                             }
-                            HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                                Spacer()
-                                ForEach(-(button_num - 1)..<1, id: \.self) { i in
-                                    WholeItemStatusTextCircle(
-                                        hab_chain_data: $hab_chain_data,
-                                        date_offset: i
-                                    )
-                                }
+                        }
+                        .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
+                        HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
+                            Spacer()
+                            ForEach(-(button_num - 1)..<1, id: \.self) { i in
+                                WholeItemStatusTextCircle(
+                                    hab_chain_data: $hab_chain_data,
+                                    date_offset: i
+                                )
                             }
                         }
                         .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
@@ -216,7 +215,7 @@ struct IndivItemStatusChangeButton: View {
                     if hab_chain_data.is_show_status_popup == true {
                         withAnimation(.easeIn(duration: 0.2)) {
                             if let unwrapped_item = hab_chain_data.items[item_id] {
-                                let date_str: String = hab_chain_data.convToStr(date: date)
+                                //let date_str: String = hab_chain_data.convToStr(date: date)
                                 if let unwrapped_status = unwrapped_item.daily_statuses[date_str] {
                                     trgt_status = hab_chain_data.convToStr(item_status: unwrapped_status)
                                 }

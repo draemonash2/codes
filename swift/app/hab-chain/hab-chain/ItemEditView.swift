@@ -45,123 +45,127 @@ struct ItemEditView: View {
         
         NavigationView {
             Form {
-                Section {
-                    TextField("e.g. プログラミングの勉強", text: Binding($hab_chain_data.items[trgt_item_id])!.item_name)
-                        .autocapitalization(.none)
-                } header: {
-                    Text("項目名")
-                }
-                Section {
-                    TextField("e.g. スキルアップして転職に成功するため", text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
-                        .autocapitalization(.none)
-                    //TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
-                    //    .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
-                } header: {
-                    Text("目的")
-                }
-                Section {
-                    Button(action: {
-                        is_show_select_icon_view = true
-                    }) {
-                        if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
-                            let icon_color :Color = colorScheme == .light ? Color.black: Color.white
-                            if unwrapped_item.icon_name != "" {
-                                Image(systemName: unwrapped_item.icon_name)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: VIEW_SETTING.ICON_SIZE_PX, height: VIEW_SETTING.ICON_SIZE_PX)
-                                    .foregroundColor(icon_color)
-                            } else {
-                                Text("-")
-                            }
-                        }
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                } header: {
-                    Text("アイコン")
-                }
-                Section {
-                    TextField("e.g. 10", value: Binding($hab_chain_data.items[trgt_item_id])!.skip_num, format: .number)
-                } header: {
-                    Text("スキップ可能数")
-                }
-                if FUNC_SETTING.color_select_enable == true {
+                Group {
                     Section {
-                        Picker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.color) {
-                            Text("red").tag(Color.red)
-                            Text("green").tag(Color.green)
-                            Text("blue").tag(Color.blue)
-                        }
-                        .pickerStyle(DefaultPickerStyle())
+                        TextField("e.g. プログラミングの勉強", text: Binding($hab_chain_data.items[trgt_item_id])!.item_name)
+                            .autocapitalization(.none)
                     } header: {
-                        Text("色")
+                        Text("項目名")
                     }
-                }
-                Section {
-                    HStack {
-                        Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_start_date_enb) {}
-                            .labelsHidden()
-                        if hab_chain_data.items[trgt_item_id]!.is_start_date_enb {
-                            DatePicker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.start_date, displayedComponents: [.date])
-                                .datePickerStyle(CompactDatePickerStyle())
+                    Section {
+                        Button(action: {
+                            is_show_item_status_edit_view = true
+                        }) {
+                            Text("ステータス編集")
+                                .foregroundColor(Color.blue)
                         }
-                        //Text(hab_chain_data.convToStr(date: hab_chain_data.items[trgt_item_id]!.start_date))
+                    } header: {
+                        Text("ステータス")
                     }
-                } header: {
-                    Text("開始日")
-                }
-                Section {
-                    HStack {
-                        Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_finish_date_enb) {}
-                            .labelsHidden()
-                        if hab_chain_data.items[trgt_item_id]!.is_finish_date_enb {
-                            DatePicker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.finish_date, displayedComponents: [.date])
-                                .datePickerStyle(CompactDatePickerStyle())
-                        }
-                        //Text(hab_chain_data.convToStr(date: hab_chain_data.items[trgt_item_id]!.finish_date))
+                    Section {
+                        TextField("e.g. スキルアップして転職に成功するため", text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
+                            .autocapitalization(.none)
+                        //TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
+                        //    .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
+                    } header: {
+                        Text("目的")
                     }
-                } header: {
-                    Text("終了日")
-                }
-                Section {
-                    HStack {
-                        Spacer()
-                        let weekdays :[String] = ["日", "月", "火", "水", "木", "金", "土"]
-                        ForEach(0...6, id: \.self) { weekday_idx in
-                            Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.trgt_weekday[weekday_idx]) {
-                                Text(weekdays[weekday_idx])
+                    Section {
+                        Button(action: {
+                            is_show_select_icon_view = true
+                        }) {
+                            if let unwrapped_item = hab_chain_data.items[trgt_item_id] {
+                                let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+                                if unwrapped_item.icon_name != "" {
+                                    Image(systemName: unwrapped_item.icon_name)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: VIEW_SETTING.ICON_SIZE_PX, height: VIEW_SETTING.ICON_SIZE_PX)
+                                        .foregroundColor(icon_color)
+                                } else {
+                                    Text("-")
+                                }
                             }
-                            .toggleStyle(.button)
                         }
-                        Spacer()
+                        .buttonStyle(PlainButtonStyle())
+                    } header: {
+                        Text("アイコン")
                     }
-                } header: {
-                    Text("曜日")
-                }
-                Section {
-                    //TextField("", text: Binding($hab_chain_data.items[trgt_item_id])!.note)
-                    //    .autocapitalization(.none)
-                    TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.note)
-                        .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
-                } header: {
-                    Text("備考")
-                }
-                Section {
-                    Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_archived) {
+                    Section {
+                        TextField("e.g. 10", value: Binding($hab_chain_data.items[trgt_item_id])!.skip_num, format: .number)
+                    } header: {
+                        Text("スキップ可能数")
                     }
-                } header: {
-                    Text("アーカイブ")
+                    if FUNC_SETTING.color_select_enable == true {
+                        Section {
+                            Picker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.color) {
+                                Text("red").tag(Color.red)
+                                Text("green").tag(Color.green)
+                                Text("blue").tag(Color.blue)
+                            }
+                            .pickerStyle(DefaultPickerStyle())
+                        } header: {
+                            Text("色")
+                        }
+                    }
+                    Section {
+                        HStack {
+                            Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_start_date_enb) {}
+                                .labelsHidden()
+                            if hab_chain_data.items[trgt_item_id]!.is_start_date_enb {
+                                DatePicker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.start_date, displayedComponents: [.date])
+                                    .datePickerStyle(CompactDatePickerStyle())
+                            }
+                            //Text(hab_chain_data.convToStr(date: hab_chain_data.items[trgt_item_id]!.start_date))
+                        }
+                    } header: {
+                        Text("開始日")
+                    }
+                    Section {
+                        HStack {
+                            Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_finish_date_enb) {}
+                                .labelsHidden()
+                            if hab_chain_data.items[trgt_item_id]!.is_finish_date_enb {
+                                DatePicker("", selection: Binding($hab_chain_data.items[trgt_item_id])!.finish_date, displayedComponents: [.date])
+                                    .datePickerStyle(CompactDatePickerStyle())
+                            }
+                            //Text(hab_chain_data.convToStr(date: hab_chain_data.items[trgt_item_id]!.finish_date))
+                        }
+                    } header: {
+                        Text("終了日")
+                    }
+                    Section {
+                        HStack {
+                            Spacer()
+                            let weekdays :[String] = ["日", "月", "火", "水", "木", "金", "土"]
+                            ForEach(0...6, id: \.self) { weekday_idx in
+                                Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.trgt_weekday[weekday_idx]) {
+                                    Text(weekdays[weekday_idx])
+                                }
+                                .toggleStyle(.button)
+                            }
+                            Spacer()
+                        }
+                    } header: {
+                        Text("曜日")
+                    }
                 }
-                //Section {
-                //    ItemStatusEditView(
-                //        hab_chain_data: $hab_chain_data,
-                //        is_show_item_status_edit_view: $is_show_item_status_edit_view,
-                //        trgt_item_id: $trgt_item_id
-                //    )
-                //    //Text("aaa")
-                //} header: {
-                //    Text("ステータス")
-                //}
+                Group {
+                    Section {
+                        //TextField("", text: Binding($hab_chain_data.items[trgt_item_id])!.note)
+                        //    .autocapitalization(.none)
+                        TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.note)
+                            .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
+                    } header: {
+                        Text("備考")
+                    }
+                    Section {
+                        Toggle(isOn: Binding($hab_chain_data.items[trgt_item_id])!.is_archived) {
+                        }
+                    } header: {
+                        Text("アーカイブ")
+                    }
+                }
             }
             .navigationTitle("アイテム編集")
         }
@@ -192,6 +196,13 @@ struct ItemEditView: View {
             SelectIconView(
                 is_show_select_icon_view: $is_show_select_icon_view,
                 icon_name: Binding($hab_chain_data.items[trgt_item_id])!.icon_name
+            )
+        }
+        .sheet(isPresented: $is_show_item_status_edit_view) {
+            ItemStatusEditView(
+                hab_chain_data: $hab_chain_data,
+                is_show_item_status_edit_view: $is_show_item_status_edit_view,
+                trgt_item_id: $trgt_item_id
             )
         }
         .padding()

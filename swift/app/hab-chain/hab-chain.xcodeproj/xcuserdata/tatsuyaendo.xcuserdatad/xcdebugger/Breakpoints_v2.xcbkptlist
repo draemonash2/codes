@@ -30,10 +30,10 @@
             filePath = "hab-chain/ItemAddView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
-            landmarkName = "pressAddButtonAction()"
-            landmarkType = "7">
+            startingLineNumber = "214"
+            endingLineNumber = "214"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -78,10 +78,10 @@
             filePath = "hab-chain/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "195"
-            endingLineNumber = "195"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "194"
+            endingLineNumber = "194"
+            landmarkName = "ContentView"
+            landmarkType = "14">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -158,8 +158,8 @@
             filePath = "hab-chain/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "217"
-            endingLineNumber = "217"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -416,7 +416,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "774"
             endingLineNumber = "774"
-            landmarkName = "_test_getWeekdayIndex()"
+            landmarkName = "autoskipUntrgtWeekday(date:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
