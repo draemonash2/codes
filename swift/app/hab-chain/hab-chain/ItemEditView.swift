@@ -53,22 +53,22 @@ struct ItemEditView: View {
                         Text("項目名")
                     }
                     Section {
-                        Button(action: {
-                            is_show_item_status_edit_view = true
-                        }) {
-                            Text("ステータス編集")
-                                .foregroundColor(Color.blue)
-                        }
-                    } header: {
-                        Text("ステータス")
-                    }
-                    Section {
                         TextField("e.g. スキルアップして転職に成功するため", text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
                             .autocapitalization(.none)
                         //TextEditor(text: Binding($hab_chain_data.items[trgt_item_id])!.purpose)
                         //    .frame(height: VIEW_SETTING.TEXT_EDITER_HEIGHT_PX)
                     } header: {
                         Text("目的")
+                    }
+                    Section {
+                        Button(action: {
+                            is_show_item_status_edit_view = true
+                        }) {
+                            Text("編集 >")
+                                .foregroundColor(Color.blue)
+                        }
+                    } header: {
+                        Text("ステータス")
                     }
                     Section {
                         Button(action: {
@@ -195,7 +195,8 @@ struct ItemEditView: View {
         .sheet(isPresented: $is_show_select_icon_view) {
             SelectIconView(
                 is_show_select_icon_view: $is_show_select_icon_view,
-                icon_name: Binding($hab_chain_data.items[trgt_item_id])!.icon_name
+                icon_name: Binding($hab_chain_data.items[trgt_item_id])!.icon_name,
+                selected_icon_name: hab_chain_data.items[trgt_item_id]!.icon_name
             )
         }
         .sheet(isPresented: $is_show_item_status_edit_view) {

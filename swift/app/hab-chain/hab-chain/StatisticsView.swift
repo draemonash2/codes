@@ -30,7 +30,6 @@ struct StatisticsView: View {
                 let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
                 let latest_date: Date = Calendar.current.date(byAdding: .day,value: 0, to: Date())!
                 let old_date: Date = Calendar.current.date(byAdding: .day,value: -button_num, to: Date())!
-                //Text("button num is \(button_num)")
                 Text(hab_chain_data.formatDateMmdd(date: old_date) + "〜" + hab_chain_data.formatDateMmdd(date: latest_date))
                     .font(.title)
                 List {
@@ -42,12 +41,12 @@ struct StatisticsView: View {
                                 Group {
                                     HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
                                         Text(unwraped_item.item_name)
-                                        Spacer()
+                                        Spacer(minLength: 1)
                                         AchieveRateView(hab_chain_data: $hab_chain_data, item_id: item_id)
                                     }
                                     .padding([.leading, .trailing], VIEW_SETTING.WIDTH_PADDING_PX )
                                     HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
-                                        Spacer()
+                                        Spacer(minLength: 1)
                                         ForEach(-(button_num - 1)..<1, id: \.self) { date_offset in
                                             IndivItemStatusTextCircle(hab_chain_data: $hab_chain_data, item_id: item_id, date_offset: date_offset)
                                         }

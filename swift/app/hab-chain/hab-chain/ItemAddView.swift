@@ -170,7 +170,8 @@ struct ItemAddView: View {
         .sheet(isPresented: $is_show_select_icon_view) {
             SelectIconView(
                 is_show_select_icon_view: $is_show_select_icon_view,
-                icon_name: $new_item.icon_name
+                icon_name: $new_item.icon_name,
+                selected_icon_name: new_item.icon_name
             )
         }
         .padding()
