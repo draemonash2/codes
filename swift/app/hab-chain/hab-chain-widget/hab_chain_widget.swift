@@ -14,11 +14,11 @@ struct ContentViewSetting {
     let BUTTON_INCIRCLE_SIZE_PX :CGFloat? = 10
     let BUTTON_INCIRCLE_LINEWIDTH :CGFloat? = 1
     let BUTTON_SPACING_PX: CGFloat? = 1
-    let PADDING_SIZE_PX :CGFloat? = 10
+    let PADDING_SIZE_PX :CGFloat? = 2
     let LIST_SPACING_PX :CGFloat? = 1
     let ITEM_ICON_SIZE_PX :CGFloat? = 15
     let ITEM_TEXT_WIDTH_PX: CGFloat? = 120
-    let LIST_TOP_SPACING_PX :CGFloat? = 0
+    let LIST_TOP_SPACING_PX :CGFloat? = 10
 }
 
 struct Provider: TimelineProvider {
@@ -81,7 +81,7 @@ struct hab_chain_widgetEntryView : View {
             VStack (spacing : VIEW_SETTING.LIST_SPACING_PX) {
                 let button_num_tmp: Int = Int((geometry.size.width - VIEW_SETTING.ITEM_TEXT_WIDTH_PX! - VIEW_SETTING.PADDING_SIZE_PX!*2 - VIEW_SETTING.ITEM_ICON_SIZE_PX! - VIEW_SETTING.BUTTON_SPACING_PX! - VIEW_SETTING.LIST_TOP_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let button_num: Int = button_num_tmp > VIEW_SETTING.BUTTON_NUM_MIN ? button_num_tmp : VIEW_SETTING.BUTTON_NUM_MIN
-                let list_num_max_tmp: Int = Int((geometry.size.height - VIEW_SETTING.LIST_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.LIST_SPACING_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
+                let list_num_max_tmp: Int = Int((geometry.size.height - VIEW_SETTING.LIST_SPACING_PX!*2 - VIEW_SETTING.LIST_TOP_SPACING_PX!*2) / (VIEW_SETTING.BUTTON_SIZE_PX! + VIEW_SETTING.LIST_SPACING_PX! + VIEW_SETTING.BUTTON_SPACING_PX!))
                 let list_num_max: Int = list_num_max_tmp > 1 ? list_num_max_tmp : 1
                 #if false
                 Group {
