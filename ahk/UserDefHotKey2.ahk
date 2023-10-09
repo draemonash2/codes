@@ -88,6 +88,7 @@ InitSleepPreventing()
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_XACRO作成\#memo_XACRO作成.xlsm" )
+		^+!-::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\100_Documents\410_【仕事】個人事業\200_作業報告\230901_ROBOCIP\作業報告書_202310_遠藤竜也\2023_月間稼働時間（業務委託）_遠藤竜也.xlsx" )	;作業報告書(ROBOCIP向け)
 	;プログラム起動
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 		^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
