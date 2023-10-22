@@ -30,5 +30,8 @@
     },
     "alt-editor.binary": "C:\\prg_exe\\Vim\\gvim.exe",
     "alt-editor.args": "{filename}",
-    "editor.fontFamily": "\"Source Han Code JP\", monospace"
+    "editor.fontFamily": "\"Source Han Code JP\", monospace",
+    "remote.SSH.remotePlatform": {
+        "robocipA1-x11": "linux"
+    }
 }
