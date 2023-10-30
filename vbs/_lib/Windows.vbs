@@ -103,3 +103,26 @@ End Function
         Msgbox ExecDosCmd( "copy ""C:\Users\draem_000\Desktop\test.txt"" ""C:\Users\draem_000\Desktop\test2.txt""" )
         'Msgbox ExecDosCmd( "C:\codes\vbs\_lib\test.bat" )
     End Sub
+
+' ==================================================================
+' = 概要    プロセス起動確認
+' = 引数    sProcessName    String      [in]    プロセス名
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Windows.vbs
+' ==================================================================
+Public Function ExistProcess( _
+    ByVal sProcessName _
+)
+    Dim objService
+    Dim objQfeSet
+    Set objService = CreateObject("WbemScripting.SWbemLocator").ConnectServer
+    Set objQfeSet = objService.ExecQuery("Select * From Win32_Process Where Caption Like '" & sProcessName & "%'")
+    ExistProcess = objQfeSet.Count > 0
+End Function
+'   Call Test_ExistProcess()
+    Private Sub Test_ExistProcess()
+        MsgBox ExistProcess("wsl.exe")
+    End Sub
+
