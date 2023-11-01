@@ -1,6 +1,0 @@
-connect '118.238.253.15:4022 /ssh /auth=publickey /user=endo /keyfile=\\wsl.localhost\Ubuntu-22.04\home\draemon_ash3\.ssh\id_rsa /ssh-Xlocalhost:0.0'
-wait "$"
-sendln "\cp -f ${HOME}/.vim/_plugins_user/osc52/plugin/osc52.vim{.teraterm,}"
-wait "$"
-sendln "ll ${HOME}/.vim/_plugins_user/osc52/plugin/"
-

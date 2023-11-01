@@ -60,13 +60,23 @@ fi
 function _update_ps1() {
 	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
 	PS1="\n"
-	PS1="${PS1}\[\e[0;35;045m\]!"								# head keywords
-	PS1="${PS1}\[\e[0;37;045m\]\u@\h "							# user
-	PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "			# time
-	PS1="${PS1}\[\e[0;37;044m\] \$(_puts_prompt_git_branch) "	# git branch
-	PS1="${PS1}\[\e[0;97;100m\] \w "							# pwd
-	PS1="${PS1}\[\e[0;30;040m\]!"								# tail keywords
-	PS1="${PS1}\[\e[0;39;049m\] "								# reset
+	if [ -f /.dockerenv ]; then
+		PS1="${PS1}\[\e[0;35;045m\]!"								# head keywords
+		PS1="${PS1}\[\e[0;37;045m\]\u@\h "							# user
+		PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "			# time
+		PS1="${PS1}\[\e[0;37;045m\] \$(_puts_prompt_git_branch) "	# git branch
+		PS1="${PS1}\[\e[0;97;100m\] \w "							# pwd
+		PS1="${PS1}\[\e[0;30;040m\]!"								# tail keywords
+		PS1="${PS1}\[\e[0;39;049m\] "								# reset
+	else
+		PS1="${PS1}\[\e[0;34;044m\]!"								# head keywords
+		PS1="${PS1}\[\e[0;37;044m\]\u@\h "							# user
+		PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "			# time
+		PS1="${PS1}\[\e[0;37;044m\] \$(_puts_prompt_git_branch) "	# git branch
+		PS1="${PS1}\[\e[0;97;100m\] \w "							# pwd
+		PS1="${PS1}\[\e[0;30;040m\]!"								# tail keywords
+		PS1="${PS1}\[\e[0;39;049m\] "								# reset
+	fi
 	PS1="${PS1}\n\$ "
 }
 show_prompt_branch_name=0
@@ -864,9 +874,15 @@ alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
-add_session_list_to_cmplist
-add_session_name_to_cmplist temp
+if [ ! -f /.dockerenv ]; then
+	add_session_list_to_cmplist
+	add_session_name_to_cmplist temp
+fi
 alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
+
+if [ -f /.dockerenv ]; then
+	export TERM=screen-256color
+fi
 
 #########################################################
 # Environment dependent settings

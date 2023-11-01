@@ -1,13 +1,13 @@
 Option Explicit
 
 '<<概要>>
-'  TODO:
+'  WSL2をバックグラウンドで起動し、TeraTermで接続する
 '  
 '<<使用方法>>
-'  TODO:
+'  本プログラムを実行する
 '  
 '<<仕様>>
-'  ・TODO:
+'  ・特になし
 
 '===============================================================================
 '= インクルード
@@ -19,6 +19,8 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )    'ExistProcess()
 '===============================================================================
 Const bEXEC_TEST = False 'テスト用
 Const sSCRIPT_NAME = "WSL2接続＠TeraTerm"
+
+Const sTTL_FILE_PATH = "C:\codes\ttl\login_wsl2.ttl"
 
 '===============================================================================
 '= 本処理
@@ -43,7 +45,7 @@ Public Sub Main()
     If Not ExistProcess("wsl.exe") Then
         CreateObject("Wscript.Shell").Run "cmd /c wsl", 0
     End If
-    CreateObject("Wscript.Shell").Run "cmd /c C:\codes\ttl\login_wsl2.ttl", 0
+    CreateObject("Wscript.Shell").Run "cmd /c " & sTTL_FILE_PATH, 0
 End Sub
 
 '===============================================================================
