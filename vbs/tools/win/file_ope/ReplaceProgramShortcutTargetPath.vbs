@@ -1,6 +1,7 @@
 Option Explicit
 
 'TODO:要コマンド化
+'TODO:EXE_PATH_ORG/EXE_PATH_NEW 引数化
 
 ' 概要）
 '指定されたフォルダ配下に存在するショートカット(*.lnk)の指示先を、置換する。

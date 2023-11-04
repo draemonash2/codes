@@ -45,6 +45,9 @@ Public Sub Main()
     If Not ExistProcess("wsl.exe") Then
         CreateObject("Wscript.Shell").Run "cmd /c wsl", 0
     End If
+    Do While Not ExistProcess("wsl.exe")
+        WScript.sleep(300)
+    Loop
     CreateObject("Wscript.Shell").Run "cmd /c " & sTTL_FILE_PATH, 0
 End Sub
 
