@@ -1,5 +1,13 @@
 Option Explicit
 
+'  [使い方]
+'    SyncCodesToRemote.vbs <username> <key> <server> <home_dir_path> [<auth_type>]
+'      <username>：ユーザ名
+'      <key>：【パスワード認証時】パスワード 【公開鍵認証時】秘密鍵格納先(*.ppk)
+'      <server>：接続先（e.g. 123.345.678.901:22）
+'      <home_dir_path>：ホームディレクトリパス
+'      <auth_type>：キー種別 (0:パスワード認証 1:公開鍵認証)。省略可。デフォルト=パスワード認証。
+
 '===============================================================================
 '= インクルード
 '===============================================================================
@@ -16,21 +24,29 @@ Set objWshShell = CreateObject("WScript.Shell")
 Dim objFSO
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-If WScript.Arguments.Count <> 4 Then
+Dim sUserName
+Dim sKey
+Dim sLoginServerName
+Dim sHomeDirPath
+Dim sAuthType
+If WScript.Arguments.Count >= 4 Then
+    sUserName = WScript.Arguments(0)
+    sKey = WScript.Arguments(1)
+    sLoginServerName = WScript.Arguments(2)
+    sHomeDirPath = WScript.Arguments(3)
+End If
+If WScript.Arguments.Count >= 5 Then
+    sAuthType = WScript.Arguments(4)
+Else
+    sAuthType = "0"
+End If
+If WScript.Arguments.Count < 4 Then
     MsgBox "引数を正しく指定してください。", vbExclamation, WScript.ScriptName
     WScript.Quit
 End If
-Dim sUserName
-Dim sPassword
-Dim sLoginServerName
-Dim sHomeDirPath
-sUserName = WScript.Arguments(0)
-sPassword = WScript.Arguments(1)
-sLoginServerName = WScript.Arguments(2)
-sHomeDirPath = WScript.Arguments(3)
 
-Dim sOutputMsg
-sOutputMsg = WScript.ScriptName
+Dim sMsgTitle
+sMsgTitle = WScript.ScriptName
 
 '=== 事前処理 ===
 Dim sDownloadTrgtDirPathRaw
@@ -57,23 +73,36 @@ cTrgtDirNames.Add "linux" : cTrgtFileNames.Add ".tigrc"
 'バックアップフォルダ作成
 Dim sDateSuffix
 sDateSuffix = ConvDate2String(Now(),1)
-sDownloadTrgtDirPath = sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix & "\" & sLoginServerName
+sDownloadTrgtDirPath = sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix
 Call CreateDirectry( sDownloadTrgtDirPath )
 
 Dim vAnswer
 Dim iIdx
-vAnswer = MsgBox("ファイルを受信します。ダウンロードを開始しますか？", vbYesNo, sOutputMsg)
+vAnswer = MsgBox("ファイルを受信します。ダウンロードを開始しますか？", vbYesNo, sMsgTitle)
 If vAnswer = vbYes Then
     On Error Resume Next 'リモートにファイルが存在しなくても無視する
     '=== ファイル受信(Remote → Local) ===
+    Dim sResultMsg
+    sResultMsg = ""
     For iIdx = 0 To cTrgtFileNames.Count - 1
-        objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & cTrgtFileNames(iIdx) & " " & sDownloadTrgtDirPath & "\"" ""exit""", 0, True
+        Dim sCmd
+        If sAuthType = "0" Then ' Password
+            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sKey & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & cTrgtFileNames(iIdx) & " " & sDownloadTrgtDirPath & "\"" ""exit"""
+        Else                    ' PrivateKey
+            sCmd = """" & sScpProgramPath & """ /console /privatekey=" & sKey & " /command ""option batch on"" ""open " & sUserName & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & cTrgtFileNames(iIdx) & " " & sDownloadTrgtDirPath & "\"" ""exit"""
+        End If
+        objWshShell.Run sCmd, 0, True
+        'MsgBox sCmd
         If objFSO.FileExists(sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx)) Then
             'Do Nothing
         Else
-            objFSO.CopyFile sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx), sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx)
+            sResultMsg = sResultMsg & vbNewLine & cTrgtFileNames(iIdx) & " のダウンロードはスキップされました。"
+            'objFSO.CopyFile sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx), sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx)
         End If
     Next
+    If sResultMsg <> "" Then
+        MsgBox sResultMsg, vbOkOnly, sMsgTitle
+    End If
     '=== ファイルバックアップ ===
     For iIdx = 0 To cTrgtFileNames.Count - 1
         objFSO.CopyFile sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx), sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & "_rmtorg"
@@ -83,30 +112,36 @@ If vAnswer = vbYes Then
         objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sCodesDirPath & "\" & cTrgtDirNames(iIdx) & "\" & cTrgtFileNames(iIdx) & """ """ & sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """", 10, False
     Next
     On Error Goto 0
-    MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg
+    MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sMsgTitle
 Else
-    MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sOutputMsg
+    MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sMsgTitle
     WScript.Quit
 End If
 
-vAnswer = MsgBox("編集したファイルを送信しますか？", vbYesNo, sOutputMsg)
+vAnswer = MsgBox("編集したファイルを送信しますか？", vbYesNo, sMsgTitle)
 If vAnswer = vbYes Then
     '=== ファイル送信(Local → Remote) ===
     On Error Resume Next 'ローカルにファイルが存在しなくても無視する
     For iIdx = 0 To cTrgtFileNames.Count - 1
-        objWshShell.Run """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sPassword & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """ ""exit""", 0, True
+        If sAuthType = "0" Then ' Password
+            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sUserName & ":" & sKey & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """ ""exit"""
+        Else                    ' PrivateKey
+            sCmd = """" & sScpProgramPath & """ /console /privatekey=" & sKey & " /command ""option batch on"" ""open " & sUserName & "@" & sLoginServerName & """ ""cd"" ""put "& sDownloadTrgtDirPath & "\" & cTrgtFileNames(iIdx) & """ ""exit"""
+        End If
+        objWshShell.Run sCmd, 0, True
+        'MsgBox sCmd
     Next
     On Error Goto 0
 End If
 
-vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sOutputMsg)
+vAnswer = MsgBox("ダウンロードしたファイルを削除しますか？", vbYesNo, sMsgTitle)
 If vAnswer = vbYes Then
     '=== フォルダ削除 ===
     'objFSO.DeleteFolder sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix, True
     Call MoveToTrushBox(sDownloadTrgtDirPathRaw & "\" & "DiffLclVsRmt_" & sDateSuffix)
 End If
 
-'MsgBox "処理が完了しました！", vbYesNo, sOutputMsg
+'MsgBox "処理が完了しました！", vbYesNo, sMsgTitle
 
 '===============================================================================
 '= 内部関数
@@ -125,7 +160,7 @@ Private Function GetEnvVariable( _
     Dim sGetValue
     sGetValue = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%" & sEnvVar & "%")
     If InStr(sGetValue, "%") > 0 then
-        MsgBox "環境変数「" & sEnvVar & "」が設定されていません。" & vbNewLine & "処理を中断します。", vbExclamation, sOutputMsg
+        MsgBox "環境変数「" & sEnvVar & "」が設定されていません。" & vbNewLine & "処理を中断します。", vbExclamation, sMsgTitle
         WScript.Quit
     End If
     GetEnvVariable = sGetValue

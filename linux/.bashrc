@@ -900,7 +900,6 @@ alias lsetup="source install/setup.bash"
 
 function cbuild() {
 	# colcon build --continue-on-error --executor sequential --symlink-install --packages-select <pkg_name>
-		#--symlink-install
 	if [ $# -eq 0 ]; then
 		pkg_sel_opt=""
 	elif [ $# -eq 1 ]; then

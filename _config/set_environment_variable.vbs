@@ -13,13 +13,15 @@ Const sENV_TARGET = "User"	'System:ÉVÉXÉeÉÄä¬ã´ïœêî User:ÉÜÅ[ÉUä¬ã´ïœêî
 																											' +------+------+------+------------+--------------+
 																											' |  xf  |	ahk |  vim | codes(vbs) | updatecodes  |
 With dEnvVars																								' +------+------+------+------------+--------------+
+	.Add "MYDIRPATH_DESKTOP"		,"%USERPROFILE%\OneDrive\ÉfÉXÉNÉgÉbÉv"									' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
+	.Add "MYDIRPATH_DOCUMENTS"		,"%USERPROFILE%\OneDrive\Documents"										' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
+	.Add "MYDIRPATH_PICTURES"		,"%USERPROFILE%\OneDrive\Pictures"										' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_CODES"			,"C:\codes"																' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_CODES_SAMPLE"	,"C:\codes_sample"														' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_GITHUB_IO"		,"C:\github_io"															' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_OTHER"			,"C:\other"																' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_PRG"			,"C:\prg"																' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_PRG_EXE"		,"C:\prg_exe"															' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
-	.Add "MYDIRPATH_PROGRAMS"		,"C:\programs"															' |  Å|  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYDIRPATH_CODES_CONFIG"	,"%MYDIRPATH_CODES%\_config"											' |  Å|  |	Å|	|  Å|  |	 Åõ		|	   Å|	   |
 	.Add "MYEXEPATH_HIDEMARU"		,"%MYDIRPATH_PRG_EXE%\Hidemaru\Hidemaru.exe"							' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_WINMERGE"		,"%MYDIRPATH_PRG_EXE%\WinMerge\WinMergeU.exe"							' |  ÅZ  |	Å|	|  Å|  |	 ÅZ		|	   ÅZ	   |
