@@ -14,5 +14,5 @@ sDstTmpFilePath = objFSO.GetParentFolderName( WScript.ScriptFullName ) & "\" & s
 'Msgbox sDstTmpFilePath & vbNewLine & sSrcTmpFilePath
 objFSO.CopyFile sSrcTmpFilePath, sDstTmpFilePath, True
 
-Msgbox sTEMPLATE_FILE_NAME & "を更新しました！"
+Msgbox sTEMPLATE_FILE_NAME & "を取得しました！"
 

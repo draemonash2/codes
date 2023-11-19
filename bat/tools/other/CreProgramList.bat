@@ -1,8 +1,8 @@
 @echo off
-setlocal ENABLEDELAYEDEXPANSION
+setlocal enabledelayedexpansion
 
-	set LOG_FILE_PATH=%CD%\000_output_program_list.log
-::	set LOG_FILE_PATH=%USERPROFILE%\Documents\Amazon Drive\100_Programs\_script\000_output_program_list.log
+	set LOG_FILE_PATH=G:\マイドライブ\101_program_list\program_list.log
+	
 	echo.> "%LOG_FILE_PATH%"
 
 	echo %date% %time%>> "%LOG_FILE_PATH%"
@@ -27,6 +27,12 @@ setlocal ENABLEDELAYEDEXPANSION
 		set TRGT_PATH=C:\prg_exe&&				echo ## target folder "!TRGT_PATH!">> "%LOG_FILE_PATH%" && dir /b /s /a:a-d "!TRGT_PATH!\*.exe" >> "%LOG_FILE_PATH%" && echo.>> "%LOG_FILE_PATH%"
 		set TRGT_PATH=C:\Program Files&&		echo ## target folder "!TRGT_PATH!">> "%LOG_FILE_PATH%" && dir /b /s /a:a-d "!TRGT_PATH!\*.exe" >> "%LOG_FILE_PATH%" && echo.>> "%LOG_FILE_PATH%"
 		set TRGT_PATH=C:\Program Files (x86)&&	echo ## target folder "!TRGT_PATH!">> "%LOG_FILE_PATH%" && dir /b /s /a:a-d "!TRGT_PATH!\*.exe" >> "%LOG_FILE_PATH%" && echo.>> "%LOG_FILE_PATH%"
+
+	echo create program list (windows app)...
+	echo =============================================>> "%LOG_FILE_PATH%"
+	echo = program list (windows app)>> "%LOG_FILE_PATH%"
+	echo =============================================>> "%LOG_FILE_PATH%"
+		winget list>> "%LOG_FILE_PATH%"
 
 ::	cmd.exe /c "%LOG_FILE_PATH%"
 endlocal

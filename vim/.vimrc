@@ -1773,6 +1773,44 @@ endif
 		endif
 	endfunction
 
+" ==============================================================================
+" Tmuxからコピーした標準出力について、左右ペインの標準出力を抽出する
+" ==============================================================================
+	command! -range Tml call ExtractPromptTmux(1) " extract left
+	command! -range Tmr call ExtractPromptTmux(2) " extract right
+	function! ExtractPromptTmux( iExtractPain ) " iExtractPain: 1(left) or 2(right)
+		"選択文字列取得
+		silent normal gvd
+		let l:sInputStr = @*
+		
+		"文字列整形
+		let l:sOutputStr = ""
+		let l:asLines = split( l:sInputStr, "\n" )
+		let l:sPattern = ''
+		if a:iExtractPain == 1 " Extract left
+			let l:sPattern = '\v\\u2502.*'
+		elseif a:iExtractPain == 2 " Extract right
+			let l:sPattern = '\v^.*\\u2502'
+		else " other
+			let l:sPattern = ''
+			echom "[error] ExtractPromptTmux() iExtractPain must be 1(left) or 2(right)."
+		endif
+		for l:sLine in l:asLines
+			let l:replacedstr = substitute( l:sLine, l:sPattern, "", "g" )
+			if l:sOutputStr == ""
+				let l:sOutputStr = l:replacedstr
+			else
+				let l:sOutputStr = l:sOutputStr . "\n" . l:replacedstr
+			endif
+		endfor
+		let l:sOutputStr = l:sOutputStr . "\n"
+		
+		"貼り付け
+		let @* = l:sOutputStr
+		exec "normal k"
+		silent normal p
+	endfunction
+
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
 " **************************************************************************************************

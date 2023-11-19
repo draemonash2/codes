@@ -1,0 +1,7 @@
+@echo off
+set HOST=TODO:
+set USER=TODO:
+set PRIVATEKEY=TODO:
+
+start %MYEXEPATH_WINSCP% sftp://%USER%@%HOST% /privatekey=%PRIVATEKEY%
+

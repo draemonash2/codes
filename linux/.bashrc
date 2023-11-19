@@ -58,25 +58,30 @@ fi
 
 # for PS1
 function _update_ps1() {
-	#[参考URL]https://zenn.dev/kotokaze/articles/bash-console
-	PS1="\n"
+	# [参考URL] https://zenn.dev/kotokaze/articles/bash-console
+	color_black=0
+	color_red=1
+	color_green=2
+	color_yellow=3
+	color_blue=4
+	color_magenta=5
+	color_cyan=6
+	color_white=7
+	color_default=9
 	if [ -f /.dockerenv ]; then
-		PS1="${PS1}\[\e[0;35;045m\]!"								# head keywords
-		PS1="${PS1}\[\e[0;37;045m\]\u@\h "							# user
-		PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "			# time
-		PS1="${PS1}\[\e[0;37;045m\] \$(_puts_prompt_git_branch) "	# git branch
-		PS1="${PS1}\[\e[0;97;100m\] \w "							# pwd
-		PS1="${PS1}\[\e[0;30;040m\]!"								# tail keywords
-		PS1="${PS1}\[\e[0;39;049m\] "								# reset
+		bg_color=${color_magenta}
 	else
-		PS1="${PS1}\[\e[0;34;044m\]!"								# head keywords
-		PS1="${PS1}\[\e[0;37;044m\]\u@\h "							# user
-		PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "			# time
-		PS1="${PS1}\[\e[0;37;044m\] \$(_puts_prompt_git_branch) "	# git branch
-		PS1="${PS1}\[\e[0;97;100m\] \w "							# pwd
-		PS1="${PS1}\[\e[0;30;040m\]!"								# tail keywords
-		PS1="${PS1}\[\e[0;39;049m\] "								# reset
+		bg_color=${color_blue}
 	fi
+	PS1="\n"
+	PS1="${PS1}\[\e[0;3${bg_color};04${bg_color}m\]!"					# head keywords
+	PS1="${PS1}\[\e[0;37;04${bg_color}m\]\u@\h "						# user
+	PS1="${PS1}\[\e[0;30;047m\] \D{%m/%d %H:%M:%S} "					# time
+	PS1="${PS1}\[\e[0;37;04${bg_color}m\] \$(_puts_prompt_git_branch) "	# git branch
+	PS1="${PS1}\[\e[0;30;047m\] \$(_puts_prompt_container_name) "		# docker container name
+	PS1="${PS1}\[\e[0;97;100m\] \w "									# pwd
+	PS1="${PS1}\[\e[0;30;040m\]!"										# tail keywords
+	PS1="${PS1}\[\e[0;39;049m\] "										# reset
 	PS1="${PS1}\n\$ "
 }
 show_prompt_branch_name=0
@@ -93,6 +98,25 @@ function _puts_prompt_git_branch() {
 			fi
 		else
 			echo "-"
+		fi
+	else
+		echo " "
+	fi
+}
+show_prompt_container_name=1
+function _puts_prompt_container_name() {
+	# Notes:
+	#   This function requires placing a .dockercontainer with 
+	#   the container name in the container's home directory
+	if [ ${show_prompt_container_name} -eq 1 ]; then
+		if [ -f /.dockerenv ]; then
+			if [ -f ~/.dockercontainer ]; then
+				echo "$(cat ~/.dockercontainer)"
+			else
+				echo "unknown container"
+			fi
+		else
+			echo "host"
 		fi
 	else
 		echo " "
@@ -294,7 +318,25 @@ function vimdiffdir() {
 		file2=${diffline#*:::::}
 		echo "==> ${file1} vs ${file2} <=="
 		vimdiff ${file1} ${file2}
+		sleep 1
 	done
+}
+# Compare with vimdiff only when there is a difference
+function vimdiffcheck() {
+	if [ $# -lt 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : vimdiffcheck <file1> <file2> [<sleeptime>]"
+		return 1
+	fi
+	file1=$1
+	file2=$2
+	sleeptime=${3:-0}
+	echo "==> ${file1} vs ${file2} <=="
+	diff ${file1} ${file2} &> /dev/null
+	if [ $? -eq 1 ]; then
+		vimdiff ${file1} ${file2}
+		sleep ${sleeptime}
+	fi
 }
 function swap() {
 	suffix=swaptmp
@@ -504,6 +546,21 @@ function killjobsall() {
 		#echo ${jobid}
 		kill -9 %${jobid}
 		wait %${jobid} 2>/dev/null
+	done
+}
+function killprocessall() {
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : killprocessall <keyword>"
+		return 1
+	fi
+	keyword=$1
+	pidlist=$(ps a | grep "${keyword}" | grep -v "grep " | sed 's/^[ \t]*//' | cut -d" " -f 1)
+	for pid in ${pidlist}
+	do
+		echo ${pid}
+		kill -9 ${pid}
+		wait ${pid} 2>/dev/null
 	done
 }
 function cpd() {
@@ -845,6 +902,120 @@ function outputhwinfo() {
 		vim ${logfile}
 	fi
 }
+function greprep() {
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : greprep <source_keyword> <destination_keyword>"
+		return 1
+	fi
+	src=$1
+	dst=$2
+	
+	echo "### before ###"
+	echo "# source"
+	gr "${src}"
+	echo ""
+	echo "# destination"
+	gr "${dst}"
+	echo ""
+	
+	grep -lr "${src}" | xargs sed -i -e "s/${src}/${dst}/g"
+	
+	echo "### after ###"
+	echo "# source"
+	gr "${src}"
+	echo ""
+	echo "# destination"
+	gr "${dst}"
+	echo ""
+}
+function convertimg() {
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : convertimg <size or ratio> <file_path>"
+		return 1
+	fi
+	size=$1
+	file=$2
+	filebase=${file%%.*}
+	fileext=${file#*.}
+	bakfilebase=${filebase}_
+	while [ -f ${bakfilebase}.${fileext} ]
+	do
+		bakfilebase=${bakfilebase}_
+	done
+	bakfile=${bakfilebase}.${fileext}
+	\cp -f ${file} ${bakfile}
+	dst=${file}
+	convert -geometry "${size}" ${bakfile} ${file}
+}
+# Rename all files and directories under the current directory.
+function renamedirfiles() {
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : renamedirfiles <source_keyword> <destination_keyword>"
+		return 1
+	fi
+	srckeyword=$1
+	dstkeyword=$2
+	
+	# output before
+	echo "### before ###"
+	find . -type f
+	echo ""
+	
+	# calc max layer number
+	maxlayernum=0
+	dirlist=$(find . -type d)
+	for dir in ${dirlist}
+	do
+		dir_nodelim=${dir//\//}
+		#echo ${dir}
+		#echo ${dir_nodelim}
+		layernum=$((${#dir}-${#dir_nodelim}))
+		#echo ${layernum}
+		if [ ${layernum} -gt ${maxlayernum} ]; then
+			maxlayernum=${layernum}
+		fi
+	done
+	#echo ${maxlayernum}
+	
+	# rename directorys
+	for layernum in $(seq 1 ${maxlayernum})
+	do
+		dirlist=$(find . -mindepth ${layernum} -maxdepth ${layernum} -type d)
+		#echo ${dirlist}
+		for dir in ${dirlist}
+		do
+			srcdir=${dir}
+			dstdir=${dir//${srckeyword}/${dstkeyword}}
+			#echo "mv -f ${srcdir} ${dstdir} 2> /dev/null"
+			mv -f ${srcdir} ${dstdir} 2> /dev/null
+		done
+		#echo ""
+	done
+	
+	# rename files and symboliclinks
+	typelist=("f" "l")
+	for type in ${typelist[@]}
+	do
+		#echo ${type}
+		filelist=$(find . -type ${type})
+		#echo ${filelist}
+		for file in ${filelist}
+		do
+			srcfile=${file}
+			dstfile=${file//${srckeyword}/${dstkeyword}}
+			#echo "mv -f ${srcfile} ${dstfile} 2> /dev/null"
+			mv -f ${srcfile} ${dstfile} 2> /dev/null
+		done
+	done
+	
+	# output after
+	echo "### after ###"
+	find . -type f
+	echo ""
+}
 
 alias cp='cp -i'
 alias mv='mv -i'
@@ -865,9 +1036,8 @@ alias sr='vim ~/.screenrc'
 alias tgr='vim ~/.tigrc'
 alias tmc='vim ~/.tmux.conf'
 alias tmcm='vim ~/.tmux.conf.mac.conf'
-alias tmcu='vim ~/.tmux.conf.ubuntu.conf'
-
 alias tml='tmux list-sessions'
+alias tmb="export TMUX="
 
 #alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
 alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
@@ -884,17 +1054,16 @@ if [ -f /.dockerenv ]; then
 	export TERM=screen-256color
 fi
 
-#########################################################
-# Environment dependent settings
-#########################################################
-# WSL
+alias sht='sudo shutdown -h now'
+
+### WSL
 unixname=$(uname -r)
 unixname=$(tr '[:upper:]' '[:lower:]' <<< $unixname)
 if [[ "${unixname}" == *microsoft* ]]; then
 	alias cdw='cd /mnt/c/'
 fi
-alias sht='sudo shutdown -h now'
 
+### ROS2
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
 
@@ -918,16 +1087,6 @@ function cbuild() {
 		${pkg_sel_opt}
 }
 
-function test_urdf_run() {
-	if [ $# -ne 2 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : urdf_tutorial_run <urdfdir> <urdfname>"
-		return 1
-	fi
-	urdfdir=${1}
-	urdfname=${2}
-	xacro ${urdfdir}/${urdfname}.xacro > ${urdfdir}/${urdfname} &&
-	colcon build --symlink-install --continue-on-error --executor sequential --packages-select urdf_tutorial &&
-	source install/setup.bash &&
-	ros2 launch urdf_tutorial display.launch.py model:=urdf/${urdfname}
-}
+#########################################################
+# Environment dependent settings
+#########################################################
