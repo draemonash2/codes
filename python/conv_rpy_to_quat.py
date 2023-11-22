@@ -28,10 +28,10 @@ def main():
     y = cr * sp * cy + sr * cp * sy;
     z = cr * cp * sy - sr * sp * cy;
     
-    print("x  : " + str(x))
-    print("y  : " + str(y))
-    print("z  : " + str(z))
-    print("w  : " + str(w))
+    print("x: " + str(x) + ",")
+    print("y: " + str(y) + ",")
+    print("z: " + str(z) + ",")
+    print("w: " + str(w))
 
 if __name__ == "__main__":
     main()
