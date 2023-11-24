@@ -17,7 +17,7 @@ struct ContentViewSetting {
     let PADDING_SIZE_PX :CGFloat? = 2
     let LIST_SPACING_PX :CGFloat? = 1
     let ITEM_ICON_SIZE_PX :CGFloat? = 15
-    let ITEM_TEXT_WIDTH_PX: CGFloat? = 120
+    let ITEM_TEXT_WIDTH_PX: CGFloat? = 100
     let LIST_TOP_SPACING_PX :CGFloat? = 10
 }
 
@@ -118,7 +118,7 @@ struct hab_chain_widgetEntryView : View {
                 ForEach((0...(list_num_max-1)), id: \.self) { list_idx in
                     if list_idx < item_id_list.count {
                         let item_id: String = item_id_list[list_idx]
-                        let background_color: Color = list_idx % 2 == 0 ? Color("widget_list_background1") : Color("widget_list_background2")
+                        let background_color: Color = list_idx % 2 == 1 ? Color("widget_list_background1") : Color("widget_list_background2")
                         if let unwraped_item = entry.hab_chain_data.items[item_id] {
                             if unwraped_item.is_archived == false {
                                 HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
@@ -138,11 +138,18 @@ struct hab_chain_widgetEntryView : View {
                                             .opacity(0)
                                     }
 
+                                    Text(" ")
+                                        .font(.caption)
+                                        .padding(0)
                                     Text(unwraped_item.item_name)
                                         .font(.caption)
-                                        .frame(width: VIEW_SETTING.ITEM_TEXT_WIDTH_PX, alignment: .leading)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: VIEW_SETTING.ITEM_TEXT_WIDTH_PX, alignment: .leading)
+                                        .lineLimit(1)
+                                        .edgesIgnoringSafeArea(.all)
                                     
-                                    Spacer()
+                                    
+                                    Spacer(minLength: 1)
                                     
                                     ForEach(-(button_num - 1)..<1, id: \.self) { btn_idx in
                                         let date: Date = Calendar.current.date(byAdding: .day,value: btn_idx, to: Date())!
@@ -188,6 +195,7 @@ struct hab_chain_widgetEntryView : View {
             }
             .padding(.top, VIEW_SETTING.LIST_TOP_SPACING_PX)
             .padding(.bottom, VIEW_SETTING.LIST_TOP_SPACING_PX)
+            .widgetBackground(backgroundView: Color.clear)
         }
     }
 }
@@ -198,21 +206,24 @@ struct ItemIcon: View {
     let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
 
     var body:some View {
-        let icon_color :Color = colorScheme == .light ? Color.black: Color.white
-        if icon_name != "" {
-            Image(systemName: icon_name)
-                .resizable()
-                .scaledToFit()
-                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
-                .foregroundColor(icon_color)
-        } else {
-            Image(systemName: icon_name)
-                .resizable()
-                .scaledToFit()
-                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
-                .foregroundColor(icon_color)
-                .opacity(0)
+        VStack {
+            let icon_color :Color = colorScheme == .light ? Color.black: Color.white
+            if icon_name != "" {
+                Image(systemName: icon_name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                    .foregroundColor(icon_color)
+            } else {
+                Image(systemName: icon_name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                    .foregroundColor(icon_color)
+                    .opacity(0)
+            }
         }
+        .widgetBackground(backgroundView: Color.clear)
     }
 }
 
@@ -228,6 +239,7 @@ struct hab_chain_widget: Widget {
         .configurationDisplayName("hab-chain Widget")
         .description("This is hab-chain widget.")
         .supportedFamilies([.systemMedium, .systemLarge])
+        .contentMarginsDisabled()
     }
 }
 
@@ -239,3 +251,15 @@ struct hab_chain_widget_Previews: PreviewProvider {
     }
 }
 #endif
+
+extension View {
+    func widgetBackground(backgroundView: some View) -> some View {
+        if #available(watchOS 10.0, iOSApplicationExtension 17.0, iOS 17.0, macOSApplicationExtension 14.0, *) {
+            return containerBackground(for: .widget) {
+                backgroundView
+            }
+        } else {
+            return background(backgroundView)
+        }
+    }
+}

@@ -14,6 +14,7 @@ struct SelectIconViewSetting {
     let ICON_PADDING_SIZE_PX: CGFloat = 5
     let BUTTON_HEIGHT_PX: CGFloat = 50
     let LIST_PADDING_PX :CGFloat = 5
+    let TITLE_TOP_PADDING_PX :CGFloat = 30
     let BUTTON_PADDING_TOPBOTTOM_PX: CGFloat = 4
 }
 
@@ -32,8 +33,8 @@ struct SelectIconView: View {
         GeometryReader { geometry in
             VStack {
                 Text("アイコン選択")
-                    .font(.largeTitle)
-                    .padding()
+                    .font(.title)
+                    .padding([.top], VIEW_SETTING.TITLE_TOP_PADDING_PX )
                 List {
                     let symbol_num: Int = sf_symbols.count
                     //Text(String(symbol_num))
@@ -57,9 +58,10 @@ struct SelectIconView: View {
                 .environment(\.editMode, .constant(.active))
                 .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
                 Button(action: {
+                    icon_name = selected_icon_name
                     is_show_select_icon_view = false
                 }) {
-                    Text("Cancel")
+                    Text("Done")
                         .frame(maxWidth: .infinity)
                         .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                         .multilineTextAlignment(.center)
@@ -69,10 +71,9 @@ struct SelectIconView: View {
                 .padding([.top, .bottom], VIEW_SETTING.BUTTON_PADDING_TOPBOTTOM_PX )
                 .padding([.leading, .trailing], VIEW_SETTING.LIST_PADDING_PX )
                 Button(action: {
-                    icon_name = selected_icon_name
                     is_show_select_icon_view = false
                 }) {
-                    Text("Done")
+                    Text("Cancel")
                         .frame(maxWidth: .infinity)
                         .frame(height: VIEW_SETTING.BUTTON_HEIGHT_PX)
                         .multilineTextAlignment(.center)

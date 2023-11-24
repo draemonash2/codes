@@ -36,7 +36,7 @@ struct ItemAddView: View {
             let _ = Self._printChanges()
         }
         NavigationView {
-            Form {
+            List {
                 Group {
                     Section {
                         TextField("e.g. プログラミングの勉強", text: $new_item.item_name)
@@ -140,6 +140,7 @@ struct ItemAddView: View {
                     }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("アイテム追加")
         }
         .navigationViewStyle(StackNavigationViewStyle())

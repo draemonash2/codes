@@ -116,6 +116,23 @@ struct HabChainData {
             self.item_id_list.remove(at: remove_index)
         }
     }
+    mutating func copyItem(
+        item_id: String
+    )
+    {
+        var item: Item = self.items[item_id]!
+        var new_item_name: String = ""
+        new_item_name = item.item_name
+        while true {
+            if existItemName(item_name: new_item_name) {
+                new_item_name = new_item_name + " - コピー"
+            } else {
+                break
+            }
+        }
+        item.item_name = new_item_name
+        self.addItem(new_item_id: generateItemId(), new_item: item)
+    }
     func existItemName(
         item_name: String
     ) -> Bool
