@@ -1,0 +1,15 @@
+[user]
+	name = Tatsuya Endo
+	email = draemon_ash3@yahoo.co.jp
+[core]
+	editor = vim
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[merge]
+	tool = vimdiff
+[mergetool]
+	prompt = false
+[credential]
+	helper = store
