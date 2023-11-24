@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.21
+' my excel addin macros v2.22
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -168,11 +168,11 @@ Const sDELIMITER_INIT As String = vbTab
     Const sFILEEXPORT_CHAR_SET As String = "Shift_JIS" '(UTF-8|UTF-16|Shift_JIS|EUC-JP|ISO-2022-JP|...)
     Const lFILEEXPORT_LINE_SEPARATER As Long = 10 '13:CR 10:LF -1:CRLF
 '=== DOSコマンドを一括実行() ===
-    Const sCMDEXEBAT_BAT_FILE_NAME As String = "MyExcelAddinCmdexebat.bat"
-    Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdexebat.log"
+    Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdExeBat.log"
+    Const sCMDEXEBAT_BAT_FILE_NAME As String = "MyExcelAddinCmdExeBat.bat"
     Const bCMDEXEBAT_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを各々実行() ===
-    Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdexeuni.log"
+    Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdExeUni.log"
     Const bCMDEXEUNI_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== EpTreeの関数ツリーをExcelで取り込む() ===
     Const sEPTREE_OUT_SHEET_NAME As String = "CallTree"
@@ -1194,12 +1194,12 @@ Public Sub DOSコマンドを一括実行()
     MsgBox "実行完了！", vbOKOnly, sMACRO_NAME
     
     '*** 出力ファイルを開く ***
-    If Left(sOutputFilePath, 1) = "" Then
-        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
-    Else
-        'Do Nothing
-    End If
-    objWshShell.Run """" & sOutputFilePath & """", 3
+'    If Left(sOutputFilePath, 1) = "" Then
+'        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+'    Else
+'        'Do Nothing
+'    End If
+'    objWshShell.Run """" & sOutputFilePath & """", 3
 End Sub
 
 ' =============================================================================
@@ -1264,12 +1264,12 @@ Public Sub DOSコマンドを各々実行()
     MsgBox "実行完了！", vbOKOnly, sMACRO_NAME
     
     '*** 出力ファイルを開く ***
-    If Left(sOutputFilePath, 1) = "" Then
-        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
-    Else
-        'Do Nothing
-    End If
-    objWshShell.Run """" & sOutputFilePath & """", 3
+'    If Left(sOutputFilePath, 1) = "" Then
+'        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+'    Else
+'        'Do Nothing
+'    End If
+'    objWshShell.Run """" & sOutputFilePath & """", 3
 End Sub
 
 ' =============================================================================

@@ -76,7 +76,6 @@ InitSleepPreventing()
 		}
 		^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
 		^+!Left::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.vsdm" )													;#temp.vsdm
-		^+!F1::		StartProgramAndActivateFile( "C:\other\グローバルホットキー配置.vsdx" )											;ホットキー配置表示
 		^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
 		^+!^::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\予算管理＠家族用.xlsx" )						;予算管理＠家族用.xlsx
 		^+!/::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
@@ -87,9 +86,9 @@ InitSleepPreventing()
 	;仕事用
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
+		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_XACRO作成\#memo_XACRO作成.xlsm" )
-		^+!-::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\100_Documents\410_【仕事】個人事業\200_作業報告\230901_ROBOCIP\作業報告書_202310_遠藤竜也\2023_月間稼働時間（業務委託）_遠藤竜也.xlsx" )	;作業報告書(ROBOCIP向け)
 	;プログラム起動
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 		^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs

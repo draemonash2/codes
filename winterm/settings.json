@@ -6,9 +6,10 @@
         {
             "command": 
             {
-                "action": "quakeMode"
+                "action": "sendInput",
+                "input": "\u0002"
             },
-            "keys": "win+@"
+            "keys": "ctrl+comma"
         },
         {
             "command": "closePane",
@@ -24,14 +25,29 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u0002"
+                "action": "quakeMode"
             },
-            "keys": "ctrl+comma"
+            "keys": "win+@"
         },
         {
             "command": "find",
             "keys": "ctrl+shift+f"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "right"
+            },
+            "keys": "alt+shift+v"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u001bf"
+            },
+            "keys": "ctrl+shift+period"
         },
         {
             "command": 
@@ -52,18 +68,9 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u001bf"
-            },
-            "keys": "ctrl+shift+period"
-        },
-        {
-            "command": 
-            {
-                "action": "splitPane",
-                "split": "right"
-            },
-            "keys": "alt+shift+v"
+                "action": "copy",
+                "singleLine": false
+            }
         },
         {
             "command": 
@@ -72,13 +79,6 @@
                 "input": "\u001bb"
             },
             "keys": "ctrl+shift+comma"
-        },
-        {
-            "command": 
-            {
-                "action": "copy",
-                "singleLine": false
-            }
         },
         {
             "command": 
@@ -112,20 +112,20 @@
             "keys": "ctrl+alt+k"
         },
         {
-            "command": 
-            {
-                "action": "sendInput",
-                "input": "\u0006"
-            },
-            "keys": "ctrl+period"
-        },
-        {
             "command": "paste",
             "keys": "alt+v"
         },
         {
             "command": "paste",
             "keys": "ctrl+shift+v"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0006"
+            },
+            "keys": "ctrl+period"
         },
         {
             "command": 
@@ -321,7 +321,7 @@
     ],
     "copyFormatting": "none",
     "copyOnSelect": true,
-    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+    "defaultProfile": "{d7b20cea-47a9-518c-95a4-c8bd91e2e1c6}",
     "launchMode": "maximized",
     "newTabMenu": 
     [
@@ -354,11 +354,23 @@
                 "startingDirectory": "C:\\"
             },
             {
+                "guid": "{17bf3de4-5353-5709-bcf9-835bd952a95e}",
+                "hidden": true,
+                "name": "Ubuntu-22.04",
+                "source": "Windows.Terminal.Wsl"
+            },
+            {
                 "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
                 "hidden": false,
                 "name": "Azure Cloud Shell",
                 "source": "Windows.Terminal.Azure",
                 "startingDirectory": "C:\\"
+            },
+            {
+                "guid": "{d7b20cea-47a9-518c-95a4-c8bd91e2e1c6}",
+                "hidden": false,
+                "name": "Ubuntu 22.04.2 LTS",
+                "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
             }
         ]
     },
