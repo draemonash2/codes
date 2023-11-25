@@ -16,8 +16,8 @@ if errorlevel 1 (
 :: robocopy ƒIƒvƒVƒ‡ƒ“”»’è
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set SRC_PATH=Z:
-set DST_BASE_PATH=X:\820_BackUp_SD
-set DST_PATH=%DST_BASE_PATH%\latest
+set DST_BASE_PATH=X:\820_BackUp_SD\latest
+set DST_PATH=%DST_BASE_PATH%\data
 set OPT=
 set OPT=!OPT! /MIR
 set OPT=!OPT! /R:5

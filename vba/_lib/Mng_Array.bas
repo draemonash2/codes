@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mng_Array"
 Option Explicit
 
-' array manage library v1.33
+' array manage library v1.34
 
 Public Enum E_INSERT_TYPE
     E_INSERT_TOP
@@ -445,43 +445,4 @@ End Function
     Private Sub Test_ConvRange2Array()
         '★
     End Sub
-
-' ============================================
-' = 概要    配列の内容をファイルに書き込む。
-' = 引数    sFilePath     String  [in]  出力するファイルパス
-' =         asFileLine()  String  [in]  出力するファイルの内容
-' = 戻値    なし
-' = 覚書    なし
-' = 依存    なし
-' = 所属    Mng_Array.bas
-' ============================================
-Public Function OutputTxtFile( _
-    ByVal sFilePath As String, _
-    ByRef asFileLine() As String, _
-    Optional ByVal sCharSet As String = "shift_jis" _
-)
-    Dim oTxtObj As Object
-    Dim lLineIdx As Long
-    
-    If Sgn(asFileLine) = 0 Then
-        'Do Nothing
-    Else
-        Set oTxtObj = CreateObject("ADODB.Stream")
-        With oTxtObj
-            .Type = 2
-            .Charset = sCharSet
-            .Open
-            
-            '配列を1行ずつオブジェクトに書き込む
-            For lLineIdx = 0 To UBound(asFileLine)
-                .WriteText asFileLine(lLineIdx), 1
-            Next lLineIdx
-            
-            .SaveToFile (sFilePath), 2    'オブジェクトの内容をファイルに保存
-            .Close
-        End With
-    End If
-    
-    Set oTxtObj = Nothing
-End Function
 

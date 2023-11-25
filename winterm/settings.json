@@ -6,10 +6,9 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u0002"
+                "action": "quakeMode"
             },
-            "keys": "ctrl+comma"
+            "keys": "win+@"
         },
         {
             "command": "closePane",
@@ -25,29 +24,14 @@
         {
             "command": 
             {
-                "action": "quakeMode"
+                "action": "sendInput",
+                "input": "\u0002"
             },
-            "keys": "win+@"
+            "keys": "ctrl+comma"
         },
         {
             "command": "find",
             "keys": "ctrl+shift+f"
-        },
-        {
-            "command": 
-            {
-                "action": "splitPane",
-                "split": "right"
-            },
-            "keys": "alt+shift+v"
-        },
-        {
-            "command": 
-            {
-                "action": "sendInput",
-                "input": "\u001bf"
-            },
-            "keys": "ctrl+shift+period"
         },
         {
             "command": 
@@ -68,9 +52,18 @@
         {
             "command": 
             {
-                "action": "copy",
-                "singleLine": false
-            }
+                "action": "sendInput",
+                "input": "\u001bf"
+            },
+            "keys": "ctrl+shift+period"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "right"
+            },
+            "keys": "alt+shift+v"
         },
         {
             "command": 
@@ -79,6 +72,13 @@
                 "input": "\u001bb"
             },
             "keys": "ctrl+shift+comma"
+        },
+        {
+            "command": 
+            {
+                "action": "copy",
+                "singleLine": false
+            }
         },
         {
             "command": 
@@ -112,20 +112,20 @@
             "keys": "ctrl+alt+k"
         },
         {
-            "command": "paste",
-            "keys": "alt+v"
-        },
-        {
-            "command": "paste",
-            "keys": "ctrl+shift+v"
-        },
-        {
             "command": 
             {
                 "action": "sendInput",
                 "input": "\u0006"
             },
             "keys": "ctrl+period"
+        },
+        {
+            "command": "paste",
+            "keys": "alt+v"
+        },
+        {
+            "command": "paste",
+            "keys": "ctrl+shift+v"
         },
         {
             "command": 
@@ -371,6 +371,18 @@
                 "hidden": false,
                 "name": "Ubuntu 22.04.2 LTS",
                 "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
+            },
+            {
+                "commandline": "ssh robocipA1-x11",
+                "cursorShape": "filledBox",
+                "font": 
+                {
+                    "size": 9.0
+                },
+                "guid": "{495f5463-2e64-4489-b725-4aff6b1b7689}",
+                "hidden": false,
+                "name": "SSH-RobocipA1",
+                "tabTitle": "RobocipA1"
             }
         ]
     },

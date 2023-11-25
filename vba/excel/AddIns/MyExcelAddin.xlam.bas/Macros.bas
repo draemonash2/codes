@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.22
+' my excel addin macros v2.24
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -39,6 +39,7 @@ Option Explicit
 ' =         ファイルエクスポート                        選択範囲をファイルとしてエクスポートする。
 ' =         DOSコマンドを一括実行                       選択範囲内のDOSコマンドをまとめて実行する。
 ' =         DOSコマンドを各々実行                       選択範囲内のDOSコマンドをそれぞれ実行する。
+' =         DOSコマンドを一括実行_管理者権限            選択範囲内のDOSコマンドをまとめて実行する。（管理者権限）
 ' =         検索文字の文字色を変更                      選択範囲内の検索文字の文字色を変更する
 ' =         セル内の丸数字をデクリメント                ②～⑮を指定して、指定番号以降をインクリメントする
 ' =         セル内の丸数字をインクリメント              ①～⑭を指定して、指定番号以降をデクリメントする
@@ -73,6 +74,7 @@ Option Explicit
 ' =         Excel数式整形化解除                         Excel数式整形化解除
 ' =         セルコメントの書式設定を一括変更            セルコメントの書式設定を一括変更
 ' =         Diff色付け                                  選択範囲のDiff形式のフォント色に変更する。(旧:赤、新:緑)
+' =         選択範囲アドレス結合文字列コピー_XXX        選択範囲のセルアドレスを結合して文字列コピー
 ' =
 ' =     ・オブジェクト操作
 ' =         最前面へ移動                                最前面へ移動する
@@ -145,6 +147,17 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 Const sDELIMITER_INIT As String = vbTab
 '△△△Macro.bas/ReadSettingFile()/WriteSettingFile()△△△
 
+'▽▽▽Mng_SysCmd.bas/ExecDosCmdRunas()▽▽▽
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
+    ByVal hWnd As Long, _
+    ByVal lpOperation As String, _
+    ByVal lpFile As String, _
+    ByVal lpParameters As String, _
+    ByVal lpDirectory As String, _
+    ByVal nShowCmd As Long _
+) As Long
+'△△△Mng_SysCmd.bas/ExecDosCmdRunas()△△△
+
 '******************************************************************************
 '* 設定値
 '******************************************************************************
@@ -171,6 +184,9 @@ Const sDELIMITER_INIT As String = vbTab
     Const sCMDEXEBAT_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdExeBat.log"
     Const sCMDEXEBAT_BAT_FILE_NAME As String = "MyExcelAddinCmdExeBat.bat"
     Const bCMDEXEBAT_IGNORE_INVISIBLE_CELL As Boolean = True
+'=== DOSコマンドを一括実行_管理者権限() ===
+    Const sCMDEXEBATRUNAS_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdExeBatRunas.log"
+    Const bCMDEXEBATRUNAS_IGNORE_INVISIBLE_CELL As Boolean = True
 '=== DOSコマンドを各々実行() ===
     Const sCMDEXEUNI_REDIRECT_FILE_NAME As String = "MyExcelAddinCmdExeUni.log"
     Const bCMDEXEUNI_IGNORE_INVISIBLE_CELL As Boolean = True
@@ -192,6 +208,9 @@ Const sDELIMITER_INIT As String = vbTab
     Const sCELLCOPYLINE_SUFFIX As String = ")"
 '=== シート選択ウィンドウを表示() ===
     Const bSHTSELWIN_MSGBOX_SHOW As Boolean = False
+'=== 選択範囲アドレス結合文字列コピー_xxx() ===
+    Const sCELLADRJOIN_DELIMITER As String = ""
+    Const bCELLADRJOIN_FORMAT_R1C1 As Boolean = False
 '▲▲▲ 設定 ▲▲▲
 
 ' ==================================================================
@@ -255,10 +274,12 @@ Private Sub SwitchMacroShortcutKeysActivation( _
 '   dMacroShortcutKeys.Add "", "ファイルエクスポート"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行"
 '   dMacroShortcutKeys.Add "", "DOSコマンドを各々実行"
+'   dMacroShortcutKeys.Add "", "DOSコマンドを一括実行_管理者権限"
 '   dMacroShortcutKeys.Add "^+f", "検索文字の文字色を変更" '「CtrlShiftFマクロ」にて実行
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をデクリメント"
 '   dMacroShortcutKeys.Add "", "セル内の丸数字をインクリメント"
 '   dMacroShortcutKeys.Add "", "ツリーをグループ化"
+'   dMacroShortcutKeys.Add "", "選択範囲のセルアドレスを結合して文字列コピー"
 '   dMacroShortcutKeys.Add "", "ハイパーリンク一括オープン"
     dMacroShortcutKeys.Add "^+j", "ハイパーリンクで飛ぶ"
 '   dMacroShortcutKeys.Add "", "選択範囲内で中央"
@@ -1127,7 +1148,8 @@ End Sub
 ' =============================================================================
 ' = 概要    選択範囲内のDOSコマンドをバッチファイルに書き出してまとめて実行する。
 ' =         単一列選択時のみ有効。
-' = 覚書    なし
+' = 覚書    ・大量のコマンドを実行する場合、「DOSコマンドを各々実行()」に比べて
+' =           本マクロのほうが早い。
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_FileSys.bas/OutputTxtFile()
 ' =         Mng_SysCmd.bas/ExecDosCmd()
@@ -1203,9 +1225,77 @@ Public Sub DOSコマンドを一括実行()
 End Sub
 
 ' =============================================================================
-' = 概要    選択範囲内のDOSコマンドをそれぞれ実行する。
+' = 概要    選択範囲内のDOSコマンドをバッチファイルに書き出してまとめて実行する。（管理者権限）
 ' =         単一列選択時のみ有効。
 ' = 覚書    なし
+' = 依存    Mng_SysCmd.bas/ExecDosCmdRunas()
+' =         SettingFile.cls
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub DOSコマンドを一括実行_管理者権限()
+    Const sMACRO_NAME As String = "DOSコマンドを一括実行_管理者権限"
+    
+    '*** アドイン設定読み出し ***
+    Dim bIgnoreInvisibleCell As Boolean
+    bIgnoreInvisibleCell = ReadSettingFile("bCMDEXEBATRUNAS_IGNORE_INVISIBLE_CELL", bCMDEXEBATRUNAS_IGNORE_INVISIBLE_CELL)
+    
+    '*** セル選択判定 ***
+    If Selection.Count = 0 Then
+        MsgBox "セルが選択されていません", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
+        End
+    End If
+    
+    '*** 範囲チェック ***
+    If Selection.Columns.Count = 1 Then
+        'Do Nothing
+    Else
+        MsgBox "単一列のみ選択してください", vbCritical, sMACRO_NAME
+        MsgBox "処理を中断します", vbCritical, sMACRO_NAME
+        End
+    End If
+    
+    'Range型からString()型へ変換
+    Dim asRange() As String
+    Call ConvRange2Array( _
+                Selection, _
+                asRange, _
+                bIgnoreInvisibleCell, _
+                "" _
+            )
+    
+    Dim objWshShell As Object
+    Set objWshShell = CreateObject("WScript.Shell")
+    Dim sOutputFilePath As String
+    sOutputFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sCMDEXEBATRUNAS_REDIRECT_FILE_NAME
+    
+    '*** コマンド実行 ***
+    Open sOutputFilePath For Append As #1
+    Print #1, ""
+    Print #1, "****************************************************"
+    Print #1, Now()
+    Print #1, "****************************************************"
+    Print #1, ExecDosCmdRunas(asRange, True)
+    Close #1
+    
+    MsgBox "実行完了！", vbOKOnly, sMACRO_NAME
+    
+    '*** 出力ファイルを開く ***
+'    If Left(sOutputFilePath, 1) = "" Then
+'        sOutputFilePath = Mid(sOutputFilePath, 2, Len(sOutputFilePath) - 2)
+'    Else
+'        'Do Nothing
+'    End If
+'    objWshShell.Run """" & sOutputFilePath & """", 3
+End Sub
+
+' =============================================================================
+' = 概要    選択範囲内のDOSコマンドをそれぞれ実行する。
+' =         単一列選択時のみ有効。
+' = 覚書    ・単発のコマンドを実行する場合、「DOSコマンドを一括実行()」に比べて
+' =           本マクロのほうが早い。
+' =         ・大量のコマンドを実行する際、コマンド毎にプロンプトが表示される。
+' =           目障りに感じる場合は、「DOSコマンドを一括実行()」を実行すること。
 ' = 依存    Mng_Array.bas/ConvRange2Array()
 ' =         Mng_SysCmd.bas/ExecDosCmd()
 ' =         SettingFile.cls
@@ -2284,6 +2374,25 @@ Public Sub オブジェクトサイズ変更プロパティ一括変更()
         "「セルに合わせて移動とサイズ変更をする」に一括変更しました！"
 End Sub
 
+' =============================================================================
+' = 概要    選択範囲のセルアドレスを結合して文字列コピー
+' = 覚書    なし
+' = 依存    Macros.bas/CopyConcatedCellAddresses()
+' = 所属    Macros.bas
+' =============================================================================
+Public Sub 選択範囲アドレス結合文字列コピー_相対行_相対列()
+    Call CopyConcatedCellAddresses(Selection, False, False, bCELLADRJOIN_FORMAT_R1C1, sCELLADRJOIN_DELIMITER)
+End Sub
+Public Sub 選択範囲アドレス結合文字列コピー_絶対行_相対列()
+    Call CopyConcatedCellAddresses(Selection, True, False, bCELLADRJOIN_FORMAT_R1C1, sCELLADRJOIN_DELIMITER)
+End Sub
+Public Sub 選択範囲アドレス結合文字列コピー_相対行_絶対列()
+    Call CopyConcatedCellAddresses(Selection, False, True, bCELLADRJOIN_FORMAT_R1C1, sCELLADRJOIN_DELIMITER)
+End Sub
+Public Sub 選択範囲アドレス結合文字列コピー_絶対行_絶対列()
+    Call CopyConcatedCellAddresses(Selection, True, True, bCELLADRJOIN_FORMAT_R1C1, sCELLADRJOIN_DELIMITER)
+End Sub
+
 ' *****************************************************************************
 ' * 内部プロシージャ定義
 ' *****************************************************************************
@@ -2634,6 +2743,107 @@ Private Function ExecDosCmd( _
         ExecDosCmd = sStdOutAll
     End If
 End Function
+
+' ==================================================================
+' = 概要    コマンドを実行（管理者権限）
+' = 引数    asCommands()    String   [in] 実行コマンド
+' = 引数    bDelFiles       Boolean  [in] Bat/Logファイル削除(省略可)
+' = 戻値                    String        標準出力＆標準エラー出力
+' = 覚書    ・Desktopフォルダパスに空白が含まれる場合は、動作しない。
+' = 依存    なし
+' = 依存    Mng_FileSys.bas/OutputTxtFile()
+' = 所属    Mng_SysCmd.bas
+' ==================================================================
+Private Function ExecDosCmdRunas( _
+    ByRef asCommands() As String, _
+    Optional bDelFiles As Boolean = True _
+) As String
+    Const sEXECDOSCMDRUNAS_REDIRECT_FILE_BASE_NAME As String = "CmdExeBatRunas"
+    If Sgn(asCommands) = 0 Then
+        ExecDosCmdRunas = ""
+    Else
+        If UBound(asCommands) < 0 Then
+            ExecDosCmdRunas = ""
+        Else
+            Dim objWshShell
+            Set objWshShell = CreateObject("WScript.Shell")
+            Dim objFSO
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
+            
+            Dim sBatFilePath As String
+            Dim sLogFilePath As String
+            sBatFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sEXECDOSCMDRUNAS_REDIRECT_FILE_BASE_NAME & ".bat"
+            sLogFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sEXECDOSCMDRUNAS_REDIRECT_FILE_BASE_NAME & ".log"
+            
+            '「@echo off」挿入
+            ReDim Preserve asCommands(UBound(asCommands) + 1)
+            Dim lIdx As Long
+            For lIdx = UBound(asCommands) To (LBound(asCommands) + 1) Step -1
+                asCommands(lIdx) = asCommands(lIdx - 1)
+            Next lIdx
+            asCommands(0) = "@echo off"
+            
+            'BATファイル作成
+            Call OutputTxtFile(sBatFilePath, asCommands)
+            Do While Not objFSO.FileExists(sBatFilePath)
+                Sleep 100
+            Loop
+            
+            'BATファイル実行
+            ShellExecute 0, "runas", sBatFilePath, " > " & sLogFilePath & " 2>&1", vbNullString, 1
+            
+            'LOGファイル出力待ち
+            Do While Not objFSO.FileExists(sLogFilePath)
+                Sleep 100
+            Loop
+            
+            'LOGファイル読込み
+            Dim objTxtFile
+            Set objTxtFile = objFSO.OpenTextFile(sLogFilePath, 1, True)
+            Dim sStdOutAll As String
+            sStdOutAll = ""
+            Dim sLine As String
+            Do Until objTxtFile.AtEndOfStream
+                sLine = objTxtFile.ReadLine
+                'MsgBox sLine
+                If sStdOutAll = "" Then
+                    sStdOutAll = sLine
+                Else
+                    sStdOutAll = sStdOutAll & vbNewLine & sLine
+                End If
+            Loop
+            'MsgBox sStdOutAll
+            objTxtFile.Close
+            
+            'BATファイル/LOGファイル削除
+            If bDelFiles = True Then
+                Kill sBatFilePath
+                Kill sLogFilePath
+            End If
+            
+            ExecDosCmdRunas = sStdOutAll
+        End If
+    End If
+End Function
+    Private Sub Test_ExecDosCmdRunas()
+        Dim asCommands() As String
+        
+        MsgBox ExecDosCmdRunas(asCommands)
+        
+        ReDim Preserve asCommands(0)
+        asCommands(0) = "mklink ""C:\Users\draem\OneDrive\デスクトップ\source.txt"" ""C:\Users\draem\OneDrive\デスクトップ\target.txt"""
+        MsgBox ExecDosCmdRunas(asCommands)
+        
+        ReDim Preserve asCommands(1)
+        asCommands(0) = "mklink ""C:\Users\draem\OneDrive\デスクトップ\source.txt"" ""C:\Users\draem\OneDrive\デスクトップ\target.txt"""
+        asCommands(1) = "mklink ""C:\Users\draem\OneDrive\デスクトップ\source2.txt"" ""C:\Users\draem\OneDrive\デスクトップ\target2.txt"""
+        MsgBox ExecDosCmdRunas(asCommands)
+        
+        ReDim Preserve asCommands(1)
+        asCommands(0) = "mklink ""C:\Users\draem\OneDrive\デスクトップ\source.txt"" ""C:\Users\draem\OneDrive\デスクトップ\target.txt"""
+        asCommands(1) = "mklink ""C:\Users\draem\OneDrive\デスクトップ\source2.txt"" ""C:\Users\draem\OneDrive\デスクトップ\target2.txt"""
+        MsgBox ExecDosCmdRunas(asCommands, False)
+    End Sub
 
 ' ============================================
 ' = 概要    配列の内容をファイルに書き込む。
@@ -3369,10 +3579,10 @@ Public Function ReadSettingFile( _
         Open sFilePath For Input As #1
         Do Until EOF(1)
             Dim vKeyValue As Variant
-            Dim sLINE As String
-            Line Input #1, sLINE
-            If InStr(sLINE, sDELIMITER_INIT) Then
-                vKeyValue = Split(sLINE, sDELIMITER_INIT)
+            Dim sLine As String
+            Line Input #1, sLine
+            If InStr(sLine, sDELIMITER_INIT) Then
+                vKeyValue = Split(sLine, sDELIMITER_INIT)
                 If UBound(vKeyValue) = 0 Then
                     dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
                 ElseIf UBound(vKeyValue) = 1 Then
@@ -3476,10 +3686,10 @@ Public Function WriteSettingFile( _
     Open sFilePath For Input As #1
     Do Until EOF(1)
         Dim vKeyValue As Variant
-        Dim sLINE As String
-        Line Input #1, sLINE
-        If InStr(sLINE, sDELIMITER_INIT) Then
-            vKeyValue = Split(sLINE, sDELIMITER_INIT)
+        Dim sLine As String
+        Line Input #1, sLine
+        If InStr(sLine, sDELIMITER_INIT) Then
+            vKeyValue = Split(sLine, sDELIMITER_INIT)
             If UBound(vKeyValue) = 0 Then
                 dSettingItems.Add vKeyValue(0), ""           '単一区切り文字(値なし)
             ElseIf UBound(vKeyValue) = 1 Then
@@ -3721,3 +3931,70 @@ Private Function ExportAllModules( _
     Next
     Debug.Print ""
 End Function
+
+' ==================================================================
+' = 概要    指定範囲のセルアドレス(e.g. A1)を結合した文字列を
+' =         コピー(クリップボードに格納)する。
+' =         例えば、B2～D2の範囲が指定された場合、"B2&C2&D2"をコピーする。
+' = 引数    rRange          Range   [in]    セル範囲
+' = 引数    bAbsRefRow      Boolean [in]    行に対する絶対参照指定 (省略可)
+' = 引数    bAbsRefClm      Boolean [in]    列に対する絶対参照指定 (省略可)
+' = 引数    bRefStyleR1C1   Boolean [in]    R1C1形式指定 (省略可)
+' = 引数    sDelimiter      String  [in]    区切り文字 (省略可)
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Macros.bas
+' ==================================================================
+Private Function CopyConcatedCellAddresses( _
+    ByRef rRange As Range, _
+    Optional ByVal bAbsRefRow As Boolean = False, _
+    Optional ByVal bAbsRefClm As Boolean = False, _
+    Optional ByVal bRefStyleR1C1 = False, _
+    Optional ByVal sDelimiter = "" _
+)
+    ' 範囲チェック
+    If rRange.Columns.Count > 1 And rRange.Rows.Count > 1 Then
+        MsgBox "[ERROR] 1行または1列を指定してください"
+        Return
+    End If
+    
+    ' セルアドレス取得＆結合
+    Dim sConcatCellAdr As String
+    sConcatCellAdr = ""
+    Dim rCell As Range
+    For Each rCell In rRange
+        Dim sCellAdr As String
+        Dim xlRefStyle As XlReferenceStyle
+        If bRefStyleR1C1 = True Then
+            xlRefStyle = xlR1C1
+        Else
+            xlRefStyle = xlA1
+        End If
+        sCellAdr = rCell.Address( _
+            RowAbsolute:=bAbsRefRow, _
+            ColumnAbsolute:=bAbsRefClm, _
+            ReferenceStyle:=xlRefStyle _
+        )
+        Dim sDlmStr As String
+        If sDelimiter = "" Then
+            sDlmStr = "&"
+        Else
+            sDlmStr = "&""" & sDelimiter & """&"
+        End If
+        If sConcatCellAdr = "" Then
+            sConcatCellAdr = sCellAdr
+        Else
+            sConcatCellAdr = sConcatCellAdr & sDlmStr & sCellAdr
+        End If
+    Next
+    
+    ' クリップボード設定
+    With CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText sConcatCellAdr
+        .PutInClipboard
+    End With
+    MsgBox sConcatCellAdr
+End Function
+
+
