@@ -27,7 +27,7 @@ struct AppSettingView: View {
         if FUNC_SETTING.debug_mode {
             let _ = Self._printChanges()
         }
-        Form {
+        List {
             Section {
                 Picker("", selection: $hab_chain_data.whole_color) {
                     Text("red").tag(Color.red)
@@ -100,6 +100,7 @@ struct AppSettingView: View {
                 Text("バックアップ")
             }
         }
+        .listStyle(InsetGroupedListStyle())
         Button(action: {
             pressDoneButtonAction()
         }) {

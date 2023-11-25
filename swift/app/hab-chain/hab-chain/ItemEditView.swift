@@ -44,7 +44,7 @@ struct ItemEditView: View {
         }
         
         NavigationView {
-            Form {
+            List {
                 Group {
                     Section {
                         TextField("e.g. プログラミングの勉強", text: Binding($hab_chain_data.items[trgt_item_id])!.item_name)
@@ -167,6 +167,7 @@ struct ItemEditView: View {
                     }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("アイテム編集")
         }
         .navigationViewStyle(StackNavigationViewStyle())

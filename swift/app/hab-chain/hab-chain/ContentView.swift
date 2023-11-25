@@ -268,13 +268,17 @@ struct WholeItemStatusTextCircle: View {
         let date: Date = Calendar.current.date(byAdding: .day,value: date_offset, to: Date())!
         let continuation_cnt: Int = hab_chain_data.calcContinuationCountAll(base_date: date)
         let color_str: String = getColorString(color: hab_chain_data.whole_color, continuation_count: continuation_cnt)
-        Text(String(continuation_cnt))
-            .font(.caption)
-            .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
-            .multilineTextAlignment(.center)
-            .foregroundColor(Color.white)
-            .background(Color(color_str))
-            .clipShape(Circle())
+        Button {
+        } label: {
+            Text(String(continuation_cnt))
+                .font(.caption)
+                .frame(width: VIEW_SETTING.BUTTON_SIZE_PX, height: VIEW_SETTING.BUTTON_SIZE_PX)
+                .multilineTextAlignment(.center)
+                .foregroundColor(Color.white)
+                .background(Color(color_str))
+                .clipShape(Circle())
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -294,7 +298,7 @@ struct ItemIcon: View {
                     .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
                     .foregroundColor(icon_color)
             } else {
-                Image(systemName: unwraped_item.icon_name)
+                Image(systemName: sf_symbols[0])
                     .resizable()
                     .scaledToFit()
                     .frame(width: VIEW_SETTING.ITEM_ICON_SIZE_PX, height: VIEW_SETTING.ITEM_ICON_SIZE_PX)
