@@ -74,7 +74,7 @@ Option Explicit
 ' =         Excel数式整形化解除                         Excel数式整形化解除
 ' =         セルコメントの書式設定を一括変更            セルコメントの書式設定を一括変更
 ' =         Diff色付け                                  選択範囲のDiff形式のフォント色に変更する。(旧:赤、新:緑)
-' =         選択範囲アドレス結合文字列コピー_XXX        選択範囲のセルアドレスを結合して文字列コピー
+' =         選択範囲アドレス結合文字列コピー            選択範囲のセルアドレスを結合して文字列コピー
 ' =
 ' =     ・オブジェクト操作
 ' =         最前面へ移動                                最前面へ移動する
@@ -208,7 +208,7 @@ Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( 
     Const sCELLCOPYLINE_SUFFIX As String = ")"
 '=== シート選択ウィンドウを表示() ===
     Const bSHTSELWIN_MSGBOX_SHOW As Boolean = False
-'=== 選択範囲アドレス結合文字列コピー_xxx() ===
+'=== 選択範囲アドレス結合文字列コピー() ===
     Const sCELLADRJOIN_DELIMITER As String = ""
     Const bCELLADRJOIN_FORMAT_R1C1 As Boolean = False
 '▲▲▲ 設定 ▲▲▲
