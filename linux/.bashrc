@@ -81,7 +81,7 @@ function _update_ps1() {
 	PS1="${PS1}\[\e[0;30;047m\] \$(_puts_prompt_container_name) "		# docker container name
 	PS1="${PS1}\[\e[0;97;100m\] \w "									# pwd
 	PS1="${PS1}\[\e[0;30;040m\]!"										# tail keywords
-	PS1="${PS1}\[\e[0;39;049m\] "										# reset
+	PS1="${PS1}\[\e[0;39;049m\]"										# reset
 	PS1="${PS1}\n\$ "
 }
 show_prompt_branch_name=0
@@ -660,6 +660,7 @@ function ff() {
 		find . -type f 2> /dev/null
 	else
 		find . -type f -name $1 2> /dev/null
+		find . -type l -name $1 2> /dev/null
 	fi
 }
 function fd() {
@@ -668,6 +669,16 @@ function fd() {
 	else
 		find . -type d -name $1 2> /dev/null
 	fi
+}
+# This function requires "nkf" command.
+function outputencodesall()
+{
+	filelist=$(ff)
+	for file in $filelist
+	do
+		encode=$(nkf --guess ${file})
+		echo "${file} : ${encode}"
+	done
 }
 (diff --help | grep -- "--color") &> /dev/null
 if [ $? -eq 0 ]; then
@@ -1039,8 +1050,14 @@ alias tmcm='vim ~/.tmux.conf.mac.conf'
 alias tml='tmux list-sessions'
 alias tmb="export TMUX="
 
-#alias gitlo="git log --oneline --graph --pretty=format:\"%Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
-alias gitlo="git log --all --graph --date-order --pretty=format:\" ::: %Cred%ad%Creset ::: %Cblue%h%Creset ::: %Cgreen%an%Creset ::: %C(yellow)%s\""
+alias gitlo="\
+	git log \
+	--all \
+	--graph \
+	--date=short \
+	--date-order \
+	--decorate=full \
+	--pretty=format:\" ::: %C(red)%ad%Creset ::: %C(blue)%h%Creset ::: %C(magenta)%d%Creset ::: %C(green)%an%Creset ::: %C(yellow)%s\""
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 

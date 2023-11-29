@@ -1811,6 +1811,58 @@ endif
 		silent normal p
 	endfunction
 
+" ==============================================================================
+" 引用番号を更新する
+" ==============================================================================
+	let g:bSetQuoteNoDelTmpFile = 0
+	command! Sqn call SetQuoteNo()
+	function! SetQuoteNo()
+		let l:sInFileName = GetCurFilePath()
+		let l:sOutFileName = l:sInFileName . ".setquote_bak"
+		while filereadable(l:sOutFileName)
+			let l:sOutFileName = l:sOutFileName . "_"
+		endwhile
+		
+		if !filereadable(l:sInFileName)
+			echo "[error] file does not exist : " . l:sInFileName
+			return 0
+		endif
+		
+		call delete(l:sOutFileName)
+		
+		let l:sPattern = '\v\[\[\d+\]\]'
+		let l:iQuoteIdx = 1
+		try
+			let l:asLines = readfile(l:sInFileName)
+			for l:sLine in l:asLines
+				let l:sLineRep1 = substitute(l:sLine, l:sPattern, "", "g")
+				let l:sLineRep2 = substitute(l:sLine, l:sPattern, "1", "g")
+				let l:iMatchNum = len(l:sLineRep2) - len(l:sLineRep1)
+				let l:sReplaceKeyword = "!!!!!"
+				let l:sReplacedLine = substitute(l:sLine, l:sPattern, l:sReplaceKeyword, "g")
+				for l:iMatchIdx in range( 1, l:iMatchNum )
+					let l:sReplacedLine = substitute(l:sReplacedLine, l:sReplaceKeyword, "[[" . l:iQuoteIdx . "]]" , "")
+					let l:iQuoteIdx += 1
+				endfor
+				call writefile([l:sReplacedLine], l:sOutFileName, 'a')
+			endfor
+		catch
+			echo v:exception
+		finally
+			let l:sCopyCmdName = ""
+			if has('win32')
+				let l:sCopyCmdName = "copy"
+			else
+				let l:sCopyCmdName = "cp"
+			endif
+			call system(l:sCopyCmdName . ' "' . l:sOutFileName . '" "' . l:sInFileName . '"')
+			
+			if g:bSetQuoteNoDelTmpFile == 1
+				call delete(l:sOutFileName)
+			endif
+		endtry
+	endfunction
+
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
 " **************************************************************************************************
@@ -1962,4 +2014,3 @@ endif
 " showmarks 設定
 " ==============================================================================
 	autocmd VimEnter * DoShowMarks!
-
