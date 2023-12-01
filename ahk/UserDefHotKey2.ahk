@@ -118,7 +118,7 @@ InitSleepPreventing()
 		}
 	;サイトオープン
 		^+!1::	Run "https://draemonash2.github.io/"																				;Github.io
-		^+!2::	Run "https://draemonash2.github.io/linux_sft/linux.html"															;Github.io linux
+		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																;Github.io linux
 		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"													;Github.io git command
 		^+!h::	Run "https://www.deepl.com//translator"																				;翻訳サイト
 	;Wifi接続

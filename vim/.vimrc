@@ -1238,6 +1238,29 @@ endif
 		"echo "copy line with lineno"
 	endfunction
 	
+	command! Cpk call CopyCurRos2PkgName()
+	function! CopyCurRos2PkgName()
+		"substitute関数は"\"のエスケープが必要なため、一旦"/"に置換してから処理する。
+		let l:sCurFilePath = GetCurFilePath()
+		let l:sCurFilePath = substitute( l:sCurFilePath, "\\", "/", "g" )
+		let l:sPkgRootPath = SrchStoreDirPathToTop( GetCurDirPath(), "package.xml" )
+		if l:sPkgRootPath == ""
+			echom "[error] package.xml is missing."
+			return
+		endif
+		let l:sPkgFilePath = l:sPkgRootPath . g:sSysPathDlmtr . "package.xml"
+		let l:sPkgName = ""
+		let l:sPattern = '\v.*\<name\>(.*)\<\/name\>'
+		for l:sLine in readfile(l:sPkgFilePath)
+			let l:lsMatch = matchlist(l:sLine, l:sPattern)
+			if !empty(l:lsMatch)
+				let l:sPkgName = l:lsMatch[1]
+			endif
+		endfor
+		call SetToClipboard(l:sPkgName)
+		echo "copy ros2 package name : " . l:sPkgName
+	endfunction
+	
 	function! GetFromClipboard()
 		if g:lCopy2UnnamedRegister == 1
 		"	let l:sClipbordStr = @* " * register
@@ -1853,7 +1876,7 @@ endif
 			if has('win32')
 				let l:sCopyCmdName = "copy"
 			else
-				let l:sCopyCmdName = "cp"
+				let l:sCopyCmdName = "\cp -f"
 			endif
 			call system(l:sCopyCmdName . ' "' . l:sOutFileName . '" "' . l:sInFileName . '"')
 			

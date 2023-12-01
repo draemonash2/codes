@@ -57,7 +57,7 @@ else
 fi
 
 # for PS1
-function _update_ps1() {
+function _update_ps1() { # {{{
 	# [参考URL] https://zenn.dev/kotokaze/articles/bash-console
 	color_black=0
 	color_red=1
@@ -83,9 +83,9 @@ function _update_ps1() {
 	PS1="${PS1}\[\e[0;30;040m\]!"										# tail keywords
 	PS1="${PS1}\[\e[0;39;049m\]"										# reset
 	PS1="${PS1}\n\$ "
-}
+} # }}}
 show_prompt_branch_name=0
-function _puts_prompt_git_branch() {
+function _puts_prompt_git_branch() { # {{{
 	if [ ${show_prompt_branch_name} -eq 1 ]; then
 		branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
 		if [ ! "${branch_name}" = "" ]; then
@@ -102,9 +102,9 @@ function _puts_prompt_git_branch() {
 	else
 		echo " "
 	fi
-}
+} # }}}
 show_prompt_container_name=1
-function _puts_prompt_container_name() {
+function _puts_prompt_container_name() { # {{{
 	# Notes:
 	#   This function requires placing a .dockercontainer with 
 	#   the container name in the container's home directory
@@ -121,7 +121,7 @@ function _puts_prompt_container_name() {
 	else
 		echo " "
 	fi
-}
+} # }}}
 if [ "$color_prompt" = yes ]; then
 	_update_ps1
 else
@@ -149,6 +149,10 @@ if [ -x /usr/bin/dircolors ]; then
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
+(diff --help | grep -- "--color") &> /dev/null
+if [ $? -eq 0 ]; then
+	alias diff='\diff --color'
+fi
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -157,6 +161,9 @@ fi
 #alias ll='ls -alF'
 #alias la='ls -A'
 #alias l='ls -CF'
+alias ll='ls -lFAv --color=auto'
+alias la='ls -AF --color=auto'
+alias l='ls -CF --color=auto'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -186,7 +193,7 @@ HISTTIMEFORMAT='%F %T '
 export LANG=en_US.UTF8
 
 # for common
-function _is_tail_char_slash() {
+function _is_tail_char_slash() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : _is_tail_char_slash <word>"
@@ -210,7 +217,8 @@ function _is_tail_char_slash() {
 			echo "[error] is_tail_char_slash_test() test error 01"
 		fi
 	} #}}}
-function _remove_tail_slash() {
+ # }}}
+function _remove_tail_slash() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : _remove_tail_slash <word>"
@@ -231,7 +239,8 @@ function _remove_tail_slash() {
 		result=`_remove_tail_slash ${str}`; echo ${result}
 		result=`_remove_tail_slash ${str}`; echo ${result}
 	} #}}}
-function _output_ps1_color_palette() {
+ # }}}
+function _output_ps1_color_palette() { # {{{
 	printf "\n === PS1 color palette ===\n"
 	type[0]="none        "
 	type[1]="bold        "
@@ -252,8 +261,8 @@ function _output_ps1_color_palette() {
 		done
 	done
 	printf "\n"
-}
-function _output_color_palette_clridx() {
+} # }}}
+function _output_color_palette_clridx() { # {{{
 	bgclridx=${1:-0}
 	echo "=== colour palette color idx ==="
 	echo "  i.e. set -g status-style \"fg=colour???,bg=colour${bgclridx}\""
@@ -268,38 +277,130 @@ function _output_color_palette_clridx() {
 		fgoutstr="$(printf "%03d\n" "${fgclridx}")"
 		printf "${bgclrstr}${fgclrstr} ${fgoutstr} \x1b[0m"
 	done
+} # }}}
+function _is_exist_str() { # {{{
+	# usage: _is_exist_str <target> <search_word>
+	#          _is_exist_str aaa_atest ates  # -> 0 (exist)
+	#          _is_exist_str aaa_atest btes  # -> 1 (not exist)
+	target=$1
+	searchword=$2
+	if [[ "${target}" =~ "${searchword}" ]]; then
+		return 0 # exist
+	else
+		return 1 # not exist
+	fi
 }
+	function _test_is_exist_str() { #{{{
+		_is_exist_str aaa_atest atest; echo $?  # -> 0 (exist)
+		_is_exist_str aaa_atest btest; echo $?  # -> 1 (not exist)
+		_is_exist_str aaa aaa; echo $?          # -> 0 (exist)
+	} #}}}
+# }}}
+function _is_str_pos_head() { # {{{
+	# usage: _is_str_pos_head <target> <search_word>
+	#          _is_str_pos_head aaa_atest aaa_   # -> 0 (head)
+	#          _is_str_pos_head aaa_atest aa_    # -> 1 (not head)
+	#          _is_str_pos_head aaa_atest ab     # -> 1 (not exist)
+	target=$1
+	searchword=$2
+	if [[ "${target}" =~ "${searchword}" ]]; then
+		matchpos=$(expr length \( ${target} : "\(.*\)${searchword}" \))
+		if [ ${matchpos} = 0 ]; then
+			return 0 # head
+		else
+			return 1 # not head
+		fi
+	else
+		return 1 # not exist
+	fi
+}
+	function _test_is_str_pos_head() { #{{{
+		_is_str_pos_head aaa_atest aaa_; echo $?  # -> 0 (head)
+		_is_str_pos_head aaa_atest aa_; echo $?   # -> 1 (not head)
+		_is_str_pos_head aaa_atest ab; echo $?    # -> 1 (not exist)
+		_is_str_pos_head aaa aaa; echo $?         # -> 0 (head)
+	} #}}}
+# }}}
+function _is_str_pos_tail() { # {{{
+	# usage: _is_str_pos_tail <target> <search_word>
+	#          _is_str_pos_tail aaa_atest atest  # -> 0 (tail)
+	#          _is_str_pos_tail aaa_atest ates   # -> 1 (not tail)
+	#          _is_str_pos_tail aaa_atest btest  # -> 1 (not exist)
+	target=$1
+	searchword=$2
+	if [[ "${target}" =~ "${searchword}" ]]; then
+		matchpos=$(expr length \( ${target} : "\(.*\)${searchword}" \))
+		target_len=${#target}
+		searchword_len=${#searchword}
+		if [ ${target_len} = $((${matchpos} + ${searchword_len})) ]; then
+			return 0 # tail
+		else
+			return 1 # not tail
+		fi
+	else
+		return 1 # not exist
+	fi
+}
+	function _test_is_str_pos_tail() { #{{{
+		_is_str_pos_tail aaa_atest atest; echo $?  # -> 0 (tail)
+		_is_str_pos_tail aaa_atest ates; echo $?   # -> 1 (not tail)
+		_is_str_pos_tail aaa_atest btest; echo $?  # -> 1 (not exist)
+		_is_str_pos_tail aaa aaa; echo $?          # -> 0 (tail)
+	} #}}}
+# }}}
+function _get_scp_config() { # {{{
+	# [config file format]
+	#   hostname<tab>username<tab>password
+	#   e.g.
+	#     $ cat ~/_config_scp_a
+	#     192.168.12.11<tab>endo<tab>pw1234
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : _get_scp_config <partnername>"
+		echo "    <partnername> partner name"
+		return 1
+	fi
+	partnername=$1
+	config_file=~/_config_scp_${partnername}
+	if [ ! -f ${config_file} ]; then
+		echo "[error] ${config_file} does not exist."
+		return 1
+	fi
+	host=$(cut -f 1 ${config_file} | head -n 1)
+	user=$(cut -f 2 ${config_file} | head -n 1)
+	password=$(cut -f 3 ${config_file} | head -n 1)
+} # }}}
 # command alias
-function gr() {
+function gr() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : gr <keyword>"
 		return 1
 	fi
 	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
-}
-function grw() {
+} # }}}
+function grw() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : grw <keyword>"
 		return 1
 	fi
 	grep -nrIRw "$@" --exclude={tags,GTAGS*,GRTAGS*} .
-}
-function cdex() {
+} # }}}
+function cdex() { # {{{
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
 	ls -lFAv --color=auto
-}
-function vimall() {
+} # }}}
+function vimall() { # {{{
 	if [ $# -eq 0 ]; then
 		list=`find . -type f`
 	else
 		list=`find . -type f -name $1`
 	fi
 	vim $list
-}
-function vimdiffdir() {
+} # }}}
+function vimdiffdir() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : vimdiffdir <file1> <file2>"
@@ -320,9 +421,9 @@ function vimdiffdir() {
 		vimdiff ${file1} ${file2}
 		sleep 1
 	done
-}
-# Compare with vimdiff only when there is a difference
-function vimdiffcheck() {
+} # }}}
+function vimdiffcheck() { # {{{
+	# Compare with vimdiff only when there is a difference
 	if [ $# -lt 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : vimdiffcheck <file1> <file2> [<sleeptime>]"
@@ -337,8 +438,8 @@ function vimdiffcheck() {
 		vimdiff ${file1} ${file2}
 		sleep ${sleeptime}
 	fi
-}
-function swap() {
+} # }}}
+function swap() { # {{{
 	suffix=swaptmp
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
@@ -350,8 +451,8 @@ function swap() {
 	\mv ./${file1} ./${file2}.${suffix}
 	\mv ./${file2} ./${file1}
 	\mv ./${file2}.${suffix} ./${file2}
-}
-function bak() {
+} # }}}
+function bak() { # {{{
 	mode=1 # 1:Alphabet other:Time
 	delimiter=.bak
 	if [ $# -ne 1 ]; then
@@ -381,8 +482,8 @@ function bak() {
 		nowsuffix=$(date '+%s' | awk '{print strftime("%y%m%d-%H%M%S", $1)}')
 		\cp -f ${INFILE} ${INFILE}${delimiter}${nowsuffix}
 	fi
-}
-function lndir() {
+} # }}}
+function lndir() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : lnhdir <srcdir> <dstdir>"
@@ -421,8 +522,9 @@ function lndir() {
 		mkdir -p ${dstdir}
 		ln ${srcfile} ${dstfile}
 	done
-}
-function tma() { # TMux Attach
+} # }}}
+function tma() { # {{{
+	# TMux Attach
 	if [ ! -z "$TMUX" ]; then
 		echo "[error] cannot be run on tmux."
 		return 1
@@ -438,7 +540,9 @@ function tma() { # TMux Attach
 }
 	complete -F _complete_tma tma # {{{
 	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
-function tmam() { # TMux Attach Mac
+# }}}
+function tmam() { # {{{
+	# TMux Attach Mac
 	if [ ! -z "$TMUX" ]; then
 		echo "[error] cannot be run on tmux."
 		return 1
@@ -454,7 +558,9 @@ function tmam() { # TMux Attach Mac
 }
 	complete -F _complete_tmam tmam # {{{
 	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
-function tmau() { # TMux Attach Ubuntu
+# }}}
+function tmau() { # {{{
+	# TMux Attach Ubuntu
 	if [ ! -z "$TMUX" ]; then
 		echo "[error] cannot be run on tmux."
 		return 1
@@ -470,7 +576,9 @@ function tmau() { # TMux Attach Ubuntu
 }
 	complete -F _complete_tmau tmau # {{{
 	function _complete_tmau() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmau}" -- "${cur}") ); } # }}}
-function tmk() { # TMux Kill
+# }}}
+function tmk() { # {{{
+	# TMux Kill
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : tmk <session_name>"
@@ -481,7 +589,9 @@ function tmk() { # TMux Kill
 }
 	complete -F _complete_tmk tmk # {{{
 	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
-function tmr() { # TMux Restart
+# }}}
+function tmr() { # {{{
+	# TMux Restart
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : tmr <session_name>"
@@ -493,7 +603,9 @@ function tmr() { # TMux Restart
 }
 	complete -F _complete_tmr tmr # {{{
 	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
-function tmrm() { # TMux Restart Mac
+# }}}
+function tmrm() { # {{{
+	# TMux Restart Mac
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : tmrm <session_name>"
@@ -505,7 +617,9 @@ function tmrm() { # TMux Restart Mac
 }
 	complete -F _complete_tmrm tmrm # {{{
 	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
-function tmru() { # TMux Restart Ubuntu
+# }}}
+function tmru() { # {{{
+	# TMux Restart Ubuntu
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : tmru <session_name>"
@@ -517,7 +631,8 @@ function tmru() { # TMux Restart Ubuntu
 }
 	complete -F _complete_tmru tmru # {{{
 	function _complete_tmru() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmru}" -- "${cur}") ); } # }}}
-function add_session_name_to_cmplist() {
+# }}}
+function add_session_name_to_cmplist() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : add_session_name_to_cmplist <session_name>"
@@ -531,15 +646,15 @@ function add_session_name_to_cmplist() {
 	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
 	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
 	cmpllist_tmru="${cmpllist_tmru} ${session_name}"
-}
-function add_session_list_to_cmplist() {
+} # }}}
+function add_session_list_to_cmplist() { # {{{
 	session_list=$(tmux list-sessions | cut -d: -f 1)
 	for session_name in "${session_list}"
 	do
 		add_session_name_to_cmplist "${session_name}"
 	done
-}
-function killjobsall() {
+} # }}}
+function killjobsall() { # {{{
 	jobidlist=$(jobs | cut -d] -f -1 | cut -d[ -f 2-)
 	for jobid in ${jobidlist}
 	do
@@ -547,8 +662,8 @@ function killjobsall() {
 		kill -9 %${jobid}
 		wait %${jobid} 2>/dev/null
 	done
-}
-function killprocessall() {
+} # }}}
+function killprocessall() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : killprocessall <keyword>"
@@ -562,8 +677,8 @@ function killprocessall() {
 		kill -9 ${pid}
 		wait ${pid} 2>/dev/null
 	done
-}
-function cpd() {
+} # }}}
+function cpd() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : cpd <src> <dst>"
@@ -596,7 +711,8 @@ function cpd() {
 		cpd ${srcpath} ${dstpath}
 		ll ${dstpath}
 	} # }}}
-function catrange() {
+# }}}
+function catrange() { # {{{
 	if [ $# -ne 3 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : catrange <file> <lineno_head> <lineno_tail>"
@@ -651,46 +767,39 @@ function catrange() {
 		
 		rm -f ${inputfile}
 	} # }}}
-
-alias ll='ls -lFAv --color=auto'
-alias la='ls -AF --color=auto'
-alias l='ls -CF --color=auto'
-function ff() {
+# }}}
+function ff() { # {{{
 	if [ $# -eq 0 ]; then
 		find . -type f 2> /dev/null
 	else
 		find . -type f -name $1 2> /dev/null
 		find . -type l -name $1 2> /dev/null
 	fi
-}
-function fd() {
+} # }}}
+function fd() { # {{{
 	if [ $# -eq 0 ]; then
 		find . -type d 2> /dev/null
 	else
 		find . -type d -name $1 2> /dev/null
 	fi
-}
-# This function requires "nkf" command.
-function outputencodesall()
+} # }}}
+function outputencodesall() # {{{
 {
+	# This function requires "nkf" command.
 	filelist=$(ff)
 	for file in $filelist
 	do
 		encode=$(nkf --guess ${file})
 		echo "${file} : ${encode}"
 	done
-}
-(diff --help | grep -- "--color") &> /dev/null
-if [ $? -eq 0 ]; then
-	alias diff='\diff --color'
-fi
-function lsscpdata() {
+} # }}}
+function lsscpdata() { # {{{
 	trgtdir=~/_scp_to_xxx
 	echo "$ ll ${trgtdir}"; ll ${trgtdir};
 	trgtdir=~/_scp_from_xxx
 	echo "$ ll ${trgtdir}"; ll ${trgtdir};
-}
-function storescpsenddata() {
+} # }}}
+function storescpsenddata() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : storescpsenddata <file/dir>"
@@ -700,15 +809,15 @@ function storescpsenddata() {
 	mkdir -p ${trgtdir}
 	\cp -rf $1 ${trgtdir}/.
 	lsscpdata
-}
-function clearscpsenddata() {
+} # }}}
+function clearscpsenddata() { # {{{
 	trgtdir=~/_scp_to_xxx
 	rm -rf ${trgtdir}/*
 	trgtdir=~/_scp_from_xxx
 	rm -rf ${trgtdir}/*
 	lsscpdata
-}
-function sendscp() {
+} # }}}
+function sendscp() { # {{{
 	if [ $# -lt 5 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : sendscp <host> <user> <password> <partnerdir> <myobj> [<myobj>...]"
@@ -726,8 +835,8 @@ function sendscp() {
 		myobj=${argv[$i]}
 		expect -c "spawn scp -r ${myobj} ${user}@${host}:${partnerdir} ; expect password: ; send ${password}\r ; expect $ ; interact"
 	done
-}
-function fetchscp() {
+} # }}}
+function fetchscp() { # {{{
 	if [ $# -lt 5 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : fetchscp <host> <user> <password> <mydir> <partnerobj> [<partnerobj>...]"
@@ -745,8 +854,8 @@ function fetchscp() {
 		partnerobj=${argv[$i]}
 		expect -c "spawn scp -r ${user}@${host}:${partnerobj} ${mydir} ; expect password: ; send ${password}\r ; expect $ ; interact"
 	done
-}
-function syncscp() {
+} # }}}
+function syncscp() { # {{{
 	if [ $# -ne 5 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : syncscp <host> <user> <password> <partnerfile> <myfile>"
@@ -767,30 +876,8 @@ function syncscp() {
 	fi
 #	sendscp ${host} ${user} ${password} /home/${user} ~/${myfile}
 	rm -rf ${mytmpdir}/${partnerfile}
-}
-function _get_scp_config() {
-	# [config file format]
-	#   hostname<tab>username<tab>password
-	#   e.g.
-	#     $ cat ~/_config_scp_a
-	#     192.168.12.11<tab>endo<tab>pw1234
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : _get_scp_config <partnername>"
-		echo "    <partnername> partner name"
-		return 1
-	fi
-	partnername=$1
-	config_file=~/_config_scp_${partnername}
-	if [ ! -f ${config_file} ]; then
-		echo "[error] ${config_file} does not exist."
-		return 1
-	fi
-	host=$(cut -f 1 ${config_file} | head -n 1)
-	user=$(cut -f 2 ${config_file} | head -n 1)
-	password=$(cut -f 3 ${config_file} | head -n 1)
-}
-function sendscpto() {
+} # }}}
+function sendscpto() { # {{{
 	if [ $# -lt 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : sendscpto <partnername> <myobj> [<myobj>...]"
@@ -810,8 +897,8 @@ function sendscpto() {
 		myobj=${argv[$i]}
 		sendscp ${host} ${user} ${password} ${partnerdir} ${myobj}
 	done
-}
-function fetchscpfrom() {
+} # }}}
+function fetchscpfrom() { # {{{
 	if [ $# -lt 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : fetchscpfrom <partnername> <partnerobj> [<partnerobj>...]"
@@ -832,8 +919,8 @@ function fetchscpfrom() {
 		fetchscp ${host} ${user} ${password} ${mydir} ${partnerobj}
 	done
 	echo "$ ll ${mydir}"; ll ${mydir};
-}
-function syncscpto() {
+} # }}}
+function syncscpto() { # {{{
 	if [ $# -ne 3 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : syncscpto <partnername> <partnerfile> <myfile>"
@@ -850,8 +937,8 @@ function syncscpto() {
 		return 1
 	fi
 	syncscp ${host} ${user} ${password} ${partnerfile} ${myfile}
-}
-function syncdotfiles() {
+} # }}}
+function syncdotfiles() { # {{{
 	file=".bashrc";					syncscpto a ${file} ${file}
 	file=".gdbinit";				syncscpto a ${file} ${file}
 	file=".inputrc";				syncscpto a ${file} ${file}
@@ -860,16 +947,16 @@ function syncdotfiles() {
 	file=".tmux.conf.mac.conf";		syncscpto a ${file} ${file}
 	file=".tmux.conf.ubuntu.conf";	syncscpto a ${file} ${file}
 	file=".vimrc";					syncscpto a ${file} ${file}
-}
-function convunixtimetodate() {
+} # }}}
+function convunixtimetodate() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : convunixtimetodate <unixtime>"
 		return 1
 	fi
 	echo $1 | awk '{print strftime("%c",$1)}'
-}
-function aggregate() {
+} # }}}
+function aggregate() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : aggregate <file>"
@@ -889,8 +976,8 @@ function aggregate() {
 	echo "${filename} ${min} ${max} ${mid} ${avg} ${stddev}"
 	
 	rm -f ${tmpfile}
-}
-function outputhwinfo() {
+} # }}}
+function outputhwinfo() { # {{{
 	if [ "$(uname)" == 'Darwin' ]; then
 		:
 	else
@@ -912,8 +999,8 @@ function outputhwinfo() {
 		cmd="gcc -v"																	; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		vim ${logfile}
 	fi
-}
-function greprep() {
+} # }}}
+function greprep() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : greprep <source_keyword> <destination_keyword>"
@@ -939,8 +1026,8 @@ function greprep() {
 	echo "# destination"
 	gr "${dst}"
 	echo ""
-}
-function convertimg() {
+} # }}}
+function convertimg() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : convertimg <size or ratio> <file_path>"
@@ -959,9 +1046,9 @@ function convertimg() {
 	\cp -f ${file} ${bakfile}
 	dst=${file}
 	convert -geometry "${size}" ${bakfile} ${file}
-}
-# Rename all files and directories under the current directory.
-function renamedirfiles() {
+} # }}}
+function renamedirfiles() { # {{{
+	# Rename all files and directories under the current directory.
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : renamedirfiles <source_keyword> <destination_keyword>"
@@ -1026,6 +1113,85 @@ function renamedirfiles() {
 	echo "### after ###"
 	find . -type f
 	echo ""
+} # }}}
+function setenv() { # {{{
+	# Set environment variable without duplication
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : setenv <env_var_name> <env_value>"
+		return 1
+	fi
+	env_var_name=$1
+	env_value_new=$2
+	env_value_old=$(printenv ${env_var_name})
+	if [ -z ${env_value_old} ]; then
+		export ${env_var_name}="${env_value_new}"
+	else
+		_true=0
+		_false=1
+		_is_str_pos_head "${env_value_old}" "${env_value_new}:"
+		is_exist_head="$?"
+		_is_str_pos_tail "${env_value_old}" ":${env_value_new}"
+		is_exist_tail="$?"
+		_is_exist_str "${env_value_old}" ":${env_value_new}:"
+		is_exist_mid="$?"
+		
+		if [ "${env_value_new}" = "${env_value_old}" ]; then
+			:
+		else
+			if [ "${is_exist_head}" = "${_true}" ]; then
+				:
+			else
+				if [ "${is_exist_mid}" = "${_true}" ]; then
+					:
+				else
+					if [ "${is_exist_tail}" = "${_true}" ]; then
+						:
+					else
+						export ${env_var_name}="${env_value_new}:${env_value_old}"
+					fi
+				fi
+			fi
+		fi
+	fi
+}
+	function _test_setenv() { # {{{
+		export TESTENV=aaa:bbb:ccc
+		echo ""
+		setenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+		
+		echo ""
+		export TESTENV=
+		echo ""
+		setenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+	} # }}}
+# }}}
+function extractdefine() {
+	# TODO:
+	:
 }
 
 alias cp='cp -i'
@@ -1084,7 +1250,7 @@ fi
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
 
-function cbuild() {
+function cbuild() { # {{{
 	# colcon build --continue-on-error --executor sequential --symlink-install --packages-select <pkg_name>
 	if [ $# -eq 0 ]; then
 		pkg_sel_opt=""
@@ -1102,6 +1268,22 @@ function cbuild() {
 		--executor sequential \
 		--symlink-install \
 		${pkg_sel_opt}
+} # }}}
+function outputnodesinfo() {
+	# TODO:
+	:
+}
+function outputtopicsinfo() {
+	# TODO:
+	:
+}
+function outputparamlist() {
+	# TODO:
+	:
+}
+function formatnodesinfo() {
+	# TODO:
+	:
 }
 
 #########################################################
