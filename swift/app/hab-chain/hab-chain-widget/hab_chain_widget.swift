@@ -26,23 +26,20 @@ struct Provider: TimelineProvider {
     mutating func generateHabChainData() -> HabChainData
     {
         var hab_chain_data: HabChainData = HabChainData()
-        let hab_chain_data_jsonstruct = hab_chain_data.convJsonString2JsonStruct(hab_chain_data_jsonstring: app_json_string)
-        hab_chain_data.convJsonStruct2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
         return hab_chain_data
     }
     func placeholder(in context: Context) -> SimpleEntry
     {
         var hab_chain_data: HabChainData = HabChainData()
-        let hab_chain_data_jsonstruct = hab_chain_data.convJsonString2JsonStruct(hab_chain_data_jsonstring: app_json_string)
-        hab_chain_data.convJsonStruct2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
         return SimpleEntry(date: Date(), hab_chain_data: hab_chain_data)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ())
     {
         var hab_chain_data: HabChainData = HabChainData()
-        let hab_chain_data_jsonstruct = hab_chain_data.convJsonString2JsonStruct(hab_chain_data_jsonstring: app_json_string)
-        hab_chain_data.convJsonStruct2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
         let entry = SimpleEntry(date: Date(), hab_chain_data: hab_chain_data)
         completion(entry)
     }
@@ -55,8 +52,7 @@ struct Provider: TimelineProvider {
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
             var hab_chain_data: HabChainData = HabChainData()
-            let hab_chain_data_jsonstruct = hab_chain_data.convJsonString2JsonStruct(hab_chain_data_jsonstring: app_json_string)
-            hab_chain_data.convJsonStruct2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+            hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
             let entry = SimpleEntry(date: entryDate, hab_chain_data: hab_chain_data)
             entries.append(entry)
         }
