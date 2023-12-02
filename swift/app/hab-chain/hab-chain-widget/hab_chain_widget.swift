@@ -26,20 +26,20 @@ struct Provider: TimelineProvider {
     mutating func generateHabChainData() -> HabChainData
     {
         var hab_chain_data: HabChainData = HabChainData()
-        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
         return hab_chain_data
     }
     func placeholder(in context: Context) -> SimpleEntry
     {
         var hab_chain_data: HabChainData = HabChainData()
-        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
         return SimpleEntry(date: Date(), hab_chain_data: hab_chain_data)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ())
     {
         var hab_chain_data: HabChainData = HabChainData()
-        hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+        hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
         let entry = SimpleEntry(date: Date(), hab_chain_data: hab_chain_data)
         completion(entry)
     }
@@ -52,7 +52,7 @@ struct Provider: TimelineProvider {
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
             var hab_chain_data: HabChainData = HabChainData()
-            hab_chain_data.setJsonString2RawStruct(hab_chain_data_jsonstruct: hab_chain_data_jsonstruct)
+            hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
             let entry = SimpleEntry(date: entryDate, hab_chain_data: hab_chain_data)
             entries.append(entry)
         }
