@@ -126,3 +126,68 @@ End Function
         MsgBox ExistProcess("wsl.exe")
     End Sub
 
+' ==================================================================
+' = 概要    WSL2 Running 待ち
+' = 引数    sDistName   String  [in]    WSL2 ディストリビューション名
+' = 戻値    なし
+' = 覚書    なし
+' = 依存    なし
+' = 所属    Windows.vbs
+' ==================================================================
+Private Function WaitForWslRunning( _
+    ByVal sDistName _
+)
+    Const sLOG_FILE_NAME = "wsl_status.log"
+    
+    Dim objWshShell
+    Set objWshShell = WScript.CreateObject("WScript.Shell")
+    Dim objFSO
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Dim oRegExp
+    Set oRegExp = CreateObject("VBScript.RegExp")
+    
+    Dim sLogFilePath
+    sLogFilePath = objWshShell.SpecialFolders("Desktop") & "\" & sLOG_FILE_NAME
+    
+    Dim sStatus
+    Do
+        On Error Resume Next
+        WScript.sleep(500)
+        
+        ' wslステータスコマンド リダイレクト
+        objWshShell.Run "%comspec% /c wsl -l -v > """ & sLogFilePath & """", 0 , True
+        
+        'リダイレクトログ読み込み
+        Dim adoStrm
+        Set adoStrm = CreateObject("ADODB.Stream")
+        adoStrm.Type = 2
+        adoStrm.Charset = "UTF-16"
+        adoStrm.LineSeparator = -1
+        adoStrm.Open
+        adoStrm.LoadFromFile sLogFilePath
+        Dim sLine
+        Dim sStatusLine
+        Do Until adoStrm.EOS
+            sLine = adoStrm.ReadText(-2)
+            If InStr(sLine, "* " & sDistName) Then
+                sStatusLine = sLine
+            End If
+        Loop
+        
+        'ステータス取得
+        Dim sTargetStr
+        sTargetStr = sLine
+        Dim sSearchPattern
+        sSearchPattern = "^\*\s+(" & sDistName & ")\s+(\w+)"
+        oRegExp.IgnoreCase = True
+        oRegExp.Global = True
+        oRegExp.Pattern = sSearchPattern
+        Dim oMatchResult
+        Set oMatchResult = oRegExp.Execute(sTargetStr)
+        sStatus = oMatchResult(0).SubMatches(1)
+        'MsgBox sStatus
+        On Error Goto 0
+    Loop While sStatus <> "Running"
+    objFSO.DeleteFile sLogFilePath, True
+End Function
+

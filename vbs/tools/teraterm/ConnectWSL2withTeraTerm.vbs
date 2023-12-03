@@ -13,6 +13,7 @@ Option Explicit
 '= インクルード
 '===============================================================================
 Call Include( "%MYDIRPATH_CODES%\vbs\_lib\Windows.vbs" )    'ExistProcess()
+                                                            'WaitForWslRunning()
 
 '===============================================================================
 '= 設定値
@@ -21,6 +22,7 @@ Const bEXEC_TEST = False 'テスト用
 Const sSCRIPT_NAME = "WSL2接続＠TeraTerm"
 
 Const sTTL_FILE_PATH = "C:\codes\ttl\login_wsl2.ttl"
+Const sWSL_DIST_NAME = "Ubuntu-22.04"
 
 '===============================================================================
 '= 本処理
@@ -45,10 +47,7 @@ Public Sub Main()
     If Not ExistProcess("wsl.exe") Then
         CreateObject("Wscript.Shell").Run "cmd /c wsl", 0
     End If
-    Do While Not ExistProcess("wsl.exe")
-        WScript.sleep(300)
-    Loop
-    WScript.sleep(2000)
+    Call WaitForWslRunning(sWSL_DIST_NAME)
     CreateObject("Wscript.Shell").Run "cmd /c " & sTTL_FILE_PATH, 0
 End Sub
 
