@@ -417,11 +417,17 @@ InitSleepPreventing()
 	}
 	BringActiveWindowToTop()
 	{
-		;常に最前面ON→OFFにより、アクティブウィンドウを最前面に設定する
-		Sleep 100
-		WinSetAlwaysOnTop 1, "A" ; 常に最前面ON
-		Sleep 100
-		WinSetAlwaysOnTop 0, "A" ; 常に最前面OFF
+		Try {
+			;常に最前面ON→OFFにより、アクティブウィンドウを最前面に設定する
+			Sleep 100
+			WinSetAlwaysOnTop 1, "A" ; 常に最前面ON
+			Sleep 100
+			WinSetAlwaysOnTop 0, "A" ; 常に最前面OFF
+		} Catch Error as err {
+		;	MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
+		}
 	}
 
 	; 今押している修飾キーと共にキー送信する
@@ -622,7 +628,13 @@ InitSleepPreventing()
 	;		"`n iWinWidth = " . iWinWidth . 
 	;		"`n iWinHeight = " . iWinHeight . 
 	;		""
-		WinMove iWinX, iWinY, iWinWidth, iWinHeight, "A"
+		Try {
+			WinMove iWinX, iWinY, iWinWidth, iWinHeight, "A"
+		} Catch Error as err {
+		;	MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
+		}
 	}
 
 	; ファイル名取得
