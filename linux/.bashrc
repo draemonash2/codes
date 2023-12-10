@@ -144,7 +144,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
-
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
@@ -193,6 +192,25 @@ HISTTIMEFORMAT='%F %T '
 export LANG=en_US.UTF8
 
 # for common
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias rmi='rm -i'
+
+alias cd=cdex
+alias ..='cd ..;'
+alias ...='cd ../..;'
+alias ....='cd ../../..;'
+alias .....='cd ../../../..;'
+
+alias br='vim ~/.bashrc; . ~/.bashrc'
+alias bre='. ~/.bashrc'
+alias vr='vim ~/.vimrc'
+alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
+alias sr='vim ~/.screenrc'
+
+alias sht='sudo shutdown -h now'
+
 function _is_tail_char_slash() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -370,7 +388,6 @@ function _get_scp_config() { # {{{
 	user=$(cut -f 2 ${config_file} | head -n 1)
 	password=$(cut -f 3 ${config_file} | head -n 1)
 } # }}}
-# command alias
 function gr() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -521,137 +538,6 @@ function lndir() { # {{{
 		#echo ${srcfile} : ${dstfile}
 		mkdir -p ${dstdir}
 		ln ${srcfile} ${dstfile}
-	done
-} # }}}
-function tma() { # {{{
-	# TMux Attach
-	if [ ! -z "$TMUX" ]; then
-		echo "[error] cannot be run on tmux."
-		return 1
-	fi
-	config_path=~/.tmux.conf
-	tmux source-file ${config_path}
-	if [ $# -eq 1 ]; then
-		session_name=${1}
-		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
-	else
-		tmux attach-session || tmux new-session
-	fi
-}
-	complete -F _complete_tma tma # {{{
-	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
-# }}}
-function tmam() { # {{{
-	# TMux Attach Mac
-	if [ ! -z "$TMUX" ]; then
-		echo "[error] cannot be run on tmux."
-		return 1
-	fi
-	config_path=~/.tmux.conf.mac.conf
-	tmux source-file ${config_path}
-	if [ $# -eq 1 ]; then
-		session_name=${1}
-		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
-	else
-		tmux attach-session || tmux new-session
-	fi
-}
-	complete -F _complete_tmam tmam # {{{
-	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
-# }}}
-function tmau() { # {{{
-	# TMux Attach Ubuntu
-	if [ ! -z "$TMUX" ]; then
-		echo "[error] cannot be run on tmux."
-		return 1
-	fi
-	config_path=~/.tmux.conf.ubuntu.conf
-	tmux source-file ${config_path}
-	if [ $# -eq 1 ]; then
-		session_name=${1}
-		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
-	else
-		tmux attach-session || tmux new-session
-	fi
-}
-	complete -F _complete_tmau tmau # {{{
-	function _complete_tmau() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmau}" -- "${cur}") ); } # }}}
-# }}}
-function tmk() { # {{{
-	# TMux Kill
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmk <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmux kill-session -t ${session_name}
-}
-	complete -F _complete_tmk tmk # {{{
-	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
-# }}}
-function tmr() { # {{{
-	# TMux Restart
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmr <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmk ${session_name}
-	tma ${session_name}
-}
-	complete -F _complete_tmr tmr # {{{
-	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
-# }}}
-function tmrm() { # {{{
-	# TMux Restart Mac
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmrm <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmk ${session_name}
-	tmam ${session_name}
-}
-	complete -F _complete_tmrm tmrm # {{{
-	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
-# }}}
-function tmru() { # {{{
-	# TMux Restart Ubuntu
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmru <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmk ${session_name}
-	tmau ${session_name}
-}
-	complete -F _complete_tmru tmru # {{{
-	function _complete_tmru() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmru}" -- "${cur}") ); } # }}}
-# }}}
-function add_session_name_to_cmplist() { # {{{
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : add_session_name_to_cmplist <session_name>"
-		return 1
-	fi
-	session_name=$1
-	cmpllist_tma="${cmpllist_tma} ${session_name}"
-	cmpllist_tmam="${cmpllist_tmam} ${session_name}"
-	cmpllist_tmau="${cmpllist_tmau} ${session_name}"
-	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
-	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
-	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
-	cmpllist_tmru="${cmpllist_tmru} ${session_name}"
-} # }}}
-function add_session_list_to_cmplist() { # {{{
-	session_list=$(tmux list-sessions | cut -d: -f 1)
-	for session_name in "${session_list}"
-	do
-		add_session_name_to_cmplist "${session_name}"
 	done
 } # }}}
 function killjobsall() { # {{{
@@ -1194,28 +1080,7 @@ function extractdefine() {
 	:
 }
 
-alias cp='cp -i'
-alias mv='mv -i'
-alias rm='rm -i'
-alias rmi='rm -i'
-
-alias cd=cdex
-alias ..='cd ..;'
-alias ...='cd ../..;'
-alias ....='cd ../../..;'
-alias .....='cd ../../../..;'
-
-alias br='vim ~/.bashrc; . ~/.bashrc'
-alias bre='. ~/.bashrc'
-alias vr='vim ~/.vimrc'
-alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
-alias sr='vim ~/.screenrc'
-alias tgr='vim ~/.tigrc'
-alias tmc='vim ~/.tmux.conf'
-alias tmcm='vim ~/.tmux.conf.mac.conf'
-alias tml='tmux list-sessions'
-alias tmb="export TMUX="
-
+### Git
 alias gitlo="\
 	git log \
 	--all \
@@ -1227,17 +1092,154 @@ alias gitlo="\
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
+### Tmux
 if [ ! -f /.dockerenv ]; then
 	add_session_list_to_cmplist
 	add_session_name_to_cmplist temp
 fi
 alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
+alias tgr='vim ~/.tigrc'
+alias tmc='vim ~/.tmux.conf'
+alias tmcm='vim ~/.tmux.conf.mac.conf'
+alias tml='tmux list-sessions'
+alias tmb="export TMUX="
 
+function tma() { # {{{
+	# TMux Attach
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	config_path=~/.tmux.conf
+	tmux source-file ${config_path}
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
+	fi
+}
+	complete -F _complete_tma tma # {{{
+	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
+# }}}
+function tmam() { # {{{
+	# TMux Attach Mac
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	config_path=~/.tmux.conf.mac.conf
+	tmux source-file ${config_path}
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
+	fi
+}
+	complete -F _complete_tmam tmam # {{{
+	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
+# }}}
+function tmau() { # {{{
+	# TMux Attach Ubuntu
+	if [ ! -z "$TMUX" ]; then
+		echo "[error] cannot be run on tmux."
+		return 1
+	fi
+	config_path=~/.tmux.conf.ubuntu.conf
+	tmux source-file ${config_path}
+	if [ $# -eq 1 ]; then
+		session_name=${1}
+		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
+	else
+		tmux attach-session || tmux new-session
+	fi
+}
+	complete -F _complete_tmau tmau # {{{
+	function _complete_tmau() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmau}" -- "${cur}") ); } # }}}
+# }}}
+function tmk() { # {{{
+	# TMux Kill
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmk <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmux kill-session -t ${session_name}
+}
+	complete -F _complete_tmk tmk # {{{
+	function _complete_tmk() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmk}" -- "${cur}") ); } # }}}
+# }}}
+function tmr() { # {{{
+	# TMux Restart
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmr <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tma ${session_name}
+}
+	complete -F _complete_tmr tmr # {{{
+	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
+# }}}
+function tmrm() { # {{{
+	# TMux Restart Mac
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmrm <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tmam ${session_name}
+}
+	complete -F _complete_tmrm tmrm # {{{
+	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
+# }}}
+function tmru() { # {{{
+	# TMux Restart Ubuntu
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : tmru <session_name>"
+		return 1
+	fi
+	session_name=${1}
+	tmk ${session_name}
+	tmau ${session_name}
+}
+	complete -F _complete_tmru tmru # {{{
+	function _complete_tmru() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmru}" -- "${cur}") ); } # }}}
+# }}}
+function add_session_name_to_cmplist() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : add_session_name_to_cmplist <session_name>"
+		return 1
+	fi
+	session_name=$1
+	cmpllist_tma="${cmpllist_tma} ${session_name}"
+	cmpllist_tmam="${cmpllist_tmam} ${session_name}"
+	cmpllist_tmau="${cmpllist_tmau} ${session_name}"
+	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
+	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
+	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
+	cmpllist_tmru="${cmpllist_tmru} ${session_name}"
+} # }}}
+function add_session_list_to_cmplist() { # {{{
+	session_list=$(tmux list-sessions | cut -d: -f 1)
+	for session_name in "${session_list}"
+	do
+		add_session_name_to_cmplist "${session_name}"
+	done
+} # }}}
+
+### Docker
 if [ -f /.dockerenv ]; then
 	export TERM=screen-256color
 fi
-
-alias sht='sudo shutdown -h now'
 
 ### WSL
 unixname=$(uname -r)
