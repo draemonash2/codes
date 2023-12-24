@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.24
+' my excel addin macros v2.25
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1394,7 +1394,15 @@ Public Sub 検索文字の文字色を変更()
     lClrRgbInit = ReadSettingFile("lWORDCOLOR_CLR_RGB", lWORDCOLOR_CLR_RGB)
     
     '検索対象文字列選択
-    sSrchStr = InputBox("検索文字列を正規表現で入力してください", sMACRO_NAME, sSrchStr)
+    Dim sOutputMsg As String
+    sOutputMsg = _
+        "検索文字列を正規表現で入力してください" & vbNewLine & _
+        "" & vbNewLine & _
+        "<備考>" & vbNewLine & _
+        "  ・以下の記号を検索したい場合は、エスケープが必要。" & vbNewLine & _
+        "      ^　$　?　*　+　.　|　{　}　\　[　]　(　)" & vbNewLine & _
+        ""
+    sSrchStr = InputBox(sOutputMsg, sMACRO_NAME, sSrchStr)
     If StrPtr(sSrchStr) = 0 Then
         MsgBox "キャンセルが押されたため、処理を中断します。", vbCritical, sMACRO_NAME
         Exit Sub

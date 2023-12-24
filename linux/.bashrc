@@ -1093,10 +1093,6 @@ alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
 ### Tmux
-if [ ! -f /.dockerenv ]; then
-	add_session_list_to_cmplist
-	add_session_name_to_cmplist temp
-fi
 alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
 alias tgr='vim ~/.tigrc'
 alias tmc='vim ~/.tmux.conf'
@@ -1235,6 +1231,12 @@ function add_session_list_to_cmplist() { # {{{
 		add_session_name_to_cmplist "${session_name}"
 	done
 } # }}}
+if [ ! -f /.dockerenv ]; then
+	add_session_list_to_cmplist
+	add_session_name_to_cmplist temp
+fi
+#export PROMPT_COMMAND="add_session_list_to_cmplist; ${PROMPT_COMMAND}"
+#setenv PROMPT_COMMAND add_session_list_to_cmplist
 
 ### Docker
 if [ -f /.dockerenv ]; then
@@ -1270,6 +1272,16 @@ function cbuild() { # {{{
 		--executor sequential \
 		--symlink-install \
 		${pkg_sel_opt}
+} # }}}
+function cbuildc() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : cbuildc <package_name>"
+		return 1
+	fi
+	pkg=${1}
+	rm -rf install/${pkg} build/${pkg}
+	cbuild ${pkg}
 } # }}}
 function outputnodesinfo() {
 	# TODO:

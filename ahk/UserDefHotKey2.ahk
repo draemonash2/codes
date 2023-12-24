@@ -29,7 +29,9 @@ global giSLEEPPREVENT_EXE_NAME := "javaw.exe" ; TurboVNC
 global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
 global giSLEEPPREVENT_KEY_NAME := " "
 global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
-global giMOVECURSOL_KEYPRESS_NUM := 3
+global giJUMPCURSOL_KEYPRESS_NUM := 3
+global giMOVECURSOL_MOVE_OFFSET := 50
+global giMOVECURSOL_MOVE_OFFSET_FAR := 100
 
 ;* ***************************************************************
 ;* Preprocess
@@ -55,11 +57,21 @@ InitSleepPreventing()
 
 ;***** キー置き換え *****
 	;無変換キー＋方向キーでPgUp,PgDn,Home,End
+		; e.g. 無変換+上キー -> PgUp
+		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
 		VK1D::VK1D
 		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
 		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
 		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
 		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
+	;無変換キー＋jkhlでマウスカーソル移動
+		VK1D & k::		MouseMove 0, -giMOVECURSOL_MOVE_OFFSET, 0, "R"
+		VK1D & j::		MouseMove 0, giMOVECURSOL_MOVE_OFFSET, 0, "R"
+		VK1D & l::		MouseMove giMOVECURSOL_MOVE_OFFSET, 0, 0, "R"
+		VK1D & h::		MouseMove -giMOVECURSOL_MOVE_OFFSET, 0, 0, "R"
+	;無変換キー＋Spaceでマウスクリック
+		VK1D & Space::	Click
+	;その他
 		Insert::Return																												;Insertキー
 		PrintScreen::return																											;PrintScreenキー
 
@@ -161,11 +173,11 @@ InitSleepPreventing()
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
 	;その他
-		^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
+	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
 		Ctrl::																														;モニタ中心にカーソル移動
 		{
-			Loop giMOVECURSOL_KEYPRESS_NUM - 1
+			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
 			{
 				Sleep 100
 				iIsTimeout := KeyWait("Ctrl", "D T0.2")
@@ -173,8 +185,35 @@ InitSleepPreventing()
 					Return
 				}
 			}
-			;MsgBox "Ctrlキーが" . giMOVECURSOL_KEYPRESS_NUM . "回押されました"
+			;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
 			MoveCursolToMonitorCenter()
+		}
+	;Tmux上の全ペインでbreを実行する
+		^+!r::
+		{
+			iSleepTimeA := 500
+			iSleepTimeB := 1500
+			; sync on
+			SendInput "^{Space}"
+			sleep iSleepTimeA
+			SendInput "B"
+			
+			; execute bre
+			sleep iSleepTimeB
+			SendInput "bre{Enter}"
+			sleep iSleepTimeB
+			
+			; sync off
+			SendInput "^{Space}"
+			sleep iSleepTimeA
+			SendInput "B"
+			sleep iSleepTimeA
+			
+			; focus next window
+			SendInput "^{Space}"
+			sleep iSleepTimeA
+			SendInput "n"
+			sleep iSleepTimeA
 		}
 	;テスト用
 		/*
@@ -209,6 +248,8 @@ InitSleepPreventing()
 			sleep 500
 			SendInput "+t"
 		}
+		~RButton & WheelUp::SendInput "^+{Tab}"
+		~RButton & WheelDown::SendInput "^{Tab}"
 	#HotIf
 	
 	#HotIf WinActive("ahk_exe explorer.exe")
@@ -285,6 +326,16 @@ InitSleepPreventing()
 		MButton::	SendInput "^z" ;元に戻す
 		XButton1::	SendInput "!5" ;下線
 		XButton2::	SendInput "!4" ;テキストハイライト
+	#HotIf
+	
+	#HotIf WinActive("ahk_exe java.exe") and WinActive("TurboVNC: ")
+		; カーソル位置クリック
+		;   UbuntuのターミナルからGUIプログラムを起動後、
+		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
+		^Enter::
+		{
+			Click
+		}
 	#HotIf
 
 ;* ***************************************************************

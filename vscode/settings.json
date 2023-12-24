@@ -33,5 +33,11 @@
     "editor.fontFamily": "\"Source Han Code JP\", monospace",
     "remote.SSH.remotePlatform": {
         "robocipA1-x11": "linux"
-    }
+    },
+    "markdown-pdf.highlightStyle": "solarized-light.css",
+    "markdown-pdf.stylesRelativePathFile": true,
+    "markdown-pdf.styles": [
+        ".\\\\_custom.css"
+    ],
+    "workbench.settings.openDefaultKeybindings": true
 }
