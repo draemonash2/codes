@@ -9,13 +9,13 @@
          contextName = "closure #1 in closure #1 in closure #1 in SelectIconView.body.getter:SelectIconView.swift">
          <PersistentStrings>
             <PersistentString
+               value = "VIEW_SETTING.LIST_PADDING_PX*2">
+            </PersistentString>
+            <PersistentString
                value = "VIEW_SETTING.ICON_SIZE_PX">
             </PersistentString>
             <PersistentString
                value = "geometry.size.width">
-            </PersistentString>
-            <PersistentString
-               value = "VIEW_SETTING.LIST_PADDING_PX*2">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -45,16 +45,24 @@
          contextName = "closure #5 in ItemEditView.body.getter:ItemEditView.swift">
       </ContextState>
       <ContextState
+         contextName = "closure #1 in closure #1 in IndivItemStatusChangeButton.body.getter:ContentView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "app_json_string">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "ItemAddView.pressAddButtonAction():ItemAddView.swift">
       </ContextState>
       <ContextState
          contextName = "HabChainData.calcContinuationCount(base_date:item_id:):DataMngr.swift">
          <PersistentStrings>
             <PersistentString
-               value = "dateFormat(date: key)">
+               value = "dateFormat(date: date)">
             </PersistentString>
             <PersistentString
-               value = "dateFormat(date: date)">
+               value = "dateFormat(date: key)">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -100,10 +108,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
+         contextName = "closure #1 in closure #1 in SelectIconView.body.getter:SelectIconView.swift">
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in SelectIconView.body.getter:SelectIconView.swift">
+         contextName = "HabChainData._test_calcContinuationCount():DataMngr.swift">
       </ContextState>
       <ContextState
          contextName = "closure #1 in closure #1 in closure #1 in closure #1 in ItemEditView.body.getter:ItemEditView.swift">

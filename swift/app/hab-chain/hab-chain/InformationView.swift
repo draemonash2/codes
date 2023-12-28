@@ -22,10 +22,10 @@ struct InformationView: View {
             let _ = Self._printChanges()
         }
         VStack (alignment: .leading) {
-            Text("hab-chainについて")
-                .font(.largeTitle)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding()
+            //Text("hab-chainについて")
+            //    .font(.largeTitle)
+            //    .frame(maxWidth: .infinity, alignment: .center)
+            //    .padding()
             ScrollView(.vertical, showsIndicators: true) {
                 Group {
                     Text("hab-chainとは？")

@@ -30,6 +30,13 @@ struct ContentView: View {
     @State var trgt_item_id: String = ""
     private let VIEW_SETTING: ContentViewSetting = ContentViewSetting()
     private let FUNC_SETTING: FunctionSetting = FunctionSetting()
+    @State var dateText = ""
+    @State var nowDate = Date()
+    private let dateFormatter = DateFormatter()
+    init() {
+        dateFormatter.dateFormat = "YYYY/MM/dd(E) HH:mm:ss"
+        dateFormatter.locale = Locale(identifier: "ja_jp")
+    }
     var body: some View {
         if FUNC_SETTING.debug_mode {
             let _ = Self._printChanges()
@@ -43,6 +50,15 @@ struct ContentView: View {
                         Text("hab-chain")
                             .font(.largeTitle)
                             .padding()
+                            .onAppear() {
+                                hab_chain_data.setJsonString2RawStruct(json_string: app_json_string)
+                                WidgetCenter.shared.reloadAllTimelines()
+                                hab_chain_data.autoskipUntrgtWeekday(date: Date())
+                                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                                    self.nowDate = Date()
+                                    dateText = "\(dateFormatter.string(from: nowDate))"
+                                }
+                            }
                         Text("ハビットチェーンの力で習慣を継続させましょう！")
                             .font(.caption)
                         HStack (spacing: VIEW_SETTING.BUTTON_SPACING_PX) {
@@ -112,6 +128,7 @@ struct ContentView: View {
                                 trgt_item_id: $trgt_item_id
                             )
                         }
+                        Text(dateText.isEmpty ? "\(dateFormatter.string(from: nowDate))" : dateText)
                     }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {

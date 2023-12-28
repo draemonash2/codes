@@ -224,6 +224,12 @@ struct ItemAddView: View {
             is_show_alert = true
             error_kind = .invalid_weekday_all
         } else {
+            if new_item.is_archived {
+                if !new_item.is_finish_date_enb {
+                    new_item.is_finish_date_enb = true
+                    new_item.finish_date = Date()
+                }
+            }
             hab_chain_data.addItem(new_item_id: hab_chain_data.generateItemId(), new_item: new_item)
             is_show_item_add_view = false
             is_show_alert = false

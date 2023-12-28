@@ -239,6 +239,12 @@ struct ItemEditView: View {
             is_show_alert = true
             error_kind = .invalid_weekday_all
         } else {
+            if hab_chain_data.items[trgt_item_id]!.is_archived {
+                if !hab_chain_data.items[trgt_item_id]!.is_finish_date_enb {
+                    hab_chain_data.items[trgt_item_id]!.is_finish_date_enb = true
+                    hab_chain_data.items[trgt_item_id]!.finish_date = Date()
+                }
+            }
             is_show_item_edit_view = false
             is_show_alert = false
         }

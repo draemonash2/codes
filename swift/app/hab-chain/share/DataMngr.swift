@@ -92,7 +92,13 @@ struct HabChainData {
         new_item: Item
     )
     {
-        self.items.updateValue(new_item, forKey: new_item_id)
+        var new_item_mod: Item = new_item
+        if new_item_mod.is_start_date_enb {
+        } else {
+            new_item_mod.is_start_date_enb = true
+            new_item_mod.start_date = Date()
+        }
+        self.items.updateValue(new_item_mod, forKey: new_item_id)
         self.item_id_list.append(new_item_id)
     }
     mutating func removeItem(

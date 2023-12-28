@@ -62,6 +62,8 @@ struct ItemSettingView: View {
                                         hab_chain_data.items[item_id]!.is_archived = false
                                     } else {
                                         hab_chain_data.items[item_id]!.is_archived = true
+                                        hab_chain_data.items[item_id]!.is_finish_date_enb = true
+                                        hab_chain_data.items[item_id]!.finish_date = Date()
                                     }
                                 } label: {
                                     let icon_color :Color = colorScheme == .light ? Color.black: Color.white
