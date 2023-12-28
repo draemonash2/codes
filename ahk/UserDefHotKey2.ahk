@@ -30,8 +30,8 @@ global giSLEEPPREVENT_PROGRAM_NAME := "TurboVNC"
 global giSLEEPPREVENT_KEY_NAME := " "
 global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
 global giJUMPCURSOL_KEYPRESS_NUM := 3
-global giMOVECURSOL_MOVE_OFFSET := 50
-global giMOVECURSOL_MOVE_OFFSET_FAR := 100
+global giMOVECURSOL_MOVE_OFFSET_NEAR := 50
+global giMOVECURSOL_MOVE_OFFSET_FAR := 150
 
 ;* ***************************************************************
 ;* Preprocess
@@ -56,7 +56,7 @@ InitSleepPreventing()
 ;* ***************************************************************
 
 ;***** キー置き換え *****
-	;無変換キー＋方向キーでPgUp,PgDn,Home,End
+	;無変換キー＋方向キー → PgUp,PgDn,Home,End
 		; e.g. 無変換+上キー -> PgUp
 		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
 		VK1D::VK1D
@@ -64,17 +64,26 @@ InitSleepPreventing()
 		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
 		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
 		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
-	;無変換キー＋jkhlでマウスカーソル移動
-		VK1D & k::		MouseMove 0, -giMOVECURSOL_MOVE_OFFSET, 0, "R"
-		VK1D & j::		MouseMove 0, giMOVECURSOL_MOVE_OFFSET, 0, "R"
-		VK1D & l::		MouseMove giMOVECURSOL_MOVE_OFFSET, 0, 0, "R"
-		VK1D & h::		MouseMove -giMOVECURSOL_MOVE_OFFSET, 0, 0, "R"
-	;無変換キー＋Spaceでマウスクリック
-		VK1D & Space::	Click
+	;無変換キー＋jkhl → マウスカーソル移動
+		~VK1D & k::		MoveCursor("Up")
+		~VK1D & j::		MoveCursor("Down")
+		~VK1D & l::		MoveCursor("Right")
+		~VK1D & h::		MoveCursor("Left")
+	;無変換キー＋Space → マウスクリック
+		VK1D & Space::
+		{
+			if (GetKeyState("Shift","P")) {
+				Click "Right"
+			} else {
+				Click
+			}
+		}
+	;かなキー → AppsKey
+		~VKF2::Send "{AppsKey}"
 	;その他
 		Insert::Return																												;Insertキー
 		PrintScreen::return																											;PrintScreenキー
-
+		
 ;***** ホットキー（Global） *****
 	;スクリプトリロード
 		^+!F5::		ReloadMe()
@@ -334,7 +343,13 @@ InitSleepPreventing()
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
 		^Enter::
 		{
-			Click
+			SendInput "{Enter}"
+			Sleep 5000
+			SendInput "^{Tab}"
+			Sleep 3000
+			SendInput "^{Tab}"
+			Sleep 300
+			SendInput "^{Tab}"
 		}
 	#HotIf
 
@@ -1222,6 +1237,29 @@ InitSleepPreventing()
 			iMoveTrgtMonNum := 1
 		} Else {
 			iMoveTrgtMonNum := iMoveTrgtMonNum + 1
+		}
+	}
+
+	; カーソル移動
+	MoveCursor(sDirection)
+	{
+		iMoveOffset := 0
+		if (GetKeyState("Shift","P")) {
+			iMoveOffset := giMOVECURSOL_MOVE_OFFSET_FAR
+		} else {
+			iMoveOffset := giMOVECURSOL_MOVE_OFFSET_NEAR
+		}
+		switch sDirection {
+			case "Left":
+				MouseMove -iMoveOffset, 0, 0, "R"
+			case "Right":
+				MouseMove iMoveOffset, 0, 0, "R"
+			case "Up":
+				MouseMove 0, -iMoveOffset, 0, "R"
+			case "Down":
+				MouseMove 0, iMoveOffset, 0, "R"
+			default:
+				MsgBox "[ERROR] MoveCursor() unknown direction : " . sDirection
 		}
 	}
 

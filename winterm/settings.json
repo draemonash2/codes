@@ -6,13 +6,10 @@
         {
             "command": 
             {
-                "action": "quakeMode"
+                "action": "sendInput",
+                "input": "\u0002"
             },
-            "keys": "win+@"
-        },
-        {
-            "command": "closePane",
-            "keys": "alt+shift+w"
+            "keys": "ctrl+comma"
         },
         {
             "command": 
@@ -22,16 +19,27 @@
             }
         },
         {
+            "command": "closePane",
+            "keys": "alt+shift+w"
+        },
+        {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u0002"
+                "action": "quakeMode"
             },
-            "keys": "ctrl+comma"
+            "keys": "win+@"
         },
         {
             "command": "find",
             "keys": "ctrl+shift+f"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "right"
+            },
+            "keys": "alt+shift+v"
         },
         {
             "command": 
@@ -60,14 +68,6 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "right"
-            },
-            "keys": "alt+shift+v"
-        },
-        {
-            "command": 
-            {
                 "action": "sendInput",
                 "input": "\u001bb"
             },
@@ -90,14 +90,6 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u0001"
-            },
-            "keys": "ctrl+alt+comma"
-        },
-        {
-            "command": 
-            {
                 "action": "moveFocus",
                 "direction": "up"
             },
@@ -110,6 +102,14 @@
                 "direction": "up"
             },
             "keys": "ctrl+alt+k"
+        },
+        {
+            "command": 
+            {
+                "action": "sendInput",
+                "input": "\u0001"
+            },
+            "keys": "ctrl+alt+comma"
         },
         {
             "command": 
@@ -146,17 +146,17 @@
         {
             "command": 
             {
-                "action": "openSettings",
-                "target": "settingsUI"
+                "action": "nextTab"
             },
-            "keys": "ctrl+alt+o"
+            "keys": "ctrl+tab"
         },
         {
             "command": 
             {
-                "action": "nextTab"
+                "action": "openSettings",
+                "target": "settingsUI"
             },
-            "keys": "ctrl+tab"
+            "keys": "ctrl+alt+o"
         },
         {
             "command": 
@@ -166,6 +166,14 @@
                 "splitMode": "duplicate"
             },
             "keys": "alt+shift+d"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "down"
+            },
+            "keys": "alt+shift+h"
         },
         {
             "command": "unbound",
@@ -254,14 +262,6 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "down"
-            },
-            "keys": "alt+shift+h"
-        },
-        {
-            "command": 
-            {
                 "action": "adjustFontSize",
                 "delta": 1.0
             },
@@ -321,7 +321,7 @@
     ],
     "copyFormatting": "none",
     "copyOnSelect": true,
-    "defaultProfile": "{d7b20cea-47a9-518c-95a4-c8bd91e2e1c6}",
+    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
     "launchMode": "maximized",
     "newTabMenu": 
     [
@@ -367,12 +367,6 @@
                 "startingDirectory": "C:\\"
             },
             {
-                "guid": "{d7b20cea-47a9-518c-95a4-c8bd91e2e1c6}",
-                "hidden": false,
-                "name": "Ubuntu 22.04.2 LTS",
-                "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
-            },
-            {
                 "commandline": "ssh robocipA1-x11",
                 "cursorShape": "filledBox",
                 "font": 
@@ -383,6 +377,12 @@
                 "hidden": false,
                 "name": "SSH-RobocipA1",
                 "tabTitle": "RobocipA1"
+            },
+            {
+                "guid": "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}",
+                "hidden": false,
+                "name": "Ubuntu 22.04.3 LTS",
+                "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
             }
         ]
     },
@@ -619,50 +619,6 @@
             "yellow": "#808000"
         }
     ],
-    "themes": 
-    [
-        {
-            "name": "legacyDark",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "dark",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacyLight",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "light",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacySystem",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "system",
-                "useMica": false
-            }
-        }
-    ],
+    "themes": [],
     "useAcrylicInTabRow": true
 }
