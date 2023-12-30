@@ -1231,6 +1231,26 @@ function add_session_list_to_cmplist() { # {{{
 		add_session_name_to_cmplist "${session_name}"
 	done
 } # }}}
+function tmuxexecall_bre() { # {{{
+	if [ -z "$TMUX" ]; then
+		echo "[error] can only be run on tmux."
+		return 1
+	fi
+	winnum=$(tmux list-windows | tail -n 1 | cut -d: -f 1)
+	activewinidx=$(tmux list-windows | grep "(active)" | cut -d: -f 1)
+	winidx=1
+	while [ ${winidx} -le ${winnum} ]
+	do
+		tmux select-window -t:${winidx}
+		tmux set-window-option synchronize-panes on
+		tmux send-keys ":q" C-m		# quit vim
+		tmux send-keys "bre" C-m	# execute bre
+		tmux set-window-option synchronize-panes off
+		winidx=`expr ${winidx} + 1`
+	done
+	tmux select-window -t:${activewinidx}
+}
+# }}}
 if [ ! -f /.dockerenv ]; then
 	add_session_list_to_cmplist
 	add_session_name_to_cmplist temp
