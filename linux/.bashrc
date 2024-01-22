@@ -1243,7 +1243,7 @@ function tmuxexecall_bre() { # {{{
 	do
 		tmux select-window -t:${winidx}
 		tmux set-window-option synchronize-panes on
-		tmux send-keys ":q" C-m		# quit vim
+		tmux send-keys ":qa!" C-m	# quit vim
 		tmux send-keys "bre" C-m	# execute bre
 		tmux set-window-option synchronize-panes off
 		winidx=`expr ${winidx} + 1`
@@ -1302,6 +1302,45 @@ function cbuildc() { # {{{
 	pkg=${1}
 	rm -rf install/${pkg} build/${pkg}
 	cbuild ${pkg}
+} # }}}
+function renamerospkg() { # {{{
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : renamerospkg <source> <destination>"
+		return 1
+	fi
+	src=${1}
+	dst=${2}
+	renamedirfiles "${1}" "${2}"
+	greprep "${1}" "${2}"
+#	TODO: rename AaaBbb
+} # }}}
+function alignsdfxml() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : alignsdfxml <filepath>"
+		return 1
+	fi
+	infile=${1}
+	if [ ! -f ${infile} ]; then
+		echo "[error] ${infile} does not exist."
+		return 1
+	fi
+	
+	bakfile=${infile}.bak
+	while [ -f ${bakfile} ]
+	do
+		bakfile=${bakfile}_
+	done
+	\cp -f ${infile} ${bakfile}
+	
+	sed -i 's/\\n/\n/g' ${infile}
+	sed -i "s/\\\\'/'/g" ${infile}
+	sed -i 's/\\\"/\"/g' ${infile}
+	sed -i 's/^data: "//g' ${infile}
+	sed -i 's/^"$//g' ${infile}
+	sed -i 's/^\n//g' ${infile}
+#	sed -i '1i <?xml version="1.0" ?>' ${infile}
 } # }}}
 function outputnodesinfo() {
 	# TODO:
