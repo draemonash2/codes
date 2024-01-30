@@ -56,21 +56,16 @@ InitSleepPreventing()
 ;* ***************************************************************
 
 ;***** キー置き換え *****
-	;無変換キー＋方向キー → PgUp,PgDn,Home,End
-		; e.g. 無変換+上キー -> PgUp
-		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
+	;無変換/変換キー単押し
 		VK1D::VK1D
-		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
-		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
-		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
-		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
-	;無変換キー＋jkhl → マウスカーソル移動
-		~VK1D & k::		MoveCursor("Up")
-		~VK1D & j::		MoveCursor("Down")
-		~VK1D & l::		MoveCursor("Right")
-		~VK1D & h::		MoveCursor("Left")
-	;無変換キー＋Space → マウスクリック
-		VK1D & Space::
+		VK1C::VK1C
+	;変換キー＋wasd → マウスカーソル移動
+		VK1C & w::		MoveCursor("Up")
+		VK1C & s::		MoveCursor("Down")
+		VK1C & d::		MoveCursor("Right")
+		VK1C & a::		MoveCursor("Left")
+	;変換キー＋Space → マウスクリック
+		VK1C & Space::
 		{
 			if (GetKeyState("Shift","P")) {
 				Click "Right"
@@ -78,12 +73,23 @@ InitSleepPreventing()
 				Click
 			}
 		}
-	;かなキー → AppsKey
-		~VKF2::Send "{AppsKey}"
-	;その他
+	;無変換キー＋方向キー → PgUp,PgDn,Home,End
+		; e.g. 無変換+上キー -> PgUp
+		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
+		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
+		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
+		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
+		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
+	;無変換キー＋jkhl → 矢印キー
+		VK1D::VK1D
+		VK1D & k::		Send "{Up}"
+		VK1D & j::		Send "{Down}"
+		VK1D & l::		Send "{Right}"
+		VK1D & h::		Send "{Left}"
+	;キー無効化
 		Insert::Return																												;Insertキー
 		PrintScreen::return																											;PrintScreenキー
-		
+
 ;***** ホットキー（Global） *****
 	;スクリプトリロード
 		^+!F5::		ReloadMe()
@@ -339,18 +345,14 @@ InitSleepPreventing()
 	#HotIf
 	
 	#HotIf WinActive("ahk_exe java.exe") and WinActive("TurboVNC: ")
-		; カーソル位置クリック
+		; 特定位置へカーソル移動
 		;   UbuntuのターミナルからGUIプログラムを起動後、
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
-		^Enter::
+		VK1C & t::
 		{
-			SendInput "{Enter}"
-			Sleep 5000
-			SendInput "^{Tab}"
-			Sleep 3000
-			SendInput "^{Tab}"
-			Sleep 300
-			SendInput "^{Tab}"
+			MouseMove 1532, 384
+			sleep 1000
+			Click
 		}
 	#HotIf
 

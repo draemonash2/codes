@@ -1,4 +1,4 @@
-connect '192.168.0.8:22 /ssh /auth=password /user=tatsuyaendo /passwd=Endo4353'
+connect '192.168.0.8:22 /ssh /auth=password /user=endoutatsuya /passwd=Endo4353'
 wait "$"
 sendln "export MYTERM_PRG=TeraTerm"
 wait "$"

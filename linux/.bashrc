@@ -157,6 +157,13 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
+function _update_curdir() # {{{
+{
+	pwdold=${PWD}
+	\cd
+	\cd ${pwdold}
+} # }}}
+alias up='_update_curdir'
 #alias ll='ls -alF'
 #alias la='ls -A'
 #alias l='ls -CF'
@@ -429,7 +436,7 @@ function vimdiffdir() { # {{{
 	diff -rq ${dir1} ${dir2}
 	echo ''
 	echo '***** vimdiff (only files with differences) *****'
-	difflist=(`LANG=C; diff -rq ${dir1} ${dir2} | grep "Files " | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
+	difflist=(`LANG=C; diff -rq ${dir1} ${dir2} | grep "Files " | grep -v "/.git/" | sed -e 's/Files //' | sed -e 's/ and /:::::/' | sed -e 's/ differ//'`)
 	for diffline in "${difflist[@]}"
 	do
 		file1=${diffline%:::::*}
@@ -556,7 +563,7 @@ function killprocessall() { # {{{
 		return 1
 	fi
 	keyword=$1
-	pidlist=$(ps a | grep "${keyword}" | grep -v "grep " | sed 's/^[ \t]*//' | cut -d" " -f 1)
+	pidlist=$(ps a -u ${USER} | grep "${keyword}" | grep -v "grep " | sed 's/^[ \t]*//' | cut -d" " -f 1)
 	for pid in ${pidlist}
 	do
 		echo ${pid}
@@ -668,6 +675,14 @@ function fd() { # {{{
 	else
 		find . -type d -name $1 2> /dev/null
 	fi
+} # }}}
+function path() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : path <file>"
+		return 1
+	fi
+	echo ${PWD}/$1
 } # }}}
 function outputencodesall() # {{{
 {
@@ -1075,6 +1090,19 @@ function setenv() { # {{{
 		echo "#result: ${TESTENV}"
 	} # }}}
 # }}}
+function avim() { # {{{
+	# Colorize ANSI color code on vim
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : avim <file>"
+		return 1
+	fi
+	file=$1
+	vim -c ":term ++hidden ++curwin ++open cat ${file}"
+}
+	complete -F _complete_avim avim # {{{
+	function _complete_avim() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
+# }}}
 function extractdefine() {
 	# TODO:
 	:
@@ -1249,6 +1277,21 @@ function tmuxexecall_bre() { # {{{
 		winidx=`expr ${winidx} + 1`
 	done
 	tmux select-window -t:${activewinidx}
+}
+# }}}
+function tmuxexec_bashtest() { # {{{
+	if [ -z "$TMUX" ]; then
+		echo "[error] can only be run on tmux."
+		return 1
+	fi
+	tmux select-window -t:${winidx}
+	tmux set-window-option synchronize-panes on
+	tmux send-keys ":qa!" C-m	# quit vim
+	tmux send-keys "cd ${HOME}/_repo/pj1tool-ros2dev/docker" C-m
+	tmux send-keys "./bash_test.sh" C-m
+	tmux send-keys "cd workspace" C-m
+	tmux send-keys "lsetup" C-m
+	tmux set-window-option synchronize-panes off
 }
 # }}}
 if [ ! -f /.dockerenv ]; then
