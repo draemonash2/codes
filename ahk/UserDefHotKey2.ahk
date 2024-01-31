@@ -349,7 +349,7 @@ InitSleepPreventing()
 		; 特定位置へカーソル移動
 		;   UbuntuのターミナルからGUIプログラムを起動後、
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
-		VK1C & t::
+		VK1C & v::
 		{
 			MouseMove 1532, 384
 			sleep 1000
@@ -1280,28 +1280,6 @@ InitSleepPreventing()
 	}
 
 	; キッチンタイマー
-;	SetKitchenTimer(iWaitTimeMinites:=0)
-;	{
-;		if (iWaitTimeMinites = 0) {
-;			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , "3")
-;			if (InputBoxObj.Result = "Cancel") {
-;				MsgBox "処理を中断します。"
-;				Return
-;			} else {
-;				iWaitTimeMinites := InputBoxObj.Value
-;			}
-;		}
-;		iWaitTimeMs := iWaitTimeMinites * 60 * 1000
-;		ShowAutoHideTrayTip("キッチンタイマー", iWaitTimeMinites . "分のキッチンタイマーを設定しました！", 5000)
-;		SetTimer ArrivedKitchenTimerCb, iWaitTimeMs
-;	}
-;	ArrivedKitchenTimerCb()
-;	{
-;		FlashScreen()
-;		ShowAutoHideTrayTip("キッチンタイマー", "時間です！", 5000)
-;		SetTimer ArrivedKitchenTimerCb, 0
-;		Return
-;	}
 	SetKitchenTimer(iIntervalMin:=0)
 	{
 		if (iIntervalMin = 0) {
@@ -1317,7 +1295,7 @@ InitSleepPreventing()
 		kitchen_timer.Start()
 	}
 	class KitchenTimer {
-		__New(iIntervalMin:=1, sMsg:="") {
+		__New(iIntervalMin:=3, sMsg:="") {
 			this.interval_min := iIntervalMin
 			this.interval_ms := iIntervalMin * 60 * 1000
 			this.traytip_duration_ms := 5000
@@ -1325,15 +1303,30 @@ InitSleepPreventing()
 			this.cb := ObjBindMethod(this, "TimerCallback")
 		}
 		Start() {
+			; Set timer
 			sMsg := this.interval_min . "分タイマーを開始します！"
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
 			SetTimer this.cb, this.interval_ms
+			
+			; Create log file
+			sMin := String(this.interval_min)
+			sDateTime := FormatTime(A_Now, "yyyyMMdd-HHmmss")
+			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" . sDateTime . "_" . sMin . "min.log"
+			sContents := ""
+			FileAppend sContents, sFilePath
+			this.log_file_path := sFilePath
 		}
 		TimerCallback() {
+			; Flash screen
 			FlashScreen()
+			
+			; Clear timer
 			sMsg := this.interval_min . "分タイマーが終了しました！"
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
 			SetTimer this.cb, 0
+			
+			; Delete log file
+			FileDelete this.log_file_path
 		}
 	}
 
