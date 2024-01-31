@@ -119,7 +119,8 @@ InitSleepPreventing()
 	;プログラム起動
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 	;	^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
-		^+!k::		Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
+	;	^+!k::		Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
+		^+!k::		SetKitchenTimer()																								;キッチンタイマー
 		^+!t::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
 		^+!w::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
 		^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
@@ -188,22 +189,6 @@ InitSleepPreventing()
 		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
-	;その他
-	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
-		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
-		Ctrl::																														;モニタ中心にカーソル移動
-		{
-			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
-			{
-				Sleep 100
-				iIsTimeout := KeyWait("Ctrl", "D T0.2")
-				If (iIsTimeout == 0){
-					Return
-				}
-			}
-			;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
-			MoveCursolToMonitorCenter()
-		}
 	;Tmux上の全ペインでbreを実行する
 		^+!r::
 		{
@@ -230,6 +215,22 @@ InitSleepPreventing()
 			sleep iSleepTimeA
 			SendInput "n"
 			sleep iSleepTimeA
+		}
+	;その他
+	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
+		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
+		Ctrl::																														;モニタ中心にカーソル移動
+		{
+			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
+			{
+				Sleep 100
+				iIsTimeout := KeyWait("Ctrl", "D T0.2")
+				If (iIsTimeout == 0){
+					Return
+				}
+			}
+			;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
+			MoveCursolToMonitorCenter()
 		}
 	;テスト用
 		/*
@@ -788,6 +789,7 @@ InitSleepPreventing()
 	}
 
 	; ツールチップ表示
+	; （カーソル付近に表示されるメッセージ）
 	ShowAutoHideToolTip(sMsg, iShowPeriodMs)
 	{
 		ToolTip(sMsg)
@@ -796,6 +798,7 @@ InitSleepPreventing()
 	}
 
 	; トレイチップ表示
+	; （Windowsのタスクトレイ付近に表示されるメッセージ）
 	ShowAutoHideTrayTip(sTitle, sMsg, iShowPeriodMs)
 	{
 		TrayTip sMsg, sTitle, 1
@@ -854,6 +857,16 @@ InitSleepPreventing()
 			giBrightness := giSCREEN_BRIGHTNESS_MIN
 		}
 		ApplyBrightness(True)
+	}
+	FlashScreen(iDarkBrightness:=10, iFlashCount:=5, iFlashIntervalMs:=50, iFlashSleepMs:=100)
+	{
+		iFlashIntervalMs := 50
+		iFlashSleepMs := 100
+		Loop iFlashCount
+		{
+			SetBrightnessTemporary(iDarkBrightness, iFlashIntervalMs)
+			sleep iFlashSleepMs
+		}
 	}
 	SetBrightness(iBrightness)
 	{
@@ -1263,6 +1276,64 @@ InitSleepPreventing()
 				MouseMove 0, iMoveOffset, 0, "R"
 			default:
 				MsgBox "[ERROR] MoveCursor() unknown direction : " . sDirection
+		}
+	}
+
+	; キッチンタイマー
+;	SetKitchenTimer(iWaitTimeMinites:=0)
+;	{
+;		if (iWaitTimeMinites = 0) {
+;			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , "3")
+;			if (InputBoxObj.Result = "Cancel") {
+;				MsgBox "処理を中断します。"
+;				Return
+;			} else {
+;				iWaitTimeMinites := InputBoxObj.Value
+;			}
+;		}
+;		iWaitTimeMs := iWaitTimeMinites * 60 * 1000
+;		ShowAutoHideTrayTip("キッチンタイマー", iWaitTimeMinites . "分のキッチンタイマーを設定しました！", 5000)
+;		SetTimer ArrivedKitchenTimerCb, iWaitTimeMs
+;	}
+;	ArrivedKitchenTimerCb()
+;	{
+;		FlashScreen()
+;		ShowAutoHideTrayTip("キッチンタイマー", "時間です！", 5000)
+;		SetTimer ArrivedKitchenTimerCb, 0
+;		Return
+;	}
+	SetKitchenTimer(iIntervalMin:=0)
+	{
+		if (iIntervalMin = 0) {
+			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , "3")
+			if (InputBoxObj.Result = "Cancel") {
+				MsgBox "処理を中断します。"
+				Return
+			} else {
+				iIntervalMin := InputBoxObj.Value
+			}
+		}
+		kitchen_timer := KitchenTimer(iIntervalMin)
+		kitchen_timer.Start()
+	}
+	class KitchenTimer {
+		__New(iIntervalMin:=1, sMsg:="") {
+			this.interval_min := iIntervalMin
+			this.interval_ms := iIntervalMin * 60 * 1000
+			this.traytip_duration_ms := 5000
+			this.msg := sMsg
+			this.cb := ObjBindMethod(this, "TimerCallback")
+		}
+		Start() {
+			sMsg := this.interval_min . "分タイマーを開始します！"
+			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
+			SetTimer this.cb, this.interval_ms
+		}
+		TimerCallback() {
+			FlashScreen()
+			sMsg := this.interval_min . "分タイマーが終了しました！"
+			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
+			SetTimer this.cb, 0
 		}
 	}
 
