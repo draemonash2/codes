@@ -24,7 +24,7 @@ set OPT=!OPT! /R:5
 set OPT=!OPT! /W:30
 set OPT=!OPT! /SL
 set OPT=!OPT! /XD "System Volume Information"
-set IDX_MAX=1
+set IDX_MAX=3
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: アクティブディレクトリ判定

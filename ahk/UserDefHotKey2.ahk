@@ -42,6 +42,10 @@ StoreCurYearMonths()
 InitScreenBrightness()
 InitWinTileMode()
 InitSleepPreventing()
+InitAlermTimer()
+InitKitchenTimer()
+
+SetEveryDayAlermTimer()
 
 ;* ***************************************************************
 ;* Keys
@@ -121,9 +125,11 @@ InitSleepPreventing()
 	;	^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
 	;	^+!k::		Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
 		^+!k::		SetKitchenTimer()																								;キッチンタイマー
+		^+!r::		SetAlermTimer()																									;アラームタイマー
 		^+!t::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
 		^+!w::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
-		^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
+	;	^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
+		^+!;::		Run A_ComSpec . " /c calc"																						;電卓アプリ
 		^+!x::																														;rapture.exe
 		{
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
@@ -189,33 +195,6 @@ InitSleepPreventing()
 		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
-	;Tmux上の全ペインでbreを実行する
-		^+!r::
-		{
-			iSleepTimeA := 500
-			iSleepTimeB := 1500
-			; sync on
-			SendInput "^{Space}"
-			sleep iSleepTimeA
-			SendInput "B"
-			
-			; execute bre
-			sleep iSleepTimeB
-			SendInput "bre{Enter}"
-			sleep iSleepTimeB
-			
-			; sync off
-			SendInput "^{Space}"
-			sleep iSleepTimeA
-			SendInput "B"
-			sleep iSleepTimeA
-			
-			; focus next window
-			SendInput "^{Space}"
-			sleep iSleepTimeA
-			SendInput "n"
-			sleep iSleepTimeA
-		}
 	;その他
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
@@ -858,7 +837,7 @@ InitSleepPreventing()
 		}
 		ApplyBrightness(True)
 	}
-	FlashScreen(iDarkBrightness:=10, iFlashCount:=5, iFlashIntervalMs:=50, iFlashSleepMs:=100)
+	FlashScreen(iDarkBrightness:=10, iFlashCount:=10, iFlashIntervalMs:=50, iFlashSleepMs:=200)
 	{
 		iFlashIntervalMs := 50
 		iFlashSleepMs := 100
@@ -1280,15 +1259,28 @@ InitSleepPreventing()
 	}
 
 	; キッチンタイマー
+	InitKitchenTimer()
+	{
+		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+	}
 	SetKitchenTimer(iIntervalMin:=0)
 	{
+		iINIT_MINUTES := 3
 		if (iIntervalMin = 0) {
-			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , "3")
+			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , String(iINIT_MINUTES))
 			if (InputBoxObj.Result = "Cancel") {
 				MsgBox "処理を中断します。"
 				Return
-			} else {
-				iIntervalMin := InputBoxObj.Value
+			}
+			Try {
+				sIntervalMin := InputBoxObj.Value
+				iIntervalMin := Integer(sIntervalMin)
+				if (iIntervalMin < 1) {
+					throw
+				}
+			} Catch Error as err {
+				MsgBox "不正な時間が指定されました。`n" . sIntervalMin . "`n`n処理を中断します。"
+				Return
 			}
 		}
 		kitchen_timer := KitchenTimer(iIntervalMin)
@@ -1303,12 +1295,12 @@ InitSleepPreventing()
 			this.cb := ObjBindMethod(this, "TimerCallback")
 		}
 		Start() {
-			; Set timer
+			; タイマー開始
 			sMsg := this.interval_min . "分タイマーを開始します！"
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
 			SetTimer this.cb, this.interval_ms
 			
-			; Create log file
+			; ログファイル生成
 			sMin := String(this.interval_min)
 			sDateTime := FormatTime(A_Now, "yyyyMMdd-HHmmss")
 			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" . sDateTime . "_" . sMin . "min.log"
@@ -1317,16 +1309,158 @@ InitSleepPreventing()
 			this.log_file_path := sFilePath
 		}
 		TimerCallback() {
-			; Flash screen
+			; 画面フラッシュ
 			FlashScreen()
 			
-			; Clear timer
+			; タイマークリア
 			sMsg := this.interval_min . "分タイマーが終了しました！"
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
 			SetTimer this.cb, 0
 			
-			; Delete log file
+			; ログファイル削除
 			FileDelete this.log_file_path
+		}
+	}
+
+	; アラームタイマー
+	InitAlermTimer()
+	{
+		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+	}
+	SetEveryDayAlermTimer()
+	{
+		iCurWeekDay := Integer(FormatTime(A_Now, "WDay")) ; Sunday is 1.
+		iWeekDayMon := 2
+		iWeekDayFri := 6
+		if (iWeekDayMon <= iCurWeekDay && iCurWeekDay <= iWeekDayFri) {
+			SetAlermTimer("08:57", false)
+			SetAlermTimer("11:57", false)
+			SetAlermTimer("12:57", false)
+			SetAlermTimer("17:57", false)
+		}
+	}
+	SetAlermTimer(sTargetTime:="", bShowMsgs:=true)
+	{
+		sCurrentTime := A_Now
+		if (sTargetTime == "") {
+			; 時刻初期値生成
+			iCurrentHour := Integer(FormatTime(sCurrentTime, "HH"))
+			iCurrentMinutes := Integer(FormatTime(sCurrentTime, "mm"))
+			sInitTime := ""
+			if (iCurrentMinutes < 30) {
+				sInitTime := iCurrentHour . ":30"
+			} else {
+				if (iCurrentHour < 22) {
+					sInitTime := iCurrentHour + 1 . ":00"
+				} else {
+					sInitTime := "00:00"
+				}
+			}
+			
+			; 時刻入力
+			InputBoxObj := InputBox("アラームを設定します。`n時刻（e.g. 12:30）を設定してください。", "アラームタイマー", , sInitTime)
+			if (InputBoxObj.Result = "Cancel") {
+				MsgBox "キャンセルされたため、処理を中断します。"
+				Return
+			}
+			sTargetTime := InputBoxObj.Value
+		}
+		
+		; 時刻フォーマットチェック
+		Try {
+			iTargetHour := Integer(SubStr(sTargetTime, 1, 2))
+			sTargetDelimiter := SubStr(sTargetTime, 3, 1)
+			iTargetMinutes := Integer(SubStr(sTargetTime, 4, 2))
+			;MsgBox iTargetHour . " " . sTargetDelimiter . " " . iTargetMinutes
+			if (StrLen(sTargetTime) != 5) {
+				throw
+			}
+			if (sTargetDelimiter != ":") {
+				throw
+			}
+			if (iTargetHour < 0 || iTargetHour > 23) {
+				throw
+			}
+			if (iTargetMinutes < 0 || iTargetMinutes > 59) {
+				throw
+			}
+		} Catch Error as err {
+			MsgBox "不正な時刻が指定されました。`n" . sTargetTime . "`n`n処理を中断します。"
+			Return
+		}
+		sTrgtDateTime := A_YYYY . A_MM . A_DD . StrReplace(sTargetTime, ":" . "", ) . "00"
+		if (DateDiff(sTrgtDateTime, sCurrentTime, "Seconds") < 0) {
+			sTrgtDateTime := DateAdd(sTrgtDateTime, 1, "days")
+		}
+		
+		; アラーム設定
+		alerm_timer := AlermTimer(sTrgtDateTime, bShowMsgs)
+		alerm_timer.Start()
+	}
+	class AlermTimer {
+		; sTrgtDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
+		; bShowMsgs: hide messages and log files.
+		__New(sTrgtDateTime, bShowMsgs:=true) {
+			Try {
+				sStartDateTime := A_Now
+				iIntervalMs := DateDiff(sTrgtDateTime, sStartDateTime, "Seconds") * 1000
+				iIntervalMin := DateDiff(sTrgtDateTime, sStartDateTime, "Minutes")
+				;MsgBox iIntervalMs . "`n" . sTrgtDateTime . "`n" . sStartDateTime
+				this.target_date_time := sTrgtDateTime
+				this.start_date_time := sStartDateTime
+				this.interval_min := iIntervalMin
+				this.interval_ms := iIntervalMs
+				this.traytip_duration_ms := 5000
+				this.cb := ObjBindMethod(this, "TimerCallback")
+				this.success_setting := true
+				this.show_msgs := bShowMsgs
+			} Catch Error as err {
+				this.success_setting := false
+				MsgBox "[error] Invarid date format : " . sTrgtDateTime . "`n`n" .
+					Format(
+						"{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+						, type(err), err.Message, err.File, err.Line, err.What, err.Stack
+					)
+			}
+		}
+		Start() {
+			if (this.success_setting == true) {
+				; タイマー開始
+				sIntervalTime := ""
+				if (this.interval_min >= 60) {
+					sIntervalTime := Format("{1:d}" , this.interval_min / 60) . "時間" . String(Mod(this.interval_min, 60)) . "分"
+				} else {
+					sIntervalTime := this.interval_min . "分"
+				}
+				
+				if (this.show_msgs) {
+					sMsg := FormatTime(this.target_date_time, "HH:mm") . "（" . sIntervalTime . "後）にアラームを設定しました！"
+					ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
+				}
+				SetTimer this.cb, this.interval_ms
+				
+				; ログファイル生成
+				if (this.show_msgs) {
+					sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_" . this.start_date_time . "-" . this.target_date_time . ".log"
+					sContents := ""
+					FileAppend sContents, sFilePath
+					this.log_file_path := sFilePath
+				}
+			}
+		}
+		TimerCallback() {
+			; 画面フラッシュ
+			FlashScreen()
+			
+			; タイマークリア
+			sMsg := FormatTime(this.target_date_time, "HH:mm") . "になりました！"
+			ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
+			SetTimer this.cb, 0
+			
+			; ログファイル削除
+			if (this.show_msgs) {
+				FileDelete this.log_file_path
+			}
 		}
 	}
 

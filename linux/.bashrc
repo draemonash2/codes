@@ -56,6 +56,9 @@ else
     fi
 fi
 
+# remove all aliases
+unalias -a
+
 # for PS1
 function _update_ps1() { # {{{
 	# [参考URL] https://zenn.dev/kotokaze/articles/bash-console
@@ -157,19 +160,19 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
+#alias ll='ls -alF'
+#alias la='ls -A'
+#alias l='ls -CF'
+alias ll='ls -lFAv --color=auto --time-style="+%Y-%m-%d %H:%M"'
+alias la='ls -AF --color=auto'
+alias l='ls -CF --color=auto'
 function _update_curdir() # {{{
 {
 	pwdold=${PWD}
 	\cd
 	\cd ${pwdold}
 } # }}}
-alias up='_update_curdir'
-#alias ll='ls -alF'
-#alias la='ls -A'
-#alias l='ls -CF'
-alias ll='ls -lFAv --color=auto'
-alias la='ls -AF --color=auto'
-alias l='ls -CF --color=auto'
+alias up='_update_curdir; ll'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -563,7 +566,7 @@ function killprocessall() { # {{{
 		return 1
 	fi
 	keyword=$1
-	pidlist=$(ps a -u ${USER} | grep "${keyword}" | grep -v "grep " | sed 's/^[ \t]*//' | cut -d" " -f 1)
+	pidlist=$(ps a -u ${USER} | grep -- "${keyword}" | grep -v "grep " | sed 's/^[ \t]*//' | cut -d" " -f 1)
 	for pid in ${pidlist}
 	do
 		echo ${pid}
@@ -677,12 +680,46 @@ function fd() { # {{{
 	fi
 } # }}}
 function path() { # {{{
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : path <file>"
+	enable_abs=0
+	args=()
+	while (( $# > 0 ))
+	do
+		case $1 in
+			-h | --help)
+				echo "[summary]"
+				echo "  Displays file/directory path. Copy to clipboard if possible."
+				echo ""
+				echo "[usage]"
+				echo "  path [-a] [<file_dir_path>...]"
+				echo ""
+				echo "[option]"
+				echo "  -a, --absolute: replace \${USER} to home directory full path."
+				return 0
+				;;
+			-a | --absolute)
+				enable_abs=1
+				;;
+			-*)
+				echo "[error] invalid option: \"$1\". see options by --help."
 		return 1
+				;;
+			*)
+				args+=("$1")
+				;;
+		esac
+		shift
+	done
+	curdir=${PWD}
+	if [ ${enable_abs} -eq 0 ]; then
+		curdir=${curdir//\/home\/${USER}/'${HOME}'}
 	fi
-	echo ${PWD}/$1
+	if [ ${#args[@]} -ge 1 ]; then
+		path=${curdir}/${args[0]}
+	else
+		path=${curdir}
+	fi
+	set_clipboard "${path}"
+	echo ${path}
 } # }}}
 function outputencodesall() # {{{
 {
@@ -1103,6 +1140,42 @@ function avim() { # {{{
 	complete -F _complete_avim avim # {{{
 	function _complete_avim() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
 # }}}
+function viml() { # {{{
+	# Launch vim with a file path that includes line numbers.
+	#   e.g. viml file.txt:115: -> vim file.txt -c 115
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : viml <file:line>"
+		return 1
+	fi
+	file_line=$1
+	file=${file_line%%:*}
+	line_tmp=${file_line#*:}
+	line=${line_tmp%%:*}
+	#echo ${file} ${line_tmp} ${line}
+	vim ${file} -c ${line}
+} # }}}
+function set_clipboard() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : set_clipboard <string>"
+		return 1
+	fi
+	string=$1
+	
+	xclip --version &> /dev/null
+	if [ $? -eq 0 ]; then
+		echo -n "${string}" | xclip
+		return 0
+	fi
+	
+	xsel --version &> /dev/null
+	if [ $? -eq 0 ]; then
+		echo -n "${string}" | xsel --clipboard --input
+		return 0
+	fi
+}
+# }}}
 function extractdefine() {
 	# TODO:
 	:
@@ -1113,10 +1186,11 @@ alias gitlo="\
 	git log \
 	--all \
 	--graph \
-	--date=short \
+	--date=format:'%Y-%m-%d %H:%M' \
 	--date-order \
 	--decorate=full \
 	--pretty=format:\" ::: %C(red)%ad%Creset ::: %C(blue)%h%Creset ::: %C(magenta)%d%Creset ::: %C(green)%an%Creset ::: %C(yellow)%s\""
+#	--date=short \
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 
@@ -1259,11 +1333,23 @@ function add_session_list_to_cmplist() { # {{{
 		add_session_name_to_cmplist "${session_name}"
 	done
 } # }}}
-function tmuxexecall_bre() { # {{{
+function _tmuxexecall() { # {{{
+	if [ -f /.dockerenv ]; then
+		echo "[error] can not be on docker container."
+		return 1
+	fi
 	if [ -z "$TMUX" ]; then
 		echo "[error] can only be run on tmux."
 		return 1
 	fi
+	command_idx=0
+	while (( $# > 0 ))
+	do
+		command_array[${command_idx}]="$1"
+		command_idx=`expr ${command_idx} + 1`
+		shift
+	done
+	
 	winnum=$(tmux list-windows | tail -n 1 | cut -d: -f 1)
 	activewinidx=$(tmux list-windows | grep "(active)" | cut -d: -f 1)
 	winidx=1
@@ -1272,28 +1358,67 @@ function tmuxexecall_bre() { # {{{
 		tmux select-window -t:${winidx}
 		tmux set-window-option synchronize-panes on
 		tmux send-keys ":qa!" C-m	# quit vim
-		tmux send-keys "bre" C-m	# execute bre
+		for cmd in "${command_array[@]}"
+		do
+			#echo "${cmd}"
+			tmux send-keys "${cmd}" C-m
+		done
 		tmux set-window-option synchronize-panes off
 		winidx=`expr ${winidx} + 1`
 	done
 	tmux select-window -t:${activewinidx}
-}
-# }}}
-function tmuxexec_bashtest() { # {{{
+} # }}}
+function tmuxexecall_bre() { # {{{
+	_tmuxexecall \
+		"bre" \
+		""
+} # }}}
+function _tmuxexec() { # {{{
+	if [ $# -lt 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : _tmuxexec [<arguments>...]"
+		return 1
+	fi
+	if [ -f /.dockerenv ]; then
+		echo "[error] can not be on docker container."
+		return 1
+	fi
 	if [ -z "$TMUX" ]; then
 		echo "[error] can only be run on tmux."
 		return 1
 	fi
-	tmux select-window -t:${winidx}
+	command_idx=0
+	while (( $# > 0 ))
+	do
+		command_array[${command_idx}]="$1"
+		command_idx=`expr ${command_idx} + 1`
+		shift
+	done
 	tmux set-window-option synchronize-panes on
 	tmux send-keys ":qa!" C-m	# quit vim
-	tmux send-keys "cd ${HOME}/_repo/pj1tool-ros2dev/docker" C-m
-	tmux send-keys "./bash_test.sh" C-m
-	tmux send-keys "cd workspace" C-m
-	tmux send-keys "lsetup" C-m
+	for cmd in "${command_array[@]}"
+	do
+		#echo "${cmd}"
+		tmux send-keys "${cmd}" C-m
+	done
 	tmux set-window-option synchronize-panes off
-}
-# }}}
+} # }}}
+function tmuxexec_bashtest() { # {{{
+	_tmuxexec \
+		"cd ${HOME}/_repo/pj1tool-ros2dev/docker" \
+		"./bash_test.sh" \
+		"cd workspace" \
+		"lsetup" \
+		""
+} # }}}
+function tmuxexec_bashtest2() { # {{{
+	_tmuxexec \
+		"cd ${HOME}/_repo/pj1tool-ros2dev/docker" \
+		"./bash_test2.sh" \
+		"cd workspace" \
+		"lsetup" \
+		""
+} # }}}
 if [ ! -f /.dockerenv ]; then
 	add_session_list_to_cmplist
 	add_session_name_to_cmplist temp
@@ -1401,6 +1526,20 @@ function formatnodesinfo() {
 	# TODO:
 	:
 }
+
+### Ignition Gazebo
+function addenv_ignresource() { # {{{
+	path=""
+	if [ $# -ge 1 ]; then
+		path="$1"
+	else
+		path="${PWD}"
+	fi
+	envname=IGN_GAZEBO_RESOURCE_PATH
+	setenv "${envname}" "${path}"
+	echo "${envname} = $(printenv ${envname})"
+	
+} # }}}
 
 #########################################################
 # Environment dependent settings
