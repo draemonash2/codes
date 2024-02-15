@@ -1,4 +1,4 @@
-" =======================================
+" ==============================================================================
 " プラグイン設定(Vundle.vim)
 " [使い方]
 "  1. 導入したいプラグインパスを以下に列挙
@@ -6,7 +6,8 @@
 " [参考]
 "  ・プラグイン https://qiita.com/tanabee/items/e2064c5ce59c85915940
 "  ・プラグインサイト https://vimawesome.com/
-" =======================================
+" ==============================================================================
+" {{{
 "set nocompatible
 "filetype off
 "set rtp+=~/.vim/bundle/Vundle.vim
@@ -30,12 +31,14 @@
 "
 "call vundle#end()
 "filetype plugin indent on
+" }}}
 
-" =======================================
+" ==============================================================================
 " ファイルパス存在チェック
 " <usage>
 "   call CheckPathExists( $CTAGS )
-" =======================================
+" ==============================================================================
+" {{{
 	function! CheckPathExists( sPath )
 		if filereadable( a:sPath )
 			echo "exists!"
@@ -43,10 +46,12 @@
 			echo "not exists!"
 		endif
 	endfunction
+" }}}
 
-" =======================================
+" ==============================================================================
 " ユーザー定義プラグインフォルダを runtimepath に追加
-" =======================================
+" ==============================================================================
+" {{{
 if has('unix')
 	let $USERPLUGINS = $HOME . '/.vim/_plugins_user'
 else
@@ -57,10 +62,12 @@ endif
 			let &runtimepath = &runtimepath.','.s:path
 		endif
 	endfor
+" }}}
 
-" =======================================
+" ==============================================================================
 " ユーザー定義エクステンションを path に追加
-" =======================================
+" ==============================================================================
+" {{{
 if has('unix')
 	let $EXTENTION = $HOME . '/.vim/_extention'
 else
@@ -71,11 +78,13 @@ endif
 			let $PATH .= ';' . s:path
 		endif
 	endfor
+" }}}
 
-" =======================================
+" ==============================================================================
 " ユーザー定義フォルダ配下のヘルプファイルのタグを作成する
 "	※処理が遅いため、プラグインインストール時のみ逐次実行すること
-" =======================================
+" ==============================================================================
+" {{{
 	function! CreateHelptags()
 		for s:path in split(glob( $USERPLUGINS . '/**/doc'), '\n')
 			let s:txtexists = 0
@@ -95,11 +104,13 @@ endif
 			endif
 		endfor
 	endfunction
+" }}}
 
-" =======================================
+" ==============================================================================
 " neocomplete.vim 用設定
 " [参照] https://github.com/Shougo/neocomplete.vim
-" =======================================
+" ==============================================================================
+" {{{
 "	let g:neocomplete#enable_at_startup = 1 " 起動時に有効化
 "	let g:neocomplete#enable_smart_case = 1 " Use smartcase.
 "	let g:neocomplete#sources#syntax#min_keyword_length = 3
@@ -112,40 +123,50 @@ endif
 "	highlight Pmenu ctermbg=71
 "	highlight PmenuSel ctermbg=71
 "	highlight PMenuSbar ctermbg=71
+" }}}
 
-" =======================================
+" ==============================================================================
 " editexisting-ext.vim 用設定
 " (他のVimで開いているファイルを開こうとしたときポップアップさせる)
 " [参照] http://vimwiki.net/?tips%2F94
 " [参照] https://github.com/koron/vim-kaoriya/issues/9
-" =======================================
+" ==============================================================================
+" {{{
 if has('unix')
 	"do nothing
 else
 	packadd! editexisting
 endif
+" }}}
 
-" =======================================
+" ==============================================================================
 " テキストファイルの自動改行抑止設定
-" =======================================
+" ==============================================================================
+" {{{
 	autocmd BufRead *.txt set tw=0
+" }}}
 
-" =======================================
+" ==============================================================================
 " 折り畳みマーカー設定
-" =======================================
+" ==============================================================================
+" {{{
 	set foldmethod=marker
+" }}}
 
-" =======================================
+" ==============================================================================
 " GVim 起動時は同じウィンドウにまとめて起動する。
 " [参考] http://tyru.hatenablog.com/entry/20130430/vim_resident
-" =======================================
+" ==============================================================================
+" {{{
 "	call singleton#enable()
+" }}}
 
 " ==============================================================================
 " lightline 設定
 " [参考] https://github.com/itchyny/lightline.vim#landscape-theme-with-the-patched-font
 " [参考] http://itchyny.hatenablog.com/entry/20130917/1379369171
 " ==============================================================================
+" {{{
 	let g:lightline = {}
 "	let g:lightline.colorscheme = 'jellybeans'
 	let g:lightline.enable = {
@@ -186,11 +207,13 @@ endif
 					\		'rangediff': 'GetSelRngDiff',
 					\		'anzu': 'anzu#search_status'
 					\	}
+" }}}
 
 " ==============================================================================
 " ctrlp 設定
 " [参照] https://github.com/ctrlpvim/ctrlp.vim
 " ==============================================================================
+" {{{
 	let g:ctrlp_map = '<F4>'
 	let g:ctrlp_cmd = 'CtrlP'
 	let g:ctrlp_working_path_mode = 'ra'
@@ -198,8 +221,9 @@ endif
 	let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
 	
 	command! -nargs=? Cpa CtrlP '/mnt/c/codes_sample'
+" }}}
 
-" =======================================
+" ==============================================================================
 " osc52 設定（リモート越しのローカルコピー）
 " <usage>
 "   1. ターミナルソフトの設定を行う(以下はRLogin時の手順)
@@ -208,12 +232,14 @@ endif
 "     1-3. [OSC 52 によるクリップボードの書き込みを許可する]にチェック
 "   2. osc52.vimをプラグインフォルダに格納
 " <url> http://tateren.hateblo.jp/entry/2017/07/21/213020
-" =======================================
+" ==============================================================================
+" {{{
 if has('unix')
 	execute 'source '. expand( "$HOME/.vim/_plugins_user/osc52/plugin/osc52.vim" )
 	vnoremap y y:call SendViaOSC52(getreg('"'))<cr>
 	nnoremap yy Vy:call SendViaOSC52(getreg('"'))<cr>
 endif
+" }}}
 
 " ==============================================================================
 " ビジュアルモード文字数カウント
@@ -221,6 +247,7 @@ endif
 "		詳細は以下 URL 参照。
 "		  http://www49.atwiki.jp/draemonash/pages/69.html
 " ==============================================================================
+" {{{
 	set updatetime=100 "CursorHold の閾値[ms]
 	autocmd CursorMoved,CursorHold * call s:CalcSelRngStrNum()
 "	autocmd ModeChanged *:[vV\x16]* * call s:CalcSelRngStrNum()
@@ -270,10 +297,12 @@ endif
 			endif
 		endif
 	endfunction
+" }}}
 
 " **************************************************************************************************
 " *****									キーバインド設定									   *****
 " **************************************************************************************************
+" {{{
 " <<説明>>
 "	- map：キー入力を別のキーに割り当てる。
 "	- noremap：キー入力を別のキーに割り当てる。
@@ -456,6 +485,7 @@ endif
 "	tnoremap						<esc><esc>	<c-w>:q!<cr>|									" Terminalモード終了
 
 " (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
+" }}}
 
 " **************************************************************************************************
 " *****										  基本設定										   *****
@@ -463,6 +493,7 @@ endif
 " ==============================================================================
 " 基本設定
 " ==============================================================================
+" {{{
 "	set guifont=MS_Gothic:h10:cSHIFTJIS					" フォントサイズ設定（フォントサイズ設定は以下の「フォントサイズ設定」参照）
 "	set columns=82										" ウィンドウの横幅を～カラムにします
 "	set lines=35										" ウィンドウの高さを～行にします
@@ -592,10 +623,12 @@ endif
 	set autoread										" ファイル自動読み込み
 	let g:vim_json_conceal = 0							" Jsonファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/json.vim）
 	let g:markdown_syntax_conceal = 0					" Markdownファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/markdown.vim）
+" }}}
 
 " ==============================================================================
 " ファイルパス設定
 " ==============================================================================
+"  " {{{
 	let $CTAGS = expand( "$MYEXEPATH_CTAGS" )
 	let $GTAGS = expand( "$MYEXEPATH_GTAGS" )
 	let $GUIGREP = expand( "$MYEXEPATH_TRESGREP" )
@@ -609,10 +642,12 @@ else
 	let g:sSysPathPrefix = ''
 endif
 	let g:sProjectRootFileName = "tags"
+" }}}
 
 " ==============================================================================
 " 共通ユーザ定義関数
 " ==============================================================================
+" {{{
 	function! GetCurFilePath()
 		"expand()のパス区切りは、環境に関わらず"/"固定。そのため環境に合わせてパス区切りを変える。
 		return substitute( expand('%:p'), "/", g:sSysPathDlmtr, "g" )
@@ -674,20 +709,24 @@ endif
 			return ""
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " カラースキーマ設定
 " ==============================================================================
+" {{{
 	syntax on
 	colorscheme jellybeans
 	highlight NonText		guibg=NONE	guifg=#404040
 	highlight SpecialKey	guibg=NONE	guifg=#707070
 	autocmd BufNewFile,BufRead *.cls  set filetype=vb
 	autocmd BufNewFile,BufRead *.frm  set filetype=vb
+" }}}
 
 " ==============================================================================
 " window位置の保存と復帰
 " ==============================================================================
+" {{{
 if has('unix')
 	"do nothing
 else
@@ -721,6 +760,7 @@ else
 		execute 'source '. g:vimposfilepath
 	endif
 endif
+" }}}
 
 " ==============================================================================
 " カーソル位置記憶
@@ -728,16 +768,19 @@ endif
 " 備考: うまく動かない場合は、~/.viminfoのオーナーを変更する。
 "         (e.g. sudo chown <user>:<group> ~/.viminfo)
 " ==============================================================================
+" {{{
 if has('unix')
 	augroup vimrcEx
 		au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
 		\ exe "normal g`\"" | endif
 	augroup END
 endif
+" }}}
 
 " ==============================================================================
 " 挿入モード時、ステータスラインの色を変更
 " ==============================================================================
+" {{{
 	let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
 	
 	if has('syntax')
@@ -767,6 +810,7 @@ endif
 		let hl = substitute(hl, 'xxx', '', '')
 		return hl
 	endfunction
+" }}}
 
 " ==============================================================================
 " 全角スペースを表示
@@ -774,6 +818,7 @@ endif
 "	このファイルのエンコードが一致するよう注意！
 "	強調表示されない場合、ここでscriptencodingを指定するとうまくいく事があります。
 " ==============================================================================
+" {{{
 	scriptencoding utf-8
 	function! ZenkakuSpace()
 		silent! let hi = s:GetHighlight('ZenkakuSpace')
@@ -789,10 +834,12 @@ endif
 		augroup end
 		call ZenkakuSpace()
 	endif
+" }}}
 
 " ==============================================================================
 " カレントディレクトリ変更（grep,tags用）
 " ==============================================================================
+" {{{
 	if exists('+autochdir')
 		"autochdirがある場合カレントディレクトリを移動
 		set autochdir
@@ -800,38 +847,46 @@ endif
 		"autochdirが存在しないが、カレントディレクトリを移動したい場合
 		au BufEnter * execute ":silent! lcd " . escape(expand("%:p:h"), ' ')
 	endif
+" }}}
 
 " ==============================================================================
 " 外部で変更のあったファイルを自動的に読み直す(ウィンドウを移動するたび)
 " [参照] http://vim-users.jp/2011/03/hack206/
 " ==============================================================================
+" {{{
 	augroup vimrc-checktime
 		autocmd!
 		autocmd WinEnter * checktime
 	augroup end
+" }}}
 
 " ==============================================================================
 " IME カラー設定
 " [参照] http://sites.google.com/site/fudist/Home/vim-nihongo-ban/vim-color
 " ==============================================================================
+" {{{
 	if has('multi_byte_ime')
 		highlight Cursor	guifg=NONE guibg=Yellow
 		highlight CursorIM	guifg=NONE guibg=Green
 	endif
+" }}}
 
 " ==============================================================================
 " コメント中の特定の単語を強調表示する
 " [ハイライト実行例] TODO: NOTE: INFO: XXX: TEMP: FIXME: todo: note: info: xxx: temp: fixme:
 " ==============================================================================
+" {{{
 	augroup HilightsForce
 		autocmd!
 		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
 		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
+" }}}
 
 " ==============================================================================
 " 行末の空白をハイライトする
 " ==============================================================================
+" {{{
 	let g:bHilightTailSpaces = 0
 	if g:bHilightTailSpaces == 1
 		augroup highlightSpace
@@ -840,14 +895,17 @@ endif
 			autocmd WinEnter,BufRead,BufNew,Syntax * highlight highlightSpaces ctermbg=Red guibg=Red
 		augroup END
 	endif
+" }}}
 
 " ==============================================================================
 " 関数名の色付け設定
 " [参照] http://ogawa.s18.xrea.com/tdiary/20070523.html
 " ==============================================================================
+" {{{
 "	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*[^\*])@=/
 	autocmd FileType ruby,c,cpp syntax match CFunction /\v[a-zA-Z_]\w*\s*!*((\[[^]]*\]\s*)?\(\s*)@=/
 	autocmd FileType ruby,c,cpp hi CFunction guifg=orange ctermfg=216
+" }}}
 
 " ==============================================================================
 " Vim 内Grep の設定
@@ -856,6 +914,7 @@ endif
 "	-E：拡張正規表現で検索を行う
 " [参照] https://eng-entrance.com/linux-command-grep#-i
 " ==============================================================================
+" {{{
 	let g:sGrepWord = ""
 	let g:sGrepOpt = "-i"
 "	let g:sGrepFileExt = "*.vim,*.c,*.h,*.C,*.H,*.cc,*.cpp,*.hpp,*.f,*.f90,*.ff90,*.F,*.F90,*.vbs,*.bas,*.cls,*.py,*.swift"
@@ -987,11 +1046,13 @@ endif
 		"### Grep 実行 ###
 		execute "Grep -r " . l:sGrepOpt . " " . l:sFileTypeOpt . " """. l:sGrepWord . """ " . l:sRootPath . "/**"
 	endfunction
+" }}}
 
 " ==============================================================================
 " GUIのGrepソフトでGrepする
 " [参照] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
+" {{{
 	function! ExecuteGuiGrep()
 		if has('unix')
 			echo "[error] ExecuteGuiGrep() is windows only!"
@@ -1007,12 +1068,14 @@ endif
 			execute "!start " . l:sGuiGrepSoftPath . " " . l:sRootDirPath . " /KEYWORD=""" . l:sSearchKeyword . """"
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " MemoFile 書込設定
 " Usage : :Cm 実行でデスクトップ配下に
 "		  temp_XXX.txt を作成する
 " ==============================================================================
+" {{{
 	command! Cm call CreateMemoFile()
 	function! CreateMemoFile()
 		let l:sFileNameIdx = 1
@@ -1027,11 +1090,13 @@ endif
 		endwhile
 		execute "w " . l:sMemoFilePath
 	endfunction
+" }}}
 
 " ==============================================================================
 " 上位階層にあるタグファイルを探して、更新。
 " 注意 : 事前にタグファイルを作成しておくこと。
 " ==============================================================================
+" {{{
 	command! Utf call UpdateTagFile()
 	function! UpdateTagFile()
 		" === 上位階層ディレクトリ tags 存在確認 ====
@@ -1053,10 +1118,12 @@ endif
 			echo "update tag file!!  " . l:sDirPath
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " フォントサイズ設定
 " ==============================================================================
+" {{{
 	let g:FontSizeLevel = 3
 	let s:aiFontSizeList = [ 2, 8, 10, 11, 13, 16 ] "要素番号0は俯瞰モード用
 	let s:bIsBirdEyesMode = 0
@@ -1095,10 +1162,12 @@ endif
 		endif
 		call UpdateFontSize()
 	endfunction
+" }}}
 
 " ==============================================================================
 " ファイル保存時に「タブ」を「空白」に変換するかを選択する
 " ==============================================================================
+" {{{
 	let g:EnableTab2SpaceAtSave = 0
 	autocmd BufWritePre * call Tab2SpaceAtSave()
 	function! Tab2SpaceAtSave()
@@ -1109,12 +1178,14 @@ endif
 			"Do Nothing
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " 現在開いているファイル名・ファイルパスをクリップボードにコピーする
 " 参考：copypath.vim v1.0
 "		http://nanasi.jp/articles/vim/copypathim.html
 " ==============================================================================
+" {{{
 	let g:lCopy2UnnamedRegister = 1 " 1）無名レジスタ＋＊レジスタにコピー、それ以外)＊レジスタにコピー
 	
 	command! Cfp call CopyCurFilePath()
@@ -1282,6 +1353,7 @@ endif
 			endif
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " 選択したファイルパスを、現在のファイルパスからの相対パスへ置き換える。
@@ -1293,6 +1365,7 @@ endif
 "	・ヴィジュアルモードで実行すること！
 "	   ex) vnoremap <silent> <F9> :call ReplaceRelativePathFromCurrent()<cr>
 " ==============================================================================
+" {{{
 	let g:sOutPathDlmtr = '/'
 	command! Rrp call ReplaceRelativePathFromCurrent()
 	function! ReplaceRelativePathFromCurrent()
@@ -1363,6 +1436,7 @@ endif
 		
 		return l:sRelativePath
 	endfunction
+" }}}
 
 " ==============================================================================
 " 現在のスクリプトを実行する
@@ -1373,6 +1447,7 @@ endif
 "	<<「cmdpst = "-v"」とした場合>>
 "	  :!% -v
 " ==============================================================================
+" {{{
 	let g:cmdpre = ""
 	let g:cmdpst = ""
 	function! ExecCurrentScript()
@@ -1394,10 +1469,12 @@ endif
 		endif
 		return l:sExecCmd
 	endfunction
+" }}}
 
 " ==============================================================================
 " ウィンドウタブ機能無効化
 " ==============================================================================
+" {{{
 	autocmd! BufNewFile,BufRead,BufEnter,BufNew,BufWinEnter * call AutoTabPageOnly()
 	let g:TabPageOnlyEnable = 1
 	function! AutoTabPageOnly()
@@ -1411,11 +1488,13 @@ endif
 			"do nothing
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " ウィンドウタブ表示を変更する
 " [参考] http://thinca.hatenablog.com/entry/20111204/1322932585
 " ==============================================================================
+" {{{
 "	function! MakeTabLine()
 "		let l:asTitles = map(range(1, tabpagenr('$')), 'GetTabPageLabel(v:val)')
 "		let l:sDelimiter = ' '	" タブ間の区切り
@@ -1463,10 +1542,12 @@ endif
 "		
 "		return '%' . a:lTabPageNum . 'T' . l:sHilight . ' ' . l:sBufNum . l:sModifyStat . l:sSpace . l:sBufName . ' ' . '%T%#TabLineFill#'
 "	endfunction
+" }}}
 
 " ==============================================================================
 " 現在ファイル削除コマンド
 " ==============================================================================
+" {{{
 	command! Delme call DeleteCurFile()
 	function! DeleteCurFile()
 		if has('unix')
@@ -1475,12 +1556,15 @@ endif
 			execute "!del """ . GetCurFilePath() . """"
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " ウィンドウサイズ最大化
 " [参考] http://d.hatena.ne.jp/akishin999/20090509/1241855699
 " ==============================================================================
+" {{{
 	"au GUIEnter * simalt ~x
+" }}}
 
 " ==============================================================================
 " 終了時 タブ⇔空白 自動置換
@@ -1489,6 +1573,7 @@ endif
 " AutoRepTabSpace()は動作するが、vim 終了時に実行してくれない…
 " vim 終了時に実行される autocmd を要調査
 " ==============================================================================
+" {{{
 	let g:AutoRepTabSpaceEnable = 0
 	let g:AutoRepTabSpaceType = 0 "1:tab 2:space other:keep
 	let g:AutoRepTabSpaceExt = 'c|h'
@@ -1538,11 +1623,13 @@ endif
 "		echo "exec"
 "		redir END
 "	endfunction
+" }}}
 
 " ==============================================================================
 " 終了時 改行コード 自動置換
 " ★「終了時 タブ⇔空白 自動置換」と同様の理由で動作しない！
 " ==============================================================================
+" {{{
 "	let g:AutoRepNewLineCodeEnable = 0
 "	let g:AutoRepNewLineCodeType = 2 "0:Lf(unix)、1:Cr(mac)、Other:CrLf(dos)
 "	let g:AutoRepNewLineCodeExt = '*.c,*.h'
@@ -1562,6 +1649,7 @@ endif
 "		endif
 "		execute 'w'
 "	endfunction
+" }}}
 
 " ==============================================================================
 " 文字コード/改行コード 再オープン
@@ -1569,6 +1657,7 @@ endif
 "   :Reoenc [euc-jp|shift_jis|utf-8|..]
 "   :Reoff [dos|mac|unix]
 " ==============================================================================
+" {{{
 	command! -nargs=1 Reoenc call s:ReOpenAtNewCharCode(<f-args>)
 	function! s:ReOpenAtNewCharCode(...)
 		if a:0 == 1
@@ -1582,6 +1671,7 @@ endif
 			execute 'e ++ff=' . a:1
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " 文字コード/改行コード置換
@@ -1589,6 +1679,7 @@ endif
 "   :Repenc [euc-jp|shift_jis|utf-8|..]
 "   :Repff [dos|mac|unix]
 " ==============================================================================
+" {{{
 	command! -nargs=? Repenc call s:ReplaceCharCode(<f-args>)
 	function! s:ReplaceCharCode(...)
 		if a:0 == 1
@@ -1602,11 +1693,13 @@ endif
 			execute 'set ff=' . a:1
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " ウィンドウサイズトグル
 " [参考] https://qiita.com/grohiro/items/e3dbcc93510bc8c4c812
 " ==============================================================================
+" {{{
 	let g:toggle_window_size = 0
 	function! ToggleWindowSize()
 		if g:toggle_window_size == 1
@@ -1618,31 +1711,37 @@ endif
 			let g:toggle_window_size = 1
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " 辞書ファイル登録
 " [参考] https://nanasi.jp/articles/howto/config/dictionary.html
 " ==============================================================================
+" {{{
 if has('unix')
 	autocmd FileType vb :set dictionary=$HOME/.vim/_dictionary/vbscript.dict
 else
 	autocmd FileType vb :set dictionary=$VIM/_dictionary/vbscript.dict
 endif
+" }}}
 
 " ==============================================================================
 " INSERT mode に入るときにカーソル形状を変える
 " [参考] https://oki2a24.com/2019/02/19/how-to-set-terminal-vim-cursor-in-vimrc-as-i-leraned-from-mintty-wiki-tips/
 " ==============================================================================
+" {{{
 if has('unix')
 	let &t_ti .= "\e[2 q"	" [Vim 起動時]		 非点滅ブロック
 	let &t_SI .= "\e[6 q"	" [挿入モード時]	 非点滅縦棒
 	let &t_EI .= "\e[2 q"	" [ノーマルモード時] 非点滅ブロック
 	let &t_te .= "\e[0 q"	" [vim 終了時]		 デフォルト
 endif
+" }}}
 
 " ==============================================================================
 " "{"と","と"}"区切りの選択文字列に対してインデント整形する
 " ==============================================================================
+" {{{
 	command! -range Aibr call AutoIndentBrackets()
 	function! AutoIndentBrackets()
 		"選択文字列取得
@@ -1695,11 +1794,13 @@ endif
 		let @* = l:outputstr
 		silent normal p
 	endfunction
+" }}}
 
 " ==============================================================================
 " 端末の Vim でも Alt キーを使う
 " [参照] https://thinca.hatenablog.com/entry/20101215/1292340358
 " ==============================================================================
+" {{{
 let s:alt_enable = 0 " 本設定はLinux環境にてVim起動時にカーソル位置の文字が"4"に変えられる問題を引き起こす。そのため、無効化する。
 if s:alt_enable
 	if has('unix') && !has('gui_running')
@@ -1722,18 +1823,22 @@ if s:alt_enable
 		map! <NUL> <C-Space>
 	endif
 endif
+" }}}
 
 " ==============================================================================
 " ターミナル起動
 " ==============================================================================
+" {{{
 	command! -nargs=? Tc terminal ++curwin
 	command! -nargs=? Tv vert terminal
 	command! -nargs=? Th bo terminal
+" }}}
 
 " ==============================================================================
 " クリップボードからの貼り付け時、自動インデント無効
 " [参考] https://ttssh2.osdn.jp/manual/4/ja/usage/tips/vim.html
 " ==============================================================================
+" {{{
 if has("patch-8.0.0238")
 	" Bracketed Paste Mode対応バージョン(8.0.0238以降)では、特に設定しない
 	" 場合はTERMがxtermの時のみBracketed Paste Modeが使われる。
@@ -1768,11 +1873,13 @@ else
 		cnoremap <special> <Esc>[201~ <nop>
 	endif
 endif
+" }}}
 
 " ==============================================================================
 " 誤って作られた"]"ファイル自動削除
 " （:w時にenterと間違えて]を押すことがある）
 " ==============================================================================
+" {{{
 	augroup setAutoDelete
 		autocmd!
 		autocmd BufWritePost ] call DeleteWronglyMadeBrackets()
@@ -1781,10 +1888,12 @@ endif
 		call delete("]")
 		echom "']' file is deleted."
 	endfunction
+" }}}
 
 " ==============================================================================
 " 現在ファイルをVSCodeで開く
 " ==============================================================================
+" {{{
 	function! OpenCurFileWithVSCode()
 		if has('win32')
 			let sEditerPath = $MYEXEPATH_VSCODE
@@ -1795,10 +1904,12 @@ endif
 			echo "[error] OpenCurFileWithVSCode() can only be executed on windows."
 		endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " Tmuxからコピーした標準出力について、左右ペインの標準出力を抽出する
 " ==============================================================================
+" {{{
 	command! -range Tml call ExtractPromptTmux(1) " extract left
 	command! -range Tmr call ExtractPromptTmux(2) " extract right
 	function! ExtractPromptTmux( iExtractPain ) " iExtractPain: 1(left) or 2(right)
@@ -1833,10 +1944,12 @@ endif
 		exec "normal k"
 		silent normal p
 	endfunction
+" }}}
 
 " ==============================================================================
 " 引用番号を更新する
 " ==============================================================================
+" {{{
 	let g:bSetQuoteNoDelTmpFile = 0
 	command! Sqn call SetQuoteNo()
 	function! SetQuoteNo()
@@ -1885,6 +1998,7 @@ endif
 			endif
 		endtry
 	endfunction
+" }}}
 
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
@@ -1892,16 +2006,19 @@ endif
 " ==============================================================================
 " Taglist 設定
 " ==============================================================================
+" {{{
 "	let Tlist_Show_One_File = 1		" アクティブバッファのみタグ表示
 "	let Tlist_Use_Right_Window = 1	" 右ウィンドウ表示
 "	let Tlist_Exit_OnlyWindow = 1	" taglistのウインドウだけならVimを閉じる
 "	let Tlist_Display_Prototype = 0 " プロトタイプを非表示
 "	let Tlist_Display_Tag_Scope = 0 " タグスコープを非表示
 "	let Tlist_Auto_Open = 0			" 自動起動無効
+" }}}
 
 " ==============================================================================
 " Tagbar 設定
 " ==============================================================================
+" {{{
 "	let g:tagbar_ctags_bin 
 	let g:tagbar_type_vb = {
 		\ 'ctagstype' : 'vb',
@@ -1924,10 +2041,12 @@ endif
 	let g:tagbar_show_linenumbers = 1
 	let g:tagbar_autopreview = 1
 	let g:tagbar_autofocus = 1
+" }}}
 
 " ==============================================================================
 " bufferlist 設定
 " ==============================================================================
+" {{{
 	let g:BufferListWidth = 30
 	let g:BufferListHideBufferList = 0
 	let g:BufferListExpandBufName = 0
@@ -1936,45 +2055,57 @@ endif
 	let g:BufferListShortenChar = "..."
 	hi BufferSelected guifg=black guibg=#9ad000 gui=bold
 "	hi BufferNormal guifg=white
+" }}}
 
 " ==============================================================================
 " align.vim 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
+" {{{
 	let g:align_xstrlen = 3 " 日本語用
+" }}}
 
 " ==============================================================================
 " code_overview 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
+" {{{
 "	let g:code_overview_autostart = 1
 "	let g:code_overview_use_colorscheme = 1
 "	let g:codeoverview_autoupdate = 1
+" }}}
 
 " =======================================
 " open-browser の設定
 " =======================================
+" {{{
 	let g:netrw_nogx = 1 " disable netrw's gx mapping.
+" }}}
 
 " ==============================================================================
 " mark.vim 設定
 " ★カラースキーマ設定の後に記述すること！★
 " [参照] http://nanasi.jp/articles/vim/mark_vim.html
 " ==============================================================================
+" {{{
 	execute 'source ' . $MARKVIM
 	command! -nargs=? M execute 'source ' . $MARKVIM
+" }}}
 
 " ==============================================================================
 " winresizer.vim 設定
 " [参照] https://github.com/simeji/winresizer
 " ==============================================================================
+" {{{
 "	let g:winresizer_enable = 1
 "	let g:winresizer_start_key = '<C-S-T>'
+" }}}
 
 " ==============================================================================
 " qfixgrep 設定
 " [参照] http://vim-users.jp/2009/09/hack77/
 " ==============================================================================
+" {{{
 if has('unix')
 	let QFix_PreviewHeight = 15
 	let QFix_Height = 15
@@ -1995,15 +2126,19 @@ endif
 	let g:nanomap_auto_realign = 1
 	let g:nanomap_auto_open_close = 1
 	let g:nanomap_highlight_delay = 100
+" }}}
 
 " ==============================================================================
 " vaffle 設定
 " ==============================================================================
+" {{{
 	let g:vaffle_show_hidden_files = 1	" 隠しファイルを表示
+" }}}
 
 " ==============================================================================
 " neosnippet設定
 " ==============================================================================
+" {{{
 if has('unix')
 	let g:neosnippet#snippets_directory = $HOME . '/.vim/_snipets'
 else
@@ -2012,10 +2147,12 @@ endif
 if has('conceal')
 	set conceallevel=2 concealcursor=i
 endif
+" }}}
 
 " ==============================================================================
 " surround 設定
 " ==============================================================================
+" {{{
 	let g:surround_{char2nr("「")} = "「\r」"
 	let g:surround_{char2nr("」")} = "「\r」"
 	let g:surround_{char2nr("【")} = "【\r】"
@@ -2026,14 +2163,19 @@ endif
 	let g:surround_{char2nr("＞")} = "＜\r＞"
 	let g:surround_{char2nr("｛")} = "｛\r｝"
 	let g:surround_{char2nr("｝")} = "｛\r｝"
+" }}}
 
 " ==============================================================================
 " linediff 設定
 " ==============================================================================
+" {{{
 	let g:linediff_first_buffer_command  = 'leftabove new'
 	let g:linediff_second_buffer_command = 'rightbelow vertical new'
+" }}}
 
 " ==============================================================================
 " showmarks 設定
 " ==============================================================================
+" {{{
 	autocmd VimEnter * DoShowMarks!
+" }}}
