@@ -9,6 +9,7 @@
 ;* ***************************************************************
 ;* Setting value
 ;* ***************************************************************
+; {{{
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
@@ -32,20 +33,22 @@ global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
 global giJUMPCURSOL_KEYPRESS_NUM := 3
 global giMOVECURSOL_MOVE_OFFSET_NEAR := 50
 global giMOVECURSOL_MOVE_OFFSET_FAR := 150
+; }}}
 
 ;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
+; {{{
 TraySetIcon "UserDefHotKey2.ico"
 ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 StoreCurYearMonths()
 InitScreenBrightness()
 InitWinTileMode()
 InitSleepPreventing()
-InitAlermTimer()
-InitKitchenTimer()
-
+RestartAlermTimer()
+RestartKitchenTimer()
 SetEveryDayAlermTimer()
+; }}}
 
 ;* ***************************************************************
 ;* Keys
@@ -60,15 +63,17 @@ SetEveryDayAlermTimer()
 ;* ***************************************************************
 
 ;***** キー置き換え *****
-	;無変換/変換キー単押し
+	;無変換/変換キー単押し ; {{{
 		VK1D::VK1D
 		VK1C::VK1C
-	;変換キー＋wasd → マウスカーソル移動
+	; }}}
+	;変換キー＋wasd → マウスカーソル移動 ; {{{
 		VK1C & w::		MoveCursor("Up")
 		VK1C & s::		MoveCursor("Down")
 		VK1C & d::		MoveCursor("Right")
 		VK1C & a::		MoveCursor("Left")
-	;変換キー＋Space → マウスクリック
+	; }}}
+	;変換キー＋Space → マウスクリック ; {{{
 		VK1C & Space::
 		{
 			if (GetKeyState("Shift","P")) {
@@ -77,27 +82,32 @@ SetEveryDayAlermTimer()
 				Click
 			}
 		}
-	;無変換キー＋方向キー → PgUp,PgDn,Home,End
+	; }}}
+	;無変換キー＋方向キー → PgUp,PgDn,Home,End ; {{{
 		; e.g. 無変換+上キー -> PgUp
 		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
 		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
 		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
 		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
 		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
-	;無変換キー＋jkhl → 矢印キー
+	; }}}
+	;無変換キー＋jkhl → 矢印キー ; {{{
 		VK1D::VK1D
 		VK1D & k::		Send "{Up}"
 		VK1D & j::		Send "{Down}"
 		VK1D & l::		Send "{Right}"
 		VK1D & h::		Send "{Left}"
-	;キー無効化
+	; }}}
+	;キー無効化 ; {{{
 		Insert::Return																												;Insertキー
 		PrintScreen::return																											;PrintScreenキー
+	; }}}
 
 ;***** ホットキー（Global） *****
-	;スクリプトリロード
+	;スクリプトリロード ; {{{
 		^+!F5::		ReloadMe()
-	;ファイルオープン
+	; }}}
+	;ファイルオープン ; {{{
 		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
 		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Up::																														;#todo.itmz
@@ -114,13 +124,15 @@ SetEveryDayAlermTimer()
 		^+!c::		StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
 		^+!s::		StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
 		^+!m::		StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
-	;仕事用
+	; }}}
+	;仕事用 ; {{{
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
 		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-	;プログラム起動
+	; }}}
+	;プログラム起動 ; {{{
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
 	;	^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
 	;	^+!k::		Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
@@ -135,7 +147,8 @@ SetEveryDayAlermTimer()
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
-	;フォルダ表示
+	; }}}
+	;フォルダ表示 ; {{{
 		^+!z::																														;ファイラ―
 		{
 			;xf.exe
@@ -151,12 +164,14 @@ SetEveryDayAlermTimer()
 			Sleep 100
 			Send "+{tab}"
 		}
-	;サイトオープン
+	; }}}
+	;サイトオープン ; {{{
 		^+!1::	Run "https://draemonash2.github.io/"																				;Github.io
 		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																;Github.io linux
 		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"													;Github.io git command
 		^+!h::	Run "https://www.deepl.com//translator"																				;翻訳サイト
-	;Wifi接続
+	; }}}
+	;Wifi接続 ; {{{
 		/*
 		^+!F9::																														;Bluetoothテザリング起動
 		{
@@ -175,7 +190,8 @@ SetEveryDayAlermTimer()
 		}
 		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
 		*/
-	;Windowタイル切り替え
+	; }}}
+	;Windowタイル切り替え ; {{{
 		!#LEFT::
 		{
 			;MsgBox "!#LEFT"
@@ -190,12 +206,14 @@ SetEveryDayAlermTimer()
 			DecrementWinTileMode()
 			ApplyWinTileMode()
 		}
-	;画面明るさ設定
+	; }}}
+	;画面明るさ設定 ; {{{
 		#Home::	SetBrightness(giSCREEN_BRIGHTNESS_MAX)
 		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
 		#PgDn::	DarkenScreen()
 		#PgUp::	BrightenScreen()
-	;その他
+	; }}}
+	;その他 ; {{{
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
 		Ctrl::																														;モニタ中心にカーソル移動
@@ -211,7 +229,8 @@ SetEveryDayAlermTimer()
 			;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
 			MoveCursolToMonitorCenter()
 		}
-	;テスト用
+	; }}}
+	;テスト用 ; {{{
 		/*
 		^Pause::	MsgBox "ctrlpause"
 		+Pause::	MsgBox "shiftpause"
@@ -227,13 +246,13 @@ SetEveryDayAlermTimer()
 			MouseMove, x, y
 		}
 		*/
+	; }}}
 
 ;***** ホットキー(Software local) *****
-	#HotIf !WinActive("ahk_exe WindowsTerminal.exe")
+	#HotIf !WinActive("ahk_exe WindowsTerminal.exe") ; {{{
 		RAlt::Send "{AppsKey}"	;右Altキーをコンテキストメニュー表示に変更
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe msedge.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		^!t::	;タブを複製して和訳
 		{
 			;タブを複製
@@ -246,9 +265,8 @@ SetEveryDayAlermTimer()
 		}
 		~RButton & WheelUp::SendInput "^+{Tab}"
 		~RButton & WheelDown::SendInput "^{Tab}"
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe explorer.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
 		+F1::	Run EnvGet("MYDIRPATH_CODES") . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . GetSelFilePathAtExplorer(1)		; winmergeで開く
 		+F2::	StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), GetSelFilePathAtExplorer(1) )									; vimで開く
 		+F3::	StartProgramAndActivate( EnvGet("MYEXEPATH_VSCODE"), GetSelFilePathAtExplorer(1) )									; VSCodeで開く
@@ -274,9 +292,8 @@ SetEveryDayAlermTimer()
 			RunWait A_ComSpec " /c copy nul " sFileName, GetCurDirPathAtExplorer()
 			;FocusFileDirListAtExplorer()
 		}
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe EXCEL.EXE")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe EXCEL.EXE") ; {{{
 		F1::return	;F1ヘルプ無効化
 		+Space::	;IME ON状態でShift+Space(行選択)が効かない対策
 		{
@@ -290,57 +307,49 @@ SetEveryDayAlermTimer()
 				SendInput "+{Space}"
 			}
 		}
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe iThoughts.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe iThoughts.exe") ; {{{
 		F1::return	;F1ヘルプ無効化
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe Rapture.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe Rapture.exe") ; {{{
 		Esc::!F4	;Escで終了
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe vimrun.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe vimrun.exe") ; {{{
 		Esc::!F4	;Escで終了
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe XF.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe XF.exe") ; {{{
 		^WheelUp::SendInput "^+{Tab}"  ;Next tab.
 		^WheelDown::SendInput "^{Tab}" ;Previous tab.
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe chrome.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe chrome.exe") ; {{{
 	;	^WheelUp::SendInput ^+{Tab}  ;Next tab.
 	;	^WheelDown::SendInput ^{Tab} ;Previous tab.
-	#HotIf
-	
-	#HotIf WinActive("ahk_class MPC-BE")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_class MPC-BE") ; {{{
 		]::Send "{Space}"
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe PDFXEdit.exe")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe PDFXEdit.exe") ; {{{
 		MButton::	SendInput "^z" ;元に戻す
 		XButton1::	SendInput "!5" ;下線
 		XButton2::	SendInput "!4" ;テキストハイライト
-	#HotIf
-	
-	#HotIf WinActive("ahk_exe java.exe") and WinActive("TurboVNC: ")
+	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe java.exe") and WinActive("TurboVNC: ") ; {{{
 		; 特定位置へカーソル移動
 		;   UbuntuのターミナルからGUIプログラムを起動後、
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
 		VK1C & v::
 		{
-			MouseMove 1532, 384
-			sleep 1000
+			MouseMove 2000, 550
+		;	sleep 1000
 			Click
 		}
-	#HotIf
+	#HotIf ; }}}
 
 ;* ***************************************************************
 ;* Functions (macro)
 ;* ***************************************************************
 	; 起動＆アクティベート処理 (実行プログラム＆ファイルパス指定)
-	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=False, bShowToolTip:=True )
+	StartProgramAndActivate( sExePath, sFilePath, bLaunchSingleProcess:=False, bShowToolTip:=True ) ; {{{
 	{
 		;*** preprocess ***
 		If ( sExePath == "" or sFilePath == "" )
@@ -381,7 +390,7 @@ SetEveryDayAlermTimer()
 		}
 		ToolTip()
 		return
-	}
+	} ; }}}
 	
 	; 起動＆アクティベート処理 (ファイルパス指定のみ)
 	;
@@ -390,7 +399,7 @@ SetEveryDayAlermTimer()
 	;       理由）単一プロセス起動は、プログラム名を基にしたプロセスの起動有無を
 	;             確認することで実現できる。本関数はプログラム名を指定しないため、
 	;             単一プロセス起動を実現できない。
-	StartProgramAndActivateFile( sFilePath, bShowToolTip:=True )
+	StartProgramAndActivateFile( sFilePath, bShowToolTip:=True ) ; {{{
 	{
 		;*** preprocess ***
 		If ( sFilePath == "" )
@@ -419,10 +428,10 @@ SetEveryDayAlermTimer()
 		}
 		ToolTip()
 		return
-	}
+	} ; }}}
 	
 	; 起動＆アクティベート処理 (実行プログラム指定のみ)
-	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=False, bShowToolTip:=True )
+	StartProgramAndActivateExe( sExePath, bLaunchSingleProcess:=False, bShowToolTip:=True ) ; {{{
 	{
 		;*** preprocess ***
 		If ( sExePath == "" )
@@ -463,8 +472,8 @@ SetEveryDayAlermTimer()
 		}
 		ToolTip()
 		return
-	}
-	BringActiveWindowToTop()
+	} ; }}}
+	BringActiveWindowToTop() ; {{{
 	{
 		Try {
 			;常に最前面ON→OFFにより、アクティブウィンドウを最前面に設定する
@@ -477,10 +486,10 @@ SetEveryDayAlermTimer()
 		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-	}
+	} ; }}}
 
 	; 今押している修飾キーと共にキー送信する
-	SendKeyWithModKeyCurPressing( sSendKey )
+	SendKeyWithModKeyCurPressing( sSendKey ) ; {{{
 	{
 		bIsPressShift := GetKeyState("Shift","P")
 		bIsPressCtrl := GetKeyState("Ctrl","P")
@@ -503,15 +512,15 @@ SetEveryDayAlermTimer()
 			Send "{" . sSendKey . "}"
 		}
 		return
-	}
+	} ; }}}
 
 	;Windowタイル切り替え
-	InitWinTileMode()
+	InitWinTileMode() ; {{{
 	{
 		ClearWinTileMode()
 		SetTimerClearWinTileMode()
-	}
-	IncrementWinTileMode()
+	} ; }}}
+	IncrementWinTileMode() ; {{{
 	{
 		global giWinTileMode
 		giWinTileMode += 1
@@ -523,8 +532,8 @@ SetEveryDayAlermTimer()
 			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
 		}
 	;	MsgBox "[DBG] IncrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
-	}
-	DecrementWinTileMode()
+	} ; }}}
+	DecrementWinTileMode() ; {{{
 	{
 		global giWinTileMode
 		giWinTileMode -= 1
@@ -536,16 +545,16 @@ SetEveryDayAlermTimer()
 			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
 		}
 	;	MsgBox "[DBG] DecrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
-	}
-	GetWinTileModeMin()
+	} ; }}}
+	GetWinTileModeMin() ; {{{
 	{
 		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MIN)
-	}
-	GetWinTileModeMax()
+	} ; }}}
+	GetWinTileModeMax() ; {{{
 	{
 		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MAX)
-	}
-	CropWinTileModeWithMonNum(iInWinTileMode)
+	} ; }}}
+	CropWinTileModeWithMonNum(iInWinTileMode) ; {{{
 	{
 		iOutWinTileMode := giWIN_TILE_MODE_INIT
 		iMonitorNum := GetMonitorNum()
@@ -556,20 +565,20 @@ SetEveryDayAlermTimer()
 			default:	MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
 		}
 		return iOutWinTileMode
-	}
-	SetTimerClearWinTileMode()
+	} ; }}}
+	SetTimerClearWinTileMode() ; {{{
 	{
 		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
-	}
-	ClearWinTileMode()
+	} ; }}}
+	ClearWinTileMode() ; {{{
 	{
 		global giWinTileMode
 		giWinTileMode := giWIN_TILE_MODE_INIT
 		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
 		Return
-	}
+	} ; }}}
 	; ウィンドウサイズ切り替え
-	ApplyWinTileMode()
+	ApplyWinTileMode() ; {{{
 	{
 		global giWinTileMode
 		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
@@ -590,12 +599,12 @@ SetEveryDayAlermTimer()
 			default:	MsgBox "[error] invalid giWinTileMode : " . giWinTileMode
 		}
 		return
-	}
-	GetMonitorNum()
+	} ; }}}
+	GetMonitorNum() ; {{{
 	{
 		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
-	}
-	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iWinRangeRate:=0 )
+	} ; }}}
+	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iWinRangeRate:=0 ) ; {{{
 	{
 		iMonNum := GetMonitorNum()
 		if ( iMonIdx > iMonNum)
@@ -640,8 +649,8 @@ SetEveryDayAlermTimer()
 		}
 	;	MsgBox "[DBG] GetMonitorPosInfo() 02" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
 		return True
-	}
-	MoveActiveWin(iInX, iInY, iInWidth, iInHeight, sOutputSide:="")
+	} ; }}}
+	MoveActiveWin(iInX, iInY, iInWidth, iInHeight, sOutputSide:="") ; {{{
 	{
 		switch sOutputSide
 		{
@@ -684,27 +693,27 @@ SetEveryDayAlermTimer()
 		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-	}
+	} ; }}}
 
 	; ファイル名取得
-	ExtractFileName( sFilePath )
+	ExtractFileName( sFilePath ) ; {{{
 	{
 		SplitPath sFilePath, &sFileName, &sDirPath, &sExtName, &sFileBaseName, &sDrive
 		sFileName := StrReplace(sFileName, "`"", )
 	;	MsgBox sFilePath . "`n" . sFileName . "`n" . sDirPath . "`n" . sExtName . "`n" . sFileBaseName . "`n" . sDrive
 		return sFileName
-	}
+	} ; }}}
 	; ディレクトリパス取得
-	ExtractDirPath( sFilePath )
+	ExtractDirPath( sFilePath ) ; {{{
 	{
 		SplitPath sFilePath, &sFileName, &sDirPath, &sExtName, &sFileBaseName, &sDrive
 		sDirPath := StrReplace(sDirPath, "`"", )
 	;	MsgBox sFilePath . "`n" . sFileName . "`n" . sDirPath . "`n" . sExtName . "`n" . sFileBaseName . "`n" . sDrive
 		return sDirPath
-	}
+	} ; }}}
 
 	; 選択ファイルパス取得＠explorer
-	GetSelFilePathAtExplorer( bIsDelimiterSpace )
+	GetSelFilePathAtExplorer( bIsDelimiterSpace ) ; {{{
 	{
 		clipboard_old := A_Clipboard
 		A_Clipboard := ""
@@ -717,9 +726,9 @@ SetEveryDayAlermTimer()
 		}
 	;	MsgBox "sTrgtPaths = " . sTrgtPaths
 		return sTrgtPaths
-	}
+	} ; }}}
 	; 現在フォルダパス取得＠explorer
-	GetCurDirPathAtExplorer()
+	GetCurDirPathAtExplorer() ; {{{
 	{
 		clipboard_old := A_Clipboard
 		A_Clipboard := ""
@@ -732,9 +741,9 @@ SetEveryDayAlermTimer()
 		A_Clipboard := clipboard_old
 	;	MsgBox "sTrgtPaths = " . sTrgtPaths
 		return sTrgtPaths
-	}
+	} ; }}}
 	; 選択ファイル名取得＠explorer
-	GetSelFileNameAtExplorer()
+	GetSelFileNameAtExplorer() ; {{{
 	{
 		sFilePaths := GetSelFilePathAtExplorer(0)
 		sDirPaths := GetCurDirPathAtExplorer()
@@ -742,9 +751,9 @@ SetEveryDayAlermTimer()
 		sTrgtPaths := StrReplace(sTrgtPaths, "`"", )
 	;	MsgBox "sTrgtPaths = " . sTrgtPaths . "`nsFilePaths = " . sFilePaths . "`nsDirPaths = " . sDirPaths
 		return sTrgtPaths
-	}
+	} ; }}}
 	; ファイルリストへフォーカスを移す＠explorer
-	;FocusFileDirListAtExplorer()
+	;FocusFileDirListAtExplorer() ; {{{
 	;{
 	;	Sleep 100
 	;	ControlFocus, SysTreeView321
@@ -754,8 +763,8 @@ SetEveryDayAlermTimer()
 	;		Sleep 100
 	;		Send "{Tab}"
 	;	}
-	;}
-	FocusFileDirListAtExplorer()
+	;} ; }}}
+	FocusFileDirListAtExplorer() ; {{{
 	{
 		WinActivate "ahk_class CabinetWClass ahk_exe Explorer.EXE"
 		Sleep 200
@@ -765,28 +774,28 @@ SetEveryDayAlermTimer()
 		Sleep 200
 		Send "{Tab}"
 		return
-	}
+	} ; }}}
 
 	; ツールチップ表示
 	; （カーソル付近に表示されるメッセージ）
-	ShowAutoHideToolTip(sMsg, iShowPeriodMs)
+	ShowAutoHideToolTip(sMsg, iShowPeriodMs) ; {{{
 	{
 		ToolTip(sMsg)
 		SetTimer () => ToolTip(), -1 * iShowPeriodMs
 		Return
-	}
+	} ; }}}
 
 	; トレイチップ表示
 	; （Windowsのタスクトレイ付近に表示されるメッセージ）
-	ShowAutoHideTrayTip(sTitle, sMsg, iShowPeriodMs)
+	ShowAutoHideTrayTip(sTitle, sMsg, iShowPeriodMs) ; {{{
 	{
 		TrayTip sMsg, sTitle, 1
 		SetTimer () => TrayTip(), -1 * iShowPeriodMs
 		Return
-	}
+	} ; }}}
 
 	; 画面明るさ設定
-	InitScreenBrightness()
+	InitScreenBrightness() ; {{{
 	{
 		global giBrightness
 		iNowHour := Integer(FormatTime(A_Now, "H"))
@@ -816,8 +825,8 @@ SetEveryDayAlermTimer()
 		;	MsgBox "iMonitorCount = " . iMonitorCount . ", A_Index = " . A_Index . ", iDimId = " . iDimId
 		}
 		Return
-	}
-	BrightenScreen()
+	} ; }}}
+	BrightenScreen() ; {{{
 	{
 		global giBrightness
 		giBrightness += giSCREEN_BRIGHTNESS_STEP
@@ -826,8 +835,8 @@ SetEveryDayAlermTimer()
 			giBrightness := giSCREEN_BRIGHTNESS_MAX
 		}
 		ApplyBrightness(True)
-	}
-	DarkenScreen()
+	} ; }}}
+	DarkenScreen() ; {{{
 	{
 		global giBrightness
 		giBrightness -= giSCREEN_BRIGHTNESS_STEP
@@ -836,8 +845,8 @@ SetEveryDayAlermTimer()
 			giBrightness := giSCREEN_BRIGHTNESS_MIN
 		}
 		ApplyBrightness(True)
-	}
-	FlashScreen(iDarkBrightness:=10, iFlashCount:=10, iFlashIntervalMs:=50, iFlashSleepMs:=200)
+	} ; }}}
+	FlashScreen(iDarkBrightness:=10, iFlashCount:=10, iFlashIntervalMs:=50, iFlashSleepMs:=200) ; {{{
 	{
 		iFlashIntervalMs := 50
 		iFlashSleepMs := 100
@@ -846,29 +855,29 @@ SetEveryDayAlermTimer()
 			SetBrightnessTemporary(iDarkBrightness, iFlashIntervalMs)
 			sleep iFlashSleepMs
 		}
-	}
-	SetBrightness(iBrightness)
+	} ; }}}
+	SetBrightness(iBrightness) ; {{{
 	{
 		global giBrightness
 		giBrightness := iBrightness
 		ApplyBrightness(True)
-	}
-	SetBrightnessTemporary(iBrightness, iWaitTimeMs)
+	} ; }}}
+	SetBrightnessTemporary(iBrightness, iWaitTimeMs) ; {{{
 	{
 		global giBrightness
 		global giBrightnessOld := giBrightness
 		giBrightness := iBrightness
 		ApplyBrightness(False)
 		SetTimer(SetOldBrightness, -1 * iWaitTimeMs)
-	}
-	SetOldBrightness()
+	} ; }}}
+	SetOldBrightness() ; {{{
 	{
 		global giBrightness
 		global giBrightnessOld
 		giBrightness := giBrightnessOld
 		ApplyBrightness(False)
-	}
-	ApplyBrightness(bShowToolTip:=True)
+	} ; }}}
+	ApplyBrightness(bShowToolTip:=True) ; {{{
 	{
 		global giBrightness
 		iMonitorCount := MonitorGetCount()
@@ -882,18 +891,18 @@ SetEveryDayAlermTimer()
 			ShowAutoHideToolTip("明るさ：" . giBrightness . "%", 500)
 		}
 		Return
-	}
+	} ; }}}
 
 	;クリップボード設定
-	SetClipboard(sStr)
+	SetClipboard(sStr) ; {{{
 	{
 		A_Clipboard := ""
 		A_Clipboard := sStr
 		ClipWait
-	}
+	} ; }}}
 
 	; GUI
-	CreateSlctCmndWindowZip()
+	CreateSlctCmndWindowZip() ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -905,8 +914,8 @@ SetEveryDayAlermTimer()
 		gmyGui.OnEvent("Close", EventEscape)
 		gmyGui.OnEvent("Escape", EventEscape)
 		gmyGui.Show("Center")
-	}
-	EventClickAtZip(A_GuiEvent, GuiCtrlObj, Info, *)
+	} ; }}}
+	EventClickAtZip(A_GuiEvent, GuiCtrlObj, Info, *) ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -928,8 +937,8 @@ SetEveryDayAlermTimer()
 		}
 		;FocusFileDirListAtExplorer()
 		return
-	}
-	CreateSlctCmndWindowLink()
+	} ; }}}
+	CreateSlctCmndWindowLink() ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -941,8 +950,8 @@ SetEveryDayAlermTimer()
 		gmyGui.OnEvent("Close", EventEscape)
 		gmyGui.OnEvent("Escape", EventEscape)
 		gmyGui.Show("Center")
-	}
-	EventClickAtLink(A_GuiEvent, GuiCtrlObj, Info, *)
+	} ; }}}
+	EventClickAtLink(A_GuiEvent, GuiCtrlObj, Info, *) ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -961,8 +970,8 @@ SetEveryDayAlermTimer()
 		}
 		;FocusFileDirListAtExplorer()
 		return
-	}
-	CreateSlctCmndWindowPathList()
+	} ; }}}
+	CreateSlctCmndWindowPathList() ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -974,8 +983,8 @@ SetEveryDayAlermTimer()
 		gmyGui.OnEvent("Close", EventEscape)
 		gmyGui.OnEvent("Escape", EventEscape)
 		gmyGui.Show("Center")
-	}
-	EventClickPathList(A_GuiEvent, GuiCtrlObj, Info, *)
+	} ; }}}
+	EventClickPathList(A_GuiEvent, GuiCtrlObj, Info, *) ; {{{
 	{
 		global gmyGui
 		global gogcListBoxAnswer
@@ -996,13 +1005,13 @@ SetEveryDayAlermTimer()
 				MsgBox "[ERROR] パス一覧作成"
 		}
 		;FocusFileDirListAtExplorer()
-	}
-	EventEscape(*)
+	} ; }}}
+	EventEscape(*) ; {{{
 	{
 		global gmyGui
 	;	MsgBox "エスケープされました"
 		gmyGui.Destroy()
-	}
+	} ; }}}
 
 	; IME.ahk
 	; [URL] https://github.com/s-show/AutoHotKey/blob/AutoHotKey/IME.ahk
@@ -1011,7 +1020,7 @@ SetEveryDayAlermTimer()
 	;   WinTitle="A"    対象Window
 	;   戻り値          1:ON / 0:OFF
 	;-----------------------------------------------------------
-	IME_GET(WinTitle:="A")  {
+	IME_GET(WinTitle:="A")  { ; {{{
 		Controls := WinGetControlsHwnd(WinTitle)
 		hwnd := ControlGetHWND(Controls[1], WinTitle)
 		if (WinActive(WinTitle))    {
@@ -1022,14 +1031,14 @@ SetEveryDayAlermTimer()
 					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
 		}
 		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x0005, "Int", 0)
-	}
+	} ; }}}
 	;-----------------------------------------------------------
 	; IMEの状態をセット
 	;	SetSts			1:ON / 0:OFF
 	;	WinTitle="A"	対象Window
 	;	戻り値			0:成功 / 0以外:失敗
 	;-----------------------------------------------------------
-	IME_SET(SetSts, WinTitle:="A")    {
+	IME_SET(SetSts, WinTitle:="A")    { ; {{{
 		Controls := WinGetControlsHwnd(WinTitle)
 		hwnd := ControlGetHWND(Controls[1], WinTitle)
 		if (WinActive(WinTitle))    {
@@ -1040,18 +1049,18 @@ SetEveryDayAlermTimer()
 					 ? NumGet(stGTI, 8+PtrSize, "UInt") : hwnd
 		}
 		return DllCall("SendMessage", "UInt", DllCall("imm32\ImmGetDefaultIMEWnd", "Uint", hwnd), "UInt", 0x0283, "Int", 0x006, "Int", SetSts)
-	}
+	} ; }}}
 
 	; 本スクリプトをリロードする
-	ReloadMe()
+	ReloadMe() ; {{{
 	{
 		Reload
 		Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
 		MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
-	}
+	} ; }}}
 
 	; 今月/先月の月日を取得する
-	StoreCurYearMonths()
+	StoreCurYearMonths() ; {{{
 	{
 		global gsYearCur := ""
 		global gsMonth1DegCur := ""
@@ -1062,9 +1071,9 @@ SetEveryDayAlermTimer()
 		GetYearMonth(A_YYYY, A_MM, &gsYearCur, &gsMonth1DegCur, &gsMonth2DegCur)
 		GetYearMonth(A_YYYY, A_MM, &gsYearLast, &gsMonth1DegLast, &gsMonth2DegLast, -1)
 		;MsgBox gsYearCur . "/" . gsMonth1DegCur . "," . gsMonth2DegCur . "`n" . gsYearLast . "/" . gsMonth1DegLast . "," . gsMonth2DegLast
-	}
+	} ; }}}
 	; 月日を取得する
-	GetYearMonth(sInYear, sInMonth, &sOutYear, &sOutMonth1Deg, &sOutMonth2Deg, iOffset:=0 )
+	GetYearMonth(sInYear, sInMonth, &sOutYear, &sOutMonth1Deg, &sOutMonth2Deg, iOffset:=0 ) ; {{{
 	{
 		if (iOffset > 12 || iOffset < -12)
 		{
@@ -1093,7 +1102,7 @@ SetEveryDayAlermTimer()
 		sOutYear := Format("{1:04d}" , String(iTrgtYear))
 		sOutMonth1Deg := Format("{1:d}" , String(iTrgtMonth))
 		sOutMonth2Deg := Format("{1:02d}" , String(iTrgtMonth))
-	}
+	} ; }}}
 		Test_GetYearMonth() { ; {{{
 			sYear := ""
 			sMonth1Deg := ""
@@ -1144,7 +1153,7 @@ SetEveryDayAlermTimer()
 		} ; }}}
 
 	; Window最前面化
-	ToggleAlwaysOnTopEnable()
+	ToggleAlwaysOnTopEnable() ; {{{
 	{
 		static bEnableAlwaysOnTop := False
 		WinSetAlwaysOnTop -1, "A"
@@ -1159,14 +1168,14 @@ SetEveryDayAlermTimer()
 			ShowAutoHideTrayTip("", "Window最前面を【解除】します`n`n" . sActiveWinTitle, 2000)
 			bEnableAlwaysOnTop := False
 		}
-	}
+	} ; }}}
 
 	; ウィンドウスリープ抑制
-	InitSleepPreventing()
+	InitSleepPreventing() ; {{{
 	{
 		SetSleepPreventingMode("Disable", False)
-	}
-	SetSleepPreventingMode(sMode, bShowToolTip:=True)
+	} ; }}}
+	SetSleepPreventingMode(sMode, bShowToolTip:=True) ; {{{
 	{
 		static bEnablePreventWindow
 		switch sMode {
@@ -1195,8 +1204,8 @@ SetEveryDayAlermTimer()
 			}
 			SetTimer ActivateTargetWindow, 0
 		}
-	}
-	ActivateTargetWindow()
+	} ; }}}
+	ActivateTargetWindow() ; {{{
 	{
 		if (gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT == True) {
 			ShowAutoHideTrayTip("", giSLEEPPREVENT_PROGRAM_NAME . " アクティベート実行", 2000)
@@ -1211,10 +1220,10 @@ SetEveryDayAlermTimer()
 			;MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 			;	, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 		}
-	}
+	} ; }}}
 
 	;モニタ中心にカーソル移動
-	MoveCursolToMonitorCenter() {
+	MoveCursolToMonitorCenter() { ; {{{
 		static iMoveTrgtMonNum := 1
 		GetMonitorPosInfo( iMoveTrgtMonNum, &dX, &dY, &dWidth, &dHeight )
 		dCurX := dX + Integer(dWidth / 2)
@@ -1233,10 +1242,10 @@ SetEveryDayAlermTimer()
 		} Else {
 			iMoveTrgtMonNum := iMoveTrgtMonNum + 1
 		}
-	}
+	} ; }}}
 
 	; カーソル移動
-	MoveCursor(sDirection)
+	MoveCursor(sDirection) ; {{{
 	{
 		iMoveOffset := 0
 		if (GetKeyState("Shift","P")) {
@@ -1256,14 +1265,45 @@ SetEveryDayAlermTimer()
 			default:
 				MsgBox "[ERROR] MoveCursor() unknown direction : " . sDirection
 		}
-	}
+	} ; }}}
 
 	; キッチンタイマー
-	InitKitchenTimer()
+	ClearKitchenTimer() ; {{{
 	{
 		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
-	}
-	SetKitchenTimer(iIntervalMin:=0)
+	} ; }}}
+	RestartKitchenTimer() ; {{{
+	{
+		sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+		Loop Files, sFilePattern
+		{
+			sFileName := A_LoopFileName
+			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
+			sFileLines := FileRead(sFilePath)
+			asFileLines := StrSplit(sFileLines, "`n")
+			sOldStartDateTime := asFileLines[1]
+			iOldMin := Integer(asFileLines[2])
+			iOldSec := Integer(asFileLines[3])
+			;MsgBox sOldStartDateTime . "`n" . String(iOldMin) . "`n" . String(iOldSec)
+			
+			FileDelete sFilePath
+			
+			iOldSeconds := iOldMin * 60 + iOldSec
+			
+			sTargetDateTime := DateAdd(sOldStartDateTime, iOldSeconds, "Seconds")
+			sStartDateTime := A_Now
+			iNewSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+			if (iNewSecond > 0) {
+				iIntervalMin := Floor(iNewSecond / 60)
+				iIntervalSec := Mod(iNewSecond, 60)
+				;MsgBox iIntervalMin . "`n" .  iIntervalSec
+				
+				kitchen_timer := KitchenTimer(false, true)
+				kitchen_timer.Start(iIntervalMin, iIntervalSec)
+			}
+		}
+	} ; }}}
+	SetKitchenTimer(iIntervalMin:=0) ; {{{
 	{
 		iINIT_MINUTES := 3
 		if (iIntervalMin = 0) {
@@ -1283,63 +1323,112 @@ SetEveryDayAlermTimer()
 				Return
 			}
 		}
-		kitchen_timer := KitchenTimer(iIntervalMin)
-		kitchen_timer.Start()
-	}
-	class KitchenTimer {
-		__New(iIntervalMin:=3, sMsg:="") {
-			this.interval_min := iIntervalMin
-			this.interval_ms := iIntervalMin * 60 * 1000
+		kitchen_timer := KitchenTimer(true, true)
+		kitchen_timer.Start(iIntervalMin)
+	} ; }}}
+	class KitchenTimer { ; {{{
+		__New(bShowMsgs:=true, bCreateLogFile:=true) {
 			this.traytip_duration_ms := 5000
-			this.msg := sMsg
+			this.show_msgs := bShowMsgs
+			this.create_log_file := bCreateLogFile
 			this.cb := ObjBindMethod(this, "TimerCallback")
 		}
-		Start() {
+		Start(iIntervalMin:=3, iIntervalSec:=0) {
+			If (iIntervalSec < 0 || iIntervalSec > 59) {
+				MsgBox "不正な時間(iIntervalSec)が指定されました。`n" . iIntervalSec . "`n`n処理を中断します。"
+				Return
+			}
+			If (iIntervalMin < 0) {
+				MsgBox "不正な時間(iIntervalMin)が指定されました。`n" . iIntervalMin . "`n`n処理を中断します。"
+				Return
+			}
+			this.interval_sec := iIntervalSec
+			this.interval_min := iIntervalMin
+			this.interval_ms := (iIntervalMin * 60 + iIntervalSec) * 1000
+			
 			; タイマー開始
-			sMsg := this.interval_min . "分タイマーを開始します！"
-			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
+			if (this.show_msgs) {
+				if (this.interval_sec > 0) {
+					sMsg := this.interval_min . "分" . this.interval_sec . "秒タイマーを開始します！"
+				} else {
+					sMsg := this.interval_min . "分タイマーを開始します！"
+				}
+				ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
+			}
 			SetTimer this.cb, this.interval_ms
 			
 			; ログファイル生成
-			sMin := String(this.interval_min)
-			sDateTime := FormatTime(A_Now, "yyyyMMdd-HHmmss")
-			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" . sDateTime . "_" . sMin . "min.log"
-			sContents := ""
-			FileAppend sContents, sFilePath
-			this.log_file_path := sFilePath
+			if (this.create_log_file) {
+				sDateTime := A_Now
+				sFilePath :=
+					EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" .
+					FormatTime(sDateTime, "yyyyMMdd-HHmmss") . "_" .
+					String(this.interval_min) . "min" . String(this.interval_sec) . "sec.log"
+				sContents := sDateTime . "`n" . String(this.interval_min) . "`n" . String(this.interval_sec)
+				FileAppend sContents, sFilePath
+				this.log_file_path := sFilePath
+			}
 		}
 		TimerCallback() {
 			; 画面フラッシュ
 			FlashScreen()
 			
 			; タイマークリア
-			sMsg := this.interval_min . "分タイマーが終了しました！"
+			if (this.interval_sec > 0) {
+				sMsg := this.interval_min . "分" . this.interval_sec . "秒タイマーが終了しました！"
+			} else {
+				sMsg := this.interval_min . "分タイマーが終了しました！"
+			}
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
 			SetTimer this.cb, 0
 			
 			; ログファイル削除
-			FileDelete this.log_file_path
+			if (this.create_log_file) {
+				FileDelete this.log_file_path
+			}
 		}
-	}
+	} ; }}}
 
 	; アラームタイマー
-	InitAlermTimer()
-	{
-		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
-	}
-	SetEveryDayAlermTimer()
+	SetEveryDayAlermTimer() ; {{{
 	{
 		iCurWeekDay := Integer(FormatTime(A_Now, "WDay")) ; Sunday is 1.
 		iWeekDayMon := 2
 		iWeekDayFri := 6
 		if (iWeekDayMon <= iCurWeekDay && iCurWeekDay <= iWeekDayFri) {
-			SetAlermTimer("08:57", false)
-			SetAlermTimer("11:57", false)
-			SetAlermTimer("12:57", false)
-			SetAlermTimer("17:57", false)
+			SetAlermTimer("8:57", false, false)
+			SetAlermTimer("11:57", false, false)
+			SetAlermTimer("12:57", false, false)
+			SetAlermTimer("17:57", false, false)
 		}
-	}
-	SetAlermTimer(sTargetTime:="", bShowMsgs:=true)
+	} ; }}}
+	ClearAlermTimer() ; {{{
+	{
+		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+	} ; }}}
+	RestartAlermTimer() ; {{{
+	{
+		sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+		Loop Files, sFilePattern
+		{
+			sFileName := A_LoopFileName
+			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
+			sFileLines := FileRead(sFilePath)
+			asFileLines := StrSplit(sFileLines, "`n")
+			sTargetDateTime := asFileLines[2]
+			;MsgBox sTargetDateTime
+			
+			FileDelete sFilePath
+			
+			sStartDateTime := A_Now
+			iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+			if (iSecond > 0) {
+				alerm_timer := AlermTimer(false, true)
+				alerm_timer.Start(sTargetDateTime)
+			}
+		}
+	} ; }}}
+	SetAlermTimer(sTargetTime:="", bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
 		sCurrentTime := A_Now
 		if (sTargetTime == "") {
@@ -1347,15 +1436,21 @@ SetEveryDayAlermTimer()
 			iCurrentHour := Integer(FormatTime(sCurrentTime, "HH"))
 			iCurrentMinutes := Integer(FormatTime(sCurrentTime, "mm"))
 			sInitTime := ""
+			sInitHour := ""
+			sInitMinute := ""
 			if (iCurrentMinutes < 30) {
-				sInitTime := iCurrentHour . ":30"
+				sInitHour := iCurrentHour
+				sInitMinute := "30"
 			} else {
-				if (iCurrentHour < 22) {
-					sInitTime := iCurrentHour + 1 . ":00"
+				if (iCurrentHour < 23) {
+					sInitHour := iCurrentHour + 1 
+					sInitMinute := "00"
 				} else {
-					sInitTime := "00:00"
+					sInitHour := "00"
+					sInitMinute := "00"
 				}
 			}
+			sInitTime := sInitHour . ":" . sInitMinute
 			
 			; 時刻入力
 			InputBoxObj := InputBox("アラームを設定します。`n時刻（e.g. 12:30）を設定してください。", "アラームタイマー", , sInitTime)
@@ -1368,16 +1463,14 @@ SetEveryDayAlermTimer()
 		
 		; 時刻フォーマットチェック
 		Try {
-			iTargetHour := Integer(SubStr(sTargetTime, 1, 2))
-			sTargetDelimiter := SubStr(sTargetTime, 3, 1)
-			iTargetMinutes := Integer(SubStr(sTargetTime, 4, 2))
-			;MsgBox iTargetHour . " " . sTargetDelimiter . " " . iTargetMinutes
-			if (StrLen(sTargetTime) != 5) {
+			iDelimiterPos := Integer(InStr(sTargetTime, ":"))
+			;MsgBox String(iDelimiterPos)
+			if (iDelimiterPos = 0) { ; delimiter not found
 				throw
 			}
-			if (sTargetDelimiter != ":") {
-				throw
-			}
+			iTargetHour := Integer(SubStr(sTargetTime, 1, iDelimiterPos-1))
+			iTargetMinutes := Integer(SubStr(sTargetTime, iDelimiterPos+1, 2))
+			;MsgBox iTargetHour . " " . iTargetMinutes
 			if (iTargetHour < 0 || iTargetHour > 23) {
 				throw
 			}
@@ -1388,19 +1481,24 @@ SetEveryDayAlermTimer()
 			MsgBox "不正な時刻が指定されました。`n" . sTargetTime . "`n`n処理を中断します。"
 			Return
 		}
-		sTrgtDateTime := A_YYYY . A_MM . A_DD . StrReplace(sTargetTime, ":" . "", ) . "00"
+		sTrgtDateTime := A_YYYY . A_MM . A_DD . Format("{1:02d}" , String(iTargetHour)) . Format("{1:02d}" , String(iTargetMinutes)) . "00"
 		if (DateDiff(sTrgtDateTime, sCurrentTime, "Seconds") < 0) {
 			sTrgtDateTime := DateAdd(sTrgtDateTime, 1, "days")
 		}
 		
 		; アラーム設定
-		alerm_timer := AlermTimer(sTrgtDateTime, bShowMsgs)
-		alerm_timer.Start()
-	}
-	class AlermTimer {
+		alerm_timer := AlermTimer(bShowMsgs, bCreateLogFile)
+		alerm_timer.Start(sTrgtDateTime)
+	} ; }}}
+	class AlermTimer { ; {{{
+		__New(bShowMsgs:=true, bCreateLogFile:=true) {
+			this.traytip_duration_ms := 5000
+			this.cb := ObjBindMethod(this, "TimerCallback")
+			this.show_msgs := bShowMsgs
+			this.create_log_file := bCreateLogFile
+		}
 		; sTrgtDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
-		; bShowMsgs: hide messages and log files.
-		__New(sTrgtDateTime, bShowMsgs:=true) {
+		Start(sTrgtDateTime) {
 			Try {
 				sStartDateTime := A_Now
 				iIntervalMs := DateDiff(sTrgtDateTime, sStartDateTime, "Seconds") * 1000
@@ -1410,42 +1508,38 @@ SetEveryDayAlermTimer()
 				this.start_date_time := sStartDateTime
 				this.interval_min := iIntervalMin
 				this.interval_ms := iIntervalMs
-				this.traytip_duration_ms := 5000
-				this.cb := ObjBindMethod(this, "TimerCallback")
-				this.success_setting := true
-				this.show_msgs := bShowMsgs
 			} Catch Error as err {
-				this.success_setting := false
 				MsgBox "[error] Invarid date format : " . sTrgtDateTime . "`n`n" .
 					Format(
 						"{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
 						, type(err), err.Message, err.File, err.Line, err.What, err.Stack
 					)
+				return
 			}
-		}
-		Start() {
-			if (this.success_setting == true) {
-				; タイマー開始
-				sIntervalTime := ""
-				if (this.interval_min >= 60) {
-					sIntervalTime := Format("{1:d}" , this.interval_min / 60) . "時間" . String(Mod(this.interval_min, 60)) . "分"
-				} else {
-					sIntervalTime := this.interval_min . "分"
-				}
-				
-				if (this.show_msgs) {
-					sMsg := FormatTime(this.target_date_time, "HH:mm") . "（" . sIntervalTime . "後）にアラームを設定しました！"
-					ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
-				}
-				SetTimer this.cb, this.interval_ms
-				
-				; ログファイル生成
-				if (this.show_msgs) {
-					sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_" . this.start_date_time . "-" . this.target_date_time . ".log"
-					sContents := ""
-					FileAppend sContents, sFilePath
-					this.log_file_path := sFilePath
-				}
+			
+			; タイマー開始
+			sIntervalTime := ""
+			if (this.interval_min >= 60) {
+				sIntervalTime := Format("{1:d}" , this.interval_min / 60) . "時間" . String(Mod(this.interval_min, 60)) . "分"
+			} else {
+				sIntervalTime := this.interval_min . "分"
+			}
+			
+			if (this.show_msgs) {
+				sMsg := FormatTime(this.target_date_time, "HH:mm") . "（" . sIntervalTime . "後）にアラームを設定しました！"
+				ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
+			}
+			SetTimer this.cb, this.interval_ms
+			
+			; ログファイル生成
+			if (this.create_log_file) {
+				sFilePath :=
+					EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_" .
+					FormatTime(this.start_date_time, "yyyyMMdd-HHmmss") .  "_to_" .
+					FormatTime(this.target_date_time, "yyyyMMdd-HHmmss") . ".log"
+				sContents := this.start_date_time . "`n" . this.target_date_time
+				FileAppend sContents, sFilePath
+				this.log_file_path := sFilePath
 			}
 		}
 		TimerCallback() {
@@ -1458,17 +1552,17 @@ SetEveryDayAlermTimer()
 			SetTimer this.cb, 0
 			
 			; ログファイル削除
-			if (this.show_msgs) {
+			if (this.create_log_file) {
 				FileDelete this.log_file_path
 			}
 		}
-	}
+	} ; }}}
 
 ;* ***************************************************************
 ;* Functions (common)
 ;* ***************************************************************
 	; 値のクリッピング
-	CropValue(iValue, iMin, iMax)
+	CropValue(iValue, iMin, iMax) ; {{{
 	{
 		if ( iValue < iMin ) {
 			return iMin
@@ -1479,5 +1573,5 @@ SetEveryDayAlermTimer()
 				return iValue
 			}
 		}
-	}
+	} ; }}}
 

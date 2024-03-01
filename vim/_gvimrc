@@ -1,7 +1,6 @@
 " **************************************************************************************************
 " *****									キーバインド設定									   *****
 " **************************************************************************************************
-" {{{
 " <<説明>>
 "	- map：キー入力を別のキーに割り当てる。
 "	- noremap：キー入力を別のキーに割り当てる。
@@ -20,6 +19,7 @@
 "			これはコメント付きの空の新しいコマンドを開始するからです。
 
 "=== モード共通 ===
+" {{{
 	noremap		<silent>			x			"_x|											" 1文字削除（切り取りなし）
 "	nnoremap	<silent>			dd			"_dd|											" 行削除（切取りなし）
 "	nnoremap	<silent>			cc			dd|												" 行切取り
@@ -35,8 +35,10 @@
 	noremap		<silent>			<c-h>		10zh10h|										" カーソル移動＋画面移動（左）
 	noremap		<silent>			<bs>		10zh10h|										" カーソル移動＋画面移動（左） for tmux
 	noremap		<silent>			<c-l>		10zl10l|										" カーソル移動＋画面移動（右）
+" }}}
 
 "=== ノーマルモード ===
+" {{{
 "	nnoremap	<silent>			<cr>		<nop>|
 	nnoremap				<expr>	gc			":Gc " . expand('<cword>')|						" Grep＠現在ファイル
 	nnoremap				<expr>	gp			":Gp " . expand('<cword>')|						" Grep＠上位階層「tags」格納ディレクトリ配下
@@ -105,12 +107,16 @@
 	nmap		<silent>			n			<Plug>(anzu-n)zz|								" 検索結果を画面中央に
 	nmap		<silent>			N			<Plug>(anzu-N)zz|								" 検索結果を画面中央に
 	nmap		<silent>			*			<Plug>(anzu-star)zz|							" 検索結果を画面中央に
+"	nnoremap	<silent>			*			:call SearchStart()<cr>|						" 検索結果を画面中央に
 	nmap		<silent>			#			<Plug>(anzu-sharp)zz|							" 検索結果を画面中央に
 	nmap		<silent>			K			g*zz|											" 検索結果を画面中央に
 	nmap		<silent>			g#			g#zz|											" 検索結果を画面中央に
 	nmap		<silent>			<Esc><Esc>	<Plug>(anzu-clear-search-status):noh<cr>|		" 検索結果を画面中央に
+	" (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
+" }}}
 
 "=== 挿入モード ===
+" {{{
 	inoremap	<silent>			<c-j>		<esc>|											" Ctrl+J でノーマルモードに移行
 	imap		<silent>			<c-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 	imap					<expr>	<TAB>		neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"|	" 【neosnippet】次の展開へ
@@ -131,8 +137,10 @@ endif
 "	inoremap	<silent>			‘			‘’<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 "	inoremap	<silent>			（			（）<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
 "	inoremap	<silent>			｛			｛｝<LEFT>|										" 括弧とクォーテーションの自動補完（全角文字はなぜかうまく動かない…）
+" }}}
 
 "=== ヴィジュアルモード ===
+" {{{
 	vmap		<silent>			Y			<esc>:set expandtab<cr>gv:retab!<cr>gvyu|		" 選択範囲をタブ->空白変換後にコピー
 	vnoremap	<silent>			T			<esc>:set expandtab<cr>gv:retab!<cr>gv:call CopyLineWithLineNo()<cr>u|	" 選択範囲をタブ->空白変換後に行番号付き行コピー
 "	vnoremap	<silent>			p			"0p<cr>											" ヤンクせずに貼り付け
@@ -155,8 +163,10 @@ endif
 "	vnoremap				<expr>	gc			":Gc " . expand('<cword>')|						" Grep＠現在ファイル
 "	vnoremap				<expr>	gp			":Gp " . expand('<cword>')|						" Grep＠上位階層「tags」格納ディレクトリ配下
 "	vnoremap				<expr>	gt			":Gt " . expand('<cword>')|						" Grep(対話型)＠ファイルパスなどを指定
+" }}}
 
 "=== コマンドラインモード ===
+" {{{
 	cnoremap						<c-n>		<Down>|											" コマンド履歴進む(シェル同等)
 	cnoremap						<c-p>		<Up>|											" コマンド履歴戻る(シェル同等)
 	cnoremap						<c-b>		<Left>|											" カーソル移動 左(シェル同等)
@@ -169,21 +179,23 @@ if has('unix')
 else
 	cmap							<c-v>		<S-Insert>|										" 貼り付け
 endif
+" }}}
 
 "=== その他モード ===
+" {{{
 	smap							<C-k>		<Plug>(neosnippet_expand_or_jump)|				" 【neosnippet】スニペットを展開
 "	xmap							<C-k>		<Plug>(neosnippet_expand_target)|				" 【neosnippet】スニペットを展開
 	smap					<expr>	<TAB>		neosnippet#expandable_or_jumpable() ?  "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"|	" 【neosnippet】次の展開へ
+" }}}
 
 "=== ターミナルウィンドウ ===
+" {{{
 "	tnoremap						<c-n><c-h>	<c-w>h|											" ウィンドウフォーカス移動(左)
 "	tnoremap						<c-n><c-j>	<c-w>j|											" ウィンドウフォーカス移動(下)
 "	tnoremap						<c-n><c-k>	<c-w>k|											" ウィンドウフォーカス移動(上)
 "	tnoremap						<c-n><c-l>	<c-w>l|											" ウィンドウフォーカス移動(右)
 "	tnoremap						<c-i>		<c-w>N|											" Terminal-Normalモード切替え
 "	tnoremap						<esc><esc>	<c-w>:q!<cr>|									" Terminalモード終了
-
-" (*1) Gtags用キーバインド [参照] http://cha.la.coocan.jp/doc/gnu_global.html#sec10
 " }}}
 
 " **************************************************************************************************
@@ -1649,26 +1661,26 @@ endif
 " 引用番号を更新する
 " ==============================================================================
 " {{{
-	let g:bSetQuoteNoDelTmpFile = 0
 	command! Sqn call SetQuoteNo()
 	function! SetQuoteNo()
-		let l:sInFileName = GetCurFilePath()
-		let l:sOutFileName = l:sInFileName . ".setquote_bak"
-		while filereadable(l:sOutFileName)
-			let l:sOutFileName = l:sOutFileName . "_"
-		endwhile
-		
-		if !filereadable(l:sInFileName)
-			echo "[error] file does not exist : " . l:sInFileName
+		let l:sInFilePath = GetCurFilePath()
+		if !filereadable(l:sInFilePath)
+			echo "[error] file does not exist : " . l:sInFilePath
 			return 0
 		endif
 		
-		call delete(l:sOutFileName)
+		let l:sTmpFilePath = l:sInFilePath . ".tmp"
+		let l:sBakFilePath = l:sInFilePath . ".setquote_bak"
+		while filereadable(l:sBakFilePath)
+			let l:sBakFilePath = l:sBakFilePath . "_"
+		endwhile
+		
+		call delete(l:sTmpFilePath)
 		
 		let l:sPattern = '\v\[\[\d+\]\]'
 		let l:iQuoteIdx = 1
 		try
-			let l:asLines = readfile(l:sInFileName)
+			let l:asLines = readfile(l:sInFilePath)
 			for l:sLine in l:asLines
 				let l:sLineRep1 = substitute(l:sLine, l:sPattern, "", "g")
 				let l:sLineRep2 = substitute(l:sLine, l:sPattern, "1", "g")
@@ -1679,7 +1691,7 @@ endif
 					let l:sReplacedLine = substitute(l:sReplacedLine, l:sReplaceKeyword, "[[" . l:iQuoteIdx . "]]" , "")
 					let l:iQuoteIdx += 1
 				endfor
-				call writefile([l:sReplacedLine], l:sOutFileName, 'a')
+				call writefile([l:sReplacedLine], l:sTmpFilePath, 'a')
 			endfor
 		catch
 			echo v:exception
@@ -1690,14 +1702,27 @@ endif
 			else
 				let l:sCopyCmdName = "\cp -f"
 			endif
-			call system(l:sCopyCmdName . ' "' . l:sOutFileName . '" "' . l:sInFileName . '"')
-			
-			if g:bSetQuoteNoDelTmpFile == 1
-				call delete(l:sOutFileName)
-			endif
+			call system(l:sCopyCmdName . ' "' . l:sInFilePath . '" "' . l:sBakFilePath . '"')
+			call system(l:sCopyCmdName . ' "' . l:sTmpFilePath . '" "' . l:sInFilePath . '"')
+			call delete(l:sTmpFilePath)
 		endtry
 	endfunction
 " }}}
+" 
+" ==============================================================================
+" 
+" ==============================================================================
+	function! SearchStart()
+		let l:sCurWord = expand("<cword>")
+	"	exec "normal /"
+		let l:sLineNoOld = line(".")
+		exec "normal *"
+	"	let l:sLineNoNew = line(".")
+	"	"echom l:sLineNoOld . " " . l:sLineNoNew
+	"	if l:sLineNoOld != l:sLineNoNew
+	"		normal N
+	"	endif
+	endfunction
 
 " ==============================================================================
 " 和訳のために英文を整形する

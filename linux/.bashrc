@@ -201,7 +201,7 @@ fi
 HISTTIMEFORMAT='%F %T '
 export LANG=en_US.UTF8
 
-# for common
+### Common
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
@@ -404,7 +404,7 @@ function gr() { # {{{
 		echo "  usage : gr <keyword>"
 		return 1
 	fi
-	grep -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
+	grep --no-messages -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 } # }}}
 function grw() { # {{{
 	if [ $# -ne 1 ]; then
@@ -412,7 +412,7 @@ function grw() { # {{{
 		echo "  usage : grw <keyword>"
 		return 1
 	fi
-	grep -nrIRw "$@" --exclude={tags,GTAGS*,GRTAGS*} .
+	grep --no-messages -nrIRw "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 } # }}}
 function cdex() { # {{{
 	\cd "$@"			# cdがaliasでループするので\をつける
@@ -679,6 +679,17 @@ function fd() { # {{{
 		find . -type d -name $1 2> /dev/null
 	fi
 } # }}}
+function outputleafdirlist() { # {{{
+	dirlist=$(find . -type d)
+	for dir in $dirlist
+	do
+		#echo $dir
+		directory_num=$(find "${dir}" -maxdepth 1 -type d | wc -l)
+		if [ ${directory_num} -eq 1 ]; then
+			echo "${dir}"
+		fi
+	done
+} # }}}
 function path() { # {{{
 	enable_abs=0
 	args=()
@@ -701,7 +712,7 @@ function path() { # {{{
 				;;
 			-*)
 				echo "[error] invalid option: \"$1\". see options by --help."
-		return 1
+				return 1
 				;;
 			*)
 				args+=("$1")
@@ -720,7 +731,10 @@ function path() { # {{{
 	fi
 	set_clipboard "${path}"
 	echo ${path}
-} # }}}
+}
+	complete -F _complete_path path # {{{
+	function _complete_path() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
+# }}}
 function outputencodesall() # {{{
 {
 	# This function requires "nkf" command.
@@ -892,7 +906,9 @@ function convunixtimetodate() { # {{{
 		echo "  usage : convunixtimetodate <unixtime>"
 		return 1
 	fi
-	echo $1 | awk '{print strftime("%c",$1)}'
+	unixtime=$1
+#	echo ${unixtime} | awk '{print strftime("%c",$1)}'
+	date -d @${unixtime} +"%Y-%m-%d %H:%M:%S"
 } # }}}
 function aggregate() { # {{{
 	if [ $# -ne 1 ]; then
@@ -1060,21 +1076,21 @@ function setenv() { # {{{
 		return 1
 	fi
 	env_var_name=$1
-	env_value_new=$2
-	env_value_old=$(printenv ${env_var_name})
-	if [ -z ${env_value_old} ]; then
-		export ${env_var_name}="${env_value_new}"
+	env_value_target=$2
+	env_value_base=$(printenv ${env_var_name})
+	if [ -z ${env_value_base} ]; then
+		export ${env_var_name}="${env_value_target}"
 	else
 		_true=0
 		_false=1
-		_is_str_pos_head "${env_value_old}" "${env_value_new}:"
+		_is_str_pos_head "${env_value_base}" "${env_value_target}:"
 		is_exist_head="$?"
-		_is_str_pos_tail "${env_value_old}" ":${env_value_new}"
+		_is_str_pos_tail "${env_value_base}" ":${env_value_target}"
 		is_exist_tail="$?"
-		_is_exist_str "${env_value_old}" ":${env_value_new}:"
+		_is_exist_str "${env_value_base}" ":${env_value_target}:"
 		is_exist_mid="$?"
 		
-		if [ "${env_value_new}" = "${env_value_old}" ]; then
+		if [ "${env_value_target}" = "${env_value_base}" ]; then
 			:
 		else
 			if [ "${is_exist_head}" = "${_true}" ]; then
@@ -1086,7 +1102,7 @@ function setenv() { # {{{
 					if [ "${is_exist_tail}" = "${_true}" ]; then
 						:
 					else
-						export ${env_var_name}="${env_value_new}:${env_value_old}"
+						export ${env_var_name}="${env_value_target}:${env_value_base}"
 					fi
 				fi
 			fi
@@ -1094,6 +1110,27 @@ function setenv() { # {{{
 	fi
 }
 	function _test_setenv() { # {{{
+		echo ""
+		export TESTENV=
+		setenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+		echo ""
+		setenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+		
+		echo ""
 		export TESTENV=aaa:bbb:ccc
 		echo ""
 		setenv TESTENV aaa
@@ -1105,25 +1142,95 @@ function setenv() { # {{{
 		setenv TESTENV ccc
 		echo "#result: ${TESTENV}"
 		
+	} # }}}
+# }}}
+function unsetenv() { # {{{
+	# Unset environment variable
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : unsetenv <env_var_name> <env_value>"
+		return 1
+	fi
+	env_var_name=$1
+	env_value_target=$2
+	env_value_base=$(printenv ${env_var_name})
+	if [ -z ${env_value_base} ]; then
+		:
+	else
+		_true=0
+		_false=1
+		_is_str_pos_head "${env_value_base}" "${env_value_target}:"
+		is_exist_head="$?"
+		_is_str_pos_tail "${env_value_base}" ":${env_value_target}"
+		is_exist_tail="$?"
+		_is_exist_str "${env_value_base}" ":${env_value_target}:"
+		is_exist_mid="$?"
+		
+		if [ "${env_value_target}" = "${env_value_base}" ]; then
+			export ${env_var_name}=""
+		else
+			if [ "${is_exist_head}" = "${_true}" ]; then
+				export ${env_var_name}="${env_value_base//${env_value_target}:/}"
+			else
+				if [ "${is_exist_mid}" = "${_true}" ]; then
+					export ${env_var_name}="${env_value_base//:${env_value_target}:/:}"
+				else
+					if [ "${is_exist_tail}" = "${_true}" ]; then
+						export ${env_var_name}="${env_value_base//:${env_value_target}/}"
+					else
+						:
+					fi
+				fi
+			fi
+		fi
+	fi
+}
+	function _test_unsetenv() { # {{{
+		echo ""
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV aaa
+		echo "#result: ${TESTENV}"
+		
+		echo ""
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV bbb
+		echo "#result: ${TESTENV}"
+		
+		echo ""
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV ccc
+		echo "#result: ${TESTENV}"
+		
+		
+		echo ""
 		echo ""
 		export TESTENV=
-		echo ""
-		setenv TESTENV aaa
+		unsetenv TESTENV aaa
 		echo "#result: ${TESTENV}"
+		
 		echo ""
-		setenv TESTENV aaa
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV ddd
 		echo "#result: ${TESTENV}"
+		
 		echo ""
-		setenv TESTENV bbb
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV aa
 		echo "#result: ${TESTENV}"
+		
 		echo ""
-		setenv TESTENV bbb
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV bb
 		echo "#result: ${TESTENV}"
+		
 		echo ""
-		setenv TESTENV ccc
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV cc
 		echo "#result: ${TESTENV}"
+		
 		echo ""
-		setenv TESTENV ccc
+		export TESTENV=aaa:bbb:ccc
+		unsetenv TESTENV aaaa
 		echo "#result: ${TESTENV}"
 	} # }}}
 # }}}
@@ -1135,7 +1242,12 @@ function avim() { # {{{
 		return 1
 	fi
 	file=$1
-	vim -c ":term ++hidden ++curwin ++open cat ${file}"
+	while true
+	do
+		vim -c ":term ++hidden ++curwin ++open cat ${file}"
+		echo "To exit, press ctrl-c."
+		sleep 1
+	done
 }
 	complete -F _complete_avim avim # {{{
 	function _complete_avim() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
@@ -1176,10 +1288,63 @@ function set_clipboard() { # {{{
 	fi
 }
 # }}}
-function extractdefine() {
-	# TODO:
-	:
-}
+function extractdefine() { # {{{
+	# [usage] 
+	# usage : extract_define_range <infile> <outfile> <define_keyword> <remain_target_side>
+	#    <remain_target_side>
+	#       true  : remain "true" side
+	#       false : remain "false" side
+	#         e.g. specified "true" side
+	#           #if AAA           #del
+	#              true side      #remain
+	#           #else /* AAA */   #del
+	#              false side     #del
+	#           #endif /* AAA */  #del
+	#
+	#           #ifdef AAA        #del
+	#              true side      #remain
+	#           #else /* AAA */   #del
+	#              false side     #del
+	#           #endif /* AAA */  #del
+	#
+	#           #ifndef AAA       #del
+	#              true side      #del
+	#           #else /* !AAA */  #del
+	#              false side     #remain
+	#           #endif /* !AAA */ #del
+	if [ -z ${DEVDIR} ]; then
+		echo "[error] \${DEVDIR} must be set."
+		return 1
+	fi
+	scriptpath=${DEVDIR}/_script/python/extract_define_range.py
+	python3 ${scriptpath} "$@"
+} # }}}
+function inode() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : inode <file>"
+		return 1
+	fi
+	file=$1
+	inode=$(ls -lai ${file} | cut -d" " -f 1)
+	echo ${inode}
+} # }}}
+function diffinode() { # {{{
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : diffinode <file1> <file2>"
+		return 1
+	fi
+	file1=$1
+	file2=$2
+	inode1=$(inode ${file1})
+	inode2=$(inode ${file2})
+	if [ "${inode1}" == "${inode2}" ]; then
+		echo 0
+	else
+		echo 1
+	fi
+} # }}}
 
 ### Git
 alias gitlo="\
@@ -1220,42 +1385,6 @@ function tma() { # {{{
 	complete -F _complete_tma tma # {{{
 	function _complete_tma() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tma}" -- "${cur}") ); } # }}}
 # }}}
-function tmam() { # {{{
-	# TMux Attach Mac
-	if [ ! -z "$TMUX" ]; then
-		echo "[error] cannot be run on tmux."
-		return 1
-	fi
-	config_path=~/.tmux.conf.mac.conf
-	tmux source-file ${config_path}
-	if [ $# -eq 1 ]; then
-		session_name=${1}
-		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
-	else
-		tmux attach-session || tmux new-session
-	fi
-}
-	complete -F _complete_tmam tmam # {{{
-	function _complete_tmam() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmam}" -- "${cur}") ); } # }}}
-# }}}
-function tmau() { # {{{
-	# TMux Attach Ubuntu
-	if [ ! -z "$TMUX" ]; then
-		echo "[error] cannot be run on tmux."
-		return 1
-	fi
-	config_path=~/.tmux.conf.ubuntu.conf
-	tmux source-file ${config_path}
-	if [ $# -eq 1 ]; then
-		session_name=${1}
-		tmux attach-session -t ${session_name} || tmux new-session -s ${session_name}
-	else
-		tmux attach-session || tmux new-session
-	fi
-}
-	complete -F _complete_tmau tmau # {{{
-	function _complete_tmau() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmau}" -- "${cur}") ); } # }}}
-# }}}
 function tmk() { # {{{
 	# TMux Kill
 	if [ $# -ne 1 ]; then
@@ -1283,34 +1412,11 @@ function tmr() { # {{{
 	complete -F _complete_tmr tmr # {{{
 	function _complete_tmr() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmr}" -- "${cur}") ); } # }}}
 # }}}
-function tmrm() { # {{{
-	# TMux Restart Mac
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmrm <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmk ${session_name}
-	tmam ${session_name}
-}
-	complete -F _complete_tmrm tmrm # {{{
-	function _complete_tmrm() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmrm}" -- "${cur}") ); } # }}}
-# }}}
-function tmru() { # {{{
-	# TMux Restart Ubuntu
-	if [ $# -ne 1 ]; then
-		echo "[error] wrong number of arguments."
-		echo "  usage : tmru <session_name>"
-		return 1
-	fi
-	session_name=${1}
-	tmk ${session_name}
-	tmau ${session_name}
-}
-	complete -F _complete_tmru tmru # {{{
-	function _complete_tmru() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "${cmpllist_tmru}" -- "${cur}") ); } # }}}
-# }}}
+function clear_session_name_to_cmplist() { # {{{
+	cmpllist_tma=""
+	cmpllist_tmk=""
+	cmpllist_tmr=""
+} # }}}
 function add_session_name_to_cmplist() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
@@ -1319,12 +1425,8 @@ function add_session_name_to_cmplist() { # {{{
 	fi
 	session_name=$1
 	cmpllist_tma="${cmpllist_tma} ${session_name}"
-	cmpllist_tmam="${cmpllist_tmam} ${session_name}"
-	cmpllist_tmau="${cmpllist_tmau} ${session_name}"
 	cmpllist_tmk="${cmpllist_tmk} ${session_name}"
 	cmpllist_tmr="${cmpllist_tmr} ${session_name}"
-	cmpllist_tmrm="${cmpllist_tmrm} ${session_name}"
-	cmpllist_tmru="${cmpllist_tmru} ${session_name}"
 } # }}}
 function add_session_list_to_cmplist() { # {{{
 	session_list=$(tmux list-sessions | cut -d: -f 1)
@@ -1420,6 +1522,7 @@ function tmuxexec_bashtest2() { # {{{
 		""
 } # }}}
 if [ ! -f /.dockerenv ]; then
+	clear_session_name_to_cmplist
 	add_session_list_to_cmplist
 	add_session_name_to_cmplist temp
 fi
@@ -1441,7 +1544,20 @@ fi
 ### ROS2
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
-
+export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity} {time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
+#export ROS_LOCALHOST_ONLY=1
+#export RCUTILS_LOGGING_USE_STDOUT=1		# The output from all debug levels goes to stderr by default. If 1, It is possible to force all output to go to stdout.
+#export RCUTILS_COLORIZED_OUTPUT=1			# By default, the output is colorized when it's targeting a terminal. If 0 force disabling colorized. If 1 force enabling colorized.
+export RCUTILS_LOGGING_BUFFERED_STREAM=1	# By default, all logging output is unbuffered. If 1, force buffer.
+alias plotjuggler="ros2 run plotjuggler plotjuggler &> /dev/null &"
+function killros2() { # {{{
+	killprocessall ros2 &> /dev/null
+	killprocessall "--ros-args" &> /dev/null
+	killprocessall "/opt/ros/humble" &> /dev/null
+	killprocessall "ros2cli.daemon" &> /dev/null
+	killprocessall ign &> /dev/null
+	ps a -u ${USER} | grep -v " 0:00 bash" | grep -v " 0:00 ps a -u "
+} # }}}
 function cbuild() { # {{{
 	# colcon build --continue-on-error --executor sequential --symlink-install --packages-select <pkg_name>
 	if [ $# -eq 0 ]; then
@@ -1510,22 +1626,159 @@ function alignsdfxml() { # {{{
 	sed -i 's/^\n//g' ${infile}
 #	sed -i '1i <?xml version="1.0" ?>' ${infile}
 } # }}}
-function outputnodesinfo() {
-	# TODO:
-	:
-}
-function outputtopicsinfo() {
-	# TODO:
-	:
-}
-function outputparamlist() {
-	# TODO:
-	:
-}
-function formatnodesinfo() {
-	# TODO:
-	:
-}
+function outputros2nodesinfo() { # {{{
+	if [ $# -ge 1 ]; then
+		suffix=_${1}
+	else
+		suffix=
+	fi
+	
+	# output node list
+	listlog=_list_nodes${suffix}.log
+	rm -rf ${listlog}
+	echo "$ ros2 node list " &>> ${listlog}
+	ros2 node list &>> ${listlog}
+	
+	# output node infos
+	nodelist=$(ros2 node list)
+	infolog=_info_nodes${suffix}.log
+	rm -rf ${infolog}
+	for node in ${nodelist}
+	do
+		echo "$ ros2 node info ${node}" &>> ${infolog}
+		ros2 node info ${node} &>> ${infolog}
+	done
+	
+	# output component list
+	complistlog=_list_comps${suffix}.log
+	rm -rf ${complistlog}
+	echo "$ ros2 component list" &>> ${complistlog}
+	ros2 component list &>> ${complistlog}
+} # }}}
+function outputros2topicsinfo() { # {{{
+	if [ $# -ge 1 ]; then
+		suffix=_${1}
+	else
+		suffix=
+	fi
+	
+	# output topic list
+	listlog=_list_topics${suffix}.log
+	rm -rf ${listlog}
+	echo "$ ros2 topic list " &>> ${listlog}
+	ros2 topic list &>> ${listlog}
+	
+	# output topic infos
+	topiclist=$(ros2 topic list)
+	infolog=_info_topics${suffix}.log
+	rm -rf ${infolog}
+	for topic in ${topiclist}
+	do
+		echo "$ ros2 topic info ${topic}" &>> ${infolog}
+		ros2 topic info ${topic} &>> ${infolog}
+	done
+} # }}}
+function outputros2paramlist() { # {{{
+	if [ $# -ge 1 ]; then
+		suffix=_${1}
+	else
+		suffix=
+	fi
+	
+	# output topic list
+	listlog=_list_params${suffix}.log
+	rm -rf ${listlog}
+	echo "$ ros2 param list " &>> ${listlog}
+	ros2 param list &>> ${listlog}
+} # }}}
+function formatros2nodesinfo() { # {{{
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : formatnodesinfo <infile> <outfile>"
+		return 1
+	fi
+	if [ -z ${DEVDIR} ]; then
+		echo "[error] \${DEVDIR} must be set."
+		return 1
+	fi
+	scriptpath=${DEVDIR}/_script/python/format_nodes_info.py
+	infile=${1}
+	outfile=${2}
+	python3 ${scriptpath} ${infile} ${outfile}
+} # }}}
+function latestloglaunch() { # {{{
+	if [ -z ${DEVDIR} ]; then
+		echo "[error] \${DEVDIR} must be set."
+		return 1
+	fi
+	logdirpath=${HOME}/.ros/log
+	if [ ! -d "${logdirpath}" ]; then
+		echo "[error] ${logdirpath} does not exist."
+		return 1
+	fi
+	
+	# extract log file paths with the latest date
+	curyear=$(date "+%Y")
+	idx=5
+	logfiledir=$(find ${logdirpath} -maxdepth 1 -type d | sort | tail -1)
+	logfile=${logfiledir}/launch.log
+	
+	# output log file date
+	logdirname=${logfiledir##*/}
+	#echo ${logdirname}
+	logfile_date=${logdirname:0:10}
+	#logfile_date=${logfile_date//-/\/}
+	logfile_time=${logdirname:11:8}
+	logfile_time=${logfile_time//-/:}
+#	echo ${logfile_date} ${logfile_time}
+	
+	# output log file path
+	set_clipboard "${logfile}"
+	echo ${logfile}
+} # }}}
+function latestlognode() { # {{{
+	if [ $# -lt 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : latestlognode <node_name>"
+		return 1
+	fi
+	logdirpath=${HOME}/.ros/log
+	if [ ! -d "${logdirpath}" ]; then
+		echo "[error] ${logdirpath} does not exist."
+		return 1
+	fi
+	nodename=${1}
+	
+	# check for the existence of log files on the target node
+	grepresult=$(find ${logdirpath} -maxdepth 1 -type f | grep -E "${nodename}_[0-9]+_[0-9]+\.log" &> /dev/null; echo $?)
+	#echo ${grepresult}
+	if [ ${grepresult} -ne 0 ]; then
+		echo "[error] log file of \"${nodename}\" does not exist."
+		return 1
+	fi
+	
+	# get unixtime string position(index) when split by "_"
+	filename=$(find ${logdirpath} -maxdepth 1 -type f | grep -E "${nodename}_[0-9]+_[0-9]+\.log" | tail -1)
+	filename_org=${filename}
+	filename_new=${filename//_/}
+	#echo ${#filename_org} ${#filename_new}
+	idx=$(expr ${#filename_org} - ${#filename_new} + 1)
+	#echo ${idx}
+	
+	# extract log file paths with the latest unixtime
+	logpath=$(find ${logdirpath} -maxdepth 1 -type f | grep -E "${nodename}_[0-9]+_[0-9]+\.log" | sort -t"_" -k ${idx},${idx} -n | tail -1)
+	
+	# output log file date
+	logfile=${logpath##*/}
+	unixtime_tmp=$(echo ${logfile} | cut -d"_" -f ${idx})
+	unixtime_tmp=${unixtime_tmp%%.*}
+	unixtime=${unixtime_tmp:0:10}
+#	convunixtimetodate ${unixtime}
+	
+	# output log file path
+	set_clipboard "${logpath}"
+	echo ${logpath}
+} # }}}
 
 ### Ignition Gazebo
 function addenv_ignresource() { # {{{
@@ -1538,9 +1791,28 @@ function addenv_ignresource() { # {{{
 	envname=IGN_GAZEBO_RESOURCE_PATH
 	setenv "${envname}" "${path}"
 	echo "${envname} = $(printenv ${envname})"
-	
 } # }}}
 
 #########################################################
 # Environment dependent settings
 #########################################################
+function test01() {
+STRLIST="aaa bbb cccc d"
+echo ${#STRLIST[@]}
+echo ${STRLIST[@]}
+for VAR in $STRLIST
+do
+    echo $VAR
+done
+echo ""
+
+LIST=(aaa bbb cccc d)
+echo ${#LIST[@]}
+echo ${LIST[@]}
+for VAR in "${LIST[@]}"
+do
+    echo $VAR
+done
+echo ""
+
+}
