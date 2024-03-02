@@ -1306,13 +1306,27 @@ SetEveryDayAlermTimer()
 	SetKitchenTimer(iIntervalMin:=0) ; {{{
 	{
 		iINIT_MINUTES := 3
+		sCONFIG_DIR_NAME := "UserDefHotKey"
+		sCONFIG_FILE_NAME := "KitchenTimer.cfg"
 		if (iIntervalMin = 0) {
-			InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , String(iINIT_MINUTES))
-			if (InputBoxObj.Result = "Cancel") {
-				MsgBox "処理を中断します。"
-				Return
+			; 初期値取得
+			sConfigDirPath := EnvGet("MYDIRPATH_DOCUMENTS") . "\" . sCONFIG_DIR_NAME
+			sConfigFilePath := sConfigDirPath . "\" . sCONFIG_FILE_NAME
+			if (FileExist(sConfigFilePath)) {
+				sFileLines := FileRead(sConfigFilePath)
+				asFileLines := StrSplit(sFileLines, "`n")
+				iIntervalMin := Float(asFileLines[1])
+			} else {
+				iIntervalMin := iINIT_MINUTES
 			}
+			
+			; 時間設定
 			Try {
+				InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , String(iIntervalMin))
+				if (InputBoxObj.Result = "Cancel") {
+					MsgBox "処理を中断します。"
+					Return
+				}
 				sIntervalMin := InputBoxObj.Value
 				iIntervalMin := Integer(sIntervalMin)
 				if (iIntervalMin < 1) {
@@ -1322,6 +1336,12 @@ SetEveryDayAlermTimer()
 				MsgBox "不正な時間が指定されました。`n" . sIntervalMin . "`n`n処理を中断します。"
 				Return
 			}
+			
+			; 初期値保存
+			DirCreate sConfigDirPath
+			sFileContents := String(iIntervalMin)
+			FileDelete sConfigFilePath
+			FileAppend sFileContents, sConfigFilePath
 		}
 		kitchen_timer := KitchenTimer(true, true)
 		kitchen_timer.Start(iIntervalMin)
