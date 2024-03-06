@@ -12,6 +12,7 @@
 ; {{{
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
+global gsCONFIG_DIR_NAME := "UserDefHotKey"
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
 global giWIN_TILE_MODE_RANGE_MIN := 1 ; 1～6 (Mon1:1-3, Mon2:4-6)
 global giWIN_TILE_MODE_RANGE_MAX := 4 ; 1～6 (Mon1:1-3, Mon2:4-6)
@@ -37,6 +38,7 @@ global gbRALT2APPSKEY_RALT_TO_APPSKEY := false
 global gfKITCHENTIMER_INIT_MIN := 3
 global gbKITCHENTIMER_SAVE_INIT_MIN := true
 global giKITCHENTIMER_TRAYTIP_DURATION_MS := 5000
+global gsKITCHENTIMER_CONFIG_FILE_NAME := "KitchenTimer.cfg"
 global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
 ; }}}
@@ -1316,8 +1318,7 @@ SetEveryDayAlermTimer()
 	SetKitchenTimer(fIntervalMin:=0.0, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
 		kitchen_timer := KitchenTimer(bShowMsgs, bCreateLogFile)
-		kitchen_timer.Set(fIntervalMin)
-		kitchen_timer.Start()
+		kitchen_timer.Start(fIntervalMin)
 	} ; }}}
 	class KitchenTimer { ; {{{
 		__New(bShowMsgs:=true, bCreateLogFile:=true) { ; {{{
@@ -1326,13 +1327,13 @@ SetEveryDayAlermTimer()
 			this.objCallbackFunc := ObjBindMethod(this, "TimerCallback")
 			this.fIntervalMin := 0.0
 			this.fOrigIntervalMin := 0.0
-			this.fIntervalMs := 0.0
-			this.sStartDateTime := ""
 			this.sOrigStartDateTime := ""
 			this.sLogFilePath := ""
+			this.bIsRestart := false
 		} ; }}}
 		Restart() { ; {{{
 			sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+			this.bIsRestart := true
 			Loop Files, sFilePattern
 			{
 				sFileName := A_LoopFileName
@@ -1344,6 +1345,9 @@ SetEveryDayAlermTimer()
 				sOrigStartDateTime := asFileLines[3]
 				;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime
 				
+				this.fOrigIntervalMin := fOrigIntervalMin
+				this.sOrigStartDateTime := sOrigStartDateTime
+				
 				FileDelete sFilePath
 				
 				sStartDateTime := A_Now
@@ -1353,19 +1357,17 @@ SetEveryDayAlermTimer()
 					fIntervalMin := Float(iNewElapsedSecond / 60)
 					;MsgBox fIntervalMin
 					
-					this.Set(fIntervalMin, fOrigIntervalMin, sOrigStartDateTime)
-					this.Start()
+					this.Start(fIntervalMin)
 				}
 			}
 		} ; }}}
-		Set(fIntervalMin:=0.0, fOrigIntervalMin:=0.0, sOrigStartDateTime:="") { ; {{{
-			sCONFIG_DIR_NAME := "UserDefHotKey"
-			sCONFIG_FILE_NAME := "KitchenTimer.cfg"
+		Start(fIntervalMin:=0.0) { ; {{{
+			; 時間設定
 			if (fIntervalMin = 0.0) {
 				; 初期値取得
 				if (gbKITCHENTIMER_SAVE_INIT_MIN) {
-					sConfigDirPath := EnvGet("MYDIRPATH_DOCUMENTS") . "\" . sCONFIG_DIR_NAME
-					sConfigFilePath := sConfigDirPath . "\" . sCONFIG_FILE_NAME
+					sConfigDirPath := EnvGet("MYDIRPATH_DOCUMENTS") . "\" . gsCONFIG_DIR_NAME
+					sConfigFilePath := sConfigDirPath . "\" . gsKITCHENTIMER_CONFIG_FILE_NAME
 					if (FileExist(sConfigFilePath)) {
 						sFileLines := FileRead(sConfigFilePath)
 						asFileLines := StrSplit(sFileLines, "`n")
@@ -1406,39 +1408,32 @@ SetEveryDayAlermTimer()
 				MsgBox "不正な時間が指定されました。`n" . fIntervalMin . "`n`n処理を中断します。"
 				Return
 			}
+			iIntervalMs := Integer(fIntervalMin * 60 * 1000)
 			this.fIntervalMin := fIntervalMin
-			this.iIntervalMs := Integer(fIntervalMin * 60 * 1000)
-			this.sStartDateTime := A_Now
-			if (sOrigStartDateTime == "") {
-				this.fOrigIntervalMin := fIntervalMin
-				this.sOrigStartDateTime := this.sStartDateTime
-				;MsgBox "Initial" . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
-			} else {
-				this.fOrigIntervalMin := fOrigIntervalMin
-				this.sOrigStartDateTime := sOrigStartDateTime
-				;MsgBox "Restart" . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
-			}
-		} ; }}}
-		Start() { ; {{{
-			; 事前チェック
-			if (this.fIntervalMin = 0.0) {
-				return
-			}
+			
 			; タイマー開始
 			if (this.bShowMsgs) {
-				sMsg := Round(this.fIntervalMin, 1) . "分タイマーを開始します！"
+				sMsg := Round(fIntervalMin, 1) . "分タイマーを開始します！"
 				ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
 			}
-			SetTimer this.objCallbackFunc, this.iIntervalMs
+			SetTimer this.objCallbackFunc, iIntervalMs
 			
 			; ログファイル生成
 			if (this.bCreateLogFile) {
+				sStartDateTime := A_Now
+				sTargetDateTime := DateAdd(sStartDateTime, Integer(iIntervalMs / 1000), "Seconds")
+				if (this.bIsRestart) {
+					sLogStartDateTime := this.sOrigStartDateTime
+					fLogIntervalMin := this.fOrigIntervalMin
+				} else {
+					sLogStartDateTime := sStartDateTime
+					fLogIntervalMin := fIntervalMin
+				}
 				sLogFilePath :=
 					EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" .
-					FormatTime(this.sOrigStartDateTime, "yyyyMMdd-HHmmss") . "_" .
-					Round(this.fOrigIntervalMin, 1) . "min.log"
-				sTargetDateTime := DateAdd(this.sStartDateTime, Integer(this.iIntervalMs / 1000), "Seconds")
-				sFileContents := sTargetDateTime . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
+					FormatTime(sLogStartDateTime, "yyyyMMdd-HHmmss") . "_" .
+					Round(fLogIntervalMin, 1) . "min.log"
+				sFileContents := sTargetDateTime . "`n" . fLogIntervalMin . "`n" . sLogStartDateTime
 				FileAppend sFileContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
 			}
@@ -1448,7 +1443,11 @@ SetEveryDayAlermTimer()
 			FlashScreen()
 			
 			; タイマークリア
-			sMsg := Round(this.fOrigIntervalMin, 1) . "分タイマーが終了しました！"
+			if (this.bIsRestart) {
+				sMsg := Round(this.fOrigIntervalMin, 1) . "分タイマーが終了しました！"
+			} else {
+				sMsg := Round(this.fIntervalMin, 1) . "分タイマーが終了しました！"
+			}
 			ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
 			SetTimer this.objCallbackFunc, 0
 			
