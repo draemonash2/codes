@@ -257,16 +257,6 @@ SetEveryDayAlermTimer()
 			MouseMove, x, y
 		}
 		*/
-		^1::
-		{
-			iCurWeekDay := 7
-			bIsExist := ExistArrayValue(aiALARMTIMER_TARGET_WEEK_DAY, iCurWeekDay)
-			if (bIsExist) {
-				MsgBox "exist"
-			} else {
-				MsgBox "not exist"
-			}
-		}
 	; }}}
 
 ;***** ホットキー(Software local) *****
@@ -1348,6 +1338,8 @@ SetEveryDayAlermTimer()
 			this.objCallbackFunc := ObjBindMethod(this, "TimerCallback")
 			this.fIntervalMin := 0.0
 			this.sLogFilePath := ""
+			this.bIsRestart := false
+			this.bReadyToStart := false
 		} ; }}}
 		SetTimeWithIntervalMin(fIntervalMin:=0.0) { ; {{{
 			this.bIsRestart := false
@@ -1401,6 +1393,7 @@ SetEveryDayAlermTimer()
 				Return
 			}
 			this.fIntervalMin := fIntervalMin
+			this.bReadyToStart := true
 		} ; }}}
 		SetTimeWithLogFile(sLogFilePath) { ; {{{
 			this.bIsRestart := true
@@ -1429,10 +1422,11 @@ SetEveryDayAlermTimer()
 			}
 			;MsgBox fIntervalMin
 			this.fIntervalMin := fIntervalMin
+			this.bReadyToStart := true
 		} ; }}}
 		Start() { ; {{{
 			; 事前チェック
-			If (this.fIntervalMin == 0.0) {
+			If (!this.bReadyToStart) {
 				Return
 			}
 			
@@ -1504,16 +1498,24 @@ SetEveryDayAlermTimer()
 	{
 		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
 	} ; }}}
-	RestartAlermTimer() ; {{{
-	{
-		alerm_timer := AlermTimer(false, true)
-		alerm_timer.Restart()
-	} ; }}}
 	SetAlermTimer(sTargetClock:="", bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
 		alerm_timer := AlermTimer(bShowMsgs, bCreateLogFile)
-		sTargetDateTime := alerm_timer.InputTargetDateTime(sTargetClock)
-		alerm_timer.Start(sTargetDateTime)
+		alerm_timer.SetTimeWithClock(sTargetClock)
+		alerm_timer.Start()
+	} ; }}}
+	RestartAlermTimer() ; {{{
+	{
+		sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+		Loop Files, sFilePattern
+		{
+			sFileName := A_LoopFileName
+			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
+			
+			alerm_timer := AlermTimer(false, true)
+			alerm_timer.SetTimeWithLogFile(sFilePath)
+			alerm_timer.Start()
+		}
 	} ; }}}
 	class AlermTimer { ; {{{
 		__New(bShowMsgs:=true, bCreateLogFile:=true) { ; {{{
@@ -1522,32 +1524,33 @@ SetEveryDayAlermTimer()
 			this.bCreateLogFile := bCreateLogFile
 			this.sTargetDateTime := ""
 			this.bIsRestart := false
+			this.bReadyToStart := false
 		} ; }}}
-		Restart() { ; {{{
-			sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+		SetTimeWithLogFile(sLogFilePath) { ; {{{
 			this.bIsRestart := true
-			Loop Files, sFilePattern
-			{
-				sFileName := A_LoopFileName
-				sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
-				sFileLines := FileRead(sFilePath)
-				asFileLines := StrSplit(sFileLines, "`n")
-				sTargetDateTime := asFileLines[1]
-				sOrigStartDateTime := asFileLines[2]
-				;MsgBox sTargetDateTime . "`n" . sOrigStartDateTime
-				
-				this.sOrigStartDateTime := sOrigStartDateTime
-				
-				FileDelete sFilePath
-				
-				sStartDateTime := A_Now
-				iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
-				if (iSecond > 0) {
-					this.Start(sTargetDateTime)
-				}
+			if (!FileExist(sLogFilePath)) {
+				MsgBox "ファイルが存在しません。`n  " . sLogFilePath . "`n`n処理を中断します。"
+				Return
+			}
+			sFileLines := FileRead(sLogFilePath)
+			asFileLines := StrSplit(sFileLines, "`n")
+			sTargetDateTime := asFileLines[1]
+			sOrigStartDateTime := asFileLines[2]
+			;MsgBox sTargetDateTime . "`n" . sOrigStartDateTime
+			
+			this.sOrigStartDateTime := sOrigStartDateTime
+			
+			FileDelete sLogFilePath
+			
+			sStartDateTime := A_Now
+			iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+			if (iSecond > 0) {
+				this.sTargetDateTime := sTargetDateTime
+				this.bReadyToStart := true
 			}
 		} ; }}}
-		InputTargetDateTime(sTargetClock:="") { ; {{{
+		SetTimeWithClock(sTargetClock:="") { ; {{{
+			this.bIsRestart := false
 			sCurDateTime := A_Now
 			if (sTargetClock == "") {
 				; 時刻初期値生成
@@ -1615,24 +1618,30 @@ SetEveryDayAlermTimer()
 			if (DateDiff(sTargetDateTime, sCurDateTime, "Seconds") < 0) {
 				sTargetDateTime := DateAdd(sTargetDateTime, 1, "days")
 			}
-			return sTargetDateTime
+			this.sTargetDateTime := sTargetDateTime
+			this.bReadyToStart := true
 		} ; }}}
-		Start(sTargetDateTime) { ; {{{
-			; sTargetDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
-			; 事前チェック
+		SetTimeWithTargetDateTime(sTargetDateTime) { ; {{{
 			sTargetYear := FormatTime(sTargetDateTime, "yyyy")
 			if (sTargetYear = "") {
 				MsgBox "不正な時刻が指定されました。`n" . sTargetDateTime . "`n`n処理を中断します。"
 				Return
 			}
+			this.sTargetDateTime := sTargetDateTime
+			this.bReadyToStart := true
+		} ; }}}
+		Start() { ; {{{
+			; sTargetDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
+			; 事前チェック
+			if (!this.bReadyToStart) {
+				Return
+			}
+			sTargetDateTime := this.sTargetDateTime
 			
 			sStartDateTime := A_Now
 			iIntervalMs := DateDiff(sTargetDateTime, sStartDateTime, "Seconds") * 1000
 			iIntervalMin := DateDiff(sTargetDateTime, sStartDateTime, "Minutes")
 			;MsgBox iIntervalMs . "`n" . sStartDateTime
-			this.iIntervalMin := iIntervalMin
-			this.iIntervalMs := iIntervalMs
-			this.sTargetDateTime := sTargetDateTime
 			
 			; タイマー開始
 			sIntervalTime := ""
