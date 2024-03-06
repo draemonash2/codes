@@ -33,6 +33,12 @@ global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
 global giJUMPCURSOL_KEYPRESS_NUM := 3
 global giMOVECURSOL_MOVE_OFFSET_NEAR := 50
 global giMOVECURSOL_MOVE_OFFSET_FAR := 150
+global gbRALTAPPSKEY_REPLACE_RALT := false ; true:RAlt->AppsKey false:RAlt
+global gfKITCHENTIMER_INIT_MIN := 3
+global gbKITCHENTIMER_SAVE_INIT_MIN := true
+global giKITCHENTIMER_TRAYTIP_DURATION_MS := 5000
+global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
+global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
 ; }}}
 
 ;* ***************************************************************
@@ -45,6 +51,7 @@ StoreCurYearMonths()
 InitScreenBrightness()
 InitWinTileMode()
 InitSleepPreventing()
+InitRAltAppsKeyMode()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -216,6 +223,7 @@ SetEveryDayAlermTimer()
 	;その他 ; {{{
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
+		^+!F11::	SwitchRAltAppsKeyMode()																							;右Alt->AppsKey置換え切替え
 		Ctrl::																														;モニタ中心にカーソル移動
 		{
 			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
@@ -250,7 +258,7 @@ SetEveryDayAlermTimer()
 
 ;***** ホットキー(Software local) *****
 	#HotIf !WinActive("ahk_exe WindowsTerminal.exe") ; {{{
-		RAlt::Send "{AppsKey}"	;右Altキーをコンテキストメニュー表示に変更
+		RAlt::PressRAlt()	;右Altキーをコンテキストメニュー表示に変更
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		^!t::	;タブを複製して和訳
@@ -1267,6 +1275,31 @@ SetEveryDayAlermTimer()
 		}
 	} ; }}}
 
+	; 右Alt->AppsKey置換え
+	InitRAltAppsKeyMode() { ; {{{
+		global gbReplaceRAlt2AppsKey
+		gbReplaceRAlt2AppsKey := gbRALTAPPSKEY_REPLACE_RALT
+	} ; }}}
+	SwitchRAltAppsKeyMode() { ; {{{
+		global gbReplaceRAlt2AppsKey
+		if (gbReplaceRAlt2AppsKey) {
+			ShowAutoHideTrayTip("", "右Alt->AppsKey置換えを【無効】にします。", 2000)
+			gbReplaceRAlt2AppsKey := false
+		} else {
+			ShowAutoHideTrayTip("", "右Alt->AppsKey置換えを【有効】にします。", 2000)
+			gbReplaceRAlt2AppsKey := true
+		}
+	} ; }}}
+	PressRAlt() ; {{{
+	{
+		global gbReplaceRAlt2AppsKey
+		if (gbReplaceRAlt2AppsKey) {
+			Send "{AppsKey}"	;右Altキーをコンテキストメニュー表示に変更
+		} else {
+			Send "{RAlt}"
+		}
+	} ; }}}
+
 	; キッチンタイマー
 	ClearKitchenTimer() ; {{{
 	{
@@ -1274,125 +1307,149 @@ SetEveryDayAlermTimer()
 	} ; }}}
 	RestartKitchenTimer() ; {{{
 	{
-		sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
-		Loop Files, sFilePattern
-		{
-			sFileName := A_LoopFileName
-			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
-			sFileLines := FileRead(sFilePath)
-			asFileLines := StrSplit(sFileLines, "`n")
-			sOldStartDateTime := asFileLines[1]
-			sTargetDateTime := asFileLines[2]
-			fOldMin := Float(asFileLines[3])
-			iOldMs := Integer(asFileLines[4])
-			;MsgBox sOldStartDateTime . "`n" . sTargetDateTime . "`n" . String(fOldMin) . "`n" . String(iOldMs)
-			
-			FileDelete sFilePath
-			
-			sStartDateTime := A_Now
-			iNewElapsedSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
-			;MsgBox iOldElapsedSecond . "`n" . sTargetDateTime . "`n" . sStartDateTime . "`n" . iNewElapsedSecond
-			if (iNewElapsedSecond > 0) {
-				fIntervalMin := Float(iNewElapsedSecond / 60)
-				;MsgBox fIntervalMin
-				
-				kitchen_timer := KitchenTimer(false, true)
-				kitchen_timer.Start(fIntervalMin)
-			}
-		}
+		kitchen_timer := KitchenTimer(false, true)
+		kitchen_timer.Restart()
 	} ; }}}
-	SetKitchenTimer(fIntervalMin:=0.0) ; {{{
+	SetKitchenTimer(fIntervalMin:=0.0, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
-		fINIT_MINUTES := 3
-		sCONFIG_DIR_NAME := "UserDefHotKey"
-		sCONFIG_FILE_NAME := "KitchenTimer.cfg"
-		if (fIntervalMin = 0) {
-			; 初期値取得
-			sConfigDirPath := EnvGet("MYDIRPATH_DOCUMENTS") . "\" . sCONFIG_DIR_NAME
-			sConfigFilePath := sConfigDirPath . "\" . sCONFIG_FILE_NAME
-			if (FileExist(sConfigFilePath)) {
-				sFileLines := FileRead(sConfigFilePath)
-				asFileLines := StrSplit(sFileLines, "`n")
-				fIntervalMin := Float(asFileLines[1])
-			} else {
-				fIntervalMin := fINIT_MINUTES
-			}
-			
-			; 時間設定
-			Try {
-				InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , String(fIntervalMin))
-				if (InputBoxObj.Result = "Cancel") {
-					MsgBox "処理を中断します。"
-					Return
-				}
-				sIntervalMin := InputBoxObj.Value
-				fIntervalMin := Float(sIntervalMin)
-				if (fIntervalMin <= 0.0) {
-					throw
-				}
-			} Catch Error as err {
-				MsgBox "不正な時間が指定されました。`n" . sIntervalMin . "`n`n処理を中断します。"
-				Return
-			}
-			
-			; 初期値保存
-			DirCreate sConfigDirPath
-			sFileContents := String(fIntervalMin)
-			FileDelete sConfigFilePath
-			FileAppend sFileContents, sConfigFilePath
-		}
-		kitchen_timer := KitchenTimer(true, true)
-		kitchen_timer.Start(fIntervalMin)
+		kitchen_timer := KitchenTimer(bShowMsgs, bCreateLogFile)
+		kitchen_timer.Set(fIntervalMin)
+		kitchen_timer.Start()
 	} ; }}}
 	class KitchenTimer { ; {{{
-		__New(bShowMsgs:=true, bCreateLogFile:=true) {
-			this.traytip_duration_ms := 5000
-			this.show_msgs := bShowMsgs
-			this.create_log_file := bCreateLogFile
-			this.cb := ObjBindMethod(this, "TimerCallback")
-		}
-		Start(fIntervalMin:=3.0) {
+		__New(bShowMsgs:=true, bCreateLogFile:=true) { ; {{{
+			this.bShowMsgs := bShowMsgs
+			this.bCreateLogFile := bCreateLogFile
+			this.objCallbackFunc := ObjBindMethod(this, "TimerCallback")
+			this.fIntervalMin := 0.0
+			this.fOrigIntervalMin := 0.0
+		} ; }}}
+		Restart() { ; {{{
+			sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+			Loop Files, sFilePattern
+			{
+				sFileName := A_LoopFileName
+				sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
+				sFileLines := FileRead(sFilePath)
+				asFileLines := StrSplit(sFileLines, "`n")
+				sTargetDateTime := asFileLines[1]
+				fOrigIntervalMin := Float(asFileLines[2])
+				sOrigStartDateTime := asFileLines[3]
+				;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime
+				
+				FileDelete sFilePath
+				
+				sStartDateTime := A_Now
+				iNewElapsedSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+				;MsgBox iOldElapsedSecond . "`n" . sTargetDateTime . "`n" . sStartDateTime . "`n" . iNewElapsedSecond
+				if (iNewElapsedSecond > 0) {
+					fIntervalMin := Float(iNewElapsedSecond / 60)
+					;MsgBox fIntervalMin
+					
+					this.Set(fIntervalMin, fOrigIntervalMin, sOrigStartDateTime)
+					this.Start()
+				}
+			}
+		} ; }}}
+		Set(fIntervalMin:=0.0, fOrigIntervalMin:=0.0, sOrigStartDateTime:="") { ; {{{
+			sCONFIG_DIR_NAME := "UserDefHotKey"
+			sCONFIG_FILE_NAME := "KitchenTimer.cfg"
+			if (fIntervalMin = 0.0) {
+				; 初期値取得
+				if (gbKITCHENTIMER_SAVE_INIT_MIN) {
+					sConfigDirPath := EnvGet("MYDIRPATH_DOCUMENTS") . "\" . sCONFIG_DIR_NAME
+					sConfigFilePath := sConfigDirPath . "\" . sCONFIG_FILE_NAME
+					if (FileExist(sConfigFilePath)) {
+						sFileLines := FileRead(sConfigFilePath)
+						asFileLines := StrSplit(sFileLines, "`n")
+						fIntervalMin := Float(asFileLines[1])
+					} else {
+						fIntervalMin := gfKITCHENTIMER_INIT_MIN
+					}
+				} else {
+					fIntervalMin := gfKITCHENTIMER_INIT_MIN
+				}
+				
+				; 時間設定
+				Try {
+					InputBoxObj := InputBox("キッチンタイマーを設定します。`n時間[分]を設定してください。", "キッチンタイマー", , String(fIntervalMin))
+					if (InputBoxObj.Result = "Cancel") {
+						MsgBox "キャンセルされたため、処理を中断します。"
+						Return
+					}
+					sIntervalMin := InputBoxObj.Value
+					fIntervalMin := Float(sIntervalMin)
+					if (fIntervalMin <= 0.0) {
+						throw
+					}
+				} Catch Error as err {
+					MsgBox "不正な時間が指定されました。`n" . sIntervalMin . "`n`n処理を中断します。"
+					Return
+				}
+				
+				; 初期値保存
+				if (gbKITCHENTIMER_SAVE_INIT_MIN) {
+					DirCreate sConfigDirPath
+					sFileContents := String(fIntervalMin)
+					FileDelete sConfigFilePath
+					FileAppend sFileContents, sConfigFilePath
+				}
+			}
 			If (fIntervalMin <= 0.0) {
 				MsgBox "不正な時間が指定されました。`n" . fIntervalMin . "`n`n処理を中断します。"
 				Return
 			}
-			this.interval_min := fIntervalMin
-			this.interval_ms := Integer(fIntervalMin * 60 * 1000)
-			
-			; タイマー開始
-			if (this.show_msgs) {
-				sMsg := this.interval_min . "分タイマーを開始します！"
-				ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
+			this.fIntervalMin := fIntervalMin
+			this.iIntervalMs := Integer(fIntervalMin * 60 * 1000)
+			this.sStartDateTime := A_Now
+			if (sOrigStartDateTime == "") {
+				this.fOrigIntervalMin := fIntervalMin
+				this.sOrigStartDateTime := this.sStartDateTime
+				;MsgBox "Initial" . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
+			} else {
+				this.fOrigIntervalMin := fOrigIntervalMin
+				this.sOrigStartDateTime := sOrigStartDateTime
+				;MsgBox "Restart" . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
 			}
-			SetTimer this.cb, this.interval_ms
+		} ; }}}
+		Start() { ; {{{
+			; 事前チェック
+			if (this.fIntervalMin = 0.0) {
+				return
+			}
+			; タイマー開始
+			if (this.bShowMsgs) {
+				sMsg := Round(this.fIntervalMin, 1) . "分タイマーを開始します！"
+				ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
+			}
+			SetTimer this.objCallbackFunc, this.iIntervalMs
 			
 			; ログファイル生成
-			if (this.create_log_file) {
-				sStartDateTime := A_Now
-				sFilePath :=
+			if (this.bCreateLogFile) {
+				sLogFilePath :=
 					EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" .
-					FormatTime(sStartDateTime, "yyyyMMdd-HHmmss") . "_" .
-					Round(this.interval_min, 2) . "min.log"
-				sTargetDateTime := DateAdd(sStartDateTime, Integer(this.interval_ms / 1000), "Seconds")
-				sFileContents := sStartDateTime . "`n" . sTargetDateTime . "`n" . this.interval_min . "`n" . this.interval_ms
-				FileAppend sFileContents, sFilePath
-				this.log_file_path := sFilePath
+					FormatTime(this.sOrigStartDateTime, "yyyyMMdd-HHmmss") . "_" .
+					Round(this.fOrigIntervalMin, 1) . "min.log"
+				sTargetDateTime := DateAdd(this.sStartDateTime, Integer(this.iIntervalMs / 1000), "Seconds")
+				sFileContents := sTargetDateTime . "`n" . this.fOrigIntervalMin . "`n" . this.sOrigStartDateTime
+				FileAppend sFileContents, sLogFilePath
+				this.sLogFilePath := sLogFilePath
 			}
-		}
-		TimerCallback() {
+		} ; }}}
+		TimerCallback() { ; {{{
 			; 画面フラッシュ
 			FlashScreen()
 			
 			; タイマークリア
-			sMsg := this.interval_min . "分タイマーが終了しました！"
-			ShowAutoHideTrayTip("キッチンタイマー", sMsg, this.traytip_duration_ms)
-			SetTimer this.cb, 0
+			sMsg := Round(this.fOrigIntervalMin, 1) . "分タイマーが終了しました！"
+			ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
+			SetTimer this.objCallbackFunc, 0
 			
 			; ログファイル削除
-			if (this.create_log_file) {
-				FileDelete this.log_file_path
+			if (this.bCreateLogFile) {
+				FileDelete this.sLogFilePath
 			}
-		}
+		} ; }}}
 	} ; }}}
 
 	; アラームタイマー
@@ -1414,163 +1471,177 @@ SetEveryDayAlermTimer()
 	} ; }}}
 	RestartAlermTimer() ; {{{
 	{
-		sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
-		Loop Files, sFilePattern
-		{
-			sFileName := A_LoopFileName
-			sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
-			sFileLines := FileRead(sFilePath)
-			asFileLines := StrSplit(sFileLines, "`n")
-			sTargetDateTime := asFileLines[2]
-			;MsgBox sTargetDateTime
-			
-			FileDelete sFilePath
-			
-			sStartDateTime := A_Now
-			iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
-			if (iSecond > 0) {
-				alerm_timer := AlermTimer(false, true)
-				alerm_timer.Start(sTargetDateTime)
-			}
-		}
+		alerm_timer := AlermTimer(false, true)
+		alerm_timer.Restart()
 	} ; }}}
 	SetAlermTimer(sTargetTime:="", bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
-		iINIT_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
-		sCurDateTime := A_Now
-		if (sTargetTime == "") {
-			; 時刻初期値生成
-			iCurHour := Integer(FormatTime(sCurDateTime, "HH"))
-			iCurMinutes := Integer(FormatTime(sCurDateTime, "mm"))
-			sInitTime := ""
-			sInitHour := ""
-			sInitMinute := ""
-			if ((iINIT_MIN_STEP <= 0) || (iINIT_MIN_STEP > 60) || (Mod(60, iINIT_MIN_STEP) != 0)) {
-				MsgBox "[fatal error] 時刻初期値設定に誤りがあるため、処理を中断します。"
-				Return
-			}
-			iMinTrgt := 0
-			while iCurMinutes >= iMinTrgt
-			{
-				iMinTrgt := iMinTrgt + iINIT_MIN_STEP
-			}
-			if (iMinTrgt = 60) {
-				if (iCurHour < 23) {
-					sInitHour := iCurHour + 1
-				} else {
-					sInitHour := "00"
-				}
-				sInitMinute := "00"
-			} else {
-				sInitHour := iCurHour
-				sInitMinute := Format("{1:02d}" , String(iMinTrgt))
-			}
-			sInitTime := sInitHour . ":" . sInitMinute
-			
-			; 時刻入力
-			InputBoxObj := InputBox("アラームを設定します。`n時刻（e.g. 12:30）を設定してください。", "アラームタイマー", , sInitTime)
-			if (InputBoxObj.Result = "Cancel") {
-				MsgBox "キャンセルされたため、処理を中断します。"
-				Return
-			}
-			sTargetTime := InputBoxObj.Value
-		}
-		
-		; 時刻フォーマットチェック
-		Try {
-			iDelimiterPos := Integer(InStr(sTargetTime, ":"))
-			;MsgBox String(iDelimiterPos)
-			if (iDelimiterPos = 0) { ; delimiter not found
-				throw
-			}
-			iTargetHour := Integer(SubStr(sTargetTime, 1, iDelimiterPos-1))
-			iTargetMinutes := Integer(SubStr(sTargetTime, iDelimiterPos+1, 2))
-			;MsgBox iTargetHour . " " . iTargetMinutes
-			if (iTargetHour < 0 || iTargetHour > 23) {
-				throw
-			}
-			if (iTargetMinutes < 0 || iTargetMinutes > 59) {
-				throw
-			}
-		} Catch Error as err {
-			MsgBox "不正な時刻が指定されました。`n" . sTargetTime . "`n`n処理を中断します。"
-			Return
-		}
-		sTrgtDateTime := A_YYYY . A_MM . A_DD . Format("{1:02d}" , String(iTargetHour)) . Format("{1:02d}" , String(iTargetMinutes)) . "00"
-		if (DateDiff(sTrgtDateTime, sCurDateTime, "Seconds") < 0) {
-			sTrgtDateTime := DateAdd(sTrgtDateTime, 1, "days")
-		}
-		
-		; アラーム設定
 		alerm_timer := AlermTimer(bShowMsgs, bCreateLogFile)
-		alerm_timer.Start(sTrgtDateTime)
+		alerm_timer.SetTime(sTargetTime)
+		alerm_timer.Start()
 	} ; }}}
 	class AlermTimer { ; {{{
-		__New(bShowMsgs:=true, bCreateLogFile:=true) {
-			this.traytip_duration_ms := 5000
-			this.cb := ObjBindMethod(this, "TimerCallback")
-			this.show_msgs := bShowMsgs
-			this.create_log_file := bCreateLogFile
-		}
-		; sTrgtDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
-		Start(sTrgtDateTime) {
-			Try {
+		__New(bShowMsgs:=true, bCreateLogFile:=true) { ; {{{
+			this.objCallbackFunc := ObjBindMethod(this, "TimerCallback")
+			this.bShowMsgs := bShowMsgs
+			this.bCreateLogFile := bCreateLogFile
+			this.sTargetDateTime := ""
+		} ; }}}
+		Restart() { ; {{{
+			sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+			Loop Files, sFilePattern
+			{
+				sFileName := A_LoopFileName
+				sFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\" . sFileName
+				sFileLines := FileRead(sFilePath)
+				asFileLines := StrSplit(sFileLines, "`n")
+				sTargetDateTime := asFileLines[1]
+				sOrigStartDateTime := asFileLines[2]
+				;MsgBox sTargetDateTime . "`n" . sOrigStartDateTime
+				
+				FileDelete sFilePath
+				
 				sStartDateTime := A_Now
-				iIntervalMs := DateDiff(sTrgtDateTime, sStartDateTime, "Seconds") * 1000
-				iIntervalMin := DateDiff(sTrgtDateTime, sStartDateTime, "Minutes")
-				;MsgBox iIntervalMs . "`n" . sTrgtDateTime . "`n" . sStartDateTime
-				this.target_date_time := sTrgtDateTime
-				this.start_date_time := sStartDateTime
-				this.interval_min := iIntervalMin
-				this.interval_ms := iIntervalMs
-			} Catch Error as err {
-				MsgBox "[error] Invarid date format : " . sTrgtDateTime . "`n`n" .
-					Format(
-						"{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
-						, type(err), err.Message, err.File, err.Line, err.What, err.Stack
-					)
-				return
+				iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+				if (iSecond > 0) {
+					this.SetTargetDateTime(sTargetDateTime, sOrigStartDateTime)
+					this.Start()
+				}
 			}
+		} ; }}}
+		SetTime(sTargetTime:="") { ; {{{
+			sCurDateTime := A_Now
+			if (sTargetTime == "") {
+				; 時刻初期値生成
+				iCurHour := Integer(FormatTime(sCurDateTime, "HH"))
+				iCurMinutes := Integer(FormatTime(sCurDateTime, "mm"))
+				sInitTime := ""
+				sInitHour := ""
+				sInitMinute := ""
+				if ((giALARMTIMER_INITTIME_MIN_STEP <= 0) || (giALARMTIMER_INITTIME_MIN_STEP > 60) || (Mod(60, giALARMTIMER_INITTIME_MIN_STEP) != 0)) {
+					MsgBox "[fatal error] 時刻初期値設定に誤りがあるため、処理を中断します。"
+					Return
+				}
+				iMinTrgt := 0
+				while iCurMinutes >= iMinTrgt
+				{
+					iMinTrgt := iMinTrgt + giALARMTIMER_INITTIME_MIN_STEP
+				}
+				if (iMinTrgt = 60) {
+					if (iCurHour < 23) {
+						sInitHour := iCurHour + 1
+					} else {
+						sInitHour := "00"
+					}
+					sInitMinute := "00"
+				} else {
+					sInitHour := iCurHour
+					sInitMinute := Format("{1:02d}" , String(iMinTrgt))
+				}
+				sInitTime := sInitHour . ":" . sInitMinute
+				
+				; 時刻入力
+				InputBoxObj := InputBox("アラームを設定します。`n時刻（e.g. 12:30）を設定してください。", "アラームタイマー", , sInitTime)
+				if (InputBoxObj.Result = "Cancel") {
+					MsgBox "キャンセルされたため、処理を中断します。"
+					Return
+				}
+				sTargetTime := InputBoxObj.Value
+			}
+			
+			; 時刻フォーマットチェック
+			Try {
+				iDelimiterPos := Integer(InStr(sTargetTime, ":"))
+				;MsgBox String(iDelimiterPos)
+				if (iDelimiterPos = 0) { ; delimiter not found
+					throw
+				}
+				iTargetHour := Integer(SubStr(sTargetTime, 1, iDelimiterPos-1))
+				iTargetMinutes := Integer(SubStr(sTargetTime, iDelimiterPos+1, 2))
+				;MsgBox iTargetHour . " " . iTargetMinutes
+				if (iTargetHour < 0 || iTargetHour > 23) {
+					throw
+				}
+				if (iTargetMinutes < 0 || iTargetMinutes > 59) {
+					throw
+				}
+			} Catch Error as err {
+				MsgBox "不正な時刻が指定されました。`n" . sTargetTime . "`n`n処理を中断します。"
+				Return
+			}
+			sTargetDateTime := A_YYYY . A_MM . A_DD . Format("{1:02d}" , String(iTargetHour)) . Format("{1:02d}" , String(iTargetMinutes)) . "00"
+			if (DateDiff(sTargetDateTime, sCurDateTime, "Seconds") < 0) {
+				sTargetDateTime := DateAdd(sTargetDateTime, 1, "days")
+			}
+			
+			; 時刻設定
+			this.SetTargetDateTime(sTargetDateTime)
+		} ; }}}
+		SetTargetDateTime(sTargetDateTime, sOrigStartDateTime:="") { ; {{{
+			; sTargetDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
+			sTargetYear := FormatTime(sTargetDateTime, "yyyy")
+			if (sTargetYear = "") {
+				MsgBox "不正な時刻が指定されました。`n" . sTargetDateTime . "`n`n処理を中断します。"
+				Return
+			}
+			this.sTargetDateTime := sTargetDateTime
+			this.sStartDateTime := A_Now
+			if (sOrigStartDateTime == "") {
+				this.sOrigStartDateTime := this.sStartDateTime
+			} else {
+				this.sOrigStartDateTime := sOrigStartDateTime
+			}
+		} ; }}}
+		Start() { ; {{{
+			; 事前チェック
+			if (this.sTargetDateTime = "") {
+				Return
+			}
+			iIntervalMs := DateDiff(this.sTargetDateTime, this.sStartDateTime, "Seconds") * 1000
+			iIntervalMin := DateDiff(this.sTargetDateTime, this.sStartDateTime, "Minutes")
+			;MsgBox iIntervalMs . "`n" . this.sStartDateTime
+			this.iIntervalMin := iIntervalMin
+			this.iIntervalMs := iIntervalMs
 			
 			; タイマー開始
 			sIntervalTime := ""
-			if (this.interval_min >= 60) {
-				sIntervalTime := Format("{1:d}" , this.interval_min / 60) . "時間" . String(Mod(this.interval_min, 60)) . "分"
+			if (this.iIntervalMin >= 60) {
+				sIntervalTime := Format("{1:d}" , this.iIntervalMin / 60) . "時間" . String(Mod(this.iIntervalMin, 60)) . "分"
 			} else {
-				sIntervalTime := this.interval_min . "分"
+				sIntervalTime := this.iIntervalMin . "分"
 			}
 			
-			if (this.show_msgs) {
-				sMsg := FormatTime(this.target_date_time, "HH:mm") . "（" . sIntervalTime . "後）にアラームを設定しました！"
-				ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
+			if (this.bShowMsgs) {
+				sMsg := FormatTime(this.sTargetDateTime, "HH:mm") . "（" . sIntervalTime . "後）にアラームを設定しました！"
+				ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
 			}
-			SetTimer this.cb, this.interval_ms
+			SetTimer this.objCallbackFunc, this.iIntervalMs
 			
 			; ログファイル生成
-			if (this.create_log_file) {
-				sFilePath :=
+			if (this.bCreateLogFile) {
+				sLogFilePath :=
 					EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_" .
-					FormatTime(this.start_date_time, "yyyyMMdd-HHmmss") .  "_to_" .
-					FormatTime(this.target_date_time, "yyyyMMdd-HHmmss") . ".log"
-				sContents := this.start_date_time . "`n" . this.target_date_time
-				FileAppend sContents, sFilePath
-				this.log_file_path := sFilePath
+					FormatTime(this.sOrigStartDateTime, "yyyyMMdd-HHmmss") .  "_to_" .
+					FormatTime(this.sTargetDateTime, "yyyyMMdd-HHmmss") . ".log"
+				sContents := this.sTargetDateTime . "`n" . this.sOrigStartDateTime
+				FileAppend sContents, sLogFilePath
+				this.sLogFilePath := sLogFilePath
 			}
-		}
-		TimerCallback() {
+		} ; }}}
+		TimerCallback() { ; {{{
 			; 画面フラッシュ
 			FlashScreen()
 			
 			; タイマークリア
-			sMsg := FormatTime(this.target_date_time, "HH:mm") . "になりました！"
-			ShowAutoHideTrayTip("アラームタイマー", sMsg, this.traytip_duration_ms)
-			SetTimer this.cb, 0
+			sMsg := FormatTime(this.sTargetDateTime, "HH:mm") . "になりました！"
+			ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
+			SetTimer this.objCallbackFunc, 0
 			
 			; ログファイル削除
-			if (this.create_log_file) {
-				FileDelete this.log_file_path
+			if (this.bCreateLogFile) {
+				FileDelete this.sLogFilePath
 			}
-		}
+		} ; }}}
 	} ; }}}
 
 ;* ***************************************************************
