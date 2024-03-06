@@ -1421,6 +1421,38 @@ function snake2pascal() { # {{{
 		snake2pascal AAA_BBB_CCC	# AaaBbbCcc
 	} # }}}
 # }}}
+function camel2pascal() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : camel2pascal <word>"
+		return 1
+	fi
+	inword=$1
+	echo ${inword^}
+}
+	function _test_camel2pascal() { # {{{
+		camel2pascal aaaBbbCcc	# AaaBbbCcc
+		camel2pascal AaaBbbCcc	# AaaBbbCcc
+		camel2pascal aaa		# Aaa
+		camel2pascal Aaa		# Aaa
+	} # }}}
+# }}}
+function pascal2camel() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : pascal2camel <word>"
+		return 1
+	fi
+	inword=$1
+	echo ${inword,}
+}
+	function _test_pascal2camel() { # {{{
+		pascal2camel AaaBbbCcc	# aaaBbbCcc
+		pascal2camel aaaBbbCcc	# aaaBbbCcc
+		pascal2camel Aaa		# aaa
+		pascal2camel aaa		# aaa
+	} # }}}
+# }}}
 
 ### Git
 alias gitlo="\

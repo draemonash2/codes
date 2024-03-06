@@ -1326,6 +1326,10 @@ SetEveryDayAlermTimer()
 			this.objCallbackFunc := ObjBindMethod(this, "TimerCallback")
 			this.fIntervalMin := 0.0
 			this.fOrigIntervalMin := 0.0
+			this.fIntervalMs := 0.0
+			this.sStartDateTime := ""
+			this.sOrigStartDateTime := ""
+			this.sLogFilePath := ""
 		} ; }}}
 		Restart() { ; {{{
 			sFilePattern := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
