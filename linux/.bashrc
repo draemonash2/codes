@@ -417,7 +417,7 @@ function grw() { # {{{
 function cdex() { # {{{
 	\cd "$@"			# cdがaliasでループするので\をつける
 	pwd
-	ls -lFAv --color=auto
+	ll
 } # }}}
 function vimall() { # {{{
 	if [ $# -eq 0 ]; then
@@ -1345,6 +1345,82 @@ function diffinode() { # {{{
 		echo 1
 	fi
 } # }}}
+function camel2snake() { # {{{
+	# https://genzouw.com/entry/2019/04/10/080016/1330/
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : camel2snake <word>"
+		return 1
+	fi
+	inword=$1
+	echo ${inword} | sed -r 's/^./\L\0/; s/([A-Z])/_\1/g; s/.*/\L\0/g;'
+}
+	function _test_camel2snake() { # {{{
+		camel2snake aaaBbbCcc		# aaa_bbb_ccc
+		camel2snake Aaa				# aaa
+		camel2snake aaa				# aaa
+		camel2snake AAA				# a_a_a
+		camel2snake aaa_bbb_ccc		# aaa_bbb_ccc
+	} # }}}
+# }}}
+function pascal2snake() { # {{{
+	# https://genzouw.com/entry/2019/04/10/080016/1330/
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : pascal2snake <word>"
+		return 1
+	fi
+	inword=$1
+	camel2snake ${inword}
+}
+	function _test_pascal2snake() { # {{{
+		pascal2snake aaaBbbCcc		# aaa_bbb_ccc
+		pascal2snake Aaa			# aaa
+		pascal2snake aaa			# aaa
+		pascal2snake AAA			# a_a_a
+		pascal2snake aaa_bbb_ccc	# aaa_bbb_ccc
+	} # }}}
+# }}}
+function snake2camel() { # {{{
+	# https://genzouw.com/entry/2019/04/10/080016/1330/
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : snake2camel <word>"
+		return 1
+	fi
+	inword=$1
+	echo ${inword} | sed -r 's/.*/\L\0/g; s/_([a-z0-9])/\U\1/g;'
+}
+	function _test_snake2camel() { # {{{
+		snake2camel aaa_bbb_ccc		# aaaBbbCcc
+		snake2camel _aaa			# Aaa
+		snake2camel aaa_			# aaa_
+		snake2camel AAA_BBB_CCC		# aaaBbbCcc
+	} # }}}
+# }}}
+function snake2pascal() { # {{{
+	# https://genzouw.com/entry/2019/04/10/080016/1330/
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : snake2pascal <word>"
+		return 1
+	fi
+	inword=$1
+	headchar=${inword:0:1}
+	#echo ${headchar}
+	if [ "${headchar}" == "_" ]; then
+		snake2camel ${inword}
+	else
+		snake2camel _${inword}
+	fi
+}
+	function _test_snake2pascal() { # {{{
+		snake2pascal aaa_bbb_ccc	# AaaBbbCcc
+		snake2pascal _aaa			# Aaa
+		snake2pascal aaa_			# Aaa_
+		snake2pascal AAA_BBB_CCC	# AaaBbbCcc
+	} # }}}
+# }}}
 
 ### Git
 alias gitlo="\
@@ -1544,7 +1620,7 @@ fi
 ### ROS2
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
-export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity} {time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
+export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
 #export ROS_LOCALHOST_ONLY=1
 #export RCUTILS_LOGGING_USE_STDOUT=1		# The output from all debug levels goes to stderr by default. If 1, It is possible to force all output to go to stdout.
 #export RCUTILS_COLORIZED_OUTPUT=1			# By default, the output is colorized when it's targeting a terminal. If 0 force disabling colorized. If 1 force enabling colorized.
@@ -1591,13 +1667,50 @@ function renamerospkg() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
 		echo "  usage : renamerospkg <source> <destination>"
+		echo "    <source>/<destination> must be small snake case. (e.g. aaa_bbb_ccc)"
 		return 1
 	fi
-	src=${1}
-	dst=${2}
-	renamedirfiles "${1}" "${2}"
-	greprep "${1}" "${2}"
-#	TODO: rename AaaBbb
+	
+	src_snake_small=${1}
+	dst_snake_small=${2}
+	src_snake_large=${src_snake_small^^}
+	dst_snake_large=${dst_snake_small^^}
+	src_nodelim_large=${src_snake_large//_/}
+	dst_nodelim_large=${dst_snake_large//_/}
+	src_pascal=$(snake2pascal ${src_snake_small})
+	dst_pascal=$(snake2pascal ${dst_snake_small})
+	
+	echo "Rename ROS2 package names as follows:"
+	echo "  - ${src_snake_small} -> ${dst_snake_small}"
+	echo "  - ${src_snake_large} -> ${dst_snake_large}"
+	echo "  - ${src_nodelim_large} -> ${dst_nodelim_large}"
+	echo "  - ${src_pascal} -> ${dst_pascal}"
+	read -p "Do you want to continue? [y/n] : " answer
+	if [ ! ${answer} == "y" ]; then
+		echo "Canceled, process will be aborted."
+		return 1
+	fi
+	echo ""
+	
+	echo "#### Rename directorys (${src_snake_small} -> ${dst_snake_small}) ####"
+	renamedirfiles "${src_snake_small}" "${dst_snake_small}"
+	echo ""
+	
+	echo "#### Grep replace with small snake case (${src_snake_small} -> ${dst_snake_small}) ####"
+	greprep "${src_snake_small}" "${dst_snake_small}"
+	echo ""
+	
+	echo "#### Grep replace with large snake case (${src_snake_large} -> ${dst_snake_large}) ####"
+	greprep "${src_snake_large}" "${dst_snake_large}"
+	echo ""
+	
+	echo "#### Grep replace with large no delimiter case (${src_nodelim_large} -> ${dst_nodelim_large}) ####"
+	greprep "${src_nodelim_large}" "${dst_nodelim_large}"
+	echo ""
+	
+	echo "#### Grep replace with pascal case (${src_pascal} -> ${dst_pascal}) ####"
+	greprep "${src_pascal}" "${dst_pascal}"
+	echo ""
 } # }}}
 function alignsdfxml() { # {{{
 	if [ $# -ne 1 ]; then
@@ -1796,23 +1909,4 @@ function addenv_ignresource() { # {{{
 #########################################################
 # Environment dependent settings
 #########################################################
-function test01() {
-STRLIST="aaa bbb cccc d"
-echo ${#STRLIST[@]}
-echo ${STRLIST[@]}
-for VAR in $STRLIST
-do
-    echo $VAR
-done
-echo ""
 
-LIST=(aaa bbb cccc d)
-echo ${#LIST[@]}
-echo ${LIST[@]}
-for VAR in "${LIST[@]}"
-do
-    echo $VAR
-done
-echo ""
-
-}

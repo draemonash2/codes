@@ -33,7 +33,7 @@ global gbSLEEPPREVENT_SHOW_TRAYTIP_WITH_ACT := False
 global giJUMPCURSOL_KEYPRESS_NUM := 3
 global giMOVECURSOL_MOVE_OFFSET_NEAR := 50
 global giMOVECURSOL_MOVE_OFFSET_FAR := 150
-global gbRALTAPPSKEY_REPLACE_RALT := false ; true:RAlt->AppsKey false:RAlt
+global gbRALT2APPSKEY_RALT_TO_APPSKEY := false
 global gfKITCHENTIMER_INIT_MIN := 3
 global gbKITCHENTIMER_SAVE_INIT_MIN := true
 global giKITCHENTIMER_TRAYTIP_DURATION_MS := 5000
@@ -51,7 +51,7 @@ StoreCurYearMonths()
 InitScreenBrightness()
 InitWinTileMode()
 InitSleepPreventing()
-InitRAltAppsKeyMode()
+;InitRAltAppsKeyMode()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -223,7 +223,7 @@ SetEveryDayAlermTimer()
 	;その他 ; {{{
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
 		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
-		^+!F11::	SwitchRAltAppsKeyMode()																							;右Alt->AppsKey置換え切替え
+	;	^+!F11::	SwitchRAltAppsKeyMode()																							;右Alt->AppsKey置換え切替え
 		Ctrl::																														;モニタ中心にカーソル移動
 		{
 			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
@@ -258,7 +258,10 @@ SetEveryDayAlermTimer()
 
 ;***** ホットキー(Software local) *****
 	#HotIf !WinActive("ahk_exe WindowsTerminal.exe") ; {{{
-		RAlt::PressRAlt()	;右Altキーをコンテキストメニュー表示に変更
+	;	RAlt::PressRAlt()		;右Altキーをコンテキストメニュー表示に変更
+		#Hotif gbRALT2APPSKEY_RALT_TO_APPSKEY
+			RAlt::Send "{AppsKey}"	;右Altキーをコンテキストメニュー表示に変更
+		#HotIf
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		^!t::	;タブを複製して和訳
@@ -1278,7 +1281,7 @@ SetEveryDayAlermTimer()
 	; 右Alt->AppsKey置換え
 	InitRAltAppsKeyMode() { ; {{{
 		global gbReplaceRAlt2AppsKey
-		gbReplaceRAlt2AppsKey := gbRALTAPPSKEY_REPLACE_RALT
+		gbReplaceRAlt2AppsKey := gbRALT2APPSKEY_RALT_TO_APPSKEY
 	} ; }}}
 	SwitchRAltAppsKeyMode() { ; {{{
 		global gbReplaceRAlt2AppsKey
