@@ -40,8 +40,9 @@ global gbKITCHENTIMER_SAVE_INIT_MIN := true
 global giKITCHENTIMER_TRAYTIP_DURATION_MS := 5000
 global gsKITCHENTIMER_CONFIG_FILE_NAME := "KitchenTimer.cfg"
 global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
+global gbALARMTIMER_INITTIME_CUR := false
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
-global aiALARMTIMER_TARGET_WEEK_DAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
+global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
 ; }}}
 
 ;* ***************************************************************
@@ -1486,7 +1487,7 @@ SetEveryDayAlermTimer()
 	SetEveryDayAlermTimer() ; {{{
 	{
 		iCurWeekDay := Integer(FormatTime(A_Now, "WDay")) ; 1:Sun, 2:Mon, ... 7:Sat
-		bIsTargetWeekDay := ExistArrayValue(aiALARMTIMER_TARGET_WEEK_DAY, iCurWeekDay)
+		bIsTargetWeekDay := ExistArrayValue(aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY, iCurWeekDay)
 		if (bIsTargetWeekDay) {
 			SetAlermTimer("8:57", false, false)
 			SetAlermTimer("11:57", false, false)
@@ -1554,36 +1555,40 @@ SetEveryDayAlermTimer()
 			sCurDateTime := A_Now
 			if (sTargetClock == "") {
 				; 時刻初期値生成
-				iCurHour := Integer(FormatTime(sCurDateTime, "HH"))
-				iCurMinutes := Integer(FormatTime(sCurDateTime, "mm"))
 				sInitTime := ""
-				sInitHour := ""
-				sInitMinute := ""
-				if (
-				  (giALARMTIMER_INITTIME_MIN_STEP <= 0) ||
-				  (giALARMTIMER_INITTIME_MIN_STEP > 60) ||
-				  (Mod(60, giALARMTIMER_INITTIME_MIN_STEP) != 0)
-				) {
-					MsgBox "[fatal error] 時刻初期値設定に誤りがあるため、処理を中断します。"
-					Return
-				}
-				iMinTrgt := 0
-				while iCurMinutes >= iMinTrgt
-				{
-					iMinTrgt := iMinTrgt + giALARMTIMER_INITTIME_MIN_STEP
-				}
-				if (iMinTrgt = 60) {
-					if (iCurHour < 23) {
-						sInitHour := iCurHour + 1
-					} else {
-						sInitHour := "00"
-					}
-					sInitMinute := "00"
+				if (gbALARMTIMER_INITTIME_CUR) {
+					sInitTime := FormatTime(sCurDateTime, "HH:mm")
 				} else {
-					sInitHour := iCurHour
-					sInitMinute := Format("{1:02d}" , String(iMinTrgt))
+					iCurHour := Integer(FormatTime(sCurDateTime, "HH"))
+					iCurMinutes := Integer(FormatTime(sCurDateTime, "mm"))
+					sInitHour := ""
+					sInitMinute := ""
+					if (
+					  (giALARMTIMER_INITTIME_MIN_STEP <= 0) ||
+					  (giALARMTIMER_INITTIME_MIN_STEP > 60) ||
+					  (Mod(60, giALARMTIMER_INITTIME_MIN_STEP) != 0)
+					) {
+						MsgBox "[fatal error] 時刻初期値設定に誤りがあるため、処理を中断します。"
+						Return
+					}
+					iMinTrgt := 0
+					while iCurMinutes >= iMinTrgt
+					{
+						iMinTrgt := iMinTrgt + giALARMTIMER_INITTIME_MIN_STEP
+					}
+					if (iMinTrgt = 60) {
+						if (iCurHour < 23) {
+							sInitHour := iCurHour + 1
+						} else {
+							sInitHour := "00"
+						}
+						sInitMinute := "00"
+					} else {
+						sInitHour := iCurHour
+						sInitMinute := Format("{1:02d}" , String(iMinTrgt))
+					}
+					sInitTime := sInitHour . ":" . sInitMinute
 				}
-				sInitTime := sInitHour . ":" . sInitMinute
 				
 				; 時刻入力
 				InputBoxObj := InputBox("アラームを設定します。`n時刻（e.g. 12:30）を設定してください。", "アラームタイマー", , sInitTime)
