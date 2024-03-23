@@ -2028,7 +2028,7 @@ endif
 " Tagbar 設定
 " ==============================================================================
 " {{{
-"	let g:tagbar_ctags_bin 
+"	let g:tagbar_ctags_bin = 
 	let g:tagbar_type_vb = {
 		\ 'ctagstype' : 'vb',
 		\ 'kinds'     : [

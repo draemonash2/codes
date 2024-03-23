@@ -430,7 +430,7 @@ function vimall() { # {{{
 function vimdiffdir() { # {{{
 	if [ $# -ne 2 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : vimdiffdir <file1> <file2>"
+		echo "  usage : vimdiffdir <dir1> <dir2>"
 		return 1
 	fi
 	dir1=${1}
@@ -1108,39 +1108,31 @@ function setenv() { # {{{
 			fi
 		fi
 	fi
+#	echo "${env_var_name}=$(printenv ${env_var_name})"
 }
 	function _test_setenv() { # {{{
 		echo ""
 		export TESTENV=
 		setenv TESTENV aaa
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV aaa
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV bbb
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV bbb
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV ccc
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV ccc
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		echo ""
 		setenv TESTENV aaa
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV bbb
-		echo "#result: ${TESTENV}"
 		echo ""
 		setenv TESTENV ccc
-		echo "#result: ${TESTENV}"
 		
 	} # }}}
 # }}}
@@ -1184,54 +1176,46 @@ function unsetenv() { # {{{
 			fi
 		fi
 	fi
+#	echo "${env_var_name}=$(printenv ${env_var_name})"
 }
 	function _test_unsetenv() { # {{{
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV aaa
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV bbb
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV ccc
-		echo "#result: ${TESTENV}"
 		
 		
 		echo ""
 		echo ""
 		export TESTENV=
 		unsetenv TESTENV aaa
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV ddd
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV aa
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV bb
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV cc
-		echo "#result: ${TESTENV}"
 		
 		echo ""
 		export TESTENV=aaa:bbb:ccc
 		unsetenv TESTENV aaaa
-		echo "#result: ${TESTENV}"
 	} # }}}
 # }}}
 function avim() { # {{{
@@ -1251,6 +1235,19 @@ function avim() { # {{{
 }
 	complete -F _complete_avim avim # {{{
 	function _complete_avim() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
+# }}}
+function vimw() { # {{{
+	# Open file on vim with no syntax (=White VIM)
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : vimw <file>"
+		return 1
+	fi
+	file=$1
+	vim "+syntax off" ${file}
+}
+	complete -F _complete_vimw vimw # {{{
+	function _complete_vimw() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
 # }}}
 function viml() { # {{{
 	# Launch vim with a file path that includes line numbers.
@@ -1453,6 +1450,31 @@ function pascal2camel() { # {{{
 		pascal2camel aaa		# aaa
 	} # }}}
 # }}}
+function searchpath2top() { # {{{
+	if [ $# -ne 2 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : searchpath2top <start_dir_path> <key_file_name>"
+		return 1
+	fi
+	start_dir_path=$1
+	key_file_name=$2
+	
+	target_dir_path=${start_dir_path}
+	top_dir_path=""
+	while true
+	do
+		file_path=${target_dir_path}/${key_file_name}
+		if [ -f ${file_path} ]; then
+			top_dir_path=${target_dir_path}
+			break
+		fi
+		if [ -z ${target_dir_path} ]; then
+			break
+		fi
+		target_dir_path=${target_dir_path%/*}
+	done
+	echo ${top_dir_path}
+} # }}}
 
 ### Git
 alias gitlo="\
@@ -1466,6 +1488,41 @@ alias gitlo="\
 #	--date=short \
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
+function vimdiffdirgit() { # {{{
+	if [ $# -eq 1 ]; then
+		if [ "$1" == "-c" ]; then
+			diffopt="--cached"
+		else
+			echo "[error] unsupported arguments: $1"
+			return 1
+		fi
+	else
+		diffopt=""
+	fi
+	_true=0
+	_false=1
+	
+	echo "### git status ###"
+	git status -s
+	echo ""
+	
+	echo "### vimdiff modified files ###"
+	if [ "${diffopt}" == "--cached" ]; then
+		filelist=$(git status -s | grep "^M  " | sed "s/^M  //g")
+	else
+		filelist=$(git status -s | grep "^ M " | sed "s/^ M //g")
+	fi
+	for file in $filelist
+	do
+		is_binary=$(file --mime ${file} | grep "charset=binary" &> /dev/null; echo $?)
+		#echo ${is_binary}
+		if [ ${is_binary} -eq ${_false} ]; then
+			echo "==> git difftool ${file} <=="
+			git difftool ${diffopt} ${file}
+			sleep 1
+		fi
+	done
+} # }}}
 
 ### Tmux
 alias tmrunsplit='tmux new-session \; source-file ~/.tmux.runsplit.conf'
@@ -1924,6 +1981,17 @@ function latestlognode() { # {{{
 	set_clipboard "${logpath}"
 	echo ${logpath}
 } # }}}
+function cpk() { # {{{
+	pkg_file_name=package.xml
+	pkg_root_dir=$(searchpath2top ${PWD} ${pkg_file_name})
+	#echo ${pkg_root_dir}
+	if [ -z ${pkg_root_dir} ]; then
+		echo "[error] ${pkg_file_name} does not exist in the upper level directory."
+	else
+		pkg_file_path=${pkg_root_dir}/${pkg_file_name}
+		grep "<name>.*</name>" ${pkg_file_path} | sed "s/.*<name>//g" | sed "s/<\/name>//g"
+	fi
+} # }}}
 
 ### Ignition Gazebo
 function addenv_ignresource() { # {{{
@@ -1941,4 +2009,6 @@ function addenv_ignresource() { # {{{
 #########################################################
 # Environment dependent settings
 #########################################################
+setenv PATH "${HOME}/_work/gz-usd/build/bin"			# for sdf2usd, usd2sdf
+setenv PATH "${HOME}/_prg/USD/bin"						# for USD
 
