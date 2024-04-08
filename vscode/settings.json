@@ -39,5 +39,6 @@
     "markdown-pdf.styles": [
         ".\\\\_custom.css"
     ],
-    "workbench.settings.openDefaultKeybindings": true
+    "workbench.settings.openDefaultKeybindings": true,
+    "markdown-pdf.scale": 0.8
 }
