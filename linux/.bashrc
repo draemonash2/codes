@@ -1488,13 +1488,14 @@ alias gitlo="\
 #	--date=short \
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
-function vimdiffdirgit() { # {{{
+function gitdifftooldir() { # {{{
 	if [ $# -eq 1 ]; then
 		if [ "$1" == "-c" ]; then
 			diffopt="--cached"
 		else
-			echo "[error] unsupported arguments: $1"
-			return 1
+			diffopt="$1"
+		#	echo "[error] unsupported arguments: $1"
+		#	return 1
 		fi
 	else
 		diffopt=""

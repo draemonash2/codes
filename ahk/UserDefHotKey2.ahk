@@ -1489,20 +1489,24 @@ SetEveryDayAlermTimer()
 		iCurWeekDay := Integer(FormatTime(A_Now, "WDay")) ; 1:Sun, 2:Mon, ... 7:Sat
 		bIsTargetWeekDay := ExistArrayValue(aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY, iCurWeekDay)
 		if (bIsTargetWeekDay) {
-			SetAlermTimer("8:57", false, false)
-			SetAlermTimer("11:57", false, false)
-			SetAlermTimer("12:57", false, false)
-			SetAlermTimer("17:57", false, false)
+			SetAlermTimer("8:57", 0.0, false, false)
+			SetAlermTimer("11:57", 0.0, false, false)
+			SetAlermTimer("12:57", 0.0, false, false)
+			SetAlermTimer("17:57", 0.0, false, false)
 		}
 	} ; }}}
 	ClearAlermTimer() ; {{{
 	{
 		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
 	} ; }}}
-	SetAlermTimer(sTargetClock:="", bShowMsgs:=true, bCreateLogFile:=true) ; {{{
+	SetAlermTimer(sTargetClock:="", fSnoozeTimeMin?, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
 		alerm_timer := AlermTimer(bShowMsgs, bCreateLogFile)
-		alerm_timer.SetTimeWithClock(sTargetClock)
+		if (IsSet(fSnoozeTimeMin)) {
+			alerm_timer.SetTimeWithClock(sTargetClock, fSnoozeTimeMin)
+		} else {
+			alerm_timer.SetTimeWithClock(sTargetClock)
+		}
 		alerm_timer.Start()
 	} ; }}}
 	RestartAlermTimer() ; {{{
@@ -1526,6 +1530,7 @@ SetEveryDayAlermTimer()
 			this.sTargetDateTime := ""
 			this.bIsRestart := false
 			this.bReadyToStart := false
+			this.fSnoozeTimeMin := 0.0
 		} ; }}}
 		SetTimeWithLogFile(sLogFilePath) { ; {{{
 			this.bIsRestart := true
@@ -1537,7 +1542,8 @@ SetEveryDayAlermTimer()
 			asFileLines := StrSplit(sFileLines, "`n")
 			sTargetDateTime := asFileLines[1]
 			sOrigStartDateTime := asFileLines[2]
-			;MsgBox sTargetDateTime . "`n" . sOrigStartDateTime
+			fSnoozeTimeMin := asFileLines[3]
+			;MsgBox sTargetDateTime . "`n" . sOrigStartDateTime . "`n" . fSnoozeTimeMin
 			
 			this.sOrigStartDateTime := sOrigStartDateTime
 			
@@ -1547,12 +1553,14 @@ SetEveryDayAlermTimer()
 			iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
 			if (iSecond > 0) {
 				this.sTargetDateTime := sTargetDateTime
+				this.fSnoozeTimeMin := fSnoozeTimeMin
 				this.bReadyToStart := true
 			}
 		} ; }}}
-		SetTimeWithClock(sTargetClock:="") { ; {{{
+		SetTimeWithClock(sTargetClock:="", fSnoozeTimeMin?) { ; {{{
 			this.bIsRestart := false
 			sCurDateTime := A_Now
+			; アラーム時刻設定
 			if (sTargetClock == "") {
 				; 時刻初期値生成
 				sInitTime := ""
@@ -1598,8 +1606,7 @@ SetEveryDayAlermTimer()
 				}
 				sTargetClock := InputBoxObj.Value
 			}
-			
-			; 時刻フォーマットチェック
+			; アラーム時刻フォーマットチェック
 			Try {
 				iDelimiterPos := Integer(InStr(sTargetClock, ":"))
 				;MsgBox String(iDelimiterPos)
@@ -1624,6 +1631,26 @@ SetEveryDayAlermTimer()
 				sTargetDateTime := DateAdd(sTargetDateTime, 1, "days")
 			}
 			this.sTargetDateTime := sTargetDateTime
+			
+			; スヌーズ時間設定
+			if (!IsSet(fSnoozeTimeMin)) {
+				;スヌーズ時間入力
+				InputBoxObj := InputBox("スヌーズ時間を設定します。`n0.0より大きい値（e.g. 0.5）を設定してください。", "アラームタイマー", , 0.0)
+				if (InputBoxObj.Result = "Cancel") {
+					MsgBox "キャンセルされたため、処理を中断します。"
+					Return
+				}
+				sSnoozeTimeMin := InputBoxObj.Value
+			}
+			; スヌーズ時間フォーマットチェック
+			Try {
+				fSnoozeTimeMin := Float(sSnoozeTimeMin)
+			} Catch Error as err {
+				MsgBox "不正なスヌーズ時間が指定されました。`n" . sSnoozeTimeMin . "`n`n処理を中断します。"
+				Return
+			}
+			this.fSnoozeTimeMin := fSnoozeTimeMin
+			
 			this.bReadyToStart := true
 		} ; }}}
 		SetTimeWithTargetDateTime(sTargetDateTime) { ; {{{
@@ -1635,6 +1662,12 @@ SetEveryDayAlermTimer()
 			this.sTargetDateTime := sTargetDateTime
 			this.bReadyToStart := true
 		} ; }}}
+		SetSnoozeTime(fSnoozeTimeMin) { ; {{{
+			if (!isFloat(fSnoozeTimeMin)) {
+				Return
+			}
+			this.fSnoozeTimeMin := fSnoozeTimeMin
+		} ; }}}
 		Start() { ; {{{
 			; sTargetDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
 			; 事前チェック
@@ -1642,6 +1675,7 @@ SetEveryDayAlermTimer()
 				Return
 			}
 			sTargetDateTime := this.sTargetDateTime
+			fSnoozeTimeMin := this.fSnoozeTimeMin
 			
 			sStartDateTime := A_Now
 			iIntervalMs := DateDiff(sTargetDateTime, sStartDateTime, "Seconds") * 1000
@@ -1673,7 +1707,7 @@ SetEveryDayAlermTimer()
 					EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_" .
 					FormatTime(sLogStartDateTime, "yyyyMMdd-HHmmss") .  "_to_" .
 					FormatTime(sTargetDateTime, "yyyyMMdd-HHmmss") . ".log"
-				sContents := sTargetDateTime . "`n" . sLogStartDateTime
+				sContents := sTargetDateTime . "`n" . sLogStartDateTime . "`n" . fSnoozeTimeMin
 				FileAppend sContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
 			}
@@ -1682,14 +1716,38 @@ SetEveryDayAlermTimer()
 			; 画面フラッシュ
 			FlashScreen()
 			
-			; タイマークリア
+			; タイマー満了通知
 			sMsg := FormatTime(this.sTargetDateTime, "HH:mm") . "になりました！"
 			ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
-			SetTimer this.objCallbackFunc, 0
 			
-			; ログファイル削除
-			if (this.bCreateLogFile) {
-				FileDelete this.sLogFilePath
+			if (this.fSnoozeTimeMin > 0.0) {
+				sAnswer := MsgBox("スヌーズを停止しますか？", "アラームタイマー", "Y/N T5 Default2")
+				if (sAnswer == "Yes") {
+					; タイマークリア
+					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを停止しました！"
+					ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
+					SetTimer this.objCallbackFunc, 0
+					
+					; ログファイル削除
+					if (this.bCreateLogFile) {
+						FileDelete this.sLogFilePath
+					}
+				} else { ; sAnswer == "No" or "Timeout"
+					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを設定しました！"
+					ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
+					
+					; タイマー再設定
+					iIntervalMs := Integer(this.fSnoozeTimeMin * 60 * 1000)
+					SetTimer this.objCallbackFunc, iIntervalMs
+				}
+			} else {
+				; タイマークリア
+				SetTimer this.objCallbackFunc, 0
+				
+				; ログファイル削除
+				if (this.bCreateLogFile) {
+					FileDelete this.sLogFilePath
+				}
 			}
 		} ; }}}
 	} ; }}}
