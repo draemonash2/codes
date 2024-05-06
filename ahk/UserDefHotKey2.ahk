@@ -43,6 +43,7 @@ global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
 global gbALARMTIMER_INITTIME_CUR := false
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
+global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 ; }}}
 
 ;* ***************************************************************
@@ -139,6 +140,7 @@ SetEveryDayAlermTimer()
 	;仕事用 ; {{{
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
+		^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.xlsx" )									;#memo_image.xlsx
 		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
@@ -1641,10 +1643,18 @@ SetEveryDayAlermTimer()
 					Return
 				}
 				sSnoozeTimeMin := InputBoxObj.Value
+				Try {
+					fSnoozeTimeMin := Float(sSnoozeTimeMin)
+				} Catch Error as err {
+					MsgBox "不正なスヌーズ時間が指定されました。`n" . sSnoozeTimeMin . "`n`n処理を中断します。"
+					Return
+				}
 			}
 			; スヌーズ時間フォーマットチェック
 			Try {
-				fSnoozeTimeMin := Float(sSnoozeTimeMin)
+				if (fSnoozeTimeMin < 0.0) {
+					throw
+				}
 			} Catch Error as err {
 				MsgBox "不正なスヌーズ時間が指定されました。`n" . sSnoozeTimeMin . "`n`n処理を中断します。"
 				Return
@@ -1721,7 +1731,7 @@ SetEveryDayAlermTimer()
 			ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
 			
 			if (this.fSnoozeTimeMin > 0.0) {
-				sAnswer := MsgBox("スヌーズを停止しますか？", "アラームタイマー", "Y/N T5 Default2")
+				sAnswer := MsgBox("スヌーズを停止しますか？", "アラームタイマー", "Y/N T" . String(giALARMTIMER_SNOOZE_MSG_DURATION_SEC) . " Default2")
 				if (sAnswer == "Yes") {
 					; タイマークリア
 					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを停止しました！"
