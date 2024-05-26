@@ -1312,7 +1312,8 @@ SetEveryDayAlermTimer()
 	; キッチンタイマー
 	ClearKitchenTimer() ; {{{
 	{
-		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+		sLogFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
+		DeleteFile(sLogFilePath)
 	} ; }}}
 	SetKitchenTimer(fIntervalMin:=0.0, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
@@ -1387,7 +1388,7 @@ SetEveryDayAlermTimer()
 				if (gbKITCHENTIMER_SAVE_INIT_MIN) {
 					DirCreate sConfigDirPath
 					sFileContents := String(fIntervalMin)
-					FileDelete sConfigFilePath
+					DeleteFile(sConfigFilePath)
 					FileAppend sFileContents, sConfigFilePath
 				}
 			}
@@ -1414,7 +1415,7 @@ SetEveryDayAlermTimer()
 			this.fOrigIntervalMin := fOrigIntervalMin
 			this.sOrigStartDateTime := sOrigStartDateTime
 			
-			FileDelete sLogFilePath
+			DeleteFile(sLogFilePath)
 			
 			fIntervalMin := 0.0
 			sStartDateTime := A_Now
@@ -1473,7 +1474,7 @@ SetEveryDayAlermTimer()
 			
 			; ログファイル削除
 			if (this.bCreateLogFile) {
-				FileDelete this.sLogFilePath
+				DeleteFile(this.sLogFilePath)
 			}
 		} ; }}}
 		TimerCallback() { ; {{{
@@ -1499,7 +1500,8 @@ SetEveryDayAlermTimer()
 	} ; }}}
 	ClearAlermTimer() ; {{{
 	{
-		FileDelete EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+		sLogFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
+		DeleteFile(sLogFilePath)
 	} ; }}}
 	SetAlermTimer(sTargetClock:="", fSnoozeTimeMin?, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
@@ -1549,7 +1551,7 @@ SetEveryDayAlermTimer()
 			
 			this.sOrigStartDateTime := sOrigStartDateTime
 			
-			FileDelete sLogFilePath
+			DeleteFile(sLogFilePath)
 			
 			sStartDateTime := A_Now
 			iSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
@@ -1740,7 +1742,7 @@ SetEveryDayAlermTimer()
 					
 					; ログファイル削除
 					if (this.bCreateLogFile) {
-						FileDelete this.sLogFilePath
+						DeleteFile(this.sLogFilePath)
 					}
 				} else { ; sAnswer == "No" or "Timeout"
 					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを設定しました！"
@@ -1756,7 +1758,7 @@ SetEveryDayAlermTimer()
 				
 				; ログファイル削除
 				if (this.bCreateLogFile) {
-					FileDelete this.sLogFilePath
+					DeleteFile(this.sLogFilePath)
 				}
 			}
 		} ; }}}
@@ -1788,5 +1790,12 @@ SetEveryDayAlermTimer()
 			}
 		}
 		return bIsExist
+	} ; }}}
+	; ファイル削除
+	DeleteFile(sFilePattern) ; {{{
+	{
+		if (FileExist(sFilePattern)) {
+			FileDelete sFilePattern
+		}
 	} ; }}}
 
