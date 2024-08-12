@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.26
+' my excel addin macros v2.26a
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -91,7 +91,7 @@ Option Explicit
 'Win32API宣言
 '▽▽▽Macro.bas/範囲を維持したままセルコピー()▽▽▽
 '▽▽▽Macro.bas/一行にまとめてセルコピー()▽▽▽
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 '△△△Macro.bas/一行にまとめてセルコピー()△△△
 '△△△Macro.bas/範囲を維持したままセルコピー()△△△
 
@@ -109,15 +109,15 @@ Private Declare PtrSafe Function GlobalLock Lib "kernel32" (ByVal hMem As LongPt
 Private Declare PtrSafe Function GlobalUnlock Lib "kernel32" (ByVal hMem As LongPtr) As Long
 Private Declare PtrSafe Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As LongPtr
 #Else
-Private Declare Function OpenClipboard Lib "User32" (ByVal hWnd As Long) As Long
-Private Declare Function CloseClipboard Lib "User32" () As Long
-Private Declare Function GetClipboardData Lib "User32" (ByVal wFormat As Long) As Long
-Private Declare Function SetClipboardData Lib "User32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
+Private Declare PtrSafe Function OpenClipboard Lib "User32" (ByVal hWnd As Long) As Long
+Private Declare PtrSafe Function CloseClipboard Lib "User32" () As Long
+Private Declare PtrSafe Function GetClipboardData Lib "User32" (ByVal wFormat As Long) As Long
+Private Declare PtrSafe Function SetClipboardData Lib "User32" (ByVal wFormat As Long, ByVal hMem As Long) As Long
+Private Declare PtrSafe Function GlobalAlloc Lib "kernel32" (ByVal wFlags, ByVal dwBytes As Long) As Long
+Private Declare PtrSafe Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare PtrSafe Function lstrcpy Lib "kernel32" (ByVal lpString1 As Any, ByVal lpString2 As Any) As Long
 #End If
 Private Const GHND = &H42
 Private Const CF_TEXT = &H1
@@ -142,7 +142,7 @@ Private Type ChooseColor
     lpfnHook As Long
     lpTemplateName As String
 End Type
-Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
+Private Declare PtrSafe Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As ChooseColor) As Long
 '△△△Macro.bas/ShowColorPalette()△△△
 
 '▽▽▽Macro.bas/ReadSettingFile()/WriteSettingFile()▽▽▽
@@ -150,7 +150,7 @@ Const sDELIMITER_INIT As String = vbTab
 '△△△Macro.bas/ReadSettingFile()/WriteSettingFile()△△△
 
 '▽▽▽Mng_SysCmd.bas/ExecDosCmdRunas()▽▽▽
-Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
+Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
     ByVal hWnd As Long, _
     ByVal lpOperation As String, _
     ByVal lpFile As String, _

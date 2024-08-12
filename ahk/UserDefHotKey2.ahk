@@ -144,6 +144,8 @@ SetEveryDayAlermTimer()
 		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
+		^+!8::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\231031_gen_world\v0.4以降\design_memo.xlsx" )
+		^+!7::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\240628_auto_sim_test\logic_memo.txt" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
@@ -358,19 +360,19 @@ SetEveryDayAlermTimer()
 				SendInput "+{Space}"
 			}
 		}
-		;Ctrl+Shift+ホイールUp/Downで右/左スクロール
-		^+WheelUp::
-		{
-			SetScrollLockState True
-			SendInput "{Left 5}"
-			SetScrollLockState False
-		}
-		^+WheelDown::
-		{
-			SetScrollLockState True
-			SendInput "{Right 5}"
-			SetScrollLockState False
-		}
+	;	;Ctrl+Shift+ホイールUp/Downで右/左スクロール（旧Excel用）
+	;	^+WheelUp::
+	;	{
+	;		SetScrollLockState True
+	;		SendInput "{Left 5}"
+	;		SetScrollLockState False
+	;	}
+	;	^+WheelDown::
+	;	{
+	;		SetScrollLockState True
+	;		SendInput "{Right 5}"
+	;		SetScrollLockState False
+	;	}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe iThoughts.exe") ; {{{
 		F1::return	;F1ヘルプ無効化
