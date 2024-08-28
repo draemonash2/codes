@@ -14,8 +14,8 @@ global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
 global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
-global giWIN_TILE_MODE_RANGE_MIN := 1 ; 1～6 (Mon1:1-3, Mon2:4-6)
-global giWIN_TILE_MODE_RANGE_MAX := 4 ; 1～6 (Mon1:1-3, Mon2:4-6)
+global giWIN_TILE_MODE_RANGE_MIN := 1
+global giWIN_TILE_MODE_RANGE_MAX := 6
 global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
 global giWIN_TILE_MODE_INIT := 0
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
@@ -142,10 +142,11 @@ SetEveryDayAlermTimer()
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
 		^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.xlsx" )									;#memo_image.xlsx
 		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
+		#^+!-::		Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
 		^+!8::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\231031_gen_world\v0.4以降\design_memo.xlsx" )
-		^+!7::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\240628_auto_sim_test\logic_memo.txt" )
+		^+!7::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\240628_auto_sim_test\design_memo.xlsx" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
@@ -626,8 +627,9 @@ SetEveryDayAlermTimer()
 		iMonitorNum := GetMonitorNum()
 		switch iMonitorNum
 		{
-			case 1:		iOutWinTileMode := CropValue(iInWinTileMode, 4, 6) ; Main only
-			case 2:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 6) ; Main + Sub
+			case 1:		iOutWinTileMode := CropValue(iInWinTileMode, 4, 4) ; Main only
+			case 2:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 4) ; Main + Sub
+			case 3:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 6) ; Main + Sub + Mobile
 			default:	MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
 		}
 		return iOutWinTileMode
@@ -649,10 +651,14 @@ SetEveryDayAlermTimer()
 		global giWinTileMode
 		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
 		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_WIN_RANGE_RATE )
+		GetMonitorPosInfo(3, &dX3, &dY3, &dWidth3, &dHeight3 )
 	;	MsgBox "[DBG] ApplyWinTileMode() " .
 	;		"`n giWinTileMode = " . giWinTileMode .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
-	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2
+	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2 .
+	;		"`n dX3 = " . dX3 . "`n dY3 = " . dY3 . "`n dWidth3 = " . dWidth3 . "`n dHeight3 = " . dHeight3
+		
+		dHeight1_3 := dHeight1 + dHeight3
 		
 		switch giWinTileMode
 		{
@@ -660,8 +666,8 @@ SetEveryDayAlermTimer()
 			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
 			case 3:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
 			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
-			case 5:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Left")
-			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1, "Right")
+			case 5:		MoveActiveWin(dX3, dY3, dWidth3, dHeight3)
+			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1_3)
 			default:	MsgBox "[error] invalid giWinTileMode : " . giWinTileMode
 		}
 		return
@@ -1394,6 +1400,35 @@ SetEveryDayAlermTimer()
 			this.bIsRestart := false
 			this.bReadyToStart := false
 		} ; }}}
+		SetTimeWithLogFile(sLogFilePath) { ; {{{
+			this.bIsRestart := true
+			if (!FileExist(sLogFilePath)) {
+				MsgBox "ファイルが存在しません。`n  " . sLogFilePath . "`n`n処理を中断します。"
+				Return
+			}
+			sFileLines := FileRead(sLogFilePath)
+			asFileLines := StrSplit(sFileLines, "`n")
+			sTargetDateTime := asFileLines[1]
+			fOrigIntervalMin := Float(asFileLines[2])
+			sOrigStartDateTime := asFileLines[3]
+			;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime
+			
+			this.fOrigIntervalMin := fOrigIntervalMin
+			this.sOrigStartDateTime := sOrigStartDateTime
+			
+			DeleteFile(sLogFilePath)
+			
+			fIntervalMin := 0.0
+			sStartDateTime := A_Now
+			iElapsedSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
+			;MsgBox sTargetDateTime . "`n" . sStartDateTime . "`n" . iElapsedSecond
+			if (iElapsedSecond > 0) {
+				fIntervalMin := Float(iElapsedSecond / 60)
+			}
+			;MsgBox fIntervalMin
+			this.fIntervalMin := fIntervalMin
+			this.bReadyToStart := true
+		} ; }}}
 		SetTimeWithIntervalMin(fIntervalMin:=0.0) { ; {{{
 			this.bIsRestart := false
 			this.fOrigIntervalMin := 0.0
@@ -1445,35 +1480,6 @@ SetEveryDayAlermTimer()
 				MsgBox "不正な時間が指定されました。`n" . fIntervalMin . "`n`n処理を中断します。"
 				Return
 			}
-			this.fIntervalMin := fIntervalMin
-			this.bReadyToStart := true
-		} ; }}}
-		SetTimeWithLogFile(sLogFilePath) { ; {{{
-			this.bIsRestart := true
-			if (!FileExist(sLogFilePath)) {
-				MsgBox "ファイルが存在しません。`n  " . sLogFilePath . "`n`n処理を中断します。"
-				Return
-			}
-			sFileLines := FileRead(sLogFilePath)
-			asFileLines := StrSplit(sFileLines, "`n")
-			sTargetDateTime := asFileLines[1]
-			fOrigIntervalMin := Float(asFileLines[2])
-			sOrigStartDateTime := asFileLines[3]
-			;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime
-			
-			this.fOrigIntervalMin := fOrigIntervalMin
-			this.sOrigStartDateTime := sOrigStartDateTime
-			
-			DeleteFile(sLogFilePath)
-			
-			fIntervalMin := 0.0
-			sStartDateTime := A_Now
-			iElapsedSecond := DateDiff(sTargetDateTime, sStartDateTime, "Seconds")
-			;MsgBox sTargetDateTime . "`n" . sStartDateTime . "`n" . iElapsedSecond
-			if (iElapsedSecond > 0) {
-				fIntervalMin := Float(iElapsedSecond / 60)
-			}
-			;MsgBox fIntervalMin
 			this.fIntervalMin := fIntervalMin
 			this.bReadyToStart := true
 		} ; }}}

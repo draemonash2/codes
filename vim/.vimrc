@@ -607,6 +607,11 @@ endif
 	set softtabstop=4									" ソフトタブストップ（<Tab> の挿入や <BS> の使用等の編集操作をするときに、<Tab> が対応する空白の数）
 	set shiftwidth=4									" シフト移動幅（自動インデントやコマンド "<<", ">>" でずれる幅）
 	set tabstop=4										" タブストップ（画面上でタブ文字が占める幅）
+"	set expandtab										" タブを空白にする
+	autocmd FileType cpp,hpp set softtabstop=2
+	autocmd FileType cpp,hpp set tabstop=2
+	autocmd FileType cpp,hpp set shiftwidth=2
+	autocmd FileType cpp,hpp set expandtab
 if has('mouse')
 	set mouse=a											" マウスを有効にする
 endif
@@ -884,12 +889,12 @@ endif
 
 " ==============================================================================
 " コメント中の特定の単語を強調表示する
-" [ハイライト実行例] TODO: NOTE: INFO: XXX: TEMP: FIXME: todo: note: info: xxx: temp: fixme:
+" [ハイライト実行例] TODO: XXX: TEMP: FIXME:
 " ==============================================================================
 " {{{
 	augroup HilightsForce
 		autocmd!
-		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\(TODO\|NOTE\|INFO\|XXX\|TEMP\|FIXME\):')
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\v(TODO|XXX|TEMP|FIXME)(\([a-zA-Z0-9_-]+\))?:')
 		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
 " }}}
@@ -2050,6 +2055,7 @@ endif
 	let g:tagbar_show_linenumbers = 1
 	let g:tagbar_autopreview = 1
 	let g:tagbar_autofocus = 1
+	let g:tagbar_width = 60
 " }}}
 
 " ==============================================================================

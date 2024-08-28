@@ -173,6 +173,69 @@ function _update_curdir() # {{{
 	\cd ${pwdold}
 } # }}}
 alias up='_update_curdir; ll'
+function lll() # {{{
+{
+	if [ $# -ge 1 ]; then
+		case $1 in
+			"-fl")
+				ls -F | grep -v / | sed s/\*$//g | sed s/\@$//g | sort
+				;;
+			"-lf")
+				ls -F | grep -v / | sed s/\*$//g | sed s/\@$//g | sort
+				;;
+			"-f")
+				ls -F | grep -v @ | grep -v / | sed s/\*$//g | sort
+				;;
+			"-l")
+				ls -F | grep  @ | sed s/\@$//g | sort
+				;;
+			"-d")
+				ls -F | grep / | sed s/\\/$//g | sort
+				;;
+			\*)
+				echo "[error] unknown argument. $1"
+				return 1
+				;;
+		esac
+	else
+		ls -F | sed s/\*$//g | sed s/\@$//g | sed s/\\/$//g | sort
+	fi
+}
+	function _test_lll() # {{{
+	{
+		(
+			# preprocess
+			TEST_DIR=_test_lll_test
+			mkdir ${TEST_DIR}
+			cd ${TEST_DIR}
+			
+			mkdir 2_test_dir
+			touch 3_test_file.md
+			touch 4_test_file.sh
+			ln -sf 3_test_file.md 1_test_symlink.md
+			
+			# test
+			echo "### lll ###"
+			lll
+			echo "### lll -fl ###"
+			lll -fl
+			echo "### lll -lf ###"
+			lll -lf
+			echo "### lll -f ###"
+			lll -f
+			echo "### lll -l ###"
+			lll -l
+			echo "### lll -d ###"
+			lll -d
+			
+			# post process
+			cd ../
+			rm -rf ${TEST_DIR}
+		)
+	} # }}}
+# }}}
+alias lllf="lll -lf"
+alias llld="lll -d"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -667,6 +730,7 @@ function catrange() { # {{{
 function ff() { # {{{
 	if [ $# -eq 0 ]; then
 		find . -type f 2> /dev/null
+		find . -type l 2> /dev/null
 	else
 		find . -type f -name $1 2> /dev/null
 		find . -type l -name $1 2> /dev/null
@@ -1218,6 +1282,16 @@ function unsetenv() { # {{{
 		unsetenv TESTENV aaaa
 	} # }}}
 # }}}
+function echopath() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : echoenv <env_var_name>"
+		return 1
+	fi
+	env_var_name=$1
+	env_value=$(printenv ${env_var_name})
+	echo ${env_value} | sed "s/:/\n/g"
+} # }}}
 function avim() { # {{{
 	# Colorize ANSI color code on vim
 	if [ $# -ne 1 ]; then
@@ -1475,6 +1549,15 @@ function searchpath2top() { # {{{
 	done
 	echo ${top_dir_path}
 } # }}}
+function grepjapanese() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : grepjapanese <target_path>"
+		return 1
+	fi
+	target_path=$1
+	grep -nrP "[\x{3040}-\x{30FF}\x{4E00}-\x{9FFF}]" ${target_path}
+} # }}}
 
 ### Git
 alias gitlo="\
@@ -1488,6 +1571,7 @@ alias gitlo="\
 #	--date=short \
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
+alias githeadmsg="git log --all --pretty=format:"%s" | head -1"
 function gitdifftooldir() { # {{{
 	if [ $# -eq 1 ]; then
 		if [ "$1" == "-c" ]; then
@@ -1523,6 +1607,23 @@ function gitdifftooldir() { # {{{
 			sleep 1
 		fi
 	done
+} # }}}
+function gitaddcmd() { # {{{
+	echo "### git status -s"
+	git status -s
+	echo ""
+	
+	echo "### echo git add list"
+	add_file_list=$(git status -s | grep "^.M " | cut -c 4- | cut -d" " -f 1)
+	for add_file in ${add_file_list}
+	do
+		#echo ${add_file}
+		echo "git add ${add_file}"
+	done
+} # }}}
+function gitcommit() { # {{{
+	commit_msg=$(githeadmsg)
+	git commit -m "${commit_msg}"
 } # }}}
 
 ### Tmux
@@ -1673,8 +1774,7 @@ function _tmuxexec() { # {{{
 } # }}}
 function tmuxexec_bashtest() { # {{{
 	_tmuxexec \
-		"cd ${HOME}/_repo/pj1tool-ros2dev/docker" \
-		"./bash_test.sh" \
+		"${HOME}/_repo/pj1tool-ros2dev/docker/bash_test.sh" \
 		"cd workspace" \
 		"lsetup" \
 		""
@@ -1710,7 +1810,8 @@ fi
 ### ROS2
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
-export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
+#export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
+export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message}"
 #export ROS_LOCALHOST_ONLY=1
 #export RCUTILS_LOGGING_USE_STDOUT=1		# The output from all debug levels goes to stderr by default. If 1, It is possible to force all output to go to stdout.
 #export RCUTILS_COLORIZED_OUTPUT=1			# By default, the output is colorized when it's targeting a terminal. If 0 force disabling colorized. If 1 force enabling colorized.
@@ -1752,6 +1853,22 @@ function cbuildc() { # {{{
 	pkg=${1}
 	rm -rf install/${pkg} build/${pkg}
 	cbuild ${pkg}
+} # }}}
+function ctest() { # {{{
+	# colcon test --packages-select <pkg_name>
+	if [ $# -eq 0 ]; then
+		pkg_sel_opt=""
+	elif [ $# -eq 1 ]; then
+		pkg_sel_opt="--packages-select ${1}"
+	else
+		echo "[error] wrong number of arguments."
+		echo "  usage : ctest [<package_name>]"
+		return 1
+	fi
+	gsetup
+	#lsetup || return 1
+	# colcon test ${pkg_sel_opt} && colcon test-result --verbose
+	colcon test ${pkg_sel_opt} && colcon test-result
 } # }}}
 function renamerospkg() { # {{{
 	if [ $# -ne 2 ]; then
@@ -1992,6 +2109,45 @@ function cpk() { # {{{
 		pkg_file_path=${pkg_root_dir}/${pkg_file_name}
 		grep "<name>.*</name>" ${pkg_file_path} | sed "s/.*<name>//g" | sed "s/<\/name>//g"
 	fi
+} # }}}
+function e2q() { # {{{
+	# euler to quaternion
+	order="wxyz"
+	delimiter=" "
+	if [ $# -ne 3 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : e2q <roll> <pitch> <yaw>   (unit:[rad])"
+		return 1
+	fi
+	roll=$1
+	pitch=$2
+	yaw=$3
+	values_str=$(quaternion_from_euler ${roll} ${pitch} ${yaw} | grep -P "^ [WXYZ] " | grep -oP "[-\d.]+" | tr "\n" " ")
+	values_array=($values_str)
+	if [ ${order} == "wxyz" ]; then
+		echo "w${delimiter}x${delimiter}y${delimiter}z"
+		echo "${values_array[0]}${delimiter}${values_array[1]}${delimiter}${values_array[2]}${delimiter}${values_array[3]}"
+	else
+		echo "x${delimiter}y${delimiter}z${delimiter}w"
+		echo "${values_array[1]}${delimiter}${values_array[2]}${delimiter}${values_array[3]}${delimiter}${values_array[0]}"
+	fi
+} # }}}
+function q2e() { # {{{
+	# quaternion to euler
+	delimiter=" "
+	if [ $# -ne 4 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : q2e <w> <x> <y> <z>"
+		return 1
+	fi
+	w=$1
+	x=$2
+	y=$3
+	z=$4
+	values_str=$(quaternion_to_euler ${w} ${x} ${y} ${z} | grep -P "^ (roll|pitch|yaw) .* degrees" | grep -oP "[-\d.]+" | tr "\n" " ")
+	values_array=($values_str)
+	echo "roll${delimiter}pitch${delimiter}yaw [degrees]"
+	echo "${values_array[0]}${delimiter}${values_array[1]}${delimiter}${values_array[2]}"
 } # }}}
 
 ### Ignition Gazebo
