@@ -612,6 +612,7 @@ endif
 	autocmd FileType cpp,hpp set tabstop=2
 	autocmd FileType cpp,hpp set shiftwidth=2
 	autocmd FileType cpp,hpp set expandtab
+	autocmd FileType cpp,hpp set colorcolumn=100
 if has('mouse')
 	set mouse=a											" マウスを有効にする
 endif
@@ -2014,6 +2015,13 @@ endif
 	endfunction
 " }}}
 
+" ==============================================================================
+" diffopt設定トグル
+" ==============================================================================
+" {{{
+	command! Tiw set diffopt+=iwhite  " TODO: impliment toggle
+" }}}
+
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
 " **************************************************************************************************
@@ -2053,9 +2061,14 @@ endif
 	\ }
 	let g:tagbar_sort = 0	" ソートしない
 	let g:tagbar_show_linenumbers = 1
-	let g:tagbar_autopreview = 1
-	let g:tagbar_autofocus = 1
+	let g:tagbar_autopreview = 0
+	let g:tagbar_autofocus = 0
 	let g:tagbar_width = 60
+	let g:tagbar_autoclose = 0
+	let g:tagbar_case_insensitive = 0
+	let g:tagbar_compact = 0
+	let g:tagbar_indent = 2
+	let g:tagbar_no_status_line = 1
 " }}}
 
 " ==============================================================================
@@ -2194,3 +2207,13 @@ endif
 " {{{
 	autocmd VimEnter * DoShowMarks!
 " }}}
+
+" " TODO:
+" " クイックフィックスウィンドウを開かないようにする
+" let g:lsp_diagnostics_enabled = 1
+" let g:lsp_signs_enabled = 1
+" let g:lsp_diagnostics_echo_cursor = 1
+" 
+" " 自動補完のオプション
+" set completeopt=menuone,noinsert,noselect
+

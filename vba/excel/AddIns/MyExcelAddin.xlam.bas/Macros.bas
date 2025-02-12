@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.26a
+' my excel addin macros v2.27
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -1372,21 +1372,25 @@ End Sub
 ' =============================================================================
 Public Sub 検索文字の文字色を変更()
     Const sMACRO_NAME As String = "検索文字の文字色を変更"
-    Const lSELECT_CLR_PALETTE As Boolean = True
+    Const lSELECT_CLR_PALETTE As Boolean = False
     Const lREGEXP_IGNORECASE As Boolean = False
     
     Dim cCLR_RGBS As Variant
     Set cCLR_RGBS = CreateObject("System.Collections.ArrayList")
     '▼▼▼色設定▼▼▼
-    Const sCOLOR_TYPE As String = "0:赤、1:水、2:緑、3:紫、4:橙、5:黄、6:白、7:黒"
-    cCLR_RGBS.Add &HFF
-    cCLR_RGBS.Add &HC6AC4B
-    cCLR_RGBS.Add &H3C9376
-    cCLR_RGBS.Add &HA03070
-    cCLR_RGBS.Add &H4696F7
-    cCLR_RGBS.Add &HC0FF
-    cCLR_RGBS.Add &HFFFFFF
-    cCLR_RGBS.Add &H0
+    Const sCOLOR_TYPE As String = "0:濃赤 1:緑 2:青 3:橙 4:水 5:紫 6:赤 7:黄土 8:真緑 9:ピンク 10:白 11:黒"
+    cCLR_RGBS.Add &H4D50C0 '濃赤
+    cCLR_RGBS.Add &H59BB9B '緑
+    cCLR_RGBS.Add &HBD814F '青
+    cCLR_RGBS.Add &H4696F7 '橙
+    cCLR_RGBS.Add &HC6AC4B '水
+    cCLR_RGBS.Add &HA26480 '紫
+    cCLR_RGBS.Add &HFF     '赤
+    cCLR_RGBS.Add &H1099CC '黄土
+    cCLR_RGBS.Add &H509900 '真緑
+    cCLR_RGBS.Add &HCC99FF 'ピンク
+    cCLR_RGBS.Add &HFFFFFF '白
+    cCLR_RGBS.Add &H0      '黒
     '▲▲▲色設定▲▲▲
     
     '*** アドイン設定ファイルから設定読み出し ***

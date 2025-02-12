@@ -126,17 +126,20 @@ SetEveryDayAlermTimer()
 		^+!Up::																														;#todo.itmz
 		{
 		;	lPID := ProcessWait("Dropbox.exe", 30) ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
-			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.itmz" )
+		;	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.itmz" )
+			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )
 		}
 		^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
 		^+!Left::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.vsdm" )													;#temp.vsdm
 		^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
-		#^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\予算管理＠家族用.xlsx" )						;予算管理＠家族用.xlsx
+		#^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
 		^+!/::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
 		^+!o::		StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
 		^+!c::		StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
 		^+!s::		StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
 		^+!m::		StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
+		^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
+		#^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 	; }}}
 	;仕事用 ; {{{
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
@@ -408,7 +411,7 @@ SetEveryDayAlermTimer()
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
 		VK1C & v::
 		{
-			MouseMove 2000, 550
+			MouseMove 1050, 70
 		;	sleep 1000
 			Click
 		}

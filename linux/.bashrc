@@ -467,7 +467,7 @@ function gr() { # {{{
 		echo "  usage : gr <keyword>"
 		return 1
 	fi
-	grep --no-messages -nrIR "$@" --exclude={tags,GTAGS*,GRTAGS*} .
+	grep --no-messages -nrIRP "$@" --exclude={tags,GTAGS*,GRTAGS*} .
 } # }}}
 function grw() { # {{{
 	if [ $# -ne 1 ]; then
@@ -1035,7 +1035,8 @@ function greprep() { # {{{
 	gr "${dst}"
 	echo ""
 	
-	grep -lr "${src}" | xargs sed -i -e "s/${src}/${dst}/g"
+#	grep -lr "${src}" | xargs sed -i -e "s/${src}/${dst}/g"
+	grep -lrP "${src}" | xargs sed -i -e "s|${src}|${dst}|g"
 	
 	echo "### after ###"
 	echo "# source"
@@ -1814,15 +1815,18 @@ alias lsetup="source install/setup.bash"
 export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message}"
 #export ROS_LOCALHOST_ONLY=1
 #export RCUTILS_LOGGING_USE_STDOUT=1		# The output from all debug levels goes to stderr by default. If 1, It is possible to force all output to go to stdout.
-#export RCUTILS_COLORIZED_OUTPUT=1			# By default, the output is colorized when it's targeting a terminal. If 0 force disabling colorized. If 1 force enabling colorized.
-export RCUTILS_LOGGING_BUFFERED_STREAM=1	# By default, all logging output is unbuffered. If 1, force buffer.
+export RCUTILS_COLORIZED_OUTPUT=1			# By default, the output is colorized when it's targeting a terminal. If 0 force disabling colorized. If 1 force enabling colorized.
+#export RCUTILS_LOGGING_BUFFERED_STREAM=1	# By default, all logging output is unbuffered. If 1, force buffer.
 alias plotjuggler="ros2 run plotjuggler plotjuggler &> /dev/null &"
 function killros2() { # {{{
+	echo ### before ###
+	ps a -u ${USER} | grep -v " 0:00 bash" | grep -v " 0:00 ps a -u "
 	killprocessall ros2 &> /dev/null
 	killprocessall "--ros-args" &> /dev/null
 	killprocessall "/opt/ros/humble" &> /dev/null
 	killprocessall "ros2cli.daemon" &> /dev/null
 	killprocessall ign &> /dev/null
+	echo ### after ###
 	ps a -u ${USER} | grep -v " 0:00 bash" | grep -v " 0:00 ps a -u "
 } # }}}
 function cbuild() { # {{{
@@ -1857,9 +1861,11 @@ function cbuildc() { # {{{
 function ctest() { # {{{
 	# colcon test --packages-select <pkg_name>
 	if [ $# -eq 0 ]; then
+		pkg_name=""
 		pkg_sel_opt=""
 	elif [ $# -eq 1 ]; then
-		pkg_sel_opt="--packages-select ${1}"
+		pkg_name=${1}
+		pkg_sel_opt="--packages-select ${pkg_name}"
 	else
 		echo "[error] wrong number of arguments."
 		echo "  usage : ctest [<package_name>]"
@@ -1869,6 +1875,27 @@ function ctest() { # {{{
 	#lsetup || return 1
 	# colcon test ${pkg_sel_opt} && colcon test-result --verbose
 	colcon test ${pkg_sel_opt} && colcon test-result
+	if [ $# -eq 1 ]; then
+		copylatestctestlog ${pkg_name}
+	fi
+} # }}}
+function copylatestctestlog() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : copylatestctestlog <package_name>"
+		return 1
+	fi
+	pkg=$1
+	root_dir_path=~/workspace/build/${pkg}
+	(
+		\cd ${root_dir_path}/Testing
+		latest_log_dir_name=$(find . -maxdepth 1 -type d | grep ./ | awk -F/ '{ print $2 }' | grep -P "\d{8}-\d{4}" | sort | tail -1)
+		# echo ${latest_log_dir_name}
+		copy_file_path=${root_dir_path}/Testing/${latest_log_dir_name}/Test.xml
+		copy_target_dir_path=${root_dir_path}/test_results/auto_sim_test/.
+		echo copy : ${copy_file_path} to ${copy_target_dir_path}
+		\cp -f ${copy_file_path} ${copy_target_dir_path}
+	)
 } # }}}
 function renamerospkg() { # {{{
 	if [ $# -ne 2 ]; then
@@ -1919,10 +1946,10 @@ function renamerospkg() { # {{{
 	greprep "${src_pascal}" "${dst_pascal}"
 	echo ""
 } # }}}
-function alignsdfxml() { # {{{
+function alignxml() { # {{{
 	if [ $# -ne 1 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : alignsdfxml <filepath>"
+		echo "  usage : alignxml <filepath>"
 		return 1
 	fi
 	infile=${1}
@@ -1945,6 +1972,15 @@ function alignsdfxml() { # {{{
 	sed -i 's/^"$//g' ${infile}
 	sed -i 's/^\n//g' ${infile}
 #	sed -i '1i <?xml version="1.0" ?>' ${infile}
+} # }}}
+function topicecho_robotdesc() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : topicecho_robotdesc <filepath>"
+		return 1
+	fi
+	outfile=${1}
+	ros2 topic echo /robot_description -f --once > ${outfile}; alignxml ${outfile}
 } # }}}
 function outputros2nodesinfo() { # {{{
 	if [ $# -ge 1 ]; then
@@ -2161,6 +2197,17 @@ function addenv_ignresource() { # {{{
 	envname=IGN_GAZEBO_RESOURCE_PATH
 	setenv "${envname}" "${path}"
 	echo "${envname} = $(printenv ${envname})"
+} # }}}
+function latestignlog() { # {{{
+	(
+		ROOTDIR=${HOME}/.ignition/gazebo/log
+		\cd ${ROOTDIR}
+		latest_log_dir_path=$(ls -td ${HOME}/.ignition/gazebo/log/*/ | head -n 1)
+		echo ${latest_log_dir_path}server_console.log
+		latest_log_file_path=${ROOTDIR}/latest_server_console.log
+		ln -f ${latest_log_dir_path}server_console.log ${latest_log_file_path}
+		vim ${latest_log_file_path}
+	)
 } # }}}
 
 #########################################################
