@@ -123,14 +123,9 @@ SetEveryDayAlermTimer()
 		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
 		#^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
 		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		^+!Up::																														;#todo.itmz
-		{
-		;	lPID := ProcessWait("Dropbox.exe", 30) ; Dropboxが起動(≒同期が完了)するまで待つ(タイムアウト時間30s)
-		;	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.itmz" )
-			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )
-		}
+		^+!Up::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													;#todo.itmz
 		^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
-		^+!Left::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.vsdm" )													;#temp.vsdm
+		^+!Left::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
 		^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
 		#^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
 		^+!/::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
@@ -144,7 +139,8 @@ SetEveryDayAlermTimer()
 	;仕事用 ; {{{
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
 		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
-		^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.xlsx" )									;#memo_image.xlsx
+	;	^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.xlsx" )									;#memo_image.xlsx
+		^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								;#memo_image.drawio
 		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
 		#^+!-::		Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
@@ -312,6 +308,8 @@ SetEveryDayAlermTimer()
 		#HotIf
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
+		~RButton & WheelUp::SendInput "^+{Tab}"
+		~RButton & WheelDown::SendInput "^{Tab}"
 		^!t::	;タブを複製して和訳
 		{
 			;タブを複製
@@ -322,8 +320,16 @@ SetEveryDayAlermTimer()
 			sleep 500
 			SendInput "+t"
 		}
-		~RButton & WheelUp::SendInput "^+{Tab}"
-		~RButton & WheelDown::SendInput "^{Tab}"
+		^+1::	; Windows Difender Smartscreen 回避
+		{
+			SendInput "{Tab 2}"
+			sleep 100
+			SendInput "{Enter}"
+			sleep 100
+			SendInput "{Tab 4}"
+			sleep 100
+			SendInput "{Enter}"
+		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
 		+F1::	Run EnvGet("MYDIRPATH_CODES") . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . GetSelFilePathAtExplorer(1)		; winmergeで開く
