@@ -22,7 +22,7 @@ global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_INIT_DAY := giSCREEN_BRIGHTNESS_MAX
-global giSCREEN_BRIGHTNESS_INIT_NIGHT := 30
+global giSCREEN_BRIGHTNESS_INIT_NIGHT := giSCREEN_BRIGHTNESS_MAX
 global giSCREEN_BRIGHTNESS_DAY_START_TIME := 7
 global giSCREEN_BRIGHTNESS_DAY_END_TIME := 20
 global giSTART_PRG_TOOLTIP_SHOW_TIME_MS := 2000
@@ -66,10 +66,15 @@ SetEveryDayAlermTimer()
 ;* Keys
 ;*  [参考URL]
 ;*		https://www.autohotkey.com/docs/v2/KeyList.htm
-;*			^）		Control
-;*			+）		Shift
-;*			!）		Alt
-;*			#）		Windowsロゴキー
+;*			修飾キー
+;*				^		Control
+;*				+		Shift
+;*				!		Alt
+;*				#		Windowsロゴキー
+;*			特殊キー
+;*				VK1C	変換キー
+;*				VK1D	無変換キー
+;*				VKF2	かなキー
 ;*  [備考]
 ;*		Pause … HP製PC以外) Alt+Pause(Fn＋Shift)、HP製PC) Shift+Alt+Fn
 ;* ***************************************************************
@@ -104,11 +109,29 @@ SetEveryDayAlermTimer()
 		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
 	; }}}
 	;無変換キー＋jkhl → 矢印キー ; {{{
-		VK1D::VK1D
-		VK1D & k::		Send "{Up}"
-		VK1D & j::		Send "{Down}"
-		VK1D & l::		Send "{Right}"
-		VK1D & h::		Send "{Left}"
+	;	VK1D & k::		Send "{Up}"
+	;	VK1D & j::		Send "{Down}"
+	;	VK1D & l::		Send "{Right}"
+	;	VK1D & h::		Send "{Left}"
+		VK1D & k::		SendKeyWithModKeyCurPressing( "Up" )
+		VK1D & j::		SendKeyWithModKeyCurPressing( "Down" )
+		VK1D & l::		SendKeyWithModKeyCurPressing( "Right" )
+		VK1D & h::		SendKeyWithModKeyCurPressing( "Left" )
+	;	VKF2::Return
+	;	VK1D & k::		SendCursorKey("Up", 5)
+	;	VK1D & j::		SendCursorKey("Down", 5)
+	;	VK1D & l::		SendCursorKey("Right", 5)
+	;	VK1D & h::		SendCursorKey("Left", 5)
+	;	SendCursorKey( sSendKey, iRepeatCnt ) ; {{{
+	;	{
+	;	;	bIsPressKana := GetKeyState("VKF2","P")
+	;	;	if(bIsPressKana) {
+	;	;		Send "{" . sSendKey . " " . iRepeatCnt . "}"
+	;	;	} else {
+	;			Send "{" . sSendKey . "}"
+	;	;	}
+	;		return
+	;	} ; }}}
 	; }}}
 	;キー無効化 ; {{{
 		Insert::Return																												;Insertキー
@@ -320,15 +343,37 @@ SetEveryDayAlermTimer()
 			sleep 500
 			SendInput "+t"
 		}
-		^+1::	; Windows Difender Smartscreen 回避
+	;	^+1::	; Windows Difender Smartscreen 回避
+	;	{
+	;		SendInput "{Tab 2}"
+	;		sleep 100
+	;		SendInput "{Enter}"
+	;		sleep 100
+	;		SendInput "{Tab 4}"
+	;		sleep 100
+	;		SendInput "{Enter}"
+	;	}
+		^+1::	; URI置換
 		{
-			SendInput "{Tab 2}"
+			iCnt := 0
+			iMax := 1
+			while iMax > iCnt
+			{
+				ReplaceFavUrl()
+				iCnt := iCnt + 1
+			}
+		}
+		ReplaceFavUrl()
+		{
+			SendInput "{Appskey}"
 			sleep 100
-			SendInput "{Enter}"
+			SendInput "e"
 			sleep 100
-			SendInput "{Tab 4}"
+			SendInput "{Tab}{Home}"
 			sleep 100
-			SendInput "{Enter}"
+			SendInput "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
+			sleep 100
+			SendInput "{Up}"
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
