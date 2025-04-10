@@ -39,11 +39,14 @@ global gfKITCHENTIMER_INIT_MIN := 3
 global gbKITCHENTIMER_SAVE_INIT_MIN := true
 global giKITCHENTIMER_TRAYTIP_DURATION_MS := 5000
 global gsKITCHENTIMER_CONFIG_FILE_NAME := "KitchenTimer.cfg"
+global giKITCHENTIMER_SNOOZE_MSG_DURATION_SEC := 10
+global gfKITCHENTIMER_SNOOZE_INIT_SEC := 0.5
 global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
 global gbALARMTIMER_INITTIME_CUR := false
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
+global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 ; }}}
 
 ;* ***************************************************************
@@ -286,8 +289,6 @@ SetEveryDayAlermTimer()
 			Sleep 100
 			MouseMove, x, y
 		}
-		*/
-		/*
 		^1::
 		{
 			;sImgFilePath := "C:\Users\draem\OneDrive\デスクトップ\schedule.jpg"
@@ -319,6 +320,11 @@ SetEveryDayAlermTimer()
 				MyGui.Title := Image
 				MyGui.Show("xCenter y0 AutoSize")  ; Resize the window to match the picture size.
 			}
+		}
+		^1::
+		{
+			ShowAutoHideToolTip("テストToolTip", 1000)
+			ShowAutoHideTrayTip("", "テストTrayTip", 1000)
 		}
 		*/
 	; }}}
@@ -1426,10 +1432,14 @@ SetEveryDayAlermTimer()
 		sLogFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
 		DeleteFile(sLogFilePath)
 	} ; }}}
-	SetKitchenTimer(fIntervalMin:=0.0, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
+	SetKitchenTimer(fIntervalMin:=0.0, fSnoozeTimeMin?, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
 		kitchen_timer := KitchenTimer(bShowMsgs, bCreateLogFile)
-		kitchen_timer.SetTimeWithIntervalMin(fIntervalMin)
+		if (IsSet(fSnoozeTimeMin)) {
+			kitchen_timer.SetTimeWithIntervalMin(fIntervalMin, fSnoozeTimeMin)
+		} else {
+			kitchen_timer.SetTimeWithIntervalMin(fIntervalMin)
+		}
 		kitchen_timer.Start()
 	} ; }}}
 	RestartKitchenTimer() ; {{{
@@ -1455,6 +1465,7 @@ SetEveryDayAlermTimer()
 			this.sLogFilePath := ""
 			this.bIsRestart := false
 			this.bReadyToStart := false
+			this.fSnoozeTimeMin := 0.0
 		} ; }}}
 		SetTimeWithLogFile(sLogFilePath) { ; {{{
 			this.bIsRestart := true
@@ -1467,7 +1478,8 @@ SetEveryDayAlermTimer()
 			sTargetDateTime := asFileLines[1]
 			fOrigIntervalMin := Float(asFileLines[2])
 			sOrigStartDateTime := asFileLines[3]
-			;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime
+			fSnoozeTimeMin := asFileLines[4]
+			;MsgBox sTargetDateTime . "`n" . String(fOrigIntervalMin) . "`n" . sOrigStartDateTime . "`n" . fSnoozeTimeMin
 			
 			this.fOrigIntervalMin := fOrigIntervalMin
 			this.sOrigStartDateTime := sOrigStartDateTime
@@ -1483,9 +1495,10 @@ SetEveryDayAlermTimer()
 			}
 			;MsgBox fIntervalMin
 			this.fIntervalMin := fIntervalMin
+			this.fSnoozeTimeMin := fSnoozeTimeMin
 			this.bReadyToStart := true
 		} ; }}}
-		SetTimeWithIntervalMin(fIntervalMin:=0.0) { ; {{{
+		SetTimeWithIntervalMin(fIntervalMin:=0.0, fSnoozeTimeMin?) { ; {{{
 			this.bIsRestart := false
 			this.fOrigIntervalMin := 0.0
 			this.sOrigStartDateTime := ""
@@ -1537,7 +1550,41 @@ SetEveryDayAlermTimer()
 				Return
 			}
 			this.fIntervalMin := fIntervalMin
+			
+			; スヌーズ時間設定
+			if (!IsSet(fSnoozeTimeMin)) {
+				;スヌーズ時間入力
+				InputBoxObj := InputBox("スヌーズ時間を設定します。`n0.0より大きい値（e.g. 0.5）を設定してください。", "キッチンタイマー", , gfKITCHENTIMER_SNOOZE_INIT_SEC)
+				if (InputBoxObj.Result = "Cancel") {
+					MsgBox "キャンセルされたため、処理を中断します。"
+					Return
+				}
+				sSnoozeTimeMin := InputBoxObj.Value
+				Try {
+					fSnoozeTimeMin := Float(sSnoozeTimeMin)
+				} Catch Error as err {
+					MsgBox "不正なスヌーズ時間が指定されました。`n" . sSnoozeTimeMin . "`n`n処理を中断します。"
+					Return
+				}
+			}
+			; スヌーズ時間フォーマットチェック
+			Try {
+				if (fSnoozeTimeMin < 0.0) {
+					throw
+				}
+			} Catch Error as err {
+				MsgBox "不正なスヌーズ時間が指定されました。`n" . sSnoozeTimeMin . "`n`n処理を中断します。"
+				Return
+			}
+			this.fSnoozeTimeMin := fSnoozeTimeMin
+			
 			this.bReadyToStart := true
+		} ; }}}
+		SetSnoozeTime(fSnoozeTimeMin) { ; {{{
+			if (!isFloat(fSnoozeTimeMin)) {
+				Return
+			}
+			this.fSnoozeTimeMin := fSnoozeTimeMin
 		} ; }}}
 		Start() { ; {{{
 			; 事前チェック
@@ -1551,6 +1598,7 @@ SetEveryDayAlermTimer()
 				ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
 			}
 			iIntervalMs := Integer(this.fIntervalMin * 60 * 1000)
+			fSnoozeTimeMin := this.fSnoozeTimeMin
 			SetTimer this.objCallbackFunc, iIntervalMs
 			
 			; ログファイル生成
@@ -1568,32 +1616,48 @@ SetEveryDayAlermTimer()
 					EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_" .
 					FormatTime(sLogStartDateTime, "yyyyMMdd-HHmmss") . "_" .
 					Round(fLogIntervalMin, 1) . "min.log"
-				sFileContents := sTargetDateTime . "`n" . fLogIntervalMin . "`n" . sLogStartDateTime
+				sFileContents := sTargetDateTime . "`n" . fLogIntervalMin . "`n" . sLogStartDateTime . "`n" . fSnoozeTimeMin
 				FileAppend sFileContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
-			}
-		} ; }}}
-		Stop() { ; {{{
-			; タイマークリア
-			if (this.bIsRestart) {
-				sMsg := Round(this.fOrigIntervalMin, 1) . "分タイマーが終了しました！"
-			} else {
-				sMsg := Round(this.fIntervalMin, 1) . "分タイマーが終了しました！"
-			}
-			ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
-			SetTimer this.objCallbackFunc, 0
-			
-			; ログファイル削除
-			if (this.bCreateLogFile) {
-				DeleteFile(this.sLogFilePath)
 			}
 		} ; }}}
 		TimerCallback() { ; {{{
 			; 画面フラッシュ
 			FlashScreen()
 			
-			; タイマークリア
-			this.Stop()
+			if (this.fSnoozeTimeMin > 0.0) {
+				sAnswer := MsgBox("スヌーズを停止しますか？", "キッチンタイマー", "Y/N T" . String(giKITCHENTIMER_SNOOZE_MSG_DURATION_SEC) . " Default2")
+				if (sAnswer == "Yes") {
+					; タイマークリア
+					if (this.bIsRestart) {
+						sMsg := Round(this.fOrigIntervalMin, 1) . "分タイマーが終了しました！"
+					} else {
+						sMsg := Round(this.fIntervalMin, 1) . "分タイマーが終了しました！"
+					}
+					ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
+					SetTimer this.objCallbackFunc, 0
+					
+					; ログファイル削除
+					if (this.bCreateLogFile) {
+						DeleteFile(this.sLogFilePath)
+					}
+				} else { ; sAnswer == "No" or "Timeout"
+					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを設定しました！"
+					ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
+					
+					; タイマー再設定
+					iIntervalMs := Integer(this.fSnoozeTimeMin * 60 * 1000)
+					SetTimer this.objCallbackFunc, iIntervalMs
+				}
+			} else {
+				; タイマークリア
+				SetTimer this.objCallbackFunc, 0
+				
+				; ログファイル削除
+				if (this.bCreateLogFile) {
+					DeleteFile(this.sLogFilePath)
+				}
+			}
 		} ; }}}
 	} ; }}}
 
@@ -1750,7 +1814,7 @@ SetEveryDayAlermTimer()
 			; スヌーズ時間設定
 			if (!IsSet(fSnoozeTimeMin)) {
 				;スヌーズ時間入力
-				InputBoxObj := InputBox("スヌーズ時間を設定します。`n0.0より大きい値（e.g. 0.5）を設定してください。", "アラームタイマー", , 0.0)
+				InputBoxObj := InputBox("スヌーズ時間を設定します。`n0.0より大きい値（e.g. 0.5）を設定してください。", "アラームタイマー", , gfALARMTIMER_SNOOZE_INIT_SEC)
 				if (InputBoxObj.Result = "Cancel") {
 					MsgBox "キャンセルされたため、処理を中断します。"
 					Return
