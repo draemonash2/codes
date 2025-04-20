@@ -161,6 +161,8 @@ SetEveryDayAlermTimer()
 		^+!m::		StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
 		^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
 		#^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
+	;	^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
+		^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											;ショートカットキー配列表.jpg
 	; }}}
 	;仕事用 ; {{{
 		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
@@ -171,9 +173,6 @@ SetEveryDayAlermTimer()
 		#^+!-::		Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
 		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\231031_gen_world\v0.4以降\design_memo.xlsx" )
-		#^+!8::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\231031_gen_world\v0.4以降\specification_task-setting.xlsx" )
-		^+!7::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\240628_auto_sim_test\design_memo.xlsx" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
