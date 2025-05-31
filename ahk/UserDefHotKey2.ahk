@@ -1,4 +1,4 @@
-﻿; [Help] https://www.autohotkey.com/docs/v2/index.htm
+﻿; [Help] https://ahkscript.github.io/ja/docs/v2/
 
 ;	#NoTrayIcon						; スクリプトのタスクトレイアイコンを非表示にする。
 	#Warn All						; Enable warnings to assist with detecting common errors.
@@ -103,23 +103,27 @@ SetEveryDayAlermTimer()
 			}
 		}
 	; }}}
-	;無変換キー＋方向キー → PgUp,PgDn,Home,End ; {{{
-		; e.g. 無変換+上キー -> PgUp
-		; e.g. 無変換+Shift+Alt+上キー -> Shift+Alt+PgUp
-		VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
-		VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
-		VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
-		VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
+	;無変換キー＋nm,. → PgUp,PgDn,Home,End ; {{{
+		; e.g. 無変換+n -> Home
+		; e.g. 無変換+Shift+Alt+n -> Shift+Alt+Home
+	;	VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
+	;	VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
+	;	VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
+	;	VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
+		
+		VK1D & n::		SendKeyWithModKeyCurPressing( "Home" )
+		VK1D & ,::		SendKeyWithModKeyCurPressing( "PgUp" )
+		VK1D & m::		SendKeyWithModKeyCurPressing( "PgDn" )
+		VK1D & .::		SendKeyWithModKeyCurPressing( "End" )
+	; }}}
+	;無変換キー＋i → AppsKey ; {{{
+		VK1D & i::		SendKeyWithModKeyCurPressing( "AppsKey" )
 	; }}}
 	;無変換キー＋jkhl → 矢印キー ; {{{
-	;	VK1D & k::		Send "{Up}"
-	;	VK1D & j::		Send "{Down}"
-	;	VK1D & l::		Send "{Right}"
-	;	VK1D & h::		Send "{Left}"
-		VK1D & k::		SendKeyWithModKeyCurPressing( "Up" )
-		VK1D & j::		SendKeyWithModKeyCurPressing( "Down" )
-		VK1D & l::		SendKeyWithModKeyCurPressing( "Right" )
 		VK1D & h::		SendKeyWithModKeyCurPressing( "Left" )
+		VK1D & j::		SendKeyWithModKeyCurPressing( "Down" )
+		VK1D & k::		SendKeyWithModKeyCurPressing( "Up" )
+		VK1D & l::		SendKeyWithModKeyCurPressing( "Right" )
 	;	VKF2::Return
 	;	VK1D & k::		SendCursorKey("Up", 5)
 	;	VK1D & j::		SendCursorKey("Down", 5)
@@ -143,47 +147,50 @@ SetEveryDayAlermTimer()
 
 ;***** ホットキー（Global） *****
 	;スクリプトリロード ; {{{
-		^+!F5::		ReloadMe()
+		^+!F5::			ReloadMe()
 	; }}}
 	;ファイルオープン ; {{{
-		^+!a::		StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
-		#^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		^+!Down::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		^+!Up::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													;#todo.itmz
-		^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
-		^+!Left::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
-		^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
-		#^+!\::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
-		^+!/::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
-		^+!o::		StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
-		^+!c::		StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
-		^+!s::		StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
-		^+!m::		StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
-		^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
-		#^+!i::		StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
-	;	^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
-		^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											;ショートカットキー配列表.jpg
+		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
+		^+!Up::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													;#todo.itmz
+		~#^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
+		~#^+!Down::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
+		~#^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
+		~#^+!Left::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
+		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
+		#^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
+		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
+		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
+		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
+		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
+		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
+		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
+		#^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
+		^+!F1::			StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											;ショートカットキー配列表.jpg
+		#^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
 	; }}}
-	;仕事用 ; {{{
-		^+!Space::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#temp.txt" )											;#temp.txt
-		^+!Enter::	StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
-	;	^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.xlsx" )									;#memo_image.xlsx
-		^+!@::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								;#memo_image.drawio
-		^+!-::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
-		#^+!-::		Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
-		^+!0::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
-		^+!9::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
+	;ファイルオープン（仕事用） ; {{{
+		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											;#memo.txt
+		^+!Down::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											;#memo.txt
+		^+!Enter::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
+		^+!Right::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
+		^+!Left::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio" )										;#memo.drawio
+		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								;#memo_image.drawio
+		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
+		#^+!-::			Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
+		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
+		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250306_東大成果等組み込みsim環境構築\東大mdl＋岡大mdl＋認識マッピング\manual_simulation_environment_construction_v2\manual_simulation_environment_construction_v2.md" )
 	; }}}
 	;プログラム起動 ; {{{
-		^+!y::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
-	;	^+!k::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
-	;	^+!k::		Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
-		^+!k::		SetKitchenTimer()																								;キッチンタイマー
-		^+!r::		SetAlermTimer()																									;アラームタイマー
-		^+!t::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
-		^+!w::		StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
-	;	^+!;::		StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
-		^+!;::		Run A_ComSpec . " /c calc"																						;電卓アプリ
+		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
+	;	^+!k::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
+	;	^+!k::			Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
+		^+!k::			SetKitchenTimer()																								;キッチンタイマー
+		^+!r::			SetAlermTimer()																									;アラームタイマー
+		^+!t::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
+		^+!w::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
+	;	^+!;::			StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
+		^+!;::			Run A_ComSpec . " /c calc"																						;電卓アプリ
 		^+!x::																														;rapture.exe
 		{
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)

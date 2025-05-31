@@ -1573,7 +1573,58 @@ alias gitlo="\
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
 alias githeadmsg="git log --all --pretty=format:"%s" | head -1"
-function gitdifftooldir() { # {{{
+function gitaddcmd() { # {{{
+	echo "### git status -s"
+	git status -s
+	echo ""
+	
+	echo "### echo git add list"
+	add_file_list=$(git status -s | grep "^.M " | cut -c 4- | cut -d" " -f 1)
+	for add_file in ${add_file_list}
+	do
+		#echo ${add_file}
+		echo "git add ${add_file}"
+	done
+} # }}}
+function gitcommit() { # {{{
+	commit_msg=$(githeadmsg)
+	git commit -m "${commit_msg}"
+} # }}}
+function gitdirstats() { # {{{
+	cur_dir_name=${PWD##*/}
+	if [ "${cur_dir_name}" != "src" ]; then
+		echo "[error] current directory must be \"src\"."
+		return 1
+	fi
+	dirs=$(find . -maxdepth 1 -type d | grep ./ | awk -F/ '{ print $2 }')
+	for dir in ${dirs}
+	do
+		(
+			echo "### ${dir}"
+			\cd ${dir}
+			git status .
+			echo ""
+		)
+	done
+} # }}}
+function gitdirdiffs() { # {{{
+	cur_dir_name=${PWD##*/}
+	if [ "${cur_dir_name}" != "src" ]; then
+		echo "[error] current directory must be \"src\"."
+		return 1
+	fi
+	dirs=$(find . -maxdepth 1 -type d | grep ./ | awk -F/ '{ print $2 }')
+	for dir in ${dirs}
+	do
+		(
+			echo "### ${dir}"
+			\cd ${dir}
+			git diff -u .
+			echo ""
+		)
+	done
+} # }}}
+function gitdirdifftools() { # {{{
 	if [ $# -eq 1 ]; then
 		if [ "$1" == "-c" ]; then
 			diffopt="--cached"
@@ -1609,22 +1660,45 @@ function gitdifftooldir() { # {{{
 		fi
 	done
 } # }}}
-function gitaddcmd() { # {{{
-	echo "### git status -s"
-	git status -s
-	echo ""
-	
-	echo "### echo git add list"
-	add_file_list=$(git status -s | grep "^.M " | cut -c 4- | cut -d" " -f 1)
-	for add_file in ${add_file_list}
+function gitdircommitids() { # {{{
+	cur_dir_name=${PWD##*/}
+	if [ "${cur_dir_name}" != "src" ]; then
+		echo "[error] current directory must be \"src\"."
+		return 1
+	fi
+	dirs=$(find . -maxdepth 1 -type d | grep ./ | awk -F/ '{ print $2 }')
+	for dir in ${dirs}
 	do
-		#echo ${add_file}
-		echo "git add ${add_file}"
+		(
+			\cd ${dir}
+			commitid=$(git show --format='%h' --no-patch)
+			echo "${dir}: ${commitid}"
+		)
 	done
 } # }}}
-function gitcommit() { # {{{
-	commit_msg=$(githeadmsg)
-	git commit -m "${commit_msg}"
+function gitdirbranches() { # {{{
+	gitpaths=$(find . -name .git 2> /dev/null)
+	echo dirpath : branch_name : commit_id
+	for gitpath in ${gitpaths}
+	do
+		(
+			dirpath=${gitpath}
+			dirpath=${dirpath%/*};
+			dirpath=${dirpath#*/};
+			# echo ${dirpath}
+			\cd ${dirpath}
+			is_git_dir=$(git status &> /dev/null; echo $?)
+			# echo !!! ${dirpath} ${is_git_dir}
+			if [ "${is_git_dir}" = "0" ]; then
+				commit_id=$(git show --format='%h' --no-patch)
+				branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+				if [[ ${branch_name} == "(HEAD detached at ${commit_id})" ]]; then
+					branch_name="-"
+				fi
+				echo ${dirpath} : ${branch_name} : ${commit_id}
+			fi
+		)
+	done
 } # }}}
 
 ### Tmux
@@ -1773,21 +1847,6 @@ function _tmuxexec() { # {{{
 	done
 	tmux set-window-option synchronize-panes off
 } # }}}
-function tmuxexec_bashtest() { # {{{
-	_tmuxexec \
-		"${HOME}/_repo/pj1tool-ros2dev/docker/bash_test.sh" \
-		"cd workspace" \
-		"lsetup" \
-		""
-} # }}}
-function tmuxexec_bashtest2() { # {{{
-	_tmuxexec \
-		"cd ${HOME}/_repo/pj1tool-ros2dev/docker" \
-		"./bash_test2.sh" \
-		"cd workspace" \
-		"lsetup" \
-		""
-} # }}}
 if [ ! -f /.dockerenv ]; then
 	clear_session_name_to_cmplist
 	add_session_list_to_cmplist
@@ -1830,6 +1889,24 @@ function killros2() { # {{{
 	ps a -u ${USER} | grep -v " 0:00 bash" | grep -v " 0:00 ps a -u "
 } # }}}
 function cbuild() { # {{{
+	# colcon build --continue-on-error --executor sequential --packages-select <pkg_name>
+	if [ $# -eq 0 ]; then
+		pkg_sel_opt=""
+	elif [ $# -eq 1 ]; then
+		pkg_sel_opt="--packages-select ${1}"
+	else
+		echo "[error] wrong number of arguments."
+		echo "  usage : cbuilds [<package_name>]"
+		return 1
+	fi
+	gsetup
+	#lsetup || return 1
+	colcon build \
+		--continue-on-error \
+		--executor sequential \
+		${pkg_sel_opt}
+} # }}}
+function cbuilds() { # {{{
 	# colcon build --continue-on-error --executor sequential --symlink-install --packages-select <pkg_name>
 	if [ $# -eq 0 ]; then
 		pkg_sel_opt=""
@@ -1857,6 +1934,16 @@ function cbuildc() { # {{{
 	pkg=${1}
 	rm -rf install/${pkg} build/${pkg}
 	cbuild ${pkg}
+} # }}}
+function cbuildsc() { # {{{
+	if [ $# -ne 1 ]; then
+		echo "[error] wrong number of arguments."
+		echo "  usage : cbuildsc <package_name>"
+		return 1
+	fi
+	pkg=${1}
+	rm -rf install/${pkg} build/${pkg}
+	cbuilds ${pkg}
 } # }}}
 function ctest() { # {{{
 	# colcon test --packages-select <pkg_name>
@@ -2184,6 +2271,16 @@ function q2e() { # {{{
 	values_array=($values_str)
 	echo "roll${delimiter}pitch${delimiter}yaw [degrees]"
 	echo "${values_array[0]}${delimiter}${values_array[1]}${delimiter}${values_array[2]}"
+} # }}}
+function packagenames() { # {{{
+	package_xml_file_path_list=$(find . -type f -name package.xml 2> /dev/null)
+	for package_xml_file_path in ${package_xml_file_path_list}
+	do
+		package_name=$(grep -ohP '(?<=<name>).*?(?=</name>)' ${package_xml_file_path})
+		dir_name_tmp=${package_xml_file_path#*/}
+		dir_name=${dir_name_tmp%/package.xml}
+		echo "${package_name}: ${dir_name}"
+	done
 } # }}}
 
 ### Ignition Gazebo
