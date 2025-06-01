@@ -74,6 +74,10 @@ SetEveryDayAlermTimer()
 ;*				+		Shift
 ;*				!		Alt
 ;*				#		Windowsロゴキー
+;*			モディファイア
+;*				*		ホットキーに記号が含まれていない修飾キーを押していても、ホットキーが発火する
+;*				~		ホットキーを設定しても元々のキーも動くようにする
+;*				$		自己送信（例: a::Send "a"）によるループを防ぐ
 ;*			特殊キー
 ;*				VK1C	変換キー
 ;*				VK1D	無変換キー
@@ -83,18 +87,17 @@ SetEveryDayAlermTimer()
 ;* ***************************************************************
 
 ;***** キー置き換え *****
-	;無変換/変換キー単押し ; {{{
-		VK1D::VK1D
-		VK1C::VK1C
+	;キー無効化 ; {{{
+		Insert::Return																												;Insertキー
+		PrintScreen::return																											;PrintScreenキー
 	; }}}
-	;変換キー＋wasd → マウスカーソル移動 ; {{{
+	;変換キー ; {{{
+		VK1C::VK1C												; 単押し無効化
 		VK1C & w::		MoveCursor("Up")
 		VK1C & s::		MoveCursor("Down")
 		VK1C & d::		MoveCursor("Right")
 		VK1C & a::		MoveCursor("Left")
-	; }}}
-	;変換キー＋Space → マウスクリック ; {{{
-		VK1C & Space::
+		VK1C & Space::											; マウスクリック
 		{
 			if (GetKeyState("Shift","P")) {
 				Click "Right"
@@ -103,32 +106,32 @@ SetEveryDayAlermTimer()
 			}
 		}
 	; }}}
-	;無変換キー＋nm,. → PgUp,PgDn,Home,End ; {{{
+	;無変換キー ; {{{
 		; e.g. 無変換+n -> Home
 		; e.g. 無変換+Shift+Alt+n -> Shift+Alt+Home
-	;	VK1D & Right::	SendKeyWithModKeyCurPressing( "End" )
-	;	VK1D & Left::	SendKeyWithModKeyCurPressing( "Home" )
-	;	VK1D & Up::		SendKeyWithModKeyCurPressing( "PgUp" )
-	;	VK1D & Down::	SendKeyWithModKeyCurPressing( "PgDn" )
+		VK1D::VK1D												; 単押し無効化
+		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
+		VK1D & Backspace::	SendKeyWithModKeyCurPressing( "Del" )
 		
-		VK1D & n::		SendKeyWithModKeyCurPressing( "Home" )
-		VK1D & ,::		SendKeyWithModKeyCurPressing( "PgUp" )
-		VK1D & m::		SendKeyWithModKeyCurPressing( "PgDn" )
-		VK1D & .::		SendKeyWithModKeyCurPressing( "End" )
-	; }}}
-	;無変換キー＋i → AppsKey ; {{{
-		VK1D & i::		SendKeyWithModKeyCurPressing( "AppsKey" )
-	; }}}
-	;無変換キー＋jkhl → 矢印キー ; {{{
-		VK1D & h::		SendKeyWithModKeyCurPressing( "Left" )
-		VK1D & j::		SendKeyWithModKeyCurPressing( "Down" )
-		VK1D & k::		SendKeyWithModKeyCurPressing( "Up" )
-		VK1D & l::		SendKeyWithModKeyCurPressing( "Right" )
+		VK1D & h::			SendKeyWithModKeyCurPressing( "Left" )
+		VK1D & j::			SendKeyWithModKeyCurPressing( "Down" )
+		VK1D & k::			SendKeyWithModKeyCurPressing( "Up" )
+		VK1D & l::			SendKeyWithModKeyCurPressing( "Right" )
+		
+		VK1D & n::			SendKeyWithModKeyCurPressing( "Home" )
+		VK1D & m::			SendKeyWithModKeyCurPressing( "PgDn" )
+		VK1D & ,::			SendKeyWithModKeyCurPressing( "PgUp" )
+		VK1D & .::			SendKeyWithModKeyCurPressing( "End" )
+		
+		VK1D & y::			SendKeyWithModKeyCurPressing( "WheelLeft" )
+		VK1D & u::			SendKeyWithModKeyCurPressing( "WheelDown" )
+		VK1D & i::			SendKeyWithModKeyCurPressing( "WheelUp" )
+		VK1D & o::			SendKeyWithModKeyCurPressing( "WheelRight" )
 	;	VKF2::Return
-	;	VK1D & k::		SendCursorKey("Up", 5)
-	;	VK1D & j::		SendCursorKey("Down", 5)
-	;	VK1D & l::		SendCursorKey("Right", 5)
-	;	VK1D & h::		SendCursorKey("Left", 5)
+	;	VK1D & k::			SendCursorKey("Up", 5)
+	;	VK1D & j::			SendCursorKey("Down", 5)
+	;	VK1D & l::			SendCursorKey("Right", 5)
+	;	VK1D & h::			SendCursorKey("Left", 5)
 	;	SendCursorKey( sSendKey, iRepeatCnt ) ; {{{
 	;	{
 	;	;	bIsPressKana := GetKeyState("VKF2","P")
@@ -140,9 +143,9 @@ SetEveryDayAlermTimer()
 	;		return
 	;	} ; }}}
 	; }}}
-	;キー無効化 ; {{{
-		Insert::Return																												;Insertキー
-		PrintScreen::return																											;PrintScreenキー
+	;半角/全角キー ; {{{
+		^VKF4::Send "!{F4}"
+		^VKF3::Send "!{F4}"
 	; }}}
 
 ;***** ホットキー（Global） *****
@@ -152,21 +155,21 @@ SetEveryDayAlermTimer()
 	;ファイルオープン ; {{{
 		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
 		^+!Up::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													;#todo.itmz
-		~#^+!Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		~#^+!Down::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		~#^+!Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
-		~#^+!Left::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
+		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
+		~^+!#Down::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
+		~^+!#Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
+		~^+!#Left::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
-		#^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
+		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
 		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
-		#^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
+		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 		^+!F1::			StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											;ショートカットキー配列表.jpg
-		#^+!F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
+		^+!#F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											;#memo.txt
@@ -176,7 +179,7 @@ SetEveryDayAlermTimer()
 		^+!Left::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio" )										;#memo.drawio
 		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								;#memo_image.drawio
 		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
-		#^+!-::			Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
+		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
 		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250306_東大成果等組み込みsim環境構築\東大mdl＋岡大mdl＋認識マッピング\manual_simulation_environment_construction_v2\manual_simulation_environment_construction_v2.md" )
@@ -191,14 +194,14 @@ SetEveryDayAlermTimer()
 		^+!w::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
 	;	^+!;::			StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
 		^+!;::			Run A_ComSpec . " /c calc"																						;電卓アプリ
-		^+!x::																														;rapture.exe
+		^+!x::																															;rapture.exe
 		{
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
 	; }}}
 	;フォルダ表示 ; {{{
-		^+!z::																														;ファイラ―
+		^+!z::																															;ファイラ―
 		{
 			;xf.exe
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
@@ -207,7 +210,7 @@ SetEveryDayAlermTimer()
 		;	Sleep 100
 		;	Send "+{tab}"
 		}
-		^+!F12::																													;Programsフォルダ表示
+		^+!F12::																														;Programsフォルダ表示
 		{
 			StartProgramAndActivateFile( "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" )
 			Sleep 100
@@ -215,14 +218,14 @@ SetEveryDayAlermTimer()
 		}
 	; }}}
 	;サイトオープン ; {{{
-		^+!1::	Run "https://draemonash2.github.io/"																				;Github.io
-		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																;Github.io linux
-		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"													;Github.io git command
-		^+!h::	Run "https://www.deepl.com//translator"																				;翻訳サイト
+		^+!1::	Run "https://draemonash2.github.io/"																					;Github.io
+		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																	;Github.io linux
+		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"														;Github.io git command
+		^+!h::	Run "https://www.deepl.com//translator"																					;翻訳サイト
 	; }}}
 	;Wifi接続 ; {{{
 		/*
-		^+!F9::																														;Bluetoothテザリング起動
+		^+!F9::																															;Bluetoothテザリング起動
 		{
 			Run "control printers"
 			
@@ -237,7 +240,7 @@ SetEveryDayAlermTimer()
 			Sleep 5000
 			Send "!{F4}"
 		}
-		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"									; Wifiテザリング
+		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"										; Wifiテザリング
 		*/
 	; }}}
 	;Windowタイル切り替え ; {{{
@@ -263,10 +266,10 @@ SetEveryDayAlermTimer()
 		#PgUp::	BrightenScreen()
 	; }}}
 	;その他 ; {{{
-	;	^+!r::		SetSleepPreventingMode("Toggle", True)																			;TurboVNCスリープ抑制
-		!Pause::	ToggleAlwaysOnTopEnable()																						;Window最前面化
-	;	^+!F11::	SwitchRAltAppsKeyMode()																							;右Alt->AppsKey置換え切替え
-		Ctrl::																														;モニタ中心にカーソル移動
+	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				;TurboVNCスリープ抑制
+		!Pause::	ToggleAlwaysOnTopEnable()																							;Window最前面化
+	;	^+!F11::	SwitchRAltAppsKeyMode()																								;右Alt->AppsKey置換え切替え
+		Ctrl::																															;モニタ中心にカーソル移動
 		{
 			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
 			{
