@@ -27,6 +27,7 @@ With dEnvVars																								' +------+------+------+------------+------
 	.Add "MYEXEPATH_WINMERGE"		,"%MYDIRPATH_PRG_EXE%\WinMerge\WinMergeU.exe"							' |  ÅZ  |	Å|	|  Å|  |	 ÅZ		|	   ÅZ	   |
 	.Add "MYEXEPATH_GVIM"			,"%MYDIRPATH_PRG_EXE%\Vim\gvim.exe"										' |  ÅZ  |	ÅZ	|  Å|  |	 ÅZ		|	   Å|	   |
 	.Add "MYEXEPATH_VSCODE"			,"%MYDIRPATH_PRG_EXE%\VSCode\Code.exe"									' |  ÅZ  |	ÅZ	|  Å|  |	 Å|		|	   Å|	   |
+	.Add "MYEXEPATH_CURSOR"			,"%MYDIRPATH_PRG%\cursor\Cursor.exe"									' |  ÅZ  |	ÅZ	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_TRESGREP"		,"%MYDIRPATH_PRG_EXE%\TresGrep\TresGrep.exe"							' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_EVERYTHING"		,"%MYDIRPATH_PRG_EXE%\Everything\Everything.exe"						' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_DISKINFO3"		,"%MYDIRPATH_PRG_EXE%\diskinfo64\DiskInfo3.exe"							' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |

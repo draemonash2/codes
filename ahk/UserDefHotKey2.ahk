@@ -82,22 +82,30 @@ SetEveryDayAlermTimer()
 ;*				VK1C	変換キー
 ;*				VK1D	無変換キー
 ;*				VKF2	かなキー
+;*				VKF3	半角/全角キー
+;*				VKF4	半角/全角キー
 ;*  [備考]
 ;*		Pause … HP製PC以外) Alt+Pause(Fn＋Shift)、HP製PC) Shift+Alt+Fn
 ;* ***************************************************************
 
-;***** キー置き換え *****
-	;キー無効化 ; {{{
-		Insert::Return																												;Insertキー
-		PrintScreen::return																											;PrintScreenキー
+;***** ホットキー（Global） *****
+	;スクリプトリロード ; {{{
+		^+!F5::			ReloadMe()
 	; }}}
-	;変換キー ; {{{
-		VK1C::VK1C												; 単押し無効化
-		VK1C & w::		MoveCursor("Up")
-		VK1C & s::		MoveCursor("Down")
-		VK1C & d::		MoveCursor("Right")
-		VK1C & a::		MoveCursor("Left")
-		VK1C & Space::											; マウスクリック
+	;キー置き換え ; {{{
+		Insert::Return																				; Insertキー
+		PrintScreen::return																			; PrintScreenキー
+		VK1D::VK1D																					; 単押しはそのまま機能させる
+		VK1C::VK1C																					; 単押しはそのまま機能させる
+		^VKF4::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
+		^VKF3::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
+		
+		VK1C & w::			MoveCursor("Up")
+		VK1C & s::			MoveCursor("Down")
+		VK1C & d::			MoveCursor("Right")
+		VK1C & a::			MoveCursor("Left")
+		
+		VK1C & Space::																				; マウスクリック
 		{
 			if (GetKeyState("Shift","P")) {
 				Click "Right"
@@ -105,11 +113,7 @@ SetEveryDayAlermTimer()
 				Click
 			}
 		}
-	; }}}
-	;無変換キー ; {{{
-		; e.g. 無変換+n -> Home
-		; e.g. 無変換+Shift+Alt+n -> Shift+Alt+Home
-		VK1D::VK1D												; 単押し無効化
+		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
 		VK1D & Backspace::	SendKeyWithModKeyCurPressing( "Del" )
 		
@@ -127,12 +131,8 @@ SetEveryDayAlermTimer()
 		VK1D & u::			SendKeyWithModKeyCurPressing( "WheelDown" )
 		VK1D & i::			SendKeyWithModKeyCurPressing( "WheelUp" )
 		VK1D & o::			SendKeyWithModKeyCurPressing( "WheelRight" )
-	;	VKF2::Return
-	;	VK1D & k::			SendCursorKey("Up", 5)
-	;	VK1D & j::			SendCursorKey("Down", 5)
-	;	VK1D & l::			SendCursorKey("Right", 5)
-	;	VK1D & h::			SendCursorKey("Left", 5)
-	;	SendCursorKey( sSendKey, iRepeatCnt ) ; {{{
+		
+	;	SendCursorKey( sSendKey, iRepeatCnt )
 	;	{
 	;	;	bIsPressKana := GetKeyState("VKF2","P")
 	;	;	if(bIsPressKana) {
@@ -141,67 +141,72 @@ SetEveryDayAlermTimer()
 	;			Send "{" . sSendKey . "}"
 	;	;	}
 	;		return
-	;	} ; }}}
-	; }}}
-	;半角/全角キー ; {{{
-		^VKF4::Send "!{F4}"
-		^VKF3::Send "!{F4}"
-	; }}}
-
-;***** ホットキー（Global） *****
-	;スクリプトリロード ; {{{
-		^+!F5::			ReloadMe()
+	;	}
 	; }}}
 	;ファイルオープン ; {{{
-		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											;UserDefHotKey.ahk
-		^+!Up::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													;#todo.itmz
-		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		~^+!#Down::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													;#temp.txt
-		~^+!#Right::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													;#temp.xlsm
-		~^+!#Left::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													;#temp.drawio
-		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							;予算管理.xlsm
-		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							;ライフプラン.xlsx
-		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								;用語集
-		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													;#object.xlsm
-		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													;言語チートシート
-		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											;ショートカットキー一覧
-		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											;PC移行時チェックリスト.xlsx
+		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											; UserDefHotKey.ahk
+		^+!j::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													; #todo.itmz
+		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
+		~^+!#.::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
+		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													; #temp.drawio
+		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
+		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
+		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								; 用語集
+		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
+		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
+		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
+		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
 		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
-		^+!F1::			StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											;ショートカットキー配列表.jpg
-		^+!#F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										;ショートカットキー配列表.drawio
+		^+!F1::			StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
+		^+!#F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										; ショートカットキー配列表.drawio
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
-		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											;#memo.txt
-		^+!Down::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											;#memo.txt
-		^+!Enter::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
-		^+!Right::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										;#memo.xlsm
-		^+!Left::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio" )										;#memo.drawio
-		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								;#memo_image.drawio
-		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										;#timemng.xlsm
-		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	;レバテック作業報告書
+		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
+		^+!Enter::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
+		^+!.::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
+		^+!,::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio" )										; #memo.drawio
+		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								; #memo_image.drawio
+		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										; #timemng.xlsm
+		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250306_東大成果等組み込みsim環境構築\東大mdl＋岡大mdl＋認識マッピング\manual_simulation_environment_construction_v2\manual_simulation_environment_construction_v2.md" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250610_install_manual_unity\install_manual_unity.md" )
 	; }}}
 	;プログラム起動 ; {{{
-		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						;codes同期
-	;	^+!k::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				;KitchenTimer.vbs
-	;	^+!k::			Run A_ComSpec . " /c start ms-clock:"																			;クロックアプリ
-		^+!k::			SetKitchenTimer()																								;キッチンタイマー
-		^+!r::			SetAlermTimer()																									;アラームタイマー
-		^+!t::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	;定期キー送信
-		^+!w::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		;Webから参照ファイル取得
-	;	^+!;::			StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													;cCalc.exe
-		^+!;::			Run A_ComSpec . " /c calc"																						;電卓アプリ
-		^+!x::																															;rapture.exe
+		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
+	;	^+!k::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\KitchenTimer.vbs" )				; KitchenTimer.vbs
+	;	^+!k::			Run A_ComSpec . " /c start ms-clock:"																			; クロックアプリ
+		^+!k::			SetKitchenTimer()																								; キッチンタイマー
+		^+!r::			SetAlermTimer()																									; アラームタイマー
+		^+!t::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\other\PeriodicKeyTransmission.bat" )	; 定期キー送信
+		^+!w::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\vbs\tools\win\file_ope\CopyRefFileFromWeb.vbs" )		; Webから参照ファイル取得
+	;	^+!;::			StartProgramAndActivateExe( EnvGet("MYEXEPATH_CALC"), True )													; cCalc.exe
+		^+!;::			Run A_ComSpec . " /c calc"																						; 電卓アプリ
+		^+!x::																															; rapture.exe
 		{
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
 	; }}}
-	;フォルダ表示 ; {{{
-		^+!z::																															;ファイラ―
+	;サイトオープン ; {{{
+		^+!1::	Run "https://draemonash2.github.io/"																					; Github.io
+		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																	; Github.io linux
+		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"														; Github.io git command
+		^+!h::	Run "https://www.deepl.com//translator"																					; 翻訳サイト
+	; }}}
+	;その他 ; {{{
+		VK1D & w::																														; Windowタイル切替え
+		{
+			;MsgBox "!#LEFT"
+			SetTimerClearWinTileMode()
+			IncrementWinTileMode()
+			ApplyWinTileMode()
+		}
+	;	VKF2::Return
+		#[::	DarkenScreen()																											; 画面の明るさを上げる
+		#]::	BrightenScreen()																										; 画面の明るさを下げる
+		^+!z::																															; ファイラ―表示
 		{
 			;xf.exe
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
@@ -210,66 +215,16 @@ SetEveryDayAlermTimer()
 		;	Sleep 100
 		;	Send "+{tab}"
 		}
-		^+!F12::																														;Programsフォルダ表示
+		^+!F12::																														; Programsフォルダ表示
 		{
 			StartProgramAndActivateFile( "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" )
 			Sleep 100
 			Send "+{tab}"
 		}
-	; }}}
-	;サイトオープン ; {{{
-		^+!1::	Run "https://draemonash2.github.io/"																					;Github.io
-		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																	;Github.io linux
-		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"														;Github.io git command
-		^+!h::	Run "https://www.deepl.com//translator"																					;翻訳サイト
-	; }}}
-	;Wifi接続 ; {{{
-		/*
-		^+!F9::																															;Bluetoothテザリング起動
-		{
-			Run "control printers"
-			
-			Sleep 2000
-			Send "myp"
-			Sleep 300
-			Send "{AppsKey}"
-			Sleep 200
-			Send "c"
-			Sleep 200
-			Send "a"
-			Sleep 5000
-			Send "!{F4}"
-		}
-		^+!F9::	Run EnvGet("MYDIRPATH_CODES") . "\bat\tools\other\ConnectWifi.bat MyPerfectiPhone"										; Wifiテザリング
-		*/
-	; }}}
-	;Windowタイル切り替え ; {{{
-		!#LEFT::
-		{
-			;MsgBox "!#LEFT"
-			SetTimerClearWinTileMode()
-			IncrementWinTileMode()
-			ApplyWinTileMode()
-		}
-		!#RIGHT::
-		{
-			;MsgBox "!#RIGHT"
-			SetTimerClearWinTileMode()
-			DecrementWinTileMode()
-			ApplyWinTileMode()
-		}
-	; }}}
-	;画面明るさ設定 ; {{{
-		#Home::	SetBrightness(giSCREEN_BRIGHTNESS_MAX)
-		#End::	SetBrightness(giSCREEN_BRIGHTNESS_MIN)
-		#PgDn::	DarkenScreen()
-		#PgUp::	BrightenScreen()
-	; }}}
-	;その他 ; {{{
-	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				;TurboVNCスリープ抑制
-		!Pause::	ToggleAlwaysOnTopEnable()																							;Window最前面化
-	;	^+!F11::	SwitchRAltAppsKeyMode()																								;右Alt->AppsKey置換え切替え
-		Ctrl::																															;モニタ中心にカーソル移動
+	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				; TurboVNCスリープ抑制
+		!Pause::	ToggleAlwaysOnTopEnable()																							; Window最前面化
+	;	^+!F11::	SwitchRAltAppsKeyMode()																								; 右Alt->AppsKey置換え切替え
+		Ctrl::																															; モニタ中心にカーソル移動
 		{
 			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
 			{
@@ -378,17 +333,25 @@ SetEveryDayAlermTimer()
 				iCnt := iCnt + 1
 			}
 		}
-		ReplaceFavUrl()
+			ReplaceFavUrl()
+			{
+				SendInput "{Appskey}"
+				sleep 100
+				SendInput "e"
+				sleep 100
+				SendInput "{Tab}{Home}"
+				sleep 100
+				SendInput "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
+				sleep 100
+				SendInput "{Up}"
+			}
+		^+2::	; Webページ全体を日本語に翻訳する
 		{
-			SendInput "{Appskey}"
+			SendInput "{F5}"
+			sleep 500
+			SendInput "{AppsKey}"
 			sleep 100
-			SendInput "e"
-			sleep 100
-			SendInput "{Tab}{Home}"
-			sleep 100
-			SendInput "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
-			sleep 100
-			SendInput "{Up}"
+			SendInput "{Down 8}{Enter}"
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
@@ -445,6 +408,14 @@ SetEveryDayAlermTimer()
 	;		SendInput "{Right 5}"
 	;		SetScrollLockState False
 	;	}
+		^+1::	; 選択した文字列を上付き文字にする
+		{
+			SendInput "^1"
+			Sleep 100
+			SendInput "!e"
+			Sleep 100
+			SendInput "{Enter}"
+		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe iThoughts.exe") ; {{{
 		F1::return	;F1ヘルプ無効化
