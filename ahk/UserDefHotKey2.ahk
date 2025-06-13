@@ -84,14 +84,12 @@ SetEveryDayAlermTimer()
 ;*				VKF2	かなキー
 ;*				VKF3	半角/全角キー
 ;*				VKF4	半角/全角キー
+;*				VKE2	バックスラッシュ（スラッシュの隣のキー）
 ;*  [備考]
 ;*		Pause … HP製PC以外) Alt+Pause(Fn＋Shift)、HP製PC) Shift+Alt+Fn
 ;* ***************************************************************
 
 ;***** ホットキー（Global） *****
-	;スクリプトリロード ; {{{
-		^+!F5::			ReloadMe()
-	; }}}
 	;キー置き換え ; {{{
 		Insert::Return																				; Insertキー
 		PrintScreen::return																			; PrintScreenキー
@@ -99,6 +97,10 @@ SetEveryDayAlermTimer()
 		VK1C::VK1C																					; 単押しはそのまま機能させる
 		^VKF4::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
 		^VKF3::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
+		VKF2::Send "{AppsKey}"																		; かなキー -> AppsKey
+		
+		VK1D & VKF3::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
+		VK1D & VKF4::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
 		
 		VK1C & w::			MoveCursor("Up")
 		VK1C & s::			MoveCursor("Down")
@@ -132,6 +134,7 @@ SetEveryDayAlermTimer()
 		VK1D & i::			SendKeyWithModKeyCurPressing( "WheelUp" )
 		VK1D & o::			SendKeyWithModKeyCurPressing( "WheelRight" )
 		
+		
 	;	SendCursorKey( sSendKey, iRepeatCnt )
 	;	{
 	;	;	bIsPressKana := GetKeyState("VKF2","P")
@@ -158,8 +161,8 @@ SetEveryDayAlermTimer()
 		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
 		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
-		^+!F1::			StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
-		^+!#F1::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										; ショートカットキー配列表.drawio
+		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
+		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										; ショートカットキー配列表.drawio
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -196,6 +199,8 @@ SetEveryDayAlermTimer()
 		^+!h::	Run "https://www.deepl.com//translator"																					; 翻訳サイト
 	; }}}
 	;その他 ; {{{
+		^+!F5::			ReloadMe()																										; スクリプトリロード
+		^+!5::			ReloadMe()																										; スクリプトリロード
 		VK1D & w::																														; Windowタイル切替え
 		{
 			;MsgBox "!#LEFT"
@@ -203,7 +208,6 @@ SetEveryDayAlermTimer()
 			IncrementWinTileMode()
 			ApplyWinTileMode()
 		}
-	;	VKF2::Return
 		#[::	DarkenScreen()																											; 画面の明るさを上げる
 		#]::	BrightenScreen()																										; 画面の明るさを下げる
 		^+!z::																															; ファイラ―表示
@@ -215,15 +219,15 @@ SetEveryDayAlermTimer()
 		;	Sleep 100
 		;	Send "+{tab}"
 		}
-		^+!F12::																														; Programsフォルダ表示
-		{
-			StartProgramAndActivateFile( "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" )
-			Sleep 100
-			Send "+{tab}"
-		}
+	;	^+!F12::																														; Programsフォルダ表示
+	;	{
+	;		StartProgramAndActivateFile( "C:\Users\" . A_Username . "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs" )
+	;		Sleep 100
+	;		Send "+{tab}"
+	;	}
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				; TurboVNCスリープ抑制
-		!Pause::	ToggleAlwaysOnTopEnable()																							; Window最前面化
 	;	^+!F11::	SwitchRAltAppsKeyMode()																								; 右Alt->AppsKey置換え切替え
+		!Pause::	ToggleAlwaysOnTopEnable()																							; Window最前面化
 		Ctrl::																															; モニタ中心にカーソル移動
 		{
 			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
@@ -303,15 +307,17 @@ SetEveryDayAlermTimer()
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		~RButton & WheelUp::SendInput "^+{Tab}"
 		~RButton & WheelDown::SendInput "^{Tab}"
-		^!t::	;タブを複製して和訳
+		^!t::	;タブを複製して、Webページを和訳
 		{
-			;タブを複製
-			SendInput "^+k"
+		;	;タブを複製
+		;	SendInput "^+k"
+		;	sleep 1000
+			;Webページを和訳
+			SendInput "{F5}"
 			sleep 1000
-			;和訳
 			SendInput "{AppsKey}"
-			sleep 500
-			SendInput "+t"
+			sleep 100
+			SendInput "t"
 		}
 	;	^+1::	; Windows Difender Smartscreen 回避
 	;	{
@@ -351,7 +357,7 @@ SetEveryDayAlermTimer()
 			sleep 500
 			SendInput "{AppsKey}"
 			sleep 100
-			SendInput "{Down 8}{Enter}"
+			SendInput "t"
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
