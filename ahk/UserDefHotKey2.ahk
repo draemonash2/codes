@@ -118,6 +118,7 @@ SetEveryDayAlermTimer()
 		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
 		VK1D & Backspace::	SendKeyWithModKeyCurPressing( "Del" )
+		VK1D & d::			SendKeyWithModKeyCurPressing( "Del" )
 		
 		VK1D & h::			SendKeyWithModKeyCurPressing( "Left" )
 		VK1D & j::			SendKeyWithModKeyCurPressing( "Down" )
@@ -228,19 +229,19 @@ SetEveryDayAlermTimer()
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				; TurboVNCスリープ抑制
 	;	^+!F11::	SwitchRAltAppsKeyMode()																								; 右Alt->AppsKey置換え切替え
 		!Pause::	ToggleAlwaysOnTopEnable()																							; Window最前面化
-		Ctrl::																															; モニタ中心にカーソル移動
-		{
-			Loop giJUMPCURSOL_KEYPRESS_NUM - 1
-			{
-				Sleep 100
-				iIsTimeout := KeyWait("Ctrl", "D T0.2")
-				If (iIsTimeout == 0){
-					Return
-				}
-			}
-			;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
-			MoveCursolToMonitorCenter()
-		}
+	;	Ctrl::																															; モニタ中心にカーソル移動
+	;	{
+	;		Loop giJUMPCURSOL_KEYPRESS_NUM - 1
+	;		{
+	;			Sleep 100
+	;			iIsTimeout := KeyWait("Ctrl", "D T0.2")
+	;			If (iIsTimeout == 0){
+	;				Return
+	;			}
+	;		}
+	;		;MsgBox "Ctrlキーが" . giJUMPCURSOL_KEYPRESS_NUM . "回押されました"
+	;		MoveCursolToMonitorCenter()
+	;	}
 	; }}}
 	;テスト用 ; {{{
 		/*
@@ -307,18 +308,18 @@ SetEveryDayAlermTimer()
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		~RButton & WheelUp::SendInput "^+{Tab}"
 		~RButton & WheelDown::SendInput "^{Tab}"
-		^!t::	;タブを複製して、Webページを和訳
-		{
-		;	;タブを複製
-		;	SendInput "^+k"
-		;	sleep 1000
-			;Webページを和訳
-			SendInput "{F5}"
-			sleep 1000
-			SendInput "{AppsKey}"
-			sleep 100
-			SendInput "t"
-		}
+	;	^!t::	;タブを複製して、Webページを和訳
+	;	{
+	;	;	;タブを複製
+	;	;	SendInput "^+k"
+	;	;	sleep 1000
+	;		;Webページを和訳
+	;		SendInput "{F5}"
+	;		sleep 1000
+	;		SendInput "{AppsKey}"
+	;		sleep 100
+	;		SendInput "t"
+	;	}
 	;	^+1::	; Windows Difender Smartscreen 回避
 	;	{
 	;		SendInput "{Tab 2}"
@@ -351,14 +352,14 @@ SetEveryDayAlermTimer()
 				sleep 100
 				SendInput "{Up}"
 			}
-		^+2::	; Webページ全体を日本語に翻訳する
-		{
-			SendInput "{F5}"
-			sleep 500
-			SendInput "{AppsKey}"
-			sleep 100
-			SendInput "t"
-		}
+	;	^+2::	; Webページ全体を日本語に翻訳する
+	;	{
+	;		SendInput "{F5}"
+	;		sleep 500
+	;		SendInput "{AppsKey}"
+	;		sleep 100
+	;		SendInput "t"
+	;	}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
 		+F1::	Run EnvGet("MYDIRPATH_CODES") . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . GetSelFilePathAtExplorer(1)		; winmergeで開く
