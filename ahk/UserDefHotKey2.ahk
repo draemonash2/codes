@@ -13,11 +13,11 @@
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
-global giWIN_TILE_MODE_CLEAR_INTERVAL_MS := 10000
-global giWIN_TILE_MODE_RANGE_MIN := 1
-global giWIN_TILE_MODE_RANGE_MAX := 6
-global giWIN_TILE_MODE_WIN_RANGE_RATE := 5/7 ; 0～1
-global giWIN_TILE_MODE_INIT := 0
+global giWIN_SNAP_IDX_CLEAR_INTERVAL_MS := 10000
+global giWIN_SNAP_IDX_RANGE_MIN := 1
+global giWIN_SNAP_IDX_RANGE_MAX := 6
+global giWIN_SNAP_IDX_WIN_RANGE_RATE := 5/7 ; 0～1
+global giWIN_SNAP_IDX_INIT := 0
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -57,7 +57,7 @@ TraySetIcon "UserDefHotKey2.ico"
 ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 StoreCurYearMonths()
 InitScreenBrightness()
-InitWinTileMode()
+InitWinSnapIdx()
 InitSleepPreventing()
 ;InitRAltAppsKeyMode()
 RestartAlermTimer()
@@ -79,8 +79,8 @@ SetEveryDayAlermTimer()
 ;*				~		ホットキーを設定しても元々のキーも動くようにする
 ;*				$		自己送信（例: a::Send "a"）によるループを防ぐ
 ;*			特殊キー
-;*				VK1C	変換キー
-;*				VK1D	無変換キー
+;*				VK1C	変換キー（スペースの右隣）
+;*				VK1D	無変換キー（スペースの左隣）
 ;*				VKF2	かなキー
 ;*				VKF3	半角/全角キー
 ;*				VKF4	半角/全角キー
@@ -93,15 +93,12 @@ SetEveryDayAlermTimer()
 	;キー置き換え ; {{{
 		Insert::Return																				; Insertキー
 		PrintScreen::return																			; PrintScreenキー
-		VK1D::VK1D																					; 単押しはそのまま機能させる
-		VK1C::VK1C																					; 単押しはそのまま機能させる
+		
 		^VKF4::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
 		^VKF3::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
 		VKF2::Send "{AppsKey}"																		; かなキー -> AppsKey
 		
-		VK1D & VKF3::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
-		VK1D & VKF4::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
-		
+		VK1C::VK1C																					; 単押しはそのまま機能させる
 		VK1C & w::			MoveCursor("Up")
 		VK1C & s::			MoveCursor("Down")
 		VK1C & d::			MoveCursor("Right")
@@ -115,6 +112,12 @@ SetEveryDayAlermTimer()
 				Click
 			}
 		}
+		
+		VK1D::VK1D																					; 単押しはそのまま機能させる
+		
+		VK1D & VKF3::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
+		VK1D & VKF4::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
+		VK1D & Space::Send "{Esc}"																	; 無変換+Space -> Esc
 		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
 		VK1D & Backspace::	SendKeyWithModKeyCurPressing( "Del" )
@@ -135,6 +138,18 @@ SetEveryDayAlermTimer()
 		VK1D & i::			SendKeyWithModKeyCurPressing( "WheelUp" )
 		VK1D & o::			SendKeyWithModKeyCurPressing( "WheelRight" )
 		
+		VK1D & 1::			SendKeyWithModKeyCurPressing( "F1" )
+		VK1D & 2::			SendKeyWithModKeyCurPressing( "F2" )
+		VK1D & 3::			SendKeyWithModKeyCurPressing( "F3" )
+		VK1D & 4::			SendKeyWithModKeyCurPressing( "F4" )
+		VK1D & 5::			SendKeyWithModKeyCurPressing( "F5" )
+		VK1D & 6::			SendKeyWithModKeyCurPressing( "F6" )
+		VK1D & 7::			SendKeyWithModKeyCurPressing( "F7" )
+		VK1D & 8::			SendKeyWithModKeyCurPressing( "F8" )
+		VK1D & 9::			SendKeyWithModKeyCurPressing( "F9" )
+		VK1D & 0::			SendKeyWithModKeyCurPressing( "F10" )
+		VK1D & -::			SendKeyWithModKeyCurPressing( "F11" )
+		VK1D & ^::			SendKeyWithModKeyCurPressing( "F12" )
 		
 	;	SendCursorKey( sSendKey, iRepeatCnt )
 	;	{
@@ -149,10 +164,10 @@ SetEveryDayAlermTimer()
 	; }}}
 	;ファイルオープン ; {{{
 		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											; UserDefHotKey.ahk
-		^+!j::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx" )													; #todo.itmz
+		^+!j::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )												; #todo.itmz
 		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
 		~^+!#.::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
-		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio" )													; #temp.drawio
+		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								; 用語集
@@ -163,19 +178,19 @@ SetEveryDayAlermTimer()
 		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
 		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
-		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio" )										; ショートカットキー配列表.drawio
+		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
 		^+!Enter::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
 		^+!.::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
-		^+!,::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio" )										; #memo.drawio
-		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio" )								; #memo_image.drawio
+		^+!,::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio", 1 )									; #memo.drawio
+		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio", 1 )								; #memo_image.drawio
 		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										; #timemng.xlsm
 		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250610_install_manual_unity\install_manual_unity.md" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250610_install_manual_unity\install_manual_unity\install_manual_unity.md" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
@@ -204,13 +219,16 @@ SetEveryDayAlermTimer()
 		^+!5::			ReloadMe()																										; スクリプトリロード
 		VK1D & w::																														; Windowタイル切替え
 		{
-			;MsgBox "!#LEFT"
-			SetTimerClearWinTileMode()
-			IncrementWinTileMode()
-			ApplyWinTileMode()
+			if (GetKeyState("Shift","P")) {
+				SwitchWinSnapIdx(True)
+			} else {
+				SwitchWinSnapIdx(False)
+			}
 		}
-		#[::	DarkenScreen()																											; 画面の明るさを上げる
-		#]::	BrightenScreen()																										; 画面の明るさを下げる
+		#w::SwitchWinSnapIdx(False)																										; Windowスナップ
+		VK1D & [::	BrightenScreen()																									; 画面の明るさを下げる
+		VK1D & ]::	DarkenScreen()																										; 画面の明るさを上げる
+		VK1D & z::	ToggleAlwaysOnTopEnable()																							; Window最前面化
 		^+!z::																															; ファイラ―表示
 		{
 			;xf.exe
@@ -228,7 +246,6 @@ SetEveryDayAlermTimer()
 	;	}
 	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				; TurboVNCスリープ抑制
 	;	^+!F11::	SwitchRAltAppsKeyMode()																								; 右Alt->AppsKey置換え切替え
-		!Pause::	ToggleAlwaysOnTopEnable()																							; Window最前面化
 	;	Ctrl::																															; モニタ中心にカーソル移動
 	;	{
 	;		Loop giJUMPCURSOL_KEYPRESS_NUM - 1
@@ -296,6 +313,8 @@ SetEveryDayAlermTimer()
 			ShowAutoHideTrayTip("", "テストTrayTip", 1000)
 		}
 		*/
+		!+^g::SendInput "#{Left}"
+		#Left::MsgBox "ウィンドウ左寄せ！"
 	; }}}
 
 ;***** ホットキー(Software local) *****
@@ -308,18 +327,18 @@ SetEveryDayAlermTimer()
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 		~RButton & WheelUp::SendInput "^+{Tab}"
 		~RButton & WheelDown::SendInput "^{Tab}"
-	;	^!t::	;タブを複製して、Webページを和訳
-	;	{
-	;	;	;タブを複製
-	;	;	SendInput "^+k"
-	;	;	sleep 1000
-	;		;Webページを和訳
-	;		SendInput "{F5}"
-	;		sleep 1000
-	;		SendInput "{AppsKey}"
-	;		sleep 100
-	;		SendInput "t"
-	;	}
+		^!t::	;タブを複製して、Webページを和訳
+		{
+		;	;タブを複製
+		;	SendInput "^+k"
+		;	sleep 1000
+			;Webページを和訳
+			SendInput "{F5}"
+			sleep 1000
+			SendInput "{AppsKey}"
+			sleep 300
+			SendInput "t"
+		}
 	;	^+1::	; Windows Difender Smartscreen 回避
 	;	{
 	;		SendInput "{Tab 2}"
@@ -330,8 +349,9 @@ SetEveryDayAlermTimer()
 	;		sleep 100
 	;		SendInput "{Enter}"
 	;	}
-		^+1::	; URI置換
+		^+1::
 		{
+			; URI置換
 			iCnt := 0
 			iMax := 1
 			while iMax > iCnt
@@ -352,14 +372,6 @@ SetEveryDayAlermTimer()
 				sleep 100
 				SendInput "{Up}"
 			}
-	;	^+2::	; Webページ全体を日本語に翻訳する
-	;	{
-	;		SendInput "{F5}"
-	;		sleep 500
-	;		SendInput "{AppsKey}"
-	;		sleep 100
-	;		SendInput "t"
-	;	}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
 		+F1::	Run EnvGet("MYDIRPATH_CODES") . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . GetSelFilePathAtExplorer(1)		; winmergeで開く
@@ -424,11 +436,12 @@ SetEveryDayAlermTimer()
 			SendInput "{Enter}"
 		}
 	#HotIf ; }}}
-	#HotIf WinActive("ahk_exe iThoughts.exe") ; {{{
-		F1::return	;F1ヘルプ無効化
-	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe Rapture.exe") ; {{{
-		Esc::!F4	;Escで終了
+	;	VK1D & VKF3::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
+	;	VK1D & VKF4::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
+		Esc::!F4						; Esc -> 終了
+		VK1D & VKF3::!F4				; 無変換+半角/全角 -> 終了
+		VK1D & VKF4::!F4				; 無変換+半角/全角 -> 終了
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe vimrun.exe") ; {{{
 		Esc::!F4	;Escで終了
@@ -436,6 +449,14 @@ SetEveryDayAlermTimer()
 	#HotIf WinActive("ahk_exe XF.exe") ; {{{
 		^WheelUp::SendInput "^+{Tab}"  ;Next tab.
 		^WheelDown::SendInput "^{Tab}" ;Previous tab.
+	;	VK1D & h ::
+	;	{
+	;		if (GetKeyState("Alt","P")) {
+	;			SendInput "!{Left}"
+	;		} else {
+	;			SendInput "{Left}"
+	;		}
+	;	}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe chrome.exe") ; {{{
 	;	^WheelUp::SendInput ^+{Tab}  ;Next tab.
@@ -515,7 +536,7 @@ SetEveryDayAlermTimer()
 	;       理由）単一プロセス起動は、プログラム名を基にしたプロセスの起動有無を
 	;             確認することで実現できる。本関数はプログラム名を指定しないため、
 	;             単一プロセス起動を実現できない。
-	StartProgramAndActivateFile( sFilePath, bShowToolTip:=True ) ; {{{
+	StartProgramAndActivateFile( sFilePath, iWinSnapIdx?, bShowToolTip:=True ) ; {{{
 	{
 		;*** preprocess ***
 		If ( sFilePath == "" )
@@ -543,6 +564,11 @@ SetEveryDayAlermTimer()
 			return
 		}
 		ToolTip()
+		
+		if (IsSet(iWinSnapIdx)) {
+			SetWinSnapIdx(iWinSnapIdx)
+			ExecuteWinSnap()
+		}
 		return
 	} ; }}}
 	
@@ -630,94 +656,106 @@ SetEveryDayAlermTimer()
 		return
 	} ; }}}
 
-	;Windowタイル切り替え
-	InitWinTileMode() ; {{{
+	;Windowスナップ
+	InitWinSnapIdx() ; {{{
 	{
-		ClearWinTileMode()
-		SetTimerClearWinTileMode()
+		ClearWinSnapIdx()
+		SetTimerClearWinSnapIdx()
 	} ; }}}
-	IncrementWinTileMode() ; {{{
+	IncrementWinSnapIdx() ; {{{
 	{
-		global giWinTileMode
-		giWinTileMode += 1
-		iWinTileModeMin := GetWinTileModeMin()
-		iWinTileModeMax := GetWinTileModeMax()
-		if ( giWinTileMode > iWinTileModeMax ) {
-			giWinTileMode := iWinTileModeMin
+		global giWinSnapIdx
+		giWinSnapIdx += 1
+		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
+		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
+		if ( giWinSnapIdx > iWinSnapIdxMax ) {
+			giWinSnapIdx := iWinSnapIdxMin
 		} else {
-			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
+			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
 		}
-	;	MsgBox "[DBG] IncrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
+	;	MsgBox "[DBG] IncrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
-	DecrementWinTileMode() ; {{{
+	DecrementWinSnapIdx() ; {{{
 	{
-		global giWinTileMode
-		giWinTileMode -= 1
-		iWinTileModeMin := GetWinTileModeMin()
-		iWinTileModeMax := GetWinTileModeMax()
-		if ( giWinTileMode < iWinTileModeMin ) {
-			giWinTileMode := iWinTileModeMax
+		global giWinSnapIdx
+		giWinSnapIdx -= 1
+		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
+		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
+		if ( giWinSnapIdx < iWinSnapIdxMin ) {
+			giWinSnapIdx := iWinSnapIdxMax
 		} else {
-			giWinTileMode := CropValue(giWinTileMode, iWinTileModeMin, iWinTileModeMax)
+			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
 		}
-	;	MsgBox "[DBG] DecrementWinTileMode()" . "`ngiWinTileMode = " . giWinTileMode
+	;	MsgBox "[DBG] DecrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
-	GetWinTileModeMin() ; {{{
+	SetWinSnapIdx(iWinSnapIdx) ; {{{
 	{
-		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MIN)
+		global giWinSnapIdx
+		giWinSnapIdx := iWinSnapIdx
+		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
+		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
+		if ( giWinSnapIdx < iWinSnapIdxMin ) {
+			giWinSnapIdx := iWinSnapIdxMax
+		} else {
+			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
+		}
+	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
-	GetWinTileModeMax() ; {{{
+	CropWinSnapIdxWithMonNum(iInWinSnapIdx) ; {{{
 	{
-		return CropWinTileModeWithMonNum(giWIN_TILE_MODE_RANGE_MAX)
-	} ; }}}
-	CropWinTileModeWithMonNum(iInWinTileMode) ; {{{
-	{
-		iOutWinTileMode := giWIN_TILE_MODE_INIT
+		iOutWinSnapIdx := giWIN_SNAP_IDX_INIT
 		iMonitorNum := GetMonitorNum()
 		switch iMonitorNum
 		{
-			case 1:		iOutWinTileMode := CropValue(iInWinTileMode, 4, 4) ; Main only
-			case 2:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 4) ; Main + Sub
-			case 3:		iOutWinTileMode := CropValue(iInWinTileMode, 1, 6) ; Main + Sub + Mobile
+			case 1:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 4, 4) ; Main only
+			case 2:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 1, 4) ; Main + 4K
+			case 3:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 1, 6) ; Main + 4K + Mobile
 			default:	MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
 		}
-		return iOutWinTileMode
+		return iOutWinSnapIdx
 	} ; }}}
-	SetTimerClearWinTileMode() ; {{{
+	SetTimerClearWinSnapIdx() ; {{{
 	{
-		SetTimer ClearWinTileMode, giWIN_TILE_MODE_CLEAR_INTERVAL_MS
+		SetTimer ClearWinSnapIdx, giWIN_SNAP_IDX_CLEAR_INTERVAL_MS
 	} ; }}}
-	ClearWinTileMode() ; {{{
+	ClearWinSnapIdx() ; {{{
 	{
-		global giWinTileMode
-		giWinTileMode := giWIN_TILE_MODE_INIT
+		global giWinSnapIdx
+		giWinSnapIdx := giWIN_SNAP_IDX_INIT
 		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
 		Return
 	} ; }}}
-	; ウィンドウサイズ切り替え
-	ApplyWinTileMode() ; {{{
+	SwitchWinSnapIdx(bIsInvert:=False) ; {{{
 	{
-		global giWinTileMode
+		SetTimerClearWinSnapIdx()
+		if (bIsInvert) {
+			DecrementWinSnapIdx()
+		} else {
+			IncrementWinSnapIdx()
+		}
+		ExecuteWinSnap()
+	} ; }}}
+	ExecuteWinSnap() ; {{{
+	{
+		global giWinSnapIdx
 		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
-		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_TILE_MODE_WIN_RANGE_RATE )
+		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE )
 		GetMonitorPosInfo(3, &dX3, &dY3, &dWidth3, &dHeight3 )
-	;	MsgBox "[DBG] ApplyWinTileMode() " .
-	;		"`n giWinTileMode = " . giWinTileMode .
+	;	MsgBox "[DBG] ExecuteWinSnap() " .
+	;		"`n giWinSnapIdx = " . giWinSnapIdx .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
 	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2 .
 	;		"`n dX3 = " . dX3 . "`n dY3 = " . dY3 . "`n dWidth3 = " . dWidth3 . "`n dHeight3 = " . dHeight3
 		
-		dHeight1_3 := dHeight1 + dHeight3
-		
-		switch giWinTileMode
+		switch giWinSnapIdx
 		{
 			case 1:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2)
 			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
 			case 3:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
 			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
 			case 5:		MoveActiveWin(dX3, dY3, dWidth3, dHeight3)
-			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1_3)
-			default:	MsgBox "[error] invalid giWinTileMode : " . giWinTileMode
+			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1 + dHeight3)
+			default:	MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
 		}
 		return
 	} ; }}}
