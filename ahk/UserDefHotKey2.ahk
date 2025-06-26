@@ -120,13 +120,17 @@ SetEveryDayAlermTimer()
 		VK1D & Space::Send "{Esc}"																	; 無変換+Space -> Esc
 		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
-		VK1D & Backspace::	SendKeyWithModKeyCurPressing( "Del" )
-		VK1D & d::			SendKeyWithModKeyCurPressing( "Del" )
+		VK1D & x::			SendKeyWithModKeyCurPressing( "Del" )
 		
 		VK1D & h::			SendKeyWithModKeyCurPressing( "Left" )
 		VK1D & j::			SendKeyWithModKeyCurPressing( "Down" )
 		VK1D & k::			SendKeyWithModKeyCurPressing( "Up" )
 		VK1D & l::			SendKeyWithModKeyCurPressing( "Right" )
+		
+		VK1D & a::			SendKeyWithModKeyCurPressing( "Left" )
+		VK1D & s::			SendKeyWithModKeyCurPressing( "Down" )
+		VK1D & w::			SendKeyWithModKeyCurPressing( "Up" )
+		VK1D & d::			SendKeyWithModKeyCurPressing( "Right" )
 		
 		VK1D & n::			SendKeyWithModKeyCurPressing( "Home" )
 		VK1D & m::			SendKeyWithModKeyCurPressing( "PgDn" )
@@ -164,7 +168,11 @@ SetEveryDayAlermTimer()
 	; }}}
 	;ファイルオープン ; {{{
 		^+!a::			StartProgramAndActivate( EnvGet("MYEXEPATH_GVIM"), A_ScriptFullPath )											; UserDefHotKey.ahk
-		^+!j::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )												; #todo.itmz
+		^+!j::																															; #todo.itmz
+		{
+			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )
+			SendInput "^a{Esc}!c"
+		}
 		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
 		~^+!#.::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
 		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
@@ -175,10 +183,10 @@ SetEveryDayAlermTimer()
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
 		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
-		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
-		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
+		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
+		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -207,29 +215,7 @@ SetEveryDayAlermTimer()
 			SetBrightnessTemporary(giSCREEN_BRIGHTNESS_MAX, 5000)
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_RAPTURE"), False, False )
 		}
-	; }}}
-	;サイトオープン ; {{{
-		^+!1::	Run "https://draemonash2.github.io/"																					; Github.io
-		^+!2::	Run "https://draemonash2.github.io/linux_os/linux.html"																	; Github.io linux
-		^+!3::	Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"														; Github.io git command
-		^+!h::	Run "https://www.deepl.com//translator"																					; 翻訳サイト
-	; }}}
-	;その他 ; {{{
-		^+!F5::			ReloadMe()																										; スクリプトリロード
-		^+!5::			ReloadMe()																										; スクリプトリロード
-		VK1D & w::																														; Windowタイル切替え
-		{
-			if (GetKeyState("Shift","P")) {
-				SwitchWinSnapIdx(True)
-			} else {
-				SwitchWinSnapIdx(False)
-			}
-		}
-		#w::SwitchWinSnapIdx(False)																										; Windowスナップ
-		VK1D & [::	BrightenScreen()																									; 画面の明るさを下げる
-		VK1D & ]::	DarkenScreen()																										; 画面の明るさを上げる
-		VK1D & z::	ToggleAlwaysOnTopEnable()																							; Window最前面化
-		^+!z::																															; ファイラ―表示
+		^+!z::																															; ファイラ―
 		{
 			;xf.exe
 			StartProgramAndActivateExe( EnvGet("MYEXEPATH_XF"), 1 )
@@ -244,8 +230,24 @@ SetEveryDayAlermTimer()
 	;		Sleep 100
 	;		Send "+{tab}"
 	;	}
-	;	^+!r::		SetSleepPreventingMode("Toggle", True)																				; TurboVNCスリープ抑制
-	;	^+!F11::	SwitchRAltAppsKeyMode()																								; 右Alt->AppsKey置換え切替え
+	; }}}
+	;サイトオープン ; {{{
+		^+!1::			Run "https://draemonash2.github.io/"																			; Github.io
+		^+!2::			Run "https://draemonash2.github.io/linux_os/linux.html"															; Github.io linux
+		^+!3::			Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"												; Github.io git command
+		^+!h::			Run "https://www.deepl.com//translator"																			; 翻訳サイト
+	; }}}
+	;ウィンドウ関連 ; {{{
+		#w::			SwitchWinSnapIdx()																								; Windowスナップ
+		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
+		#[::			BrightenScreen()																								; 画面の明るさを下げる
+		#]::			DarkenScreen()																									; 画面の明るさを上げる
+	; }}}
+	;その他 ; {{{
+		^+!F5::			ReloadMe()																										; スクリプトリロード
+		^+!5::			ReloadMe()																										; スクリプトリロード
+	;	^+!r::			SetSleepPreventingMode("Toggle", True)																			; TurboVNCスリープ抑制
+	;	^+!F11::		SwitchRAltAppsKeyMode()																							; 右Alt->AppsKey置換え切替え
 	;	Ctrl::																															; モニタ中心にカーソル移動
 	;	{
 	;		Loop giJUMPCURSOL_KEYPRESS_NUM - 1
@@ -313,8 +315,6 @@ SetEveryDayAlermTimer()
 			ShowAutoHideTrayTip("", "テストTrayTip", 1000)
 		}
 		*/
-		!+^g::SendInput "#{Left}"
-		#Left::MsgBox "ウィンドウ左寄せ！"
 	; }}}
 
 ;***** ホットキー(Software local) *****
@@ -325,8 +325,9 @@ SetEveryDayAlermTimer()
 		#HotIf
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
-		~RButton & WheelUp::SendInput "^+{Tab}"
-		~RButton & WheelDown::SendInput "^{Tab}"
+	;	RButton::RButton
+		~RButton & WheelUp::SendInput "{Blind}^+{Tab}"
+		~RButton & WheelDown::SendInput "{Blind}^{Tab}"
 		^!t::	;タブを複製して、Webページを和訳
 		{
 		;	;タブを複製
@@ -436,25 +437,40 @@ SetEveryDayAlermTimer()
 			SendInput "{Enter}"
 		}
 	#HotIf ; }}}
+	#HotIf WinActive("ahk_exe SimpleMindPro.exe") ; {{{
+		VK1D & Enter::SendInput("^a{Esc}")																							; セントラルトピックにフォーカス
+	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe Rapture.exe") ; {{{
+		Esc::!F4						; Esc -> 終了
 	;	VK1D & VKF3::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
 	;	VK1D & VKF4::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
-		Esc::!F4						; Esc -> 終了
-		VK1D & VKF3::!F4				; 無変換+半角/全角 -> 終了
-		VK1D & VKF4::!F4				; 無変換+半角/全角 -> 終了
+	;	VK1D & VKF3::!F4				; 無変換+半角/全角 -> 終了
+	;	VK1D & VKF4::!F4				; 無変換+半角/全角 -> 終了
+		VK1D & Space::!F4				; 無変換+スペース -> 終了
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe vimrun.exe") ; {{{
 		Esc::!F4	;Escで終了
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe XF.exe") ; {{{
-		^WheelUp::SendInput "^+{Tab}"  ;Next tab.
-		^WheelDown::SendInput "^{Tab}" ;Previous tab.
-	;	VK1D & h ::
+		^WheelUp::SendInput "^+{Tab}"	; Next tab.
+		^WheelDown::SendInput "^{Tab}"	; Previous tab.
+	; TODO:
+	;	; Alt+無変換+h/k -> Alt+Left/Up
+	;	; Altを離したときにAlt押下判定されてしまうために{Blind}で抑制
+	;	VK1D & h::						
 	;	{
 	;		if (GetKeyState("Alt","P")) {
-	;			SendInput "!{Left}"
+	;			SendInput "{Blind}!{Left}"
 	;		} else {
-	;			SendInput "{Left}"
+	;			SendInput "{Blind}{Left}"
+	;		}
+	;	}
+	;	VK1D & k::
+	;	{
+	;		if (GetKeyState("Alt","P")) {
+	;			SendInput "{Blind}!{Up}"
+	;		} else {
+	;			SendInput "{Blind}{Up}"
 	;		}
 	;	}
 	#HotIf ; }}}
@@ -631,27 +647,32 @@ SetEveryDayAlermTimer()
 	} ; }}}
 
 	; 今押している修飾キーと共にキー送信する
-	SendKeyWithModKeyCurPressing( sSendKey ) ; {{{
+	SendKeyWithModKeyCurPressing( sSendKey, bBlind:=true ) ; {{{
 	{
 		bIsPressShift := GetKeyState("Shift","P")
 		bIsPressCtrl := GetKeyState("Ctrl","P")
 		bIsPressAlt := GetKeyState("Alt","P")
-		if(bIsPressShift and bIsPressCtrl and bIsPressAlt){
-			Send "!^+{" . sSendKey . "}"
-		} else if(bIsPressShift and bIsPressCtrl){
-			Send "^+{" . sSendKey . "}"
-		} else if(bIsPressShift and bIsPressAlt){
-			Send "!+{" . sSendKey . "}"
-		} else if(bIsPressAlt and bIsPressCtrl){
-			Send "!^{" . sSendKey . "}"
-		} else if(bIsPressAlt){
-			Send "!{" . sSendKey . "}"
-		} else if(bIsPressCtrl){
-			Send "^{" . sSendKey . "}"
-		} else if(bIsPressShift){
-			Send "+{" . sSendKey . "}"
+		if (bBlind) {
+			sBlind := "{Blind}"
 		} else {
-			Send "{" . sSendKey . "}"
+			sBlind := ""
+		}
+		if(bIsPressShift and bIsPressCtrl and bIsPressAlt){
+			Send sBlind . "!^+{" . sSendKey . "}"
+		} else if(bIsPressShift and bIsPressCtrl){
+			Send sBlind . "^+{" . sSendKey . "}"
+		} else if(bIsPressShift and bIsPressAlt){
+			Send sBlind . "!+{" . sSendKey . "}"
+		} else if(bIsPressAlt and bIsPressCtrl){
+			Send sBlind . "!^{" . sSendKey . "}"
+		} else if(bIsPressAlt){
+			Send sBlind . "!{" . sSendKey . "}"
+		} else if(bIsPressCtrl){
+			Send sBlind . "^{" . sSendKey . "}"
+		} else if(bIsPressShift){
+			Send sBlind . "+{" . sSendKey . "}"
+		} else {
+			Send sBlind . "{" . sSendKey . "}"
 		}
 		return
 	} ; }}}
