@@ -94,9 +94,9 @@ SetEveryDayAlermTimer()
 		Insert::Return																				; Insertキー
 		PrintScreen::return																			; PrintScreenキー
 		
-		^VKF4::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
-		^VKF3::Send "!{F4}"																			; Ctrl+半角/全角 -> Alt+F4
 		VKF2::Send "{AppsKey}"																		; かなキー -> AppsKey
+		VKF3::Esc																					; 半角全角 -> Esc
+		VKF4::Esc																					; 半角全角 -> Esc
 		
 		VK1C::VK1C																					; 単押しはそのまま機能させる
 		VK1C & w::			MoveCursor("Up")
@@ -121,6 +121,7 @@ SetEveryDayAlermTimer()
 		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
 		VK1D & x::			SendKeyWithModKeyCurPressing( "Del" )
+		VK1D & Bs::			SendKeyWithModKeyCurPressing( "Del" )
 		
 		VK1D & h::			SendKeyWithModKeyCurPressing( "Left" )
 		VK1D & j::			SendKeyWithModKeyCurPressing( "Down" )
@@ -179,6 +180,7 @@ SetEveryDayAlermTimer()
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								; 用語集
+		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#prompt.txt" )													; #prompt.txt
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
@@ -239,6 +241,7 @@ SetEveryDayAlermTimer()
 	; }}}
 	;ウィンドウ関連 ; {{{
 		#w::			SwitchWinSnapIdx()																								; Windowスナップ
+		#Space::		SwitchWinSnapIdx()																								; Windowスナップ
 		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
@@ -454,29 +457,12 @@ SetEveryDayAlermTimer()
 	#HotIf WinActive("ahk_exe XF.exe") ; {{{
 		^WheelUp::SendInput "^+{Tab}"	; Next tab.
 		^WheelDown::SendInput "^{Tab}"	; Previous tab.
-	; TODO:
-	;	; Alt+無変換+h/k -> Alt+Left/Up
-	;	; Altを離したときにAlt押下判定されてしまうために{Blind}で抑制
-	;	VK1D & h::						
-	;	{
-	;		if (GetKeyState("Alt","P")) {
-	;			SendInput "{Blind}!{Left}"
-	;		} else {
-	;			SendInput "{Blind}{Left}"
-	;		}
-	;	}
-	;	VK1D & k::
-	;	{
-	;		if (GetKeyState("Alt","P")) {
-	;			SendInput "{Blind}!{Up}"
-	;		} else {
-	;			SendInput "{Blind}{Up}"
-	;		}
-	;	}
+	;	~RButton & WheelUp::SendInput "{Blind}^+{Tab}"	; Next tab.
+	;	~RButton & WheelDown::SendInput "{Blind}^{Tab}"	; Previous tab.
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe chrome.exe") ; {{{
-	;	^WheelUp::SendInput ^+{Tab}  ;Next tab.
-	;	^WheelDown::SendInput ^{Tab} ;Previous tab.
+	;	^WheelUp::SendInput ^+{Tab}		; Next tab.
+	;	^WheelDown::SendInput ^{Tab}	; Previous tab.
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_class MPC-BE") ; {{{
 		]::Send "{Space}"
@@ -780,10 +766,6 @@ SetEveryDayAlermTimer()
 		}
 		return
 	} ; }}}
-	GetMonitorNum() ; {{{
-	{
-		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
-	} ; }}}
 	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iWinRangeRate:=0 ) ; {{{
 	{
 		iMonNum := GetMonitorNum()
@@ -801,7 +783,6 @@ SetEveryDayAlermTimer()
 				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
-		dY := Top
 		if ( Left < Right ) {
 			dX := Left
 			dWidth := Right - Left + 1
@@ -809,6 +790,7 @@ SetEveryDayAlermTimer()
 			dX := Right
 			dWidth := Left - Right + 1
 		}
+		dY := Top
 		dHeight := Bottom - Top + 1
 	;	MsgBox "[DBG] GetMonitorPosInfo() 01" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
 		
@@ -2019,4 +2001,17 @@ SetEveryDayAlermTimer()
 			FileDelete sFilePattern
 		}
 	} ; }}}
+	; モニタ数取得
+	GetMonitorNum() ; {{{
+	{
+		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
+	} ; }}}
 
+;	class MonitorInfo { ; {{{
+;		__New(iWinSnapIdxMin, iWinSnapIdxMax, sAttachSide, iWinRangeRate) { ; {{{
+;			this.iWinSnapIdxMin := iWinSnapIdxMin
+;			this.iWinSnapIdxMax := iWinSnapIdxMax
+;			this.sAttachSide := sAttachSide
+;			this.iWinRangeRate := iWinRangeRate
+;		} ; }}}
+;	}
