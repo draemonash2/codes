@@ -14,10 +14,8 @@ global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
 global giWIN_SNAP_IDX_CLEAR_INTERVAL_MS := 10000
-global giWIN_SNAP_IDX_RANGE_MIN := 1
-global giWIN_SNAP_IDX_RANGE_MAX := 6
 global giWIN_SNAP_IDX_WIN_RANGE_RATE := 5/7 ; 0～1
-global giWIN_SNAP_IDX_INIT := 0
+global giWIN_SNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -97,6 +95,8 @@ SetEveryDayAlermTimer()
 		VKF2::Send "{AppsKey}"																		; かなキー -> AppsKey
 		VKF3::Esc																					; 半角全角 -> Esc
 		VKF4::Esc																					; 半角全角 -> Esc
+		^VKF3::VKF3																					; Ctrl+半角全角 -> 半角全角
+		^VKF4::VKF3																					; Ctrl+半角全角 -> 半角全角
 		
 		VK1C::VK1C																					; 単押しはそのまま機能させる
 		VK1C & w::			MoveCursor("Up")
@@ -240,8 +240,8 @@ SetEveryDayAlermTimer()
 		^+!h::			Run "https://www.deepl.com//translator"																			; 翻訳サイト
 	; }}}
 	;ウィンドウ関連 ; {{{
-		#w::			SwitchWinSnapIdx()																								; Windowスナップ
-		#Space::		SwitchWinSnapIdx()																								; Windowスナップ
+		#w::			ExecuteWinSnap()																								; Windowスナップ
+		#Space::		ExecuteWinSnap()																								; Windowスナップ
 		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
@@ -568,8 +568,7 @@ SetEveryDayAlermTimer()
 		ToolTip()
 		
 		if (IsSet(iWinSnapIdx)) {
-			SetWinSnapIdx(iWinSnapIdx)
-			ExecuteWinSnap()
+			ExecuteWinSnap(iWinSnapIdx)
 		}
 		return
 	} ; }}}
@@ -664,17 +663,50 @@ SetEveryDayAlermTimer()
 	} ; }}}
 
 	;Windowスナップ
+	class MonPosSizeInfo { ; {{{
+		__New(dX:=0, dY:=0, dWidth:=0, dHeight:=0) {
+			this.dX := dX
+			this.dY := dY
+			this.dWidth := dWidth
+			this.dHeight := dHeight
+		}
+	} ; }}}
+	class MonPosSizeAuxInfo { ; {{{
+		__New(sAttachSide:="", iWinRangeRate:=0) {
+			this.sAttachSide := sAttachSide
+			this.iWinRangeRate := iWinRangeRate
+		}
+	} ; }}}
 	InitWinSnapIdx() ; {{{
 	{
-		ClearWinSnapIdx()
+		global giWinSnapIdx
+		giWinSnapIdx := 0
+		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
+		Return
+	} ; }}}
+	SetTimerClearWinSnapIdx() ; {{{
+	{
+		SetTimer InitWinSnapIdx, giWIN_SNAP_IDX_CLEAR_INTERVAL_MS
+	} ; }}}
+	ExecuteWinSnap(iWinSnapIdx:=0, bIsInvert:=False) ; {{{
+	{
 		SetTimerClearWinSnapIdx()
+		if (iWinSnapIdx > 0) {
+			SetWinSnapIdx(iWinSnapIdx)
+		} else {
+			if (bIsInvert) {
+				DecrementWinSnapIdx()
+			} else {
+				IncrementWinSnapIdx()
+			}
+		}
+		ApplyWinSnap()
 	} ; }}}
 	IncrementWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
 		giWinSnapIdx += 1
-		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
-		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
+		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
 		if ( giWinSnapIdx > iWinSnapIdxMax ) {
 			giWinSnapIdx := iWinSnapIdxMin
 		} else {
@@ -686,8 +718,7 @@ SetEveryDayAlermTimer()
 	{
 		global giWinSnapIdx
 		giWinSnapIdx -= 1
-		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
-		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
+		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
 		if ( giWinSnapIdx < iWinSnapIdxMin ) {
 			giWinSnapIdx := iWinSnapIdxMax
 		} else {
@@ -699,56 +730,37 @@ SetEveryDayAlermTimer()
 	{
 		global giWinSnapIdx
 		giWinSnapIdx := iWinSnapIdx
-		iWinSnapIdxMin := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MIN)
-		iWinSnapIdxMax := CropWinSnapIdxWithMonNum(giWIN_SNAP_IDX_RANGE_MAX)
-		if ( giWinSnapIdx < iWinSnapIdxMin ) {
-			giWinSnapIdx := iWinSnapIdxMax
-		} else {
-			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
-		}
+		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
+		giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
 	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
-	CropWinSnapIdxWithMonNum(iInWinSnapIdx) ; {{{
+	GetWinSnapIdxMinMax(&iWinSnapMin, &iWinSnapMax) ; {{{
 	{
-		iOutWinSnapIdx := giWIN_SNAP_IDX_INIT
 		iMonitorNum := GetMonitorNum()
 		switch iMonitorNum
 		{
-			case 1:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 4, 4) ; Main only
-			case 2:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 1, 4) ; Main + 4K
-			case 3:		iOutWinSnapIdx := CropValue(iInWinSnapIdx, 1, 6) ; Main + 4K + Mobile
-			default:	MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
+			case 1:					; Main only
+				iWinSnapMin := 4
+				iWinSnapMax := 4
+			case 2:					; Main + 4K
+				iWinSnapMin := 1
+				iWinSnapMax := 4
+			case 3:					; Main + 4K + Mobile
+				iWinSnapMin := 1
+				iWinSnapMax := 6
+			default:
+				MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
+				iWinSnapMin := 4
+				iWinSnapMax := 4
 		}
-		return iOutWinSnapIdx
 	} ; }}}
-	SetTimerClearWinSnapIdx() ; {{{
-	{
-		SetTimer ClearWinSnapIdx, giWIN_SNAP_IDX_CLEAR_INTERVAL_MS
-	} ; }}}
-	ClearWinSnapIdx() ; {{{
+	ApplyWinSnap() ; {{{
 	{
 		global giWinSnapIdx
-		giWinSnapIdx := giWIN_SNAP_IDX_INIT
-		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
-		Return
-	} ; }}}
-	SwitchWinSnapIdx(bIsInvert:=False) ; {{{
-	{
-		SetTimerClearWinSnapIdx()
-		if (bIsInvert) {
-			DecrementWinSnapIdx()
-		} else {
-			IncrementWinSnapIdx()
-		}
-		ExecuteWinSnap()
-	} ; }}}
-	ExecuteWinSnap() ; {{{
-	{
-		global giWinSnapIdx
-		GetMonitorPosInfo(1, &dX1, &dY1, &dWidth1, &dHeight1 )
-		GetMonitorPosInfo(2, &dX2, &dY2, &dWidth2, &dHeight2, "Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE )
-		GetMonitorPosInfo(3, &dX3, &dY3, &dWidth3, &dHeight3 )
-	;	MsgBox "[DBG] ExecuteWinSnap() " .
+		mon1 := GetMonitorPosInfo(1)
+		mon2 := GetMonitorPosInfo(2, MonPosSizeAuxInfo("Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE))
+		mon3 := GetMonitorPosInfo(3)
+	;	MsgBox "[DBG] ApplyWinSnap() " .
 	;		"`n giWinSnapIdx = " . giWinSnapIdx .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
 	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2 .
@@ -756,22 +768,31 @@ SetEveryDayAlermTimer()
 		
 		switch giWinSnapIdx
 		{
-			case 1:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2)
-			case 2:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Top")
-			case 3:		MoveActiveWin(dX2, dY2, dWidth2, dHeight2, "Bottom")
-			case 4:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1)
-			case 5:		MoveActiveWin(dX3, dY3, dWidth3, dHeight3)
-			case 6:		MoveActiveWin(dX1, dY1, dWidth1, dHeight1 + dHeight3)
+			case 1:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight)
+			case 2:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Top")
+			case 3:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Bottom")
+			case 4:		MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight)
+			case 5:		MoveActiveWin(mon3.dX, mon3.dY, mon3.dWidth, mon3.dHeight)
+			case 6:		MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight + mon3.dHeight)
 			default:	MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
 		}
 		return
 	} ; }}}
-	GetMonitorPosInfo( iMonIdx, &dX, &dY, &dWidth, &dHeight, sAttachSide:="", iWinRangeRate:=0 ) ; {{{
+	GetMonitorPosInfo( iMonIdx, clsMonPosSizeAuxInfo? ) ; {{{
 	{
+		clsMonPosSizeInfo := MonPosSizeInfo()
+		if (IsSet(clsMonPosSizeAuxInfo)) {
+			iWinRangeRate := clsMonPosSizeAuxInfo.iWinRangeRate
+			sAttachSide := clsMonPosSizeAuxInfo.sAttachSide
+		} else {
+			iWinRangeRate := 0
+			sAttachSide := ""
+		}
 		iMonNum := GetMonitorNum()
+		
 		if ( iMonIdx > iMonNum)
 		{
-			return False
+			return clsMonPosSizeInfo
 		}
 		
 		try
@@ -809,8 +830,12 @@ SetEveryDayAlermTimer()
 			default:
 				; Do Nothing
 		}
+		clsMonPosSizeInfo.dX := dX
+		clsMonPosSizeInfo.dY := dY
+		clsMonPosSizeInfo.dWidth := dWidth
+		clsMonPosSizeInfo.dHeight := dHeight
 	;	MsgBox "[DBG] GetMonitorPosInfo() 02" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
-		return True
+		return clsMonPosSizeInfo
 	} ; }}}
 	MoveActiveWin(iInX, iInY, iInWidth, iInHeight, sOutputSide:="") ; {{{
 	{
@@ -819,7 +844,7 @@ SetEveryDayAlermTimer()
 			case "Top":
 				iWinX		:= Integer(iInX)
 				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth)
+				iWinWidth	:= Integer(iInWidth) - 
 				iWinHeight	:= Integer(iInHeight / 2)
 			case "Bottom":
 				iWinX		:= Integer(iInX)
@@ -842,6 +867,11 @@ SetEveryDayAlermTimer()
 				iWinWidth	:= Integer(iInWidth)
 				iWinHeight	:= Integer(iInHeight)
 		}
+		iWinNarrowSize := giWIN_SNAP_WIN_NARROW_SIZE / 2
+		iWinX		:= Integer(iInX) + iWinNarrowSize
+		iWinY		:= Integer(iInY) + iWinNarrowSize
+		iWinWidth	:= Integer(iInWidth) - giWIN_SNAP_WIN_NARROW_SIZE
+		iWinHeight	:= Integer(iInHeight) - giWIN_SNAP_WIN_NARROW_SIZE
 	;	MsgBox "[DBG] MoveActiveWin() " .
 	;		"`n iWinX = " . iWinX . 
 	;		"`n iWinY = " . iWinY . 
@@ -1387,9 +1417,9 @@ SetEveryDayAlermTimer()
 	;モニタ中心にカーソル移動
 	MoveCursolToMonitorCenter() { ; {{{
 		static iMoveTrgtMonNum := 1
-		GetMonitorPosInfo( iMoveTrgtMonNum, &dX, &dY, &dWidth, &dHeight )
-		dCurX := dX + Integer(dWidth / 2)
-		dCurY := dY + Integer(dHeight / 2)
+		clsMon := GetMonitorPosInfo(iMoveTrgtMonNum)
+		dCurX := clsMon.dX + Integer(clsMon.dWidth / 2)
+		dCurY := clsMon.dY + Integer(clsMon.dHeight / 2)
 		CoordMode "Mouse", "Screen"
 		MouseMove dCurX, dCurY
 		CoordMode "Mouse"
@@ -1647,6 +1677,26 @@ SetEveryDayAlermTimer()
 				sFileContents := sTargetDateTime . "`n" . fLogIntervalMin . "`n" . sLogStartDateTime . "`n" . fSnoozeTimeMin
 				FileAppend sFileContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
+			}
+		} ; }}}
+		Kill() { ; {{{
+			; 事前チェック
+			If (!this.bReadyToStart) {
+				Return
+			}
+			
+			; タイマー停止
+			if (this.bShowMsgs) {
+				sMsg := Round(this.fIntervalMin, 1) . "分タイマーを終了します。"
+				ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
+			}
+			iIntervalMs := Integer(this.fIntervalMin * 60 * 1000)
+			fSnoozeTimeMin := this.fSnoozeTimeMin
+			SetTimer this.objCallbackFunc, 0
+			
+			; ログファイル削除
+			if (this.bCreateLogFile) {
+				FileDelete(this.sLogFilePath)
 			}
 		} ; }}}
 		TimerCallback() { ; {{{
@@ -2006,12 +2056,3 @@ SetEveryDayAlermTimer()
 	{
 		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
 	} ; }}}
-
-;	class MonitorInfo { ; {{{
-;		__New(iWinSnapIdxMin, iWinSnapIdxMax, sAttachSide, iWinRangeRate) { ; {{{
-;			this.iWinSnapIdxMin := iWinSnapIdxMin
-;			this.iWinSnapIdxMax := iWinSnapIdxMax
-;			this.sAttachSide := sAttachSide
-;			this.iWinRangeRate := iWinRangeRate
-;		} ; }}}
-;	}
