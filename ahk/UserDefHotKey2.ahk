@@ -58,6 +58,8 @@ InitScreenBrightness()
 InitWinSnapIdx()
 InitSleepPreventing()
 ;InitRAltAppsKeyMode()
+InitKitchenTimer()
+InitAlermTimer()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -895,6 +897,14 @@ SetEveryDayAlermTimer()
 	;	MsgBox sFilePath . "`n" . sFileName . "`n" . sDirPath . "`n" . sExtName . "`n" . sFileBaseName . "`n" . sDrive
 		return sFileName
 	} ; }}}
+	; ファイル名取得
+	ExtractFileBaseName( sFilePath ) ; {{{
+	{
+		SplitPath sFilePath, &sFileName, &sDirPath, &sExtName, &sFileBaseName, &sDrive
+		sFileBaseName := StrReplace(sFileBaseName, "`"", )
+	;	MsgBox sFilePath . "`n" . sFileName . "`n" . sDirPath . "`n" . sExtName . "`n" . sFileBaseName . "`n" . sDrive
+		return sFileBaseName
+	} ; }}}
 	; ディレクトリパス取得
 	ExtractDirPath( sFilePath ) ; {{{
 	{
@@ -1485,10 +1495,32 @@ SetEveryDayAlermTimer()
 	} ; }}}
 
 	; キッチンタイマー
-	ClearKitchenTimer() ; {{{
+	InitKitchenTimer() ; {{{
 	{
-		sLogFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\KitchenTimer_*.log"
-		DeleteFile(sLogFilePath)
+		global gclsKitchenTimerMap
+		gclsKitchenTimerMap := Map()
+	} ; }}}
+	ClearKitchenTimers() ; {{{
+	{
+		global gclsKitchenTimerMap
+		clsKitchenTimerMapCloned := gclsKitchenTimerMap.Clone()
+		For sLogFilePath, clsKitchenTimer in clsKitchenTimerMapCloned
+		{
+			clsKitchenTimer.Stop()
+		}
+		gclsKitchenTimerMap.Clear()
+		MsgBox "全てのキッチンタイマーを終了します。"
+	} ; }}}
+	OutputKitchenTimers() ; {{{
+	{
+		global gclsKitchenTimerMap
+		sOutputStr := "＜設定済みキッチンタイマー一覧＞"
+		For sLogFilePath, clsKitchenTimer in gclsKitchenTimerMap
+		{
+			sLogFileBaseName := ExtractFileBaseName(sLogFilePath)
+			sOutputStr := sOutputStr . "`n" . A_Index . ": " .  sLogFileBaseName
+		}
+		MsgBox sOutputStr
 	} ; }}}
 	SetKitchenTimer(fIntervalMin:=0.0, fSnoozeTimeMin?, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
@@ -1512,7 +1544,6 @@ SetEveryDayAlermTimer()
 			kitchen_timer.SetTimeWithLogFile(sFilePath)
 			kitchen_timer.Start()
 		}
-		
 	} ; }}}
 	class KitchenTimer { ; {{{
 		__New(bShowMsgs:=true, bCreateLogFile:=true) { ; {{{
@@ -1645,6 +1676,7 @@ SetEveryDayAlermTimer()
 			this.fSnoozeTimeMin := fSnoozeTimeMin
 		} ; }}}
 		Start() { ; {{{
+			global gclsKitchenTimerMap
 			; 事前チェック
 			If (!this.bReadyToStart) {
 				Return
@@ -1677,26 +1709,18 @@ SetEveryDayAlermTimer()
 				sFileContents := sTargetDateTime . "`n" . fLogIntervalMin . "`n" . sLogStartDateTime . "`n" . fSnoozeTimeMin
 				FileAppend sFileContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
+				gclsKitchenTimerMap[this.sLogFilePath] := this
 			}
 		} ; }}}
-		Kill() { ; {{{
-			; 事前チェック
-			If (!this.bReadyToStart) {
-				Return
-			}
-			
-			; タイマー停止
-			if (this.bShowMsgs) {
-				sMsg := Round(this.fIntervalMin, 1) . "分タイマーを終了します。"
-				ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
-			}
-			iIntervalMs := Integer(this.fIntervalMin * 60 * 1000)
-			fSnoozeTimeMin := this.fSnoozeTimeMin
+		Stop() { ; {{{
+			global gclsKitchenTimerMap
 			SetTimer this.objCallbackFunc, 0
-			
 			; ログファイル削除
 			if (this.bCreateLogFile) {
-				FileDelete(this.sLogFilePath)
+				DeleteFile(this.sLogFilePath)
+				if (gclsKitchenTimerMap.Has(this.sLogFilePath)) {
+					gclsKitchenTimerMap.Delete(this.sLogFilePath)
+				}
 			}
 		} ; }}}
 		TimerCallback() { ; {{{
@@ -1713,12 +1737,7 @@ SetEveryDayAlermTimer()
 						sMsg := Round(this.fIntervalMin, 1) . "分タイマーが終了しました！"
 					}
 					ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
-					SetTimer this.objCallbackFunc, 0
-					
-					; ログファイル削除
-					if (this.bCreateLogFile) {
-						DeleteFile(this.sLogFilePath)
-					}
+					this.Stop()
 				} else { ; sAnswer == "No" or "Timeout"
 					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを設定しました！"
 					ShowAutoHideTrayTip("キッチンタイマー", sMsg, giKITCHENTIMER_TRAYTIP_DURATION_MS)
@@ -1728,18 +1747,40 @@ SetEveryDayAlermTimer()
 					SetTimer this.objCallbackFunc, iIntervalMs
 				}
 			} else {
-				; タイマークリア
-				SetTimer this.objCallbackFunc, 0
-				
-				; ログファイル削除
-				if (this.bCreateLogFile) {
-					DeleteFile(this.sLogFilePath)
-				}
+				this.Stop()
 			}
 		} ; }}}
 	} ; }}}
 
 	; アラームタイマー
+	InitAlermTimer() ; {{{
+	{
+		global gclsAlermTimerMap
+		gclsAlermTimerMap := Map()
+		gclsAlermTimerMap.Clear()
+	} ; }}}
+	ClearAlermTimers() ; {{{
+	{
+		global gclsAlermTimerMap
+		clsAlermTimerMapCloned := gclsAlermTimerMap.Clone()
+		For sLogFilePath, clsAlermTimer in clsAlermTimerMapCloned
+		{
+			clsAlermTimer.Stop()
+		}
+		gclsAlermTimerMap.Clear()
+		MsgBox "全てのアラームタイマーを終了します。"
+	} ; }}}
+	OutputAlermTimers() ; {{{
+	{
+		global gclsAlermTimerMap
+		sOutputStr := "＜設定済みアラームタイマー一覧＞"
+		For sLogFilePath, clsAlermTimer in gclsAlermTimerMap
+		{
+			sLogFileBaseName := ExtractFileBaseName(sLogFilePath)
+			sOutputStr := sOutputStr . "`n" . A_Index . ": " .  sLogFileBaseName
+		}
+		MsgBox sOutputStr
+	} ; }}}
 	SetEveryDayAlermTimer() ; {{{
 	{
 		iCurWeekDay := Integer(FormatTime(A_Now, "WDay")) ; 1:Sun, 2:Mon, ... 7:Sat
@@ -1750,11 +1791,6 @@ SetEveryDayAlermTimer()
 			SetAlermTimer("12:57", 0.0, false, false)
 			SetAlermTimer("17:57", 0.0, false, false)
 		}
-	} ; }}}
-	ClearAlermTimer() ; {{{
-	{
-		sLogFilePath := EnvGet("MYDIRPATH_DESKTOP") . "\AlermTimer_*.log"
-		DeleteFile(sLogFilePath)
 	} ; }}}
 	SetAlermTimer(sTargetClock:="", fSnoozeTimeMin?, bShowMsgs:=true, bCreateLogFile:=true) ; {{{
 	{
@@ -1788,6 +1824,7 @@ SetEveryDayAlermTimer()
 			this.bIsRestart := false
 			this.bReadyToStart := false
 			this.fSnoozeTimeMin := 0.0
+			this.sLogFilePath := ""
 		} ; }}}
 		SetTimeWithLogFile(sLogFilePath) { ; {{{
 			this.bIsRestart := true
@@ -1934,6 +1971,7 @@ SetEveryDayAlermTimer()
 			this.fSnoozeTimeMin := fSnoozeTimeMin
 		} ; }}}
 		Start() { ; {{{
+			global gclsAlermTimerMap
 			; sTargetDateTime: target date time. this time must be YYYYMMDDHH24MISS format.
 			; 事前チェック
 			if (!this.bReadyToStart) {
@@ -1975,6 +2013,18 @@ SetEveryDayAlermTimer()
 				sContents := sTargetDateTime . "`n" . sLogStartDateTime . "`n" . fSnoozeTimeMin
 				FileAppend sContents, sLogFilePath
 				this.sLogFilePath := sLogFilePath
+				gclsAlermTimerMap[this.sLogFilePath] := this
+			}
+		} ; }}}
+		Stop() { ; {{{
+			global gclsAlermTimerMap
+			SetTimer this.objCallbackFunc, 0
+			; ログファイル削除
+			if (this.bCreateLogFile) {
+				DeleteFile(this.sLogFilePath)
+				if (gclsAlermTimerMap.Has(this.sLogFilePath)) {
+					gclsAlermTimerMap.Delete(this.sLogFilePath)
+				}
 			}
 		} ; }}}
 		TimerCallback() { ; {{{
@@ -1991,12 +2041,7 @@ SetEveryDayAlermTimer()
 					; タイマークリア
 					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを停止しました！"
 					ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
-					SetTimer this.objCallbackFunc, 0
-					
-					; ログファイル削除
-					if (this.bCreateLogFile) {
-						DeleteFile(this.sLogFilePath)
-					}
+					this.Stop()
 				} else { ; sAnswer == "No" or "Timeout"
 					sMsg := this.fSnoozeTimeMin . "分間のスヌーズを設定しました！"
 					ShowAutoHideTrayTip("アラームタイマー", sMsg, giALARMTIMER_TRAYTIP_DURATION_MS)
@@ -2006,13 +2051,7 @@ SetEveryDayAlermTimer()
 					SetTimer this.objCallbackFunc, iIntervalMs
 				}
 			} else {
-				; タイマークリア
-				SetTimer this.objCallbackFunc, 0
-				
-				; ログファイル削除
-				if (this.bCreateLogFile) {
-					DeleteFile(this.sLogFilePath)
-				}
+				this.Stop()
 			}
 		} ; }}}
 	} ; }}}
