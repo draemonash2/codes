@@ -387,9 +387,10 @@ endif
 "	nnoremap	<silent>			<F4>														" <F4>はCtrlP起動に割り当て
 	nnoremap	<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
 "	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
+	nnoremap	<silent>			<F6>		:call OpenCurFileWithExternalEditer($MYEXEPATH_CURSOR)<cr>|	" Cursorで開く
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
 "	nnoremap	<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
-	nnoremap	<silent>			<F7>		:call OpenCurFileWithVSCode()<cr>|				" VSCodeで開く
+	nnoremap	<silent>			<F7>		:call OpenCurFileWithExternalEditer($MYEXEPATH_VSCODE)<cr>|	" VSCodeで開く
 	nnoremap	<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
 	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap	<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
@@ -408,6 +409,7 @@ endif
 	nmap		<silent>			n			<Plug>(anzu-n)zz|								" 検索結果を画面中央に
 	nmap		<silent>			N			<Plug>(anzu-N)zz|								" 検索結果を画面中央に
 	nmap		<silent>			*			<Plug>(anzu-star)zz|							" 検索結果を画面中央に
+"	nnoremap	<silent>			*			:call SearchStart()<cr>|						" 検索結果を画面中央に
 	nmap		<silent>			#			<Plug>(anzu-sharp)zz|							" 検索結果を画面中央に
 	nmap		<silent>			K			g*zz|											" 検索結果を画面中央に
 	nmap		<silent>			g#			g#zz|											" 検索結果を画面中央に
@@ -891,12 +893,12 @@ endif
 
 " ==============================================================================
 " コメント中の特定の単語を強調表示する
-" [ハイライト実行例] TODO: XXX: TEMP: FIXME:
+" [ハイライト実行例] TODO: NOTE: INFO: XXX: TEMP: FIXME: ASK: QUESTION:
 " ==============================================================================
 " {{{
 	augroup HilightsForce
 		autocmd!
-		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\v(TODO|XXX|TEMP|FIXME)(\([a-zA-Z0-9_-]+\))?:')
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\v(TODO|NOTE|INFO|XXX|TEMP|FIXME|ASK|QUESTION)(\([a-zA-Z0-9_-]+\))?:')
 		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
 " }}}
@@ -1909,17 +1911,16 @@ endif
 " }}}
 
 " ==============================================================================
-" 現在ファイルをVSCodeで開く
+" 現在ファイルを外部エディタで開く
 " ==============================================================================
 " {{{
-	function! OpenCurFileWithVSCode()
+	function! OpenCurFileWithExternalEditer( sEditerPath )
 		if has('win32')
-			let sEditerPath = $MYEXEPATH_VSCODE
 			let sFilePath = fnameescape( GetCurFilePath() )
 		"	echo sFilePath
-			execute "!start " . sEditerPath . " " . sFilePath
+			execute "!start " . a:sEditerPath . " " . l:sFilePath
 		else
-			echo "[error] OpenCurFileWithVSCode() can only be executed on windows."
+			echo "[error] OpenCurFileWithExternalEditer() can only be executed on windows."
 		endif
 	endfunction
 " }}}
@@ -1972,7 +1973,11 @@ endif
 	function! SetQuoteNo()
 		let l:sInFilePath = GetCurFilePath()
 		if !filereadable(l:sInFilePath)
-			echo "[error] file does not exist : " . l:sInFilePath
+			echoerr "[error] File does not exist : " . l:sInFilePath
+			return 0
+		endif
+		if &modified
+			echoerr "[error] Save before execution."
 			return 0
 		endif
 		
@@ -2012,7 +2017,35 @@ endif
 			call system(l:sCopyCmdName . ' "' . l:sInFilePath . '" "' . l:sBakFilePath . '"')
 			call system(l:sCopyCmdName . ' "' . l:sTmpFilePath . '" "' . l:sInFilePath . '"')
 			call delete(l:sTmpFilePath)
+			execute 'edit! ' . l:sInFilePath
 		endtry
+	endfunction
+" }}}
+" 
+" ==============================================================================
+" 
+" ==============================================================================
+	function! SearchStart()
+		let l:sCurWord = expand("<cword>")
+	"	exec "normal /"
+		let l:sLineNoOld = line(".")
+		exec "normal *"
+	"	let l:sLineNoNew = line(".")
+	"	"echom l:sLineNoOld . " " . l:sLineNoNew
+	"	if l:sLineNoOld != l:sLineNoNew
+	"		normal N
+	"	endif
+	endfunction
+
+" ==============================================================================
+" 和訳のために英文を整形する
+" ==============================================================================
+" {{{
+	command! -range Fet call FormatEnglishText()
+	function! FormatEnglishText()
+		"s/\v\. +([A-Z0-9])/\.\r\1/g
+		"let l:sReplacedLine = substitute(l:sReplacedLine, l:sReplaceKeyword, "[[" . l:iQuoteIdx . "]]" , "")
+		"TODO: https://nanasi.jp/articles/code/screen/visual.html
 	endfunction
 " }}}
 

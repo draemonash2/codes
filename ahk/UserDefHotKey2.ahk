@@ -48,6 +48,20 @@ global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 ; }}}
 
 ;* ***************************************************************
+;* Constant value
+;* ***************************************************************
+; {{{
+class eWIN_SNAP_IDX {
+	static 4K_FULL := 1
+	static 4K_TOP := 2
+	static 4K_BOTTOM := 3
+	static MAIN_FULL := 4
+	static MOBILE_FULL := 5
+	static MAIN_MOBILE_FULL := 6
+}
+; }}}
+
+;* ***************************************************************
 ;* Preprocess
 ;* ***************************************************************
 ; {{{
@@ -85,6 +99,7 @@ SetEveryDayAlermTimer()
 ;*				VKF3	半角/全角キー
 ;*				VKF4	半角/全角キー
 ;*				VKE2	バックスラッシュ（スラッシュの隣のキー）
+;*				VKBA	コロン
 ;*  [備考]
 ;*		Pause … HP製PC以外) Alt+Pause(Fn＋Shift)、HP製PC) Shift+Alt+Fn
 ;* ***************************************************************
@@ -174,7 +189,7 @@ SetEveryDayAlermTimer()
 		^+!j::																															; #todo.itmz
 		{
 			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )
-			SendInput "^a{Esc}!c"
+			SimpleMind_FocusCentralTopicAndWinCenter()
 		}
 		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
 		~^+!#.::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
@@ -183,14 +198,15 @@ SetEveryDayAlermTimer()
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								; 用語集
 		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#prompt.txt" )													; #prompt.txt
+		^+!g::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
 		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
+		^+!d::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\200_DIY\DIY設計.xlsx" )	; DIY設計.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
-		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\000_Public\住宅\新居レイアウト.xlsx" )													; TODO: 一時ファイル
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -203,6 +219,7 @@ SetEveryDayAlermTimer()
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
 		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250610_install_manual_unity\install_manual_unity\install_manual_unity.md" )
+		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250718_GZ低制御周期テスト\gz_lowcycle_test\gz_lowcycle_test.md" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
@@ -443,15 +460,14 @@ SetEveryDayAlermTimer()
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe SimpleMindPro.exe") ; {{{
-		VK1D & Enter::SendInput("^a{Esc}")																							; セントラルトピックにフォーカス
+		VK1D & Enter::SimpleMind_FocusCentralTopicAndWinCenter()																		; セントラルトピックにフォーカス＆画面中心化
+		VK1D & VKBA::SimpleMind_WinCenter()																								; 選択トピック画面中心化
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe Rapture.exe") ; {{{
 		Esc::!F4						; Esc -> 終了
-	;	VK1D & VKF3::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
-	;	VK1D & VKF4::SendInput "{Esc}"	; 無変換+半角/全角 -> 終了
-	;	VK1D & VKF3::!F4				; 無変換+半角/全角 -> 終了
-	;	VK1D & VKF4::!F4				; 無変換+半角/全角 -> 終了
-		VK1D & Space::!F4				; 無変換+スペース -> 終了
+		VKF3::!F4						; Esc(半角/全角) -> 終了
+		VKF4::!F4						; Esc(半角/全角) -> 終了
+		VK1D & Space::!F4				; Esc(無変換+スペース) -> 終了
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe vimrun.exe") ; {{{
 		Esc::!F4	;Escで終了
@@ -480,7 +496,7 @@ SetEveryDayAlermTimer()
 		;   自動的にターミナルにフォーカスを戻すために用意したマクロ
 		VK1C & v::
 		{
-			MouseMove 1050, 70
+			MouseMove 1550, 70
 		;	sleep 1000
 			Click
 		}
@@ -664,7 +680,7 @@ SetEveryDayAlermTimer()
 		return
 	} ; }}}
 
-	;Windowスナップ
+	; Windowスナップ
 	class MonPosSizeInfo { ; {{{
 		__New(dX:=0, dY:=0, dWidth:=0, dHeight:=0) {
 			this.dX := dX
@@ -770,13 +786,13 @@ SetEveryDayAlermTimer()
 		
 		switch giWinSnapIdx
 		{
-			case 1:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight)
-			case 2:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Top")
-			case 3:		MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Bottom")
-			case 4:		MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight)
-			case 5:		MoveActiveWin(mon3.dX, mon3.dY, mon3.dWidth, mon3.dHeight)
-			case 6:		MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight + mon3.dHeight)
-			default:	MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
+			case eWIN_SNAP_IDX.4K_FULL:				MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight)
+			case eWIN_SNAP_IDX.4K_TOP:				MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Top")
+			case eWIN_SNAP_IDX.4K_BOTTOM:			MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Bottom")
+			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight)
+			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(mon3.dX, mon3.dY, mon3.dWidth, mon3.dHeight)
+			case eWIN_SNAP_IDX.MAIN_MOBILE_FULL:	MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight + mon3.dHeight)
+			default:								MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
 		}
 		return
 	} ; }}}
@@ -1424,7 +1440,7 @@ SetEveryDayAlermTimer()
 		}
 	} ; }}}
 
-	;モニタ中心にカーソル移動
+	; モニタ中心にカーソル移動
 	MoveCursolToMonitorCenter() { ; {{{
 		static iMoveTrgtMonNum := 1
 		clsMon := GetMonitorPosInfo(iMoveTrgtMonNum)
@@ -2054,6 +2070,21 @@ SetEveryDayAlermTimer()
 				this.Stop()
 			}
 		} ; }}}
+	} ; }}}
+
+	; SimpleMind固有
+	SimpleMind_FocusCentralTopic() ; {{{
+	{
+		SendInput "^a{Esc}"
+	} ; }}}
+	SimpleMind_WinCenter() ; {{{
+	{
+		SendInput "!c"
+	} ; }}}
+	SimpleMind_FocusCentralTopicAndWinCenter() ; {{{
+	{
+		SimpleMind_FocusCentralTopic()
+		SimpleMind_WinCenter()
 	} ; }}}
 
 ;* ***************************************************************

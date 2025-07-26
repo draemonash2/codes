@@ -12,15 +12,15 @@
             "keys": "ctrl+comma"
         },
         {
+            "command": "closePane",
+            "keys": "alt+shift+w"
+        },
+        {
             "command": 
             {
                 "action": "openSettings",
                 "target": "defaultsFile"
             }
-        },
-        {
-            "command": "closePane",
-            "keys": "alt+shift+w"
         },
         {
             "command": 
@@ -36,10 +36,10 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "right"
+                "action": "sendInput",
+                "input": "\u001bf"
             },
-            "keys": "alt+shift+v"
+            "keys": "ctrl+shift+period"
         },
         {
             "command": 
@@ -60,10 +60,17 @@
         {
             "command": 
             {
-                "action": "sendInput",
-                "input": "\u001bf"
+                "action": "splitPane",
+                "split": "right"
             },
-            "keys": "ctrl+shift+period"
+            "keys": "alt+shift+v"
+        },
+        {
+            "command": 
+            {
+                "action": "copy",
+                "singleLine": false
+            }
         },
         {
             "command": 
@@ -76,16 +83,17 @@
         {
             "command": 
             {
-                "action": "copy",
-                "singleLine": false
-            }
+                "action": "openSettings"
+            },
+            "keys": "alt+shift+o"
         },
         {
             "command": 
             {
-                "action": "openSettings"
+                "action": "sendInput",
+                "input": "\u0001"
             },
-            "keys": "alt+shift+o"
+            "keys": "ctrl+alt+comma"
         },
         {
             "command": 
@@ -104,12 +112,12 @@
             "keys": "ctrl+alt+k"
         },
         {
-            "command": 
-            {
-                "action": "sendInput",
-                "input": "\u0001"
-            },
-            "keys": "ctrl+alt+comma"
+            "command": "paste",
+            "keys": "alt+v"
+        },
+        {
+            "command": "paste",
+            "keys": "ctrl+shift+v"
         },
         {
             "command": 
@@ -118,14 +126,6 @@
                 "input": "\u0006"
             },
             "keys": "ctrl+period"
-        },
-        {
-            "command": "paste",
-            "keys": "alt+v"
-        },
-        {
-            "command": "paste",
-            "keys": "ctrl+shift+v"
         },
         {
             "command": 
@@ -146,13 +146,6 @@
         {
             "command": 
             {
-                "action": "nextTab"
-            },
-            "keys": "ctrl+tab"
-        },
-        {
-            "command": 
-            {
                 "action": "openSettings",
                 "target": "settingsUI"
             },
@@ -161,19 +154,9 @@
         {
             "command": 
             {
-                "action": "splitPane",
-                "split": "auto",
-                "splitMode": "duplicate"
+                "action": "nextTab"
             },
-            "keys": "alt+shift+d"
-        },
-        {
-            "command": 
-            {
-                "action": "splitPane",
-                "split": "down"
-            },
-            "keys": "alt+shift+h"
+            "keys": "ctrl+tab"
         },
         {
             "command": "unbound",
@@ -258,6 +241,23 @@
         {
             "command": "unbound",
             "keys": "ctrl+0"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "auto",
+                "splitMode": "duplicate"
+            },
+            "keys": "alt+shift+d"
+        },
+        {
+            "command": 
+            {
+                "action": "splitPane",
+                "split": "down"
+            },
+            "keys": "alt+shift+h"
         },
         {
             "command": 
@@ -371,7 +371,7 @@
                 "cursorShape": "filledBox",
                 "font": 
                 {
-                    "size": 9.0
+                    "size": 11.0
                 },
                 "guid": "{495f5463-2e64-4489-b725-4aff6b1b7689}",
                 "hidden": false,
@@ -379,9 +379,14 @@
                 "tabTitle": "RobocipA1"
             },
             {
-                "guid": "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}",
+                "font": 
+                {
+                    "face": "Consolas",
+                    "size": 12.0
+                },
+                "guid": "{4ff56d04-d9cf-57ea-bae2-ad396374e7e3}",
                 "hidden": false,
-                "name": "Ubuntu 22.04.3 LTS",
+                "name": "Ubuntu 22.04.5 LTS",
                 "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
             }
         ]
@@ -619,6 +624,50 @@
             "yellow": "#808000"
         }
     ],
-    "themes": [],
+    "themes": 
+    [
+        {
+            "name": "legacyDark",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "dark",
+                "useMica": false
+            }
+        },
+        {
+            "name": "legacyLight",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "light",
+                "useMica": false
+            }
+        },
+        {
+            "name": "legacySystem",
+            "tab": 
+            {
+                "background": null,
+                "showCloseButton": "always",
+                "unfocusedBackground": null
+            },
+            "window": 
+            {
+                "applicationTheme": "system",
+                "useMica": false
+            }
+        }
+    ],
     "useAcrylicInTabRow": true
 }
