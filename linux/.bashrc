@@ -756,6 +756,8 @@ function outputleafdirlist() { # {{{
 } # }}}
 function path() { # {{{
 	enable_abs=0
+	copy_only=0
+	output_only=0
 	args=()
 	while (( $# > 0 ))
 	do
@@ -765,14 +767,22 @@ function path() { # {{{
 				echo "  Displays file/directory path. Copy to clipboard if possible."
 				echo ""
 				echo "[usage]"
-				echo "  path [-a] [<file_dir_path>...]"
+				echo "  path [-a|-c|-o] [<file_dir_path>...]"
 				echo ""
 				echo "[option]"
-				echo "  -a, --absolute: replace \${USER} to home directory full path."
+				echo "  -a, --absolute: Replace \${USER} to home directory full path."
+				echo "  -c, --copy-only: Only copy, do not output the path."
+				echo "  -o, --output-only: Only output, do not copy the path."
 				return 0
 				;;
 			-a | --absolute)
 				enable_abs=1
+				;;
+			-c | --copy-only)
+				copy_only=1
+				;;
+			-o | --output-only)
+				output_only=1
 				;;
 			-*)
 				echo "[error] invalid option: \"$1\". see options by --help."
@@ -793,8 +803,12 @@ function path() { # {{{
 	else
 		path=${curdir}
 	fi
+	if [ ${output_only} -eq 0 ]; then
 	set_clipboard "${path}"
+	fi
+	if [ ${copy_only} -eq 0 ]; then
 	echo ${path}
+	fi
 }
 	complete -F _complete_path path # {{{
 	function _complete_path() { local cur prev; _get_comp_words_by_ref -n : cur prev; COMPREPLY=( $(compgen -f -- "${cur}") );} # }}}
@@ -1004,6 +1018,7 @@ function outputhwinfo() { # {{{
 		cmd="cat /etc/lsb-release"														; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		cmd="cat /proc/cpuinfo"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		cmd="cat /proc/meminfo"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
+		cmd="sudo dmidecode --type memory | more"										; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		cmd="df -h"																		; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		cmd="lspci | grep VGA"															; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
 		cmd="nvidia-smi"																; echo "### ${cmd}" 1>> ${logfile} 2>> ${logfile}; ${cmd} 1>> ${logfile} 2>> ${logfile}
@@ -1568,7 +1583,7 @@ alias gitlo="\
 	--date=format:'%Y-%m-%d %H:%M' \
 	--date-order \
 	--decorate=full \
-	--pretty=format:\" ::: %C(red)%ad%Creset ::: %C(blue)%h%Creset ::: %C(magenta)%d%Creset ::: %C(green)%an%Creset ::: %C(yellow)%s\""
+	--pretty=format:\" ::: %C(red)%ad%Creset ::: %C(blue)%h%Creset ::: %C(magenta)%d%Creset ::: %C(green)%an%Creset ::: %C(yellow)%s%Creset\""
 #	--date=short \
 alias gitstat="git status --ignored"
 alias gitco="git checkout"
@@ -1777,7 +1792,7 @@ function add_session_list_to_cmplist() { # {{{
 		add_session_name_to_cmplist "${session_name}"
 	done
 } # }}}
-function _tmuxexecall() { # {{{
+function _tmuxexec_allwins() { # {{{
 	if [ -f /.dockerenv ]; then
 		echo "[error] can not be on docker container."
 		return 1
@@ -1812,15 +1827,15 @@ function _tmuxexecall() { # {{{
 	done
 	tmux select-window -t:${activewinidx}
 } # }}}
-function tmuxexecall_bre() { # {{{
-	_tmuxexecall \
+function tmuxexec_allwins_bre() { # {{{
+	_tmuxexec_allwins \
 		"bre" \
 		""
 } # }}}
-function _tmuxexec() { # {{{
+function _tmuxexec_allpanes() { # {{{
 	if [ $# -lt 1 ]; then
 		echo "[error] wrong number of arguments."
-		echo "  usage : _tmuxexec [<arguments>...]"
+		echo "  usage : _tmuxexec_allpanes [<arguments>...]"
 		return 1
 	fi
 	if [ -f /.dockerenv ]; then
@@ -1846,6 +1861,28 @@ function _tmuxexec() { # {{{
 		tmux send-keys "${cmd}" C-m
 	done
 	tmux set-window-option synchronize-panes off
+} # }}}
+function _tmuxexec_singlepane() { # {{{
+	if [ -f /.dockerenv ]; then
+		echo "[error] can not be on docker container."
+		return 1
+	fi
+	if [ -z "$TMUX" ]; then
+		echo "[error] can only be run on tmux."
+		return 1
+	fi
+	command_idx=0
+	while (( $# > 0 ))
+	do
+		command_array[${command_idx}]="$1"
+		command_idx=`expr ${command_idx} + 1`
+		shift
+	done
+	for cmd in "${command_array[@]}"
+	do
+		#echo "${cmd}"
+		tmux send-keys "${cmd}" C-m
+	done
 } # }}}
 if [ ! -f /.dockerenv ]; then
 	clear_session_name_to_cmplist

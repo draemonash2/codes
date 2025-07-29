@@ -2053,7 +2053,18 @@ endif
 " diffopt設定トグル
 " ==============================================================================
 " {{{
-	command! Tiw set diffopt+=iwhite  " TODO: impliment toggle
+	command! Tiw call ToggleDiffopt('iwhite')
+	command! Tic call ToggleDiffopt('icase')
+	function! ToggleDiffopt(opt)
+		if &diffopt =~# '\<' . a:opt . '\>'
+			execute 'set diffopt-=' . a:opt
+			echo 'diffopt: removed ' . a:opt
+		else
+			execute 'set diffopt+=' . a:opt
+			echo 'diffopt: added ' . a:opt
+		endif
+		execute 'set diffopt?'
+	endfunction
 " }}}
 
 " **************************************************************************************************
