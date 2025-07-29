@@ -137,7 +137,7 @@ SetEveryDayAlermTimer()
 		VK1D & Space::Send "{Esc}"																	; 無変換+Space -> Esc
 		
 		VK1D & p::			SendKeyWithModKeyCurPressing( "AppsKey" )
-		VK1D & x::			SendKeyWithModKeyCurPressing( "Del" )
+	;	VK1D & x::			SendKeyWithModKeyCurPressing( "Del" )
 		VK1D & Bs::			SendKeyWithModKeyCurPressing( "Del" )
 		
 		VK1D & h::			SendKeyWithModKeyCurPressing( "Left" )
