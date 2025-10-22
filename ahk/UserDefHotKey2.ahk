@@ -116,10 +116,12 @@ SetEveryDayAlermTimer()
 		^VKF4::VKF3																					; Ctrl+半角全角 -> 半角全角
 		
 		VK1C::VK1C																					; 単押しはそのまま機能させる
-		VK1C & w::			MoveCursor("Up")
-		VK1C & s::			MoveCursor("Down")
-		VK1C & d::			MoveCursor("Right")
-		VK1C & a::			MoveCursor("Left")
+		VK1C & w::			MoveCursor("Up")														; カーソル移動（上）
+		VK1C & s::			MoveCursor("Down")														; カーソル移動（下）
+		VK1C & d::			MoveCursor("Right")														; カーソル移動（右）
+		VK1C & a::			MoveCursor("Left")														; カーソル移動（左）
+		
+		VK1C & c::			ControlClick("TrayClockWClass1", "ahk_class Shell_TrayWnd")				; カレンダーを開く
 		
 		VK1C & Space::																				; マウスクリック
 		{
@@ -206,7 +208,9 @@ SetEveryDayAlermTimer()
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
 		^+!d::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\200_DIY\DIY設計.xlsx" )	; DIY設計.xlsx
-		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )	; TODO: 一時ファイル
+		; TODO: 一時ファイル
+		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )
+		^+!#7::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\190_【趣味】他\車\車探し_202508\車検討.xlsx" )
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -218,8 +222,7 @@ SetEveryDayAlermTimer()
 		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250610_install_manual_unity\install_manual_unity\install_manual_unity.md" )
-		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250718_GZ低制御周期テスト\gz_lowcycle_test\gz_lowcycle_test.md" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250908_ワールド形式検討\world_format_design.drawio" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
