@@ -121,8 +121,6 @@ SetEveryDayAlermTimer()
 		VK1C & d::			MoveCursor("Right")														; カーソル移動（右）
 		VK1C & a::			MoveCursor("Left")														; カーソル移動（左）
 		
-		VK1C & c::			ControlClick("TrayClockWClass1", "ahk_class Shell_TrayWnd")				; カレンダーを開く
-		
 		VK1C & Space::																				; マウスクリック
 		{
 			if (GetKeyState("Shift","P")) {
