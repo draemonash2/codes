@@ -1,0 +1,1 @@
+del %USERPROFILE%\_viminfo

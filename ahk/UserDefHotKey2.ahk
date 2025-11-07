@@ -66,7 +66,7 @@ class eWIN_SNAP_IDX {
 ;* ***************************************************************
 ; {{{
 TraySetIcon "UserDefHotKey2.ico"
-ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
+SoundSetMute true	; 起動時自動ミュート
 StoreCurYearMonths()
 InitScreenBrightness()
 InitWinSnapIdx()
@@ -77,6 +77,7 @@ InitAlermTimer()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
+ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 ; }}}
 
 ;* ***************************************************************
