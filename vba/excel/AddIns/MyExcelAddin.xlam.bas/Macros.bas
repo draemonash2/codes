@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macros"
 Option Explicit
 
-' my excel addin macros v2.27
+' my excel addin macros v2.28
 
 ' =============================================================================
 ' =  <<マクロ一覧>>
@@ -2231,19 +2231,13 @@ Public Sub ●設定変更●アクティブセルコメントのみ表示()
     Const sMACRO_NAME As String = "●設定変更●アクティブセルコメントのみ表示"
     
     'アドイン設定ファイル読み出し
-    Dim bExistSetting As Boolean
-    bExistSetting = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
+    Dim bCmntVsblEnb As Boolean
+    bCmntVsblEnb = ReadSettingFile("bCMNT_VSBL_ENB", bCMNT_VSBL_ENB)
     
     'アクティブセルコメント設定更新
-    Dim bCmntVsblEnb As Boolean
-    If bExistSetting = True Then
-        If bCmntVsblEnb = True Then
-            MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
-            bCmntVsblEnb = False
-        Else
-            MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
-            bCmntVsblEnb = True
-        End If
+    If bCmntVsblEnb = True Then
+        MsgBox "アクティブセルコメントのみ表示を【無効化】します", vbOKOnly, sMACRO_NAME
+        bCmntVsblEnb = False
     Else
         MsgBox "アクティブセルコメントのみ表示を【有効化】します", vbOKOnly, sMACRO_NAME
         bCmntVsblEnb = True
@@ -2900,9 +2894,10 @@ Private Function OutputTxtFile( _
     Dim oTxtObj As Object
     Dim lLineIdx As Long
     
-    If Sgn(asFileLine) = 0 Then
-        'Do Nothing
-    Else
+'    TODO: 要修正
+'    If Sgn(asFileLine) = 0 Then
+'        'Do Nothing
+'    Else
         Set oTxtObj = CreateObject("ADODB.Stream")
         With oTxtObj
             .Type = 2
@@ -2918,7 +2913,7 @@ Private Function OutputTxtFile( _
             .SaveToFile (sFilePath), 2    'オブジェクトの内容をファイルに保存
             .Close
         End With
-    End If
+'    End If
     
     Set oTxtObj = Nothing
 End Function

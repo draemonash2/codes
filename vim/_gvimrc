@@ -339,7 +339,7 @@ endif
 "endtry
 "	set ambiwidth=double
 	set autoread										" ファイル自動読み込み
-	set binary noeol									" 保存時に実施されるファイル末尾に対する改行コード自動付与を抑制する
+"	set binary noeol									" 保存時に実施されるファイル末尾に対する改行コード自動付与を抑制する
 	let g:vim_json_conceal = 0							" Jsonファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/json.vim）
 	let g:markdown_syntax_conceal = 0					" Markdownファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/markdown.vim）
 " }}}
