@@ -870,3 +870,44 @@ End Function
         sResult = sResult & vbNewLine & ExtractRelativePath( sInFilePath, "test.txt", 0, sOutFilePath )   & "：" & sOutFilePath    ' False：c:\test\a\aa\bbb\test.txt
         MsgBox sResult
     End Sub
+
+' ==================================================================
+' = 概要    WindowsパスからWSL2パスへ置換
+' = 引数    sWinPath        String  [in]    Windowsパス
+' = 戻値                    Boolean         WSL2パス
+' = 覚書    実行例1)
+'             sWinPath  : C\path\to\test.txt
+'             ↓
+'             戻値      : /mnt/c/path/to/test.txt
+'
+'           実行例2)
+'             sWinPath  : X\path\to\test.txt
+'             ↓
+'             戻値      : /mnt/x/path/to/test.txt
+' = 依存    なし
+' = 所属    String.vbs
+' ==================================================================
+Public Function WinPathToWslPath( _
+    ByVal sWinPath _
+)
+    Dim sDrive, sRest, sWslPath
+    
+    sWslPath = Trim(sWinPath)
+    
+    ' ドライブレター形式 "C:\..." を想定してチェック
+    If Len(sWslPath) < 3 Then
+        WinPathToWslPath = sWslPath
+        Exit Function
+    End If
+    
+    If Mid(sWslPath, 2, 1) = ":" And (Mid(sWslPath, 3, 1) = "\" Or Mid(sWslPath, 3, 1) = "/") Then
+        sDrive = LCase(Left(sWslPath, 1))
+        sRest  = Mid(sWslPath, 4) ' "C:\" の3文字を飛ばした後（4文字目から）
+        sRest  = Replace(sRest, "\", "/")
+        WinPathToWslPath = "/mnt/" & sDrive & "/" & sRest
+    Else
+        ' 想定外はそのまま返す（UNCパス等はここで拡張可能）
+        WinPathToWslPath = sWslPath
+    End If
+End Function
+

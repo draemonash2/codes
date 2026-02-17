@@ -387,10 +387,10 @@ endif
 "	nnoremap	<silent>			<F4>														" <F4>はCtrlP起動に割り当て
 	nnoremap	<silent>			<F5>		:execute ExecCurrentScript()<cr>|				" 現在のプログラムを実行
 "	nnoremap	<silent>			<F6>		:vs<cr><c-w>wggVGy:q<cr><c-w>W|					" 全体をコピー
-	nnoremap	<silent>			<F6>		:call OpenCurFileWithExternalEditer($MYEXEPATH_CURSOR)<cr>|	" Cursorで開く
+"	nnoremap	<silent>			<F6>		:call OpenCurFileWithExternalEditer($MYEXEPATH_CURSOR)<cr>|	" Cursorで開く
+	nnoremap	<silent>			<F6>		:call OpenCurFileWithExternalEditer($MYEXEPATH_VSCODE)<cr>|	" VSCodeで開く
 "	nnoremap	<silent>			<F7>		:Vexplore<cr>|									" Explorerを起動
 "	nnoremap	<silent>			<F7>		:NERDTreeToggle<CR>|							" 【NERDtree】起動
-	nnoremap	<silent>			<F7>		:call OpenCurFileWithExternalEditer($MYEXEPATH_VSCODE)<cr>|	" VSCodeで開く
 	nnoremap	<silent>			<F8>		:call SwitchFontSize()<cr>|						" フォントサイズをトグル
 	nmap		<silent>			<F9>		kyiwjciw<c-r>0<esc>b<c-a>j|						" 前行の単語をコピーしてインクリメント
 	nnoremap	<silent>			<F10>		:call ToggleWindowSize()<cr>|					" ウィンドウサイズをトグル
@@ -640,7 +640,7 @@ endif
 "endtry
 "	set ambiwidth=double
 	set autoread										" ファイル自動読み込み
-	set binary noeol									" 保存時に実施されるファイル末尾に対する改行コード自動付与を抑制する
+"	set binary noeol									" 保存時に実施されるファイル末尾に対する改行コード自動付与を抑制する
 	let g:vim_json_conceal = 0							" Jsonファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/json.vim）
 	let g:markdown_syntax_conceal = 0					" Markdownファイルのシンタックス非表示設定解除（参考:Vim/vim82/syntax/markdown.vim）
 " }}}
@@ -2023,8 +2023,9 @@ endif
 " }}}
 " 
 " ==============================================================================
-" 
+" ???
 " ==============================================================================
+" {{{
 	function! SearchStart()
 		let l:sCurWord = expand("<cword>")
 	"	exec "normal /"
@@ -2036,6 +2037,7 @@ endif
 	"		normal N
 	"	endif
 	endfunction
+" }}}
 
 " ==============================================================================
 " 和訳のために英文を整形する
@@ -2065,6 +2067,96 @@ endif
 		endif
 		execute 'set diffopt?'
 	endfunction
+" }}}
+
+" ==============================================================================
+" 画像ファイル移動＆画像表示markdownタグ追加
+" ==============================================================================
+" {{{
+command! -nargs=1 -complete=file Ii call s:InsertImg(<q-args>)
+function! s:InsertImg(qpath) abort
+  " Ensure current buffer is a file on disk
+  let l:curfile = expand('%:p')
+  if empty(l:curfile)
+    echoerr '[InsertImg] Current buffer has no file path. Save it first.'
+    return
+  endif
+
+  let l:curdir = expand('%:p:h')
+  let l:imgdir = l:curdir . '/img'
+
+  " Create ./img if missing
+  if !isdirectory(l:imgdir)
+    call mkdir(l:imgdir, 'p')
+  endif
+
+  " Resolve source path (keep spaces via <q-args>)
+  let l:src = expand(a:qpath)
+  let l:src = fnamemodify(l:src, ':p')
+
+  if !filereadable(l:src)
+    echoerr '[InsertImg] File not found or not readable: ' . l:src
+    return
+  endif
+
+  let l:fname = fnamemodify(l:src, ':t')
+
+  " Decide destination (ALWAYS overwrite)
+  let l:dst = l:imgdir . '/' . l:fname
+
+  if l:dst != l:src
+  if filereadable(l:dst)
+      call delete(l:dst)
+  endif
+
+    " Move file: rename() first, fallback to portable move (for cross-device moves)
+  let l:ok = (rename(l:src, l:dst) == 0)
+  if !l:ok
+    if !s:MoveFilePortable(l:src, l:dst)
+      echoerr '[InsertImg] Failed to move file to: ' . l:dst
+      return
+    endif
+  endif
+  endif
+
+  " Insert markdown image tag at cursor position
+  let l:tag = printf('![%s](./img/%s)', l:fname, l:fname)
+
+  let l:lnum = line('.')
+  let l:col  = col('.')          " 1-based
+  let l:line = getline(l:lnum)
+
+  " behave like normal-mode 'a' (append after cursor)
+  let l:before = strpart(l:line, 0, l:col)
+  let l:after  = strpart(l:line, l:col)
+
+  call setline(l:lnum, l:before . l:tag . l:after)
+  call cursor(l:lnum, l:col + strlen(l:tag) + 1)
+
+  echo '[InsertImg] Moved to ./img and inserted tag: ' . l:tag
+endfunction
+
+function! s:MoveFilePortable(src, dst) abort
+  " 既存があると writefile/rename がコケる環境があるので先に消す
+  if filereadable(a:dst)
+    call delete(a:dst)
+  endif
+
+  " First try rename (fast, same filesystem)
+  if rename(a:src, a:dst) == 0
+    return 1
+  endif
+
+  " Fallback: copy + delete (works across devices, OS independent)
+  try
+    let l:data = readfile(a:src, 'b')
+    call writefile(l:data, a:dst, 'b')
+    call delete(a:src)
+    return 1
+  catch
+    return 0
+  endtry
+endfunction
 " }}}
 
 " **************************************************************************************************

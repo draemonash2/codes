@@ -34,6 +34,8 @@ With dEnvVars																								' +------+------+------+------------+------
 	.Add "MYEXEPATH_NEEVIEW"		,"%MYDIRPATH_PRG_EXE%\NeeView\NeeView.exe"								' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_MASSIGRA"		,"%MYDIRPATH_PRG_EXE%\MassiGra\MassiGra.exe"							' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_LINAME"			,"%MYDIRPATH_PRG_EXE%\LiName\LiName.exe"								' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
+	.Add "MYEXEPATH_WEZTERM"		,"%MYDIRPATH_PRG_EXE%\WezTerm\wezterm.exe"								' |  Åõ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
+	.Add "MYEXEPATH_IMAGEMAGICK"	,"%MYDIRPATH_PRG_EXE%\ImageMagick\magick.exe"							' |  Åõ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_EXCEL"			,"C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE"		' |  ÅZ  |	Å|	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_XF"				,"%MYDIRPATH_PRG_EXE%\X-Finder\XF.exe"									' |  Å|  |	ÅZ	|  Å|  |	 Å|		|	   Å|	   |
 	.Add "MYEXEPATH_CALC"			,"%MYDIRPATH_PRG_EXE%\cCalc\cCalc.exe"									' |  Å|  |	ÅZ	|  Å|  |	 Å|		|	   Å|	   |

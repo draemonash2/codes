@@ -197,9 +197,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
-		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.itmz" )								; 用語集
+		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.xlsx" )								; 用語集
 		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#prompt.txt" )													; #prompt.txt
-		^+!g::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
+		^+!i::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
+		^+!g::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\900_【他】\#gripes.txt" )					; #gripes.txt
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
@@ -208,8 +209,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
 		^+!d::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\200_DIY\DIY設計.xlsx" )	; DIY設計.xlsx
 		; TODO: 一時ファイル
-		^+!i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )
+		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )
 		^+!#7::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\190_【趣味】他\車\車探し_202508\車検討.xlsx" )
+		
+		
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -219,9 +222,13 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio", 1 )								; #memo_image.drawio
 		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										; #timemng.xlsm
 		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
+		^+!^::			Run "https://app.box.com/file/2126286932741"																	; NEDOパソコン使用簿
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\250908_ワールド形式検討\world_format_design.drawio" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\モデル変換フロー.drawio" )
+		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\URDF生成ソフト比較.xlsx" )
+		^+!6::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\URDF生成アドイン試用\generate_urdf_manual_with_freecad-cross\generate_urdf_manual_with_freecad-cross.md" )
+		^+!4::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\URDF生成アドイン試用\generate_urdf_manual_with_freecad-robotcad\generate_urdf_manual_with_freecad-robotcad.md" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期

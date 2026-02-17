@@ -126,7 +126,7 @@ def extract_drawio_diagram(src_file_path: str, dst_dir_path: str) -> None:
 
 
 def main() -> None:
-    src_file_path = os.environ.get('USERPROFILE') + "/Dropbox/100_Documents/#temp.drawio"
+    src_file_path = os.environ.get('USERPROFILE') + "/_root/#memo.drawio"
     dst_dir_path = os.environ.get('MYDIRPATH_DESKTOP')
     extract_drawio_diagram(src_file_path, dst_dir_path)
 

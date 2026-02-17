@@ -62,6 +62,7 @@
 #	bind generic	y			@sh -c "echo %(commit) | pbcopy"								# commitハッシュをコピー
 #	bind generic	F			?git fetch														# fetch
 	bind generic	M			@source ~/.tigrc
+	bind generic	D			!git difftool --tool=vimdiff --no-prompt --trust-exit-code %(commit)^!	# vimdiffで確認をする
 	bind generic	<Ctrl-b>	scroll-page-up
 	bind generic	<Ctrl-f>	scroll-page-down
 	bind generic	<Ctrl-k>	move-half-page-up

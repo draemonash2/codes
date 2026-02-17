@@ -127,6 +127,38 @@ End Function
     End Sub
 
 ' ==================================================================
+' = 概要    プロセス起動確認（引数あり）
+' = 引数    sProcessName    String      [in]    プロセス名
+' = 引数    sArguments      String      [in]    引数名
+' = 戻値    なし
+' = 覚書    ・指定した引数で起動されるプロセスが存在する場合のみTrueになる
+' = 依存    なし
+' = 所属    Windows.vbs
+' ==================================================================
+Public Function ExistProcessWithArg( _
+    ByVal sProcessName, _
+    ByVal sArguments _
+)
+    Dim bFound
+    bFound = False
+    Dim wmi, processes, p
+    Set wmi = GetObject("winmgmts:\\.\root\cimv2")
+    Set processes = wmi.ExecQuery( _
+        "SELECT Name, CommandLine FROM Win32_Process WHERE Name='" & sProcessName & "'" _
+    )
+    For Each p In processes
+        If Not bFound Then
+            If Not IsNull(p.CommandLine) Then
+                If InStr(1, p.CommandLine, sArguments, vbTextCompare) > 0 Then
+                    bFound = True
+                End If
+            End If
+        End If
+    Next
+    ExistProcessWithArg = bFound
+End Function
+
+' ==================================================================
 ' = 概要    WSL2 Running 待ち
 ' = 引数    sDistName   String  [in]    WSL2 ディストリビューション名
 ' = 戻値    なし
