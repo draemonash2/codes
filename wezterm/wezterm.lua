@@ -51,36 +51,8 @@ config.default_cursor_style = 'SteadyBlock'
 -- config.cursor_blink_ease_out = 'Constant'
 
 -- カラー設定
-config.colors = {
-    -- foreground = 'silver',
-    -- selection_fg = 'red',
-    cursor_bg = "white",
-    cursor_fg = "white",
-    cursor_border = "white",
-    -- tab_bar = {         
-    --     inactive_tab_edge = "none",
-    -- },
-    -- ansi = {
-    --     'black', red, purple, light_green, blue, yellow, 'teal', 'silver',
-    -- },
-    -- brights = {
-    --     'grey', 'red', 'lime', 'yellow', 'blue', 'fuchsia', 'aqua', 'white',
-    -- },
-}
 -- config.color_scheme = 'Wez'
 config.color_scheme = 'Dark+'
--- config.color_scheme = 'Batman'
--- config.color_scheme = 'Windows High Contrast (base16)'
--- config.color_scheme = "Dracula+"
--- config.color_scheme = "Dracula (Gogh)"
--- config.color_scheme = 'Dark Pastel'
--- config.color_scheme = 'Dark Ocean (terminal.sexy)'
--- config.color_scheme = 'darkermatrix'
--- config.color_scheme = 'Darkside'
--- config.color_scheme = 'Desert'
--- config.color_scheme = 'Jellybeans'
--- config.color_scheme = 'Jellybeans (Gogh)'
--- config.color_scheme = "catppuccin-mocha"
 
 -- ショートカットキー設定
 config.keys = {

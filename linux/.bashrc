@@ -2562,4 +2562,3 @@ function ignvisurdf() {
 setenv PATH "${HOME}/_work/gz-usd/build/bin"            # for sdf2usd, usd2sdf
 setenv PATH "${HOME}/_prg/USD/bin"                      # for USD
 
-

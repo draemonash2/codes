@@ -208,11 +208,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
 		^+!d::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\200_DIY\DIY設計.xlsx" )	; DIY設計.xlsx
-		; TODO: 一時ファイル
-		^+!#i::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\100_引越\202411_狩場台\引越チェックリスト.xlsx" )
-		^+!#7::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\190_【趣味】他\車\車探し_202508\車検討.xlsx" )
-		
-		
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
@@ -227,8 +222,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
 		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\モデル変換フロー.drawio" )
 		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\URDF生成ソフト比較.xlsx" )
-		^+!6::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\URDF生成アドイン試用\generate_urdf_manual_with_freecad-cross\generate_urdf_manual_with_freecad-cross.md" )
-		^+!4::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\URDF生成アドイン試用\generate_urdf_manual_with_freecad-robotcad\generate_urdf_manual_with_freecad-robotcad.md" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
@@ -263,8 +256,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	; }}}
 	;サイトオープン ; {{{
 		^+!1::			Run "https://draemonash2.github.io/"																			; Github.io
-		^+!2::			Run "https://draemonash2.github.io/linux_os/linux.html"															; Github.io linux
-		^+!3::			Run "https://draemonash2.github.io/gitcommand_lng/gitcommand.html"												; Github.io git command
 		^+!h::			Run "https://www.deepl.com//translator"																			; 翻訳サイト
 	; }}}
 	;ウィンドウ関連 ; {{{
@@ -275,8 +266,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
 	; }}}
 	;その他 ; {{{
-		^+!F5::			ReloadMe()																										; スクリプトリロード
-		^+!5::			ReloadMe()																										; スクリプトリロード
+		^+!#r::			ReloadMe()																										; スクリプトリロード
 	;	^+!r::			SetSleepPreventingMode("Toggle", True)																			; TurboVNCスリープ抑制
 	;	^+!F11::		SwitchRAltAppsKeyMode()																							; 右Alt->AppsKey置換え切替え
 	;	Ctrl::																															; モニタ中心にカーソル移動
