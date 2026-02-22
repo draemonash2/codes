@@ -1873,6 +1873,13 @@ function clear_session_name_to_cmplist() { # {{{
     cmpllist_tmk=""
     cmpllist_tmr=""
 } # }}}
+function add_session_list_to_cmplist() { # {{{
+    session_list=$(tmux list-sessions 2>/dev/null | cut -d: -f 1)
+    for session_name in "${session_list}"
+    do
+        add_session_name_to_cmplist "${session_name}"
+    done
+} # }}}
 function add_session_name_to_cmplist() { # {{{
     if [ $# -ne 1 ]; then
         echo "[error] wrong number of arguments."
@@ -1883,13 +1890,6 @@ function add_session_name_to_cmplist() { # {{{
     cmpllist_tma="${cmpllist_tma} ${session_name}"
     cmpllist_tmk="${cmpllist_tmk} ${session_name}"
     cmpllist_tmr="${cmpllist_tmr} ${session_name}"
-} # }}}
-function add_session_list_to_cmplist() { # {{{
-    session_list=$(tmux list-sessions | cut -d: -f 1)
-    for session_name in "${session_list}"
-    do
-        add_session_name_to_cmplist "${session_name}"
-    done
 } # }}}
 function _tmuxexec_allwins() { # {{{
     if [ -f /.dockerenv ]; then
@@ -2552,13 +2552,13 @@ function ignvisurdf() {
 #   echo ${URDF_FILE_PATH}
     
     CMD1="export IGN_GAZEBO_RESOURCE_PATH=${MODEL_DIR_PATH}; vglrun ign gazebo empty.sdf"
-	CMD2="sleep 5; ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --timeout 1000 --req \"sdf_filename: \\\"${URDF_FILE_PATH}\\\", name: \\\"${MODEL_NAME}\\\", pose: {position: {x: 0.0, y: 0.0, z:0.0}, orientation: {x:0.0, y:0.0, z:0.0, w:1.0}}\""
+    CMD2="sleep 5; ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --timeout 1000 --req \"sdf_filename: \\\"${URDF_FILE_PATH}\\\", name: \\\"${MODEL_NAME}\\\", pose: {position: {x: 0.0, y: 0.0, z:0.0}, orientation: {x:0.0, y:0.0, z:0.0, w:1.0}}\""
     check_urdf ${URDF_FILE_PATH} && xpanes -e "${CMD1}" "${CMD2}"
 }
 
 #########################################################
 # Environment dependent settings
 #########################################################
-setenv PATH "${HOME}/_work/gz-usd/build/bin"            # for sdf2usd, usd2sdf
-setenv PATH "${HOME}/_prg/USD/bin"                      # for USD
+# setenv PATH "${HOME}/_work/gz-usd/build/bin"            # for sdf2usd, usd2sdf
+# setenv PATH "${HOME}/_prg/USD/bin"                      # for USD
 
