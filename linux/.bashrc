@@ -59,7 +59,20 @@ fi
 # remove all aliases
 unalias -a
 
+unixname=$(uname -r)
+unixname=$(tr '[:upper:]' '[:lower:]' <<< $unixname)
+is_wsl2=0
+if [[ "${unixname}" == *microsoft* ]]; then
+    is_wsl2=1
+fi
+
 # for PS1
+if [[ "${is_wsl2}" -eq 1 ]]; then
+    show_prompt_branch_name=0
+else
+    show_prompt_branch_name=1
+fi
+show_prompt_container_name=1
 function _update_ps1() { # {{{
     # [参考URL] https://zenn.dev/kotokaze/articles/bash-console
     color_black=0
@@ -87,7 +100,6 @@ function _update_ps1() { # {{{
     PS1="${PS1}\[\e[0;39;049m\]"                                        # reset
     PS1="${PS1}\n\$ "
 } # }}}
-show_prompt_branch_name=0
 function _puts_prompt_git_branch() { # {{{
     if [ ${show_prompt_branch_name} -eq 1 ]; then
         branch_name=$(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
@@ -106,7 +118,6 @@ function _puts_prompt_git_branch() { # {{{
         echo " "
     fi
 } # }}}
-show_prompt_container_name=1
 function _puts_prompt_container_name() { # {{{
     # Notes:
     #   This function requires placing a .dockercontainer with 
@@ -262,8 +273,8 @@ if ! shopt -oq posix; then
 fi
 
 HISTTIMEFORMAT='%F %T '
-grep -i microsoft /proc/version >/dev/null  # judge if wsl2
-if [ $? -eq 0 ]; then
+
+if [[ "${is_wsl2}" -eq 1 ]]; then
     export LANG=ja_JP.UTF8
 else
     export LANG=en_US.UTF8
@@ -280,13 +291,35 @@ alias ..='cd ..;'
 alias ...='cd ../..;'
 alias ....='cd ../../..;'
 alias .....='cd ../../../..;'
+if [[ "${is_wsl2}" -eq 1 ]]; then
+    alias cdw='cd /mnt/c/'
+fi
 
 alias br='vim ~/.bashrc; . ~/.bashrc'
 alias bre='. ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
-alias gm='vim ~/.gemini/GEMINI.md'
+function alias_agt() {
+    if [[ "${is_wsl2}" -eq 1 ]]; then
+        file=/mnt/c/codes/ai_agents/AGENTS.md
+        if [ -f "${file}" ]; then
+            alias agt="vim ${file}"
+            return
+        fi
+    fi
+    file=~/.gemini/GEMINI.md
+    if [ -f "${file}" ]; then
+        alias agt="vim ${file}"
+        return
+    fi
+    file=~/.claude/CLAUDE.md
+    if [ -f "${file}" ]; then
+        alias agt="vim ${file}"
+        return
+    fi
+}
+alias_agt
 
 alias sht='sudo shutdown -h now'
 
@@ -750,10 +783,11 @@ function fd() { # {{{
     fi
 } # }}}
 function outputleafdirlist() { # {{{
-    dirlist=$(find . -type d)
-    for dir in $dirlist
+    # dirlist=$(find . -type d)
+    # for dir in $dirlist
+    find . -type d -print0 | while IFS= read -r -d '' dir
     do
-        #echo $dir
+        # echo "$dir"
         directory_num=$(find "${dir}" -maxdepth 1 -type d | wc -l)
         if [ ${directory_num} -eq 1 ]; then
             echo "${dir}"
@@ -1999,13 +2033,6 @@ if [ -f /.dockerenv ]; then
     export TERM=screen-256color
 fi
 
-### WSL
-unixname=$(uname -r)
-unixname=$(tr '[:upper:]' '[:lower:]' <<< $unixname)
-if [[ "${unixname}" == *microsoft* ]]; then
-    alias cdw='cd /mnt/c/'
-fi
-
 ### ROS2
 alias gsetup="source /opt/ros/humble/setup.bash"
 alias lsetup="source install/setup.bash"
@@ -2556,9 +2583,8 @@ function ignvisurdf() {
     check_urdf ${URDF_FILE_PATH} && xpanes -e "${CMD1}" "${CMD2}"
 }
 
-#########################################################
 # Environment dependent settings
-#########################################################
-# setenv PATH "${HOME}/_work/gz-usd/build/bin"            # for sdf2usd, usd2sdf
-# setenv PATH "${HOME}/_prg/USD/bin"                      # for USD
-
+bashrc_env=${HOME}/.bashrc_env
+if [ -f "${bashrc_env}" ]; then
+    source "${bashrc_env}"
+fi
