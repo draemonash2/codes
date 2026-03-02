@@ -292,7 +292,15 @@ alias ...='cd ../..;'
 alias ....='cd ../../..;'
 alias .....='cd ../../../..;'
 if [[ "${is_wsl2}" -eq 1 ]]; then
-    alias cdw='cd /mnt/c/'
+    function cdw() {
+        read -r -p "Windows path: " winpath
+        if [ "${winpath}" == "" ]; then
+            linuxpath="/mnt/c"
+        else
+            linuxpath=$(wslpath -u "$winpath")
+        fi
+        cd "$linuxpath"
+    }
 fi
 
 alias br='vim ~/.bashrc; . ~/.bashrc'
@@ -301,19 +309,7 @@ alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
 function alias_agt() {
-    if [[ "${is_wsl2}" -eq 1 ]]; then
-        file=/mnt/c/codes/ai_agents/AGENTS.md
-        if [ -f "${file}" ]; then
-            alias agt="vim ${file}"
-            return
-        fi
-    fi
-    file=~/.gemini/GEMINI.md
-    if [ -f "${file}" ]; then
-        alias agt="vim ${file}"
-        return
-    fi
-    file=~/.claude/CLAUDE.md
+    file=~/_dotfiles/.ai_agents/AGENTS.md
     if [ -f "${file}" ]; then
         alias agt="vim ${file}"
         return
