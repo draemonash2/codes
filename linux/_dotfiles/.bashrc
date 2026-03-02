@@ -307,6 +307,7 @@ function alias_agt() {
             alias agt="vim ${file}"
             return
         fi
+        alias diffdotfiles="vimdiffdir /mnt/c/codes/linux/_dotfiles ~/_dotfiles"
     fi
     file=~/.gemini/GEMINI.md
     if [ -f "${file}" ]; then
@@ -1707,6 +1708,23 @@ function latestfilepath() { # {{{
         fi
     )
 } # }}}
+function createhardlink() { # {{{
+    if [ $# -ne 2 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : createhardlink <src_file_path> <target_file_path>"
+        return 1
+    fi
+    src_file_path=$1
+    target_file_path=$2
+    target_dir_path=${target_file_path%/*}
+    # echo ${target_dir_path}
+    if [ "${target_dir_path}" != "${target_file_path}" ]; then
+        if [ ! -d ${target_dir_path} ]; then
+            mkdir -p ${target_dir_path}
+        fi
+    fi
+    ln -f ${src_file_path} ${target_file_path}
+}
 
 ### Git
 alias gitlo="\

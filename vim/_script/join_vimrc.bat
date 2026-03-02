@@ -1,3 +1,3 @@
 @echo off
-copy /b ..\_vimrc + ..\_gvimrc ..\.vimrc
+copy /b ..\_vimrc + ..\_gvimrc ..\..\linux\.vimrc
 pause

@@ -1,0 +1,12 @@
+@echo off
+set SCRIPT="%MYDIRPATH_CODES%\vbs\tools\win\file_ope\DiffDotfiles_LclWin-vs-RmtLinux.vbs"
+set LINUX_USER="username"
+set HOST="123.456.789.123:22"
+:: auth with password
+::set AUTH_TYPE="0"
+::set KEY="password"
+:: auth with publickey
+set AUTH_TYPE="1"
+set KEY="%USERPROFILE%\.ssh\id_rsa.ppk"
+
+	start "" %SCRIPT% %LINUX_USER% %KEY% %HOST% %AUTH_TYPE%
