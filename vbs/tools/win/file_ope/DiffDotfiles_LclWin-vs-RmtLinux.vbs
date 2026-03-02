@@ -18,18 +18,6 @@ Call Include( "%MYDIRPATH_CODES%\vbs\_lib\FileSystem.vbs" ) 'CreateDirectry()
 '===============================================================================
 '= 設定
 '===============================================================================
-Dim csSYNC_TRGT_FILES
-Set csSYNC_TRGT_FILES = CreateObject("System.Collections.ArrayList")
-
-csSYNC_TRGT_FILES.Add "_dotfiles\.vimrc"
-csSYNC_TRGT_FILES.Add "_dotfiles\.bashrc"
-csSYNC_TRGT_FILES.Add "_dotfiles\.inputrc"
-csSYNC_TRGT_FILES.Add "_dotfiles\.gdbinit"
-csSYNC_TRGT_FILES.Add "_dotfiles\.tmux.conf"
-csSYNC_TRGT_FILES.Add "_dotfiles\.tigrc"
-csSYNC_TRGT_FILES.Add "_dotfiles\.ai_agents\AGENTS.md"
-csSYNC_TRGT_FILES.Add "_dotfiles\.ai_agents\skills\func-header-comment\SKILL.md"
-csSYNC_TRGT_FILES.Add "_dotfiles\.ai_agents\skills\func-tree\SKILL.md"
 
 '===============================================================================
 '= 本処理
@@ -74,8 +62,17 @@ sDiffProgramPath = GetEnvVariable("MYEXEPATH_WINMERGE")
 sCodesDirPath = GetEnvVariable("MYDIRPATH_CODES")
 sHomeDirPath = "/home/" & sLinuxUserName
 
-Dim sLinuxCodesDirPath
-sLinuxCodesDirPath = sCodesDirPath & "\linux"
+Dim sLocalCodesDirPath
+sLocalCodesDirPath = sCodesDirPath & "\linux"
+
+' 対象ファイル抽出
+Dim csSyncTrgtFiles
+Set csSyncTrgtFiles = CreateObject("System.Collections.ArrayList")
+Dim sLocalDotfilesDirPath
+sLocalDotfilesDirPath = sLocalCodesDirPath & "\_dotfiles"
+If objFSO.FolderExists(sLocalDotfilesDirPath) Then
+    Call AddFilesRecursive(objFSO.GetFolder(sLocalDotfilesDirPath), sLocalCodesDirPath, csSyncTrgtFiles)
+End If
 
 'バックアップフォルダ作成
 Dim sDateSuffix
@@ -92,9 +89,9 @@ If vAnswer = vbYes Then
     Dim sResultMsg
     sResultMsg = ""
     Dim sRelPathWin, sRelPathLinux, sRelSubDirBk
-    For iIdx = 0 To csSYNC_TRGT_FILES.Count - 1
-        sRelPathWin = Replace(csSYNC_TRGT_FILES(iIdx), "/", "\")
-        sRelPathLinux = Replace(csSYNC_TRGT_FILES(iIdx), "\", "/")
+    For iIdx = 0 To csSyncTrgtFiles.Count - 1
+        sRelPathWin = Replace(csSyncTrgtFiles(iIdx), "/", "\")
+        sRelPathLinux = Replace(csSyncTrgtFiles(iIdx), "\", "/")
         If InStrRev(sRelPathWin, "\") > 0 Then
             sRelSubDirBk = Left(sRelPathWin, InStrRev(sRelPathWin, "\") - 1)
             Call CreateDirectry(sDownloadTrgtDirPath & "\" & sRelSubDirBk)
@@ -110,22 +107,22 @@ If vAnswer = vbYes Then
         If objFSO.FileExists(sDownloadTrgtDirPath & "\" & sRelPathWin) Then
             'Do Nothing
         Else
-            sResultMsg = sResultMsg & vbNewLine & csSYNC_TRGT_FILES(iIdx) & " のダウンロードはスキップされました。"
-            'objFSO.CopyFile sLinuxCodesDirPath & "\" & sRelPathWin, sDownloadTrgtDirPath & "\" & sRelPathWin
+            sResultMsg = sResultMsg & vbNewLine & csSyncTrgtFiles(iIdx) & " のダウンロードはスキップされました。"
+            'objFSO.CopyFile sLocalCodesDirPath & "\" & sRelPathWin, sDownloadTrgtDirPath & "\" & sRelPathWin
         End If
     Next
     If sResultMsg <> "" Then
         MsgBox sResultMsg, vbOkOnly, sMsgTitle
     End If
     '=== ファイルバックアップ ===
-    For iIdx = 0 To csSYNC_TRGT_FILES.Count - 1
-        sRelPathWin = Replace(csSYNC_TRGT_FILES(iIdx), "/", "\")
+    For iIdx = 0 To csSyncTrgtFiles.Count - 1
+        sRelPathWin = Replace(csSyncTrgtFiles(iIdx), "/", "\")
         objFSO.CopyFile sDownloadTrgtDirPath & "\" & sRelPathWin, sDownloadTrgtDirPath & "\" & sRelPathWin & "_rmtorg"
     Next
     '=== フォルダ比較 ===
-    For iIdx = 0 To csSYNC_TRGT_FILES.Count - 1
-        sRelPathWin = Replace(csSYNC_TRGT_FILES(iIdx), "/", "\")
-        objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sLinuxCodesDirPath & "\" & sRelPathWin & """ """ & sDownloadTrgtDirPath & "\" & sRelPathWin & """", 10, False
+    For iIdx = 0 To csSyncTrgtFiles.Count - 1
+        sRelPathWin = Replace(csSyncTrgtFiles(iIdx), "/", "\")
+        objWshShell.Run """" & sDiffProgramPath & """ -r -s """ & sLocalCodesDirPath & "\" & sRelPathWin & """ """ & sDownloadTrgtDirPath & "\" & sRelPathWin & """", 10, False
     Next
     On Error Goto 0
     MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sMsgTitle
@@ -138,9 +135,9 @@ vAnswer = MsgBox("編集したファイルを送信しますか？", vbYesNo, sMsgTitle)
 If vAnswer = vbYes Then
     '=== ファイル送信(Local → Remote) ===
     On Error Resume Next 'ローカルにファイルが存在しなくても無視する
-    For iIdx = 0 To csSYNC_TRGT_FILES.Count - 1
-        sRelPathWin = Replace(csSYNC_TRGT_FILES(iIdx), "/", "\")
-        sRelPathLinux = Replace(csSYNC_TRGT_FILES(iIdx), "\", "/")
+    For iIdx = 0 To csSyncTrgtFiles.Count - 1
+        sRelPathWin = Replace(csSyncTrgtFiles(iIdx), "/", "\")
+        sRelPathLinux = Replace(csSyncTrgtFiles(iIdx), "\", "/")
         If sAuthType = "0" Then ' Password
             sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sLinuxUserName & ":" & sKey & "@" & sLoginServerName & """ ""put " & sDownloadTrgtDirPath & "\" & sRelPathWin & " " & sHomeDirPath & "/" & sRelPathLinux & """ ""exit"""
         Else                    ' PrivateKey
@@ -183,6 +180,31 @@ Private Function GetEnvVariable( _
     End If
     GetEnvVariable = sGetValue
 End Function
+
+' ==================================================================
+' = 概要    ファイルを再帰的に列挙し、相対パスをリストに追加する
+' = 引数    oFolder     Object  [in]    列挙対象フォルダ
+' =         sBaseDir    String  [in]    基準ディレクトリパス（プレフィックス除去用）
+' =         oList       Object  [in/out] 相対パスを追加する ArrayList
+' = 依存    なし
+' = 所属    本スクリプト
+' ==================================================================
+Private Sub AddFilesRecursive( _
+    ByVal oFolder, _
+    ByVal sBaseDir, _
+    ByVal oList _
+)
+    Dim oFile
+    For Each oFile In oFolder.Files
+        Dim sRelPath
+        sRelPath = Mid(oFile.Path, Len(sBaseDir) + 2)
+        oList.Add sRelPath
+    Next
+    Dim oSubFolder
+    For Each oSubFolder In oFolder.SubFolders
+        Call AddFilesRecursive(oSubFolder, sBaseDir, oList)
+    Next
+End Sub
 
 '===============================================================================
 '= インクルード関数
