@@ -307,7 +307,6 @@ function alias_agt() {
             alias agt="vim ${file}"
             return
         fi
-        alias diffdotfiles="vimdiffdir /mnt/c/codes/linux/_dotfiles ~/_dotfiles"
     fi
     file=~/.gemini/GEMINI.md
     if [ -f "${file}" ]; then
@@ -321,6 +320,10 @@ function alias_agt() {
     fi
 }
 alias_agt
+
+if [[ "${is_wsl2}" -eq 1 ]]; then
+    alias diffdotfiles="vimdiffdir /mnt/c/codes/linux/_dotfiles ~/_dotfiles"
+fi
 
 alias sht='sudo shutdown -h now'
 
