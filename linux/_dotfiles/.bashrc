@@ -1724,7 +1724,7 @@ function createhardlink() { # {{{
         fi
     fi
     ln -f ${src_file_path} ${target_file_path}
-}
+} # }}}
 
 ### Git
 alias gitlo="\
