@@ -14,7 +14,7 @@ global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
 global giWIN_SNAP_IDX_CLEAR_INTERVAL_MS := 10000
-global giWIN_SNAP_IDX_WIN_RANGE_RATE := 5/7 ; 0～1
+global giWIN_SNAP_IDX_WIN_RANGE_RATE := 0.73 ; 0～1
 global giWIN_SNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
@@ -52,12 +52,12 @@ global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 ;* ***************************************************************
 ; {{{
 class eWIN_SNAP_IDX {
-	static 4K_FULL := 1
-	static 4K_TOP := 2
-	static 4K_BOTTOM := 3
-	static MAIN_FULL := 4
-	static MOBILE_FULL := 5
-	static MAIN_MOBILE_FULL := 6
+	static DUALUP_FULL := 1
+	static 4K_FULL := 2
+	static 4K_TOP := 3
+	static 4K_BOTTOM := 4
+	static MAIN_FULL := 5
+	static MOBILE_FULL := 6
 }
 ; }}}
 
@@ -193,27 +193,26 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			SimpleMind_FocusCentralTopicAndWinCenter()
 		}
 		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
-		~^+!#.::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
-		~^+!#,::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
-		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\210_【衣食住】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
+		~^+!n::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
+		~^+!#n::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
+		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\200_【財務】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
-		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【自己啓発】勉強\words.xlsx" )								; 用語集
+		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\400_【教育】自己啓発\勉強\words.xlsx" )							; 用語集
 		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#prompt.txt" )													; #prompt.txt
+		^+!g::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "120_【書類】デジタルデータ\#gripes.txt" )						; #gripes.txt
+		^+!d::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "310_【生活】住居\200_DIY\DIY設計.xlsx" )							; DIY設計.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
-		^+!g::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\900_【他】\#gripes.txt" )					; #gripes.txt
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
-		^+!m::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
+		^+!u::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
-		^+!d::			StartProgramAndActivateFile( "C:\Users\draem\Dropbox\100_Documents\220_【衣食住】住環境\200_DIY\DIY設計.xlsx" )	; DIY設計.xlsx
 	; }}}
 	;ファイルオープン（仕事用） ; {{{
 		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
-		^+!Enter::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
-		^+!.::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
-		^+!,::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio", 1 )									; #memo.drawio
+		^+!m::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
+		^+!#m::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio", 1 )									; #memo.drawio
 		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio", 1 )								; #memo_image.drawio
 		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										; #timemng.xlsm
 		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
@@ -266,7 +265,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
 	; }}}
 	;その他 ; {{{
-		^+!#r::			ReloadMe()																										; スクリプトリロード
+		^+!Enter::		ReloadMe()																										; スクリプトリロード
 	;	^+!r::			SetSleepPreventingMode("Toggle", True)																			; TurboVNCスリープ抑制
 	;	^+!F11::		SwitchRAltAppsKeyMode()																							; 右Alt->AppsKey置換え切替え
 	;	Ctrl::																															; モニタ中心にカーソル移動
@@ -334,6 +333,23 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		{
 			ShowAutoHideToolTip("テストToolTip", 1000)
 			ShowAutoHideTrayTip("", "テストTrayTip", 1000)
+		}
+		^1::
+		{
+			sMonStr := ""
+			iMonIdx := 1
+			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
+			sMonStr := sMonStr . "`n" . Format("monitor={1}: left={2}, top={3}, right={4}, bottom={5}", iMonIdx, Left, Top, Right, Bottom)
+			iMonIdx := 2
+			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
+			sMonStr := sMonStr . "`n" . Format("monitor={1}: left={2}, top={3}, right={4}, bottom={5}", iMonIdx, Left, Top, Right, Bottom)
+			iMonIdx := 3
+			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
+			sMonStr := sMonStr . "`n" . Format("monitor={1}: left={2}, top={3}, right={4}, bottom={5}", iMonIdx, Left, Top, Right, Bottom)
+			iMonIdx := 4
+			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
+			sMonStr := sMonStr . "`n" . Format("monitor={1}: left={2}, top={3}, right={4}, bottom={5}", iMonIdx, Left, Top, Right, Bottom)
+			MsgBox sMonStr
 		}
 		*/
 	; }}}
@@ -757,26 +773,30 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		switch iMonitorNum
 		{
 			case 1:					; Main only
-				iWinSnapMin := 4
-				iWinSnapMax := 4
+				iWinSnapMin := eWIN_SNAP_IDX.MAIN_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
 			case 2:					; Main + 4K
-				iWinSnapMin := 1
-				iWinSnapMax := 4
+				iWinSnapMin := eWIN_SNAP_IDX.4K_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
 			case 3:					; Main + 4K + Mobile
-				iWinSnapMin := 1
-				iWinSnapMax := 6
+				iWinSnapMin := eWIN_SNAP_IDX.4K_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.MOBILE_FULL
+			case 4:					; Main + 4K + DualUp + Mobile
+				iWinSnapMin := eWIN_SNAP_IDX.DUALUP_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.MOBILE_FULL
 			default:
 				MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
-				iWinSnapMin := 4
-				iWinSnapMax := 4
+				iWinSnapMin := eWIN_SNAP_IDX.MAIN_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
 		}
 	} ; }}}
 	ApplyWinSnap() ; {{{
 	{
 		global giWinSnapIdx
-		mon1 := GetMonitorPosInfo(1)
-		mon2 := GetMonitorPosInfo(2, MonPosSizeAuxInfo("Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE))
-		mon3 := GetMonitorPosInfo(3)
+		monMN := GetMonitorPosInfo(1)																; Main
+		monMB := GetMonitorPosInfo(3)																; mobile
+		monDU := GetMonitorPosInfo(4)																; DualUp
+		mon4K := GetMonitorPosInfo(2, MonPosSizeAuxInfo("Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE))	; 4K
 	;	MsgBox "[DBG] ApplyWinSnap() " .
 	;		"`n giWinSnapIdx = " . giWinSnapIdx .
 	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
@@ -785,12 +805,12 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		
 		switch giWinSnapIdx
 		{
-			case eWIN_SNAP_IDX.4K_FULL:				MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight)
-			case eWIN_SNAP_IDX.4K_TOP:				MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Top")
-			case eWIN_SNAP_IDX.4K_BOTTOM:			MoveActiveWin(mon2.dX, mon2.dY, mon2.dWidth, mon2.dHeight, "Bottom")
-			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight)
-			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(mon3.dX, mon3.dY, mon3.dWidth, mon3.dHeight)
-			case eWIN_SNAP_IDX.MAIN_MOBILE_FULL:	MoveActiveWin(mon1.dX, mon1.dY, mon1.dWidth, mon1.dHeight + mon3.dHeight)
+			case eWIN_SNAP_IDX.DUALUP_FULL:			MoveActiveWin(monDU.dX, monDU.dY, monDU.dWidth, monDU.dHeight)
+			case eWIN_SNAP_IDX.4K_FULL:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight)
+			case eWIN_SNAP_IDX.4K_TOP:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Top")
+			case eWIN_SNAP_IDX.4K_BOTTOM:			MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Bottom")
+			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(monMN.dX, monMN.dY, monMN.dWidth, monMN.dHeight)
+			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(monMB.dX, monMB.dY, monMB.dWidth, monMB.dHeight)
 			default:								MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
 		}
 		return
@@ -861,7 +881,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			case "Top":
 				iWinX		:= Integer(iInX)
 				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth) - 
+				iWinWidth	:= Integer(iInWidth)
 				iWinHeight	:= Integer(iInHeight / 2)
 			case "Bottom":
 				iWinX		:= Integer(iInX)
@@ -885,11 +905,13 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 				iWinHeight	:= Integer(iInHeight)
 		}
 		iWinNarrowSize := giWIN_SNAP_WIN_NARROW_SIZE / 2
-		iWinX		:= Integer(iInX) + iWinNarrowSize
-		iWinY		:= Integer(iInY) + iWinNarrowSize
-		iWinWidth	:= Integer(iInWidth) - giWIN_SNAP_WIN_NARROW_SIZE
-		iWinHeight	:= Integer(iInHeight) - giWIN_SNAP_WIN_NARROW_SIZE
+		iWinX		:= iWinX + iWinNarrowSize
+		iWinY		:= iWinY + iWinNarrowSize
+		iWinWidth	:= iWinWidth - giWIN_SNAP_WIN_NARROW_SIZE
+		iWinHeight	:= iWinHeight - giWIN_SNAP_WIN_NARROW_SIZE
+	;	global giWinSnapIdx
 	;	MsgBox "[DBG] MoveActiveWin() " .
+	;		"`n giWinSnapIdx = " . giWinSnapIdx . 
 	;		"`n iWinX = " . iWinX . 
 	;		"`n iWinY = " . iWinY . 
 	;		"`n iWinWidth = " . iWinWidth . 
