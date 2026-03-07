@@ -14,7 +14,7 @@ global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
 global giWIN_SNAP_IDX_CLEAR_INTERVAL_MS := 10000
-global giWIN_SNAP_IDX_WIN_RANGE_RATE := 0.73 ; 0～1
+global giWIN_SNAP_IDX_WIN_RANGE_RATE := 0.79 ; 0～1
 global giWIN_SNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
@@ -54,10 +54,10 @@ global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 class eWIN_SNAP_IDX {
 	static DUALUP_FULL := 1
 	static 4K_FULL := 2
-	static 4K_TOP := 3
-	static 4K_BOTTOM := 4
-	static MAIN_FULL := 5
-	static MOBILE_FULL := 6
+	static MAIN_FULL := 3
+	static MOBILE_FULL := 4
+	static 4K_TOP := 5
+	static 4K_BOTTOM := 6
 }
 ; }}}
 
@@ -258,8 +258,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!h::			Run "https://www.deepl.com//translator"																			; 翻訳サイト
 	; }}}
 	;ウィンドウ関連 ; {{{
-		#w::			ExecuteWinSnap()																								; Windowスナップ
-		#Space::		ExecuteWinSnap()																								; Windowスナップ
+		#w::			ExecuteWinSnap(0, false)																						; Windowスナップ
+		#+w::			ExecuteWinSnap(0, true)																							; Windowスナップ
+		#Space::		ExecuteWinSnap(0, false)																						; Windowスナップ
+		#+Space::		ExecuteWinSnap(0, true)																							; Windowスナップ
 		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
@@ -780,10 +782,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
 			case 3:					; Main + 4K + Mobile
 				iWinSnapMin := eWIN_SNAP_IDX.4K_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.MOBILE_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.4K_BOTTOM
 			case 4:					; Main + 4K + DualUp + Mobile
 				iWinSnapMin := eWIN_SNAP_IDX.DUALUP_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.MOBILE_FULL
+				iWinSnapMax := eWIN_SNAP_IDX.4K_BOTTOM
 			default:
 				MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
 				iWinSnapMin := eWIN_SNAP_IDX.MAIN_FULL
@@ -805,12 +807,12 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		
 		switch giWinSnapIdx
 		{
+			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(monMN.dX, monMN.dY, monMN.dWidth, monMN.dHeight)
+			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(monMB.dX, monMB.dY, monMB.dWidth, monMB.dHeight)
 			case eWIN_SNAP_IDX.DUALUP_FULL:			MoveActiveWin(monDU.dX, monDU.dY, monDU.dWidth, monDU.dHeight)
 			case eWIN_SNAP_IDX.4K_FULL:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight)
 			case eWIN_SNAP_IDX.4K_TOP:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Top")
 			case eWIN_SNAP_IDX.4K_BOTTOM:			MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Bottom")
-			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(monMN.dX, monMN.dY, monMN.dWidth, monMN.dHeight)
-			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(monMB.dX, monMB.dY, monMB.dWidth, monMB.dHeight)
 			default:								MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
 		}
 		return
