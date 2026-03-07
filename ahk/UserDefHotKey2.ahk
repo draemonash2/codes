@@ -13,9 +13,6 @@
 global gsDOC_DIR_PATH := "C:\Users\" . A_Username . "\Dropbox\100_Documents"
 global gsUSER_PROFILE_PATH := EnvGet("USERPROFILE")
 global gsCONFIG_DIR_NAME := "UserDefHotKey"
-global giWIN_SNAP_IDX_CLEAR_INTERVAL_MS := 10000
-global giWIN_SNAP_IDX_WIN_RANGE_RATE := 0.79 ; 0～1
-global giWIN_SNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giSCREEN_BRIGHTNESS_STEP := 10 ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MIN := giSCREEN_BRIGHTNESS_STEP ; 0～100 [%]
 global giSCREEN_BRIGHTNESS_MAX := 100 ; 0～100 [%]
@@ -45,20 +42,54 @@ global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下�
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
-; }}}
-
-;* ***************************************************************
-;* Constant value
-;* ***************************************************************
-; {{{
-class eWIN_SNAP_IDX {
-	static DUALUP_FULL := 1
-	static 4K_FULL := 2
-	static MAIN_FULL := 3
-	static MOBILE_FULL := 4
-	static 4K_TOP := 5
-	static 4K_BOTTOM := 6
+global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
+global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
+global giWINSNAP_4K_HEIGHT_RATE := 0.79 ; 0～1
+global giWINSNAP_PATTERN := 1
+class eWINSNAP_MON_IDX {
+	static MAIN := 1
+	static 4K := 2
+	static MOBILE := 3
+	static DUALUP := 4
 }
+global _WINSIZEINFO_PTN0_MN :=
+[
+	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+]
+global _WINSIZEINFO_PTN0_MN_4K :=
+[
+	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+]
+global _WINSIZEINFO_PTN0_MN_4K_MB :=
+[
+	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+]
+global _WINSIZEINFO_PTN0_MN_4K_DU_MB :=
+[
+	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+]
+global gaWINSNAP_WIN_SIZE_INFO := [
+	; MonNum=1,					MonNum=2,					MonNum=3,						MonNum=4
+	[ _WINSIZEINFO_PTN0_MN,		_WINSIZEINFO_PTN0_MN_4K,	_WINSIZEINFO_PTN0_MN_4K_MB,		_WINSIZEINFO_PTN0_MN_4K_DU_MB,	],	; PATTEN0
+]
 ; }}}
 
 ;* ***************************************************************
@@ -698,20 +729,15 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	} ; }}}
 
 	; Windowスナップ
-	class MonPosSizeInfo { ; {{{
-		__New(dX:=0, dY:=0, dWidth:=0, dHeight:=0) {
-			this.dX := dX
-			this.dY := dY
-			this.dWidth := dWidth
-			this.dHeight := dHeight
+	class MonSnapInfo {
+		__New(iMonIdx, dXStartPosRate, dYStartPosRate, dMonWidthRate, dMonHeightRate) {
+			this.iMonIdx := iMonIdx
+			this.dXStartPosRate := dXStartPosRate	; 0.0(LeftSide) ~ 1.0(RightSide)
+			this.dYStartPosRate := dYStartPosRate	; 0.0(TopSide) ~ 1.0(BottomSide)
+			this.dMonWidthRate := dMonWidthRate		; 0.0(Thin) ~ 1.0(Thick)
+			this.dMonHeightRate := dMonHeightRate	; 0.0(Thin) ~ 1.0(Thick)
 		}
-	} ; }}}
-	class MonPosSizeAuxInfo { ; {{{
-		__New(sAttachSide:="", iWinRangeRate:=0) {
-			this.sAttachSide := sAttachSide
-			this.iWinRangeRate := iWinRangeRate
-		}
-	} ; }}}
+	}
 	InitWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
@@ -721,7 +747,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	} ; }}}
 	SetTimerClearWinSnapIdx() ; {{{
 	{
-		SetTimer InitWinSnapIdx, giWIN_SNAP_IDX_CLEAR_INTERVAL_MS
+		SetTimer InitWinSnapIdx, giWINSNAP_IDX_CLEAR_INTERVAL_MS
 	} ; }}}
 	ExecuteWinSnap(iWinSnapIdx:=0, bIsInvert:=False) ; {{{
 	{
@@ -740,177 +766,64 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	IncrementWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
+		global giWINSNAP_PATTERN
+		global gaWINSNAP_WIN_SIZE_INFO
+		iMonNumIdx := GetMonitorNum()
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
 		giWinSnapIdx += 1
-		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
 		if ( giWinSnapIdx > iWinSnapIdxMax ) {
-			giWinSnapIdx := iWinSnapIdxMin
-		} else {
-			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
+			giWinSnapIdx := 1
 		}
 	;	MsgBox "[DBG] IncrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
 	DecrementWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
+		global giWINSNAP_PATTERN
+		global gaWINSNAP_WIN_SIZE_INFO
+		iMonNumIdx := GetMonitorNum()
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
 		giWinSnapIdx -= 1
-		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
-		if ( giWinSnapIdx < iWinSnapIdxMin ) {
+		if ( giWinSnapIdx < 1 ) {
 			giWinSnapIdx := iWinSnapIdxMax
-		} else {
-			giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
 		}
 	;	MsgBox "[DBG] DecrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
 	SetWinSnapIdx(iWinSnapIdx) ; {{{
 	{
 		global giWinSnapIdx
-		giWinSnapIdx := iWinSnapIdx
-		GetWinSnapIdxMinMax(&iWinSnapIdxMin, &iWinSnapIdxMax)
-		giWinSnapIdx := CropValue(giWinSnapIdx, iWinSnapIdxMin, iWinSnapIdxMax)
+		global giWINSNAP_PATTERN
+		global gaWINSNAP_WIN_SIZE_INFO
+		iMonNumIdx := GetMonitorNum()
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
+		giWinSnapIdx := CropValue(iWinSnapIdx, 1, iWinSnapIdxMax)
 	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
-	} ; }}}
-	GetWinSnapIdxMinMax(&iWinSnapMin, &iWinSnapMax) ; {{{
-	{
-		iMonitorNum := GetMonitorNum()
-		switch iMonitorNum
-		{
-			case 1:					; Main only
-				iWinSnapMin := eWIN_SNAP_IDX.MAIN_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
-			case 2:					; Main + 4K
-				iWinSnapMin := eWIN_SNAP_IDX.4K_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
-			case 3:					; Main + 4K + Mobile
-				iWinSnapMin := eWIN_SNAP_IDX.4K_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.4K_BOTTOM
-			case 4:					; Main + 4K + DualUp + Mobile
-				iWinSnapMin := eWIN_SNAP_IDX.DUALUP_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.4K_BOTTOM
-			default:
-				MsgBox "[error] invalid iMonitorNum : " . iMonitorNum
-				iWinSnapMin := eWIN_SNAP_IDX.MAIN_FULL
-				iWinSnapMax := eWIN_SNAP_IDX.MAIN_FULL
-		}
 	} ; }}}
 	ApplyWinSnap() ; {{{
 	{
 		global giWinSnapIdx
-		monMN := GetMonitorPosInfo(1)																; Main
-		monMB := GetMonitorPosInfo(3)																; mobile
-		monDU := GetMonitorPosInfo(4)																; DualUp
-		mon4K := GetMonitorPosInfo(2, MonPosSizeAuxInfo("Bottom", giWIN_SNAP_IDX_WIN_RANGE_RATE))	; 4K
-	;	MsgBox "[DBG] ApplyWinSnap() " .
-	;		"`n giWinSnapIdx = " . giWinSnapIdx .
-	;		"`n dX1 = " . dX1 . "`n dY1 = " . dY1 . "`n dWidth1 = " . dWidth1 . "`n dHeight1 = " . dHeight1 .
-	;		"`n dX2 = " . dX2 . "`n dY2 = " . dY2 . "`n dWidth2 = " . dWidth2 . "`n dHeight2 = " . dHeight2 .
-	;		"`n dX3 = " . dX3 . "`n dY3 = " . dY3 . "`n dWidth3 = " . dWidth3 . "`n dHeight3 = " . dHeight3
+		global giWINSNAP_PATTERN
+		global gaWINSNAP_WIN_SIZE_INFO
 		
-		switch giWinSnapIdx
-		{
-			case eWIN_SNAP_IDX.MAIN_FULL:			MoveActiveWin(monMN.dX, monMN.dY, monMN.dWidth, monMN.dHeight)
-			case eWIN_SNAP_IDX.MOBILE_FULL:			MoveActiveWin(monMB.dX, monMB.dY, monMB.dWidth, monMB.dHeight)
-			case eWIN_SNAP_IDX.DUALUP_FULL:			MoveActiveWin(monDU.dX, monDU.dY, monDU.dWidth, monDU.dHeight)
-			case eWIN_SNAP_IDX.4K_FULL:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight)
-			case eWIN_SNAP_IDX.4K_TOP:				MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Top")
-			case eWIN_SNAP_IDX.4K_BOTTOM:			MoveActiveWin(mon4K.dX, mon4K.dY, mon4K.dWidth, mon4K.dHeight, "Bottom")
-			default:								MsgBox "[error] invalid giWinSnapIdx : " . giWinSnapIdx
-		}
-		return
-	} ; }}}
-	GetMonitorPosInfo( iMonIdx, clsMonPosSizeAuxInfo? ) ; {{{
-	{
-		clsMonPosSizeInfo := MonPosSizeInfo()
-		if (IsSet(clsMonPosSizeAuxInfo)) {
-			iWinRangeRate := clsMonPosSizeAuxInfo.iWinRangeRate
-			sAttachSide := clsMonPosSizeAuxInfo.sAttachSide
-		} else {
-			iWinRangeRate := 0
-			sAttachSide := ""
-		}
-		iMonNum := GetMonitorNum()
+		iMonNumIdx := GetMonitorNum()
+		iMonIdx := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].iMonIdx
+		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dXStartPosRate
+		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dYStartPosRate
+		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dMonWidthRate
+		dMonHeightRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dMonHeightRate
 		
-		if ( iMonIdx > iMonNum)
-		{
-			return clsMonPosSizeInfo
-		}
+		clsMonPosInfo := GetMonitorPosInfo(iMonIdx)
+		iWinX := Integer(clsMonPosInfo.iX + (clsMonPosInfo.iWidth * dXStartPosRate))
+		iWinY := Integer(clsMonPosInfo.iY + (clsMonPosInfo.iHeight * dYStartPosRate))
+		iWinWidth := Integer(clsMonPosInfo.iWidth * dMonWidthRate)
+		iWinHeight := Integer(clsMonPosInfo.iHeight * dMonHeightRate)
 		
-		try
-		{
-			ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
-		;	MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
-		} Catch Error as err {
-			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
-				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
-			return
-		}
-		if ( Left < Right ) {
-			dX := Left
-			dWidth := Right - Left + 1
-		} else {
-			dX := Right
-			dWidth := Left - Right + 1
-		}
-		dY := Top
-		dHeight := Bottom - Top + 1
-	;	MsgBox "[DBG] GetMonitorPosInfo() 01" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
-		
-		switch sAttachSide
-		{
-			case "Top":
-				dHeight := dHeight * iWinRangeRate
-			case "Bottom":
-				dY := dY + ( dHeight * ( 1 - iWinRangeRate) )
-				dHeight := dHeight * iWinRangeRate
-			case "Left":
-				dWidth := dWidth * iWinRangeRate
-			case "Right":
-				dX := dX + ( dWidth * ( 1 - iWinRangeRate) )
-				dWidth := dWidth * iWinRangeRate
-			default:
-				; Do Nothing
-		}
-		clsMonPosSizeInfo.dX := dX
-		clsMonPosSizeInfo.dY := dY
-		clsMonPosSizeInfo.dWidth := dWidth
-		clsMonPosSizeInfo.dHeight := dHeight
-	;	MsgBox "[DBG] GetMonitorPosInfo() 02" . "`n iMonIdx = " . iMonIdx . "`n dX = " . dX . "`n dY = " . dY . "`n dWidth = " . dWidth . "`n dHeight = " . dHeight
-		return clsMonPosSizeInfo
-	} ; }}}
-	MoveActiveWin(iInX, iInY, iInWidth, iInHeight, sOutputSide:="") ; {{{
-	{
-		switch sOutputSide
-		{
-			case "Top":
-				iWinX		:= Integer(iInX)
-				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth)
-				iWinHeight	:= Integer(iInHeight / 2)
-			case "Bottom":
-				iWinX		:= Integer(iInX)
-				iWinY		:= Integer(iInY + iInHeight / 2)
-				iWinWidth	:= Integer(iInWidth)
-				iWinHeight	:= Integer(iInHeight / 2)
-			case "Left":
-				iWinX		:= Integer(iInX)
-				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth / 2)
-				iWinHeight	:= Integer(iInHeight)
-			case "Right":
-				iWinX		:= Integer(iInX + (iInWidth / 2))
-				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth / 2)
-				iWinHeight	:= Integer(iInHeight)
-			default:
-				iWinX		:= Integer(iInX)
-				iWinY		:= Integer(iInY)
-				iWinWidth	:= Integer(iInWidth)
-				iWinHeight	:= Integer(iInHeight)
-		}
-		iWinNarrowSize := giWIN_SNAP_WIN_NARROW_SIZE / 2
+		iWinNarrowSize := giWINSNAP_WIN_NARROW_SIZE / 2
 		iWinX		:= iWinX + iWinNarrowSize
 		iWinY		:= iWinY + iWinNarrowSize
-		iWinWidth	:= iWinWidth - giWIN_SNAP_WIN_NARROW_SIZE
-		iWinHeight	:= iWinHeight - giWIN_SNAP_WIN_NARROW_SIZE
+		iWinWidth	:= iWinWidth - giWINSNAP_WIN_NARROW_SIZE
+		iWinHeight	:= iWinHeight - giWINSNAP_WIN_NARROW_SIZE
+		
 	;	global giWinSnapIdx
 	;	MsgBox "[DBG] MoveActiveWin() " .
 	;		"`n giWinSnapIdx = " . giWinSnapIdx . 
@@ -926,6 +839,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		;		, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
 			return
 		}
+		return
 	} ; }}}
 
 	; ファイル名取得
@@ -1467,8 +1381,8 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	MoveCursolToMonitorCenter() { ; {{{
 		static iMoveTrgtMonNum := 1
 		clsMon := GetMonitorPosInfo(iMoveTrgtMonNum)
-		dCurX := clsMon.dX + Integer(clsMon.dWidth / 2)
-		dCurY := clsMon.dY + Integer(clsMon.dHeight / 2)
+		dCurX := clsMon.iX + Integer(clsMon.iWidth / 2)
+		dCurY := clsMon.iY + Integer(clsMon.iHeight / 2)
 		CoordMode "Mouse", "Screen"
 		MouseMove dCurX, dCurY
 		CoordMode "Mouse"
@@ -2149,3 +2063,49 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	{
 		return SysGet(80) ; SM_CMONITORS: Number of display monitors on the desktop (not including "non-display pseudo-monitors").
 	} ; }}}
+	; モニタ情報取得
+	class MonPosSizeInfo { ; {{{
+		__New(iX:=0, iY:=0, iWidth:=0, iHeight:=0) {
+			this.iX := iX
+			this.iY := iY
+			this.iWidth := iWidth
+			this.iHeight := iHeight
+		}
+	}
+	GetMonitorPosInfo( iMonIdx )
+	{
+		clsMonPosSizeInfo := MonPosSizeInfo()
+		iMonNum := GetMonitorNum()
+		if ( iMonIdx > iMonNum)
+		{
+			return clsMonPosSizeInfo
+		}
+		
+		try
+		{
+			ActualN := MonitorGetWorkArea(iMonIdx, &iLeft, &iTop, &iRight, &iBottom)
+		;	MsgBox "iLeft: " iLeft " -- iTop: " iTop " -- iRight: " iRight " -- iBottom: " iBottom
+		} Catch Error as err {
+			MsgBox Format("{1}: {2}.`n`nFile:`t{3}`nLine:`t{4}`nWhat:`t{5}`nStack:`n{6}"
+				, type(err), err.Message, err.File, err.Line, err.What, err.Stack)
+			return
+		}
+		if ( iLeft < iRight ) {
+			iX := iLeft
+			iWidth := iRight - iLeft + 1
+		} else {
+			iX := iRight
+			iWidth := iLeft - iRight + 1
+		}
+		iY := iTop
+		iHeight := iBottom - iTop + 1
+	;	MsgBox "[DBG] GetMonitorPosInfo() 01" . "`n iMonIdx = " . iMonIdx . "`n iX = " . iX . "`n iY = " . iY . "`n iWidth = " . iWidth . "`n iHeight = " . iHeight
+		
+		clsMonPosSizeInfo.iX := iX
+		clsMonPosSizeInfo.iY := iY
+		clsMonPosSizeInfo.iWidth := iWidth
+		clsMonPosSizeInfo.iHeight := iHeight
+	;	MsgBox "[DBG] GetMonitorPosInfo() 02" . "`n iMonIdx = " . iMonIdx . "`n iX = " . iX . "`n iY = " . iY . "`n iWidth = " . iWidth . "`n iHeight = " . iHeight
+		return clsMonPosSizeInfo
+	} ; }}}
+
