@@ -729,6 +729,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	} ; }}}
 
 	; Windowスナップ
+	; {{{
 	class MonSnapInfo {
 		__New(iMonIdx, dXStartPosRate, dYStartPosRate, dMonWidthRate, dMonHeightRate) {
 			this.iMonIdx := iMonIdx
@@ -841,6 +842,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		}
 		return
 	} ; }}}
+	; }}}
 
 	; ファイル名取得
 	ExtractFileName( sFilePath ) ; {{{
