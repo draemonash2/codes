@@ -2184,40 +2184,71 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		MsgBox sMonStr
 	} ; }}}
 
-; 時計表示
-gui1 := Gui("+AlwaysOnTop -Caption +ToolWindow")
-gui1.BackColor := "Black"
-gui1.SetFont("s60", "Segoe UI")
+	; Clock display - supports multiple instances
+	class ClockGui { ; {{{
+		__New(iX, iY, iFontSize := 60, iWidth := 300, iHeight := 0) {
+			this.gui := Gui("+AlwaysOnTop -Caption +ToolWindow")
+			this.gui.BackColor := "Black"
+			this.gui.MarginX := 0
+			this.gui.MarginY := 0
+			this.gui.SetFont("s" iFontSize, "Segoe UI")
+			this.clockText := this.gui.AddText("cWhite Center w" iWidth, "")
+			; Make black background fully transparent — only the white text is visible
+			WinSetTransColor("Black 220", this.gui.Hwnd)
+			; iHeight=0: auto-size; iHeight>0: set explicit window height
+			sShowOpt := "x" iX " y" iY
+			if (iHeight > 0)
+				sShowOpt .= " h" iHeight
+			this.gui.Show(sShowOpt)
+			this.Update()
+		}
+		Update() {
+			this.clockText.Text := FormatTime(, "HH:mm:ss")
+		}
+		CheckMouseOver() {
+			MouseGetPos(&mx, &my)
+			WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
+			if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
+				WinSetTransColor("Black 30", this.gui.Hwnd)   ; fade text on hover
+			else
+				WinSetTransColor("Black 220", this.gui.Hwnd)  ; restore text opacity
+		}
+		IsHwnd(hwnd) {
+			return hwnd = this.gui.Hwnd
+		}
+	} ; }}}
 
-clockText := gui1.AddText("cWhite Center w300", "")
+	; Create clock instances (x, y, fontSize, width[, height])
+	; height=0 (default): auto-sized to font; height>0: explicit window height
+	clocks := [
+		ClockGui(1738, 742, 30, 200),
+		ClockGui(851, 2345, 30, 200),
+		ClockGui(3025, -449, 50, 300),
+		ClockGui(4539, -552, 90, 450),
+	]
 
-WinSetTransparent(220, gui1.Hwnd)
+	; Allow dragging each clock window with Ctrl+drag
+	OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
+	WM_NCHITTEST(wParam, lParam, msg, hwnd) {
+		global clocks
+		for clock in clocks {
+			if clock.IsHwnd(hwnd) && GetKeyState("Ctrl")
+				return 2  ; HTCAPTION - treat entire window as title bar to enable dragging
+		}
+	}
 
-gui1.Show("x" A_ScreenWidth-280 " y20")
+	; Make clocks transparent on mouse hover (polling-based)
+	SetTimer(CheckMouseOverAllClocks, 100)
+	CheckMouseOverAllClocks() {
+		global clocks
+		for clock in clocks
+			clock.CheckMouseOver()
+	}
 
-; Allow dragging the clock window by clicking anywhere on it
-OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
-WM_NCHITTEST(wParam, lParam, msg, hwnd) {
-    global gui1
-    if (hwnd = gui1.Hwnd) && GetKeyState("Ctrl")
-        return 2  ; HTCAPTION - treat entire window as title bar to enable dragging (Ctrl+drag)
-}
-
-; Make clock transparent on mouse hover (polling-based)
-SetTimer(CheckMouseOverClock, 100)
-CheckMouseOverClock() {
-    global gui1
-    MouseGetPos(&mx, &my)
-    WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " gui1.Hwnd)
-    if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
-        WinSetTransparent(30, gui1.Hwnd)
-    else
-        WinSetTransparent(220, gui1.Hwnd)
-}
-
-SetTimer(UpdateClock, 1000)
-
-UpdateClock() {
-    global clockText
-    clockText.Text := FormatTime(, "HH:mm:ss")
-}
+	; Update all clocks every second
+	SetTimer(UpdateAllClocks, 1000)
+	UpdateAllClocks() {
+		global clocks
+		for clock in clocks
+			clock.Update()
+	}
