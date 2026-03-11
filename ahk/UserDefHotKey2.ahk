@@ -45,8 +45,7 @@ global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
 global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
-global giWINSNAP_4K_HEIGHT_RATE := 0.79 ; 0～1
-global giWINSNAP_PATTERN := 1
+global giWINSNAP_4K_HEIGHT_RATE := 0.8 ; 0～1
 class eWINSNAP_MON_IDX { ; OutputMonitorInfos()で確認可能
 	static MAIN := 1
 	static 4K := 2
@@ -82,10 +81,6 @@ global _WINSIZEINFO_MN_4K_DU_MB :=
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
 ]
 global _WINSIZEINFO_MN_4K_DU_MB_HALF :=
 [
@@ -302,10 +297,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!h::			Run "https://www.deepl.com//translator"																			; 翻訳サイト
 	; }}}
 	;ウィンドウ関連 ; {{{
-		#w::			ExecuteWinSnap(0, false)																						; Windowスナップ
-		#+w::			ExecuteWinSnap(0, true)																							; Windowスナップ
-		#Space::		ExecuteWinSnap(0, false)																						; Windowスナップ
-		#+Space::		ExecuteWinSnap(0, true)																							; Windowスナップ
+		#w::			ExecuteWinSnap(1, 0, false)																						; Windowスナップ
+		#+w::			ExecuteWinSnap(2, 0, false)																							; Windowスナップ
+		#Space::		ExecuteWinSnap(1, 0, false)																						; Windowスナップ
+		#+Space::		ExecuteWinSnap(2, 0, false)																							; Windowスナップ
 		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
@@ -648,7 +643,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		ToolTip()
 		
 		if (IsSet(iWinSnapIdx)) {
-			ExecuteWinSnap(iWinSnapIdx)
+			ExecuteWinSnap(1, iWinSnapIdx, false)
 		}
 		return
 	} ; }}}
@@ -756,17 +751,25 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	InitWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
+		global giWinSnapPattern
 		giWinSnapIdx := 0
+		giWinSnapPattern := 1
 		;ShowAutoHideTrayTip("タイルモードクリアタイマー", "タイルモードをクリアしました", 5000)
 		Return
 	} ; }}}
-	SetTimerClearWinSnapIdx() ; {{{
+	SetClearTimerWinSnapIdx() ; {{{
 	{
 		SetTimer InitWinSnapIdx, giWINSNAP_IDX_CLEAR_INTERVAL_MS
 	} ; }}}
-	ExecuteWinSnap(iWinSnapIdx:=0, bIsInvert:=False) ; {{{
+	ExecuteWinSnap(iWinSnapPattern:=1, iWinSnapIdx:=0, bIsInvert:=False) ; {{{
 	{
-		SetTimerClearWinSnapIdx()
+		global giWinSnapPattern
+		if (iWinSnapPattern != giWinSnapPattern) {
+			InitWinSnapIdx()
+		}
+		giWinSnapPattern := iWinSnapPattern
+		
+		SetClearTimerWinSnapIdx()
 		if (iWinSnapIdx > 0) {
 			SetWinSnapIdx(iWinSnapIdx)
 		} else {
@@ -781,10 +784,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	IncrementWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
-		global giWINSNAP_PATTERN
+		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
 		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
 		giWinSnapIdx += 1
 		if ( giWinSnapIdx > iWinSnapIdxMax ) {
 			giWinSnapIdx := 1
@@ -794,10 +797,10 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	DecrementWinSnapIdx() ; {{{
 	{
 		global giWinSnapIdx
-		global giWINSNAP_PATTERN
+		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
 		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
 		giWinSnapIdx -= 1
 		if ( giWinSnapIdx < 1 ) {
 			giWinSnapIdx := iWinSnapIdxMax
@@ -807,25 +810,25 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	SetWinSnapIdx(iWinSnapIdx) ; {{{
 	{
 		global giWinSnapIdx
-		global giWINSNAP_PATTERN
+		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
 		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx].Length
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
 		giWinSnapIdx := CropValue(iWinSnapIdx, 1, iWinSnapIdxMax)
 	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
 	ApplyWinSnap() ; {{{
 	{
 		global giWinSnapIdx
-		global giWINSNAP_PATTERN
+		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
 		
 		iMonNumIdx := GetMonitorNum()
-		iMonIdx := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].iMonIdx
-		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dXStartPosRate
-		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dYStartPosRate
-		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dMonWidthRate
-		dMonHeightRate := gaWINSNAP_WIN_SIZE_INFO[giWINSNAP_PATTERN][iMonNumIdx][giWinSnapIdx].dMonHeightRate
+		iMonIdx := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].iMonIdx
+		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dXStartPosRate
+		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dYStartPosRate
+		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dMonWidthRate
+		dMonHeightRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dMonHeightRate
 		
 		clsMonPosInfo := GetMonitorPosInfo(iMonIdx)
 		iWinX := Integer(clsMonPosInfo.iX + (clsMonPosInfo.iWidth * dXStartPosRate))
@@ -1350,7 +1353,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	ToggleWinTempHide() { ; {{{
 		global gaWinTempHideHiddenHwnds
 		global gbWinTempHideIsHidden
-		if !gbWinTempHideIsHidden {
+		if (!gbWinTempHideIsHidden) {
 			Send "{Media_Play_Pause}"
 			SoundSetMute true
 			
@@ -1363,6 +1366,8 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			}
 			gbWinTempHideIsHidden := true
 		} else {
+			SoundSetMute false
+			
 			prev := A_DetectHiddenWindows
 			DetectHiddenWindows true
 			for hwnd in gaWinTempHideHiddenHwnds {
@@ -2179,3 +2184,40 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		MsgBox sMonStr
 	} ; }}}
 
+; 時計表示
+gui1 := Gui("+AlwaysOnTop -Caption +ToolWindow")
+gui1.BackColor := "Black"
+gui1.SetFont("s60", "Segoe UI")
+
+clockText := gui1.AddText("cWhite Center w300", "")
+
+WinSetTransparent(220, gui1.Hwnd)
+
+gui1.Show("x" A_ScreenWidth-280 " y20")
+
+; Allow dragging the clock window by clicking anywhere on it
+OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
+WM_NCHITTEST(wParam, lParam, msg, hwnd) {
+    global gui1
+    if (hwnd = gui1.Hwnd) && GetKeyState("Ctrl")
+        return 2  ; HTCAPTION - treat entire window as title bar to enable dragging (Ctrl+drag)
+}
+
+; Make clock transparent on mouse hover (polling-based)
+SetTimer(CheckMouseOverClock, 100)
+CheckMouseOverClock() {
+    global gui1
+    MouseGetPos(&mx, &my)
+    WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " gui1.Hwnd)
+    if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
+        WinSetTransparent(30, gui1.Hwnd)
+    else
+        WinSetTransparent(220, gui1.Hwnd)
+}
+
+SetTimer(UpdateClock, 1000)
+
+UpdateClock() {
+    global clockText
+    clockText.Text := FormatTime(, "HH:mm:ss")
+}

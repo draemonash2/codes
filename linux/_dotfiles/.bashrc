@@ -304,7 +304,8 @@ if [[ "${is_wsl2}" -eq 1 ]]; then
 fi
 
 alias br='vim ~/.bashrc; . ~/.bashrc'
-alias bre='. ~/.bashrc'
+alias bre='vim ~/.bashrc_env; . ~/.bashrc'
+alias sbr='. ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
@@ -1980,7 +1981,7 @@ function _tmuxexec_allwins() { # {{{
 } # }}}
 function tmuxexec_allwins_bre() { # {{{
     _tmuxexec_allwins \
-        "bre" \
+        "sbr" \
         ""
 } # }}}
 function _tmuxexec_allpanes() { # {{{
