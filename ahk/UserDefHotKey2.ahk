@@ -7,6 +7,20 @@
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 
 ;* ***************************************************************
+;* Parse parameters
+;* ***************************************************************
+; {{{
+global gbEnableMute := False
+for n, param in A_Args
+{
+    ; MsgBox "Parameter number " n " is " param "."
+	if (param == "/mute") {
+		gbEnableMute := True
+	}
+}
+; }}}
+
+;* ***************************************************************
 ;* Setting value
 ;* ***************************************************************
 ; {{{
@@ -43,14 +57,30 @@ global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ...
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
+;global gsDESKTOPCLOCK_INFO := [
+;	; ClockGui(x, y, fontSize, width[, height])
+;	;   height=0 (default): auto-sized to font; height>0: explicit window height
+;	ClockGui(1732, 742, 33, 200),		; Main
+;;	ClockGui(851, 2350, 30, 200),		; Mobile
+;;	ClockGui(3025, -449, 50, 300),		; DualUp
+;	ClockGui(4539, -552, 90, 450),		; 4K
+;]
 global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
 global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
-global giWINSNAP_4K_HEIGHT_RATE := 0.8 ; 0～1
+global giWINSNAP_4K_HEIGHT_RATE := 0.81 ; 0～1
 class eWINSNAP_MON_IDX { ; OutputMonitorInfos()で確認可能
+;	static MAIN := 1
+;	static 4K := 2
+;	static MOBILE := 3
+;	static DUALUP := 4
+;	static MAIN := 1
+;	static MOBILE := 2
+;	static DUALUP := 3
+;	static 4K := 4
 	static MAIN := 1
 	static 4K := 2
-	static MOBILE := 3
-	static DUALUP := 4
+	static DUALUP := 3
+	static MOBILE := 4
 }
 global _WINSIZEINFO_MN :=
 [
@@ -65,12 +95,10 @@ global _WINSIZEINFO_MN_4K :=
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_MN_4K_MB :=
+global _WINSIZEINFO_MN_4K_DU :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
 ]
@@ -87,6 +115,7 @@ global _WINSIZEINFO_MN_4K_DU_MB_HALF :=
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.15,								1.0,			0.7,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
@@ -94,8 +123,8 @@ global _WINSIZEINFO_MN_4K_DU_MB_HALF :=
 ]
 global gaWINSNAP_WIN_SIZE_INFO := [
 	; MonNum=1,				MonNum=2,				MonNum=3,					MonNum=4
-	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_MB,		_WINSIZEINFO_MN_4K_DU_MB,		],	; PATTEN0
-	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_MB,		_WINSIZEINFO_MN_4K_DU_MB_HALF,	],	; PATTEN1
+	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_DU,		_WINSIZEINFO_MN_4K_DU_MB,		],	; PATTEN0
+	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_DU,		_WINSIZEINFO_MN_4K_DU_MB_HALF,	],	; PATTEN1
 ]
 ; }}}
 
@@ -103,8 +132,10 @@ global gaWINSNAP_WIN_SIZE_INFO := [
 ;* Preprocess
 ;* ***************************************************************
 ; {{{
-TraySetIcon "UserDefHotKey2.ico"
-SoundSetMute true	; 起動時自動ミュート
+;TraySetIcon "UserDefHotKey2.ico"
+if (gbEnableMute) {
+	SoundSetMute true	; 起動時自動ミュート
+}
 StoreCurYearMonths()
 InitScreenBrightness()
 InitWinSnapIdx()
@@ -117,6 +148,7 @@ RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
 ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
+;StartDesktopClock()
 ; }}}
 
 ;* ***************************************************************
@@ -231,9 +263,9 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )
 			SimpleMind_FocusCentralTopicAndWinCenter()
 		}
-		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.txt" )													; #temp.txt
-		~^+!n::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.xlsm" )													; #temp.xlsm
-		~^+!#n::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#temp.drawio", 1 )												; #temp.drawio
+		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.txt" )													; #note.txt
+		~^+!n::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.xlsm" )													; #note.xlsm
+		~^+!#n::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.drawio", 1 )												; #note.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\200_【財務】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\400_【教育】自己啓発\勉強\words.xlsx" )							; 用語集
@@ -258,8 +290,8 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!^::			Run "https://app.box.com/file/2126286932741"																	; NEDOパソコン使用簿
 		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
 		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\モデル変換フロー.drawio" )
-		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260120_モデル構築検討\model_conversion_flow\URDF生成ソフト比較.xlsx" )
+		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260305_工程間搬送ユースケース具体化検討\工程間搬送ユースケース具体化検討\工程間搬送ユースケース具体化検討.drawio" )
+		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260315_シーケンスエディタ検討\シーケンスエディタ検討\シーケンスエディタ検討.drawio" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期
@@ -299,8 +331,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	;ウィンドウ関連 ; {{{
 		#w::			ExecuteWinSnap(1, 0, false)																						; Windowスナップ
 		#+w::			ExecuteWinSnap(2, 0, false)																							; Windowスナップ
-		#Space::		ExecuteWinSnap(1, 0, false)																						; Windowスナップ
-		#+Space::		ExecuteWinSnap(2, 0, false)																							; Windowスナップ
 		#f::			ToggleAlwaysOnTopEnable()																						; Window最前面化
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
@@ -308,6 +338,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	; }}}
 	;その他 ; {{{
 		^+!Enter::		ReloadMe()																										; スクリプトリロード
+		^+!#Enter::		OutputMonitorInfos()																							; 画面情報出力
 	;	^+!r::			SetSleepPreventingMode("Toggle", True)																			; TurboVNCスリープ抑制
 	;	^+!F11::		SwitchRAltAppsKeyMode()																							; 右Alt->AppsKey置換え切替え
 	;	Ctrl::																															; モニタ中心にカーソル移動
@@ -2063,6 +2094,65 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		} ; }}}
 	} ; }}}
 
+;	; デスクトップ時計
+;	class ClockGui { ; {{{
+;		__New(iX, iY, iFontSize := 60, iWidth := 300, iHeight := 0) {
+;			this.gui := Gui("+AlwaysOnTop -Caption +ToolWindow")
+;			this.gui.BackColor := "Black"
+;			this.gui.MarginX := 0
+;			this.gui.MarginY := 0
+;			this.gui.SetFont("s" iFontSize, "Segoe UI")
+;			this.clockText := this.gui.AddText("cWhite Center w" iWidth, "")
+;			; Make black background fully transparent — only the white text is visible
+;			WinSetTransColor("Black 220", this.gui.Hwnd)
+;			; iHeight=0: auto-size; iHeight>0: set explicit window height
+;			sShowOpt := "x" iX " y" iY
+;			if (iHeight > 0)
+;				sShowOpt .= " h" iHeight
+;			this.gui.Show(sShowOpt)
+;			this.Update()
+;		}
+;		Update() {
+;			this.clockText.Text := FormatTime(, "HH:mm:ss")
+;		}
+;		CheckMouseOver() {
+;			MouseGetPos(&mx, &my)
+;			WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
+;			if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
+;				WinSetTransColor("Black 30", this.gui.Hwnd)   ; fade text on hover
+;			else
+;				WinSetTransColor("Black 220", this.gui.Hwnd)  ; restore text opacity
+;		}
+;		IsHwnd(hwnd) {
+;			return hwnd = this.gui.Hwnd
+;		}
+;	}
+;	StartDesktopClock() {
+;		OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
+;		SetTimer(_CheckMouseOverAllClocks, 100)
+;		SetTimer(_UpdateAllClocks, 1000)
+;	}
+;	; Make gsDESKTOPCLOCK_INFO transparent on mouse hover (polling-based)
+;	_CheckMouseOverAllClocks() {
+;		global gsDESKTOPCLOCK_INFO
+;		for clock in gsDESKTOPCLOCK_INFO
+;			clock.CheckMouseOver()
+;	}
+;	; Update all gsDESKTOPCLOCK_INFO every second
+;	_UpdateAllClocks() {
+;		global gsDESKTOPCLOCK_INFO
+;		for clock in gsDESKTOPCLOCK_INFO
+;			clock.Update()
+;	}
+;	; Allow dragging each clock window with Ctrl+drag
+;	WM_NCHITTEST(wParam, lParam, msg, hwnd) {
+;		global gsDESKTOPCLOCK_INFO
+;		for clock in gsDESKTOPCLOCK_INFO {
+;			if clock.IsHwnd(hwnd) && GetKeyState("Ctrl")
+;				return 2  ; HTCAPTION - treat entire window as title bar to enable dragging
+;		}
+;	} ; }}}
+
 	; SimpleMind固有
 	SimpleMind_FocusCentralTopic() ; {{{
 	{
@@ -2169,86 +2259,15 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		iMonIdx := 1
 		sMonStr := ""
 		
-		sMonStr := "MonIdx: X(left), Y(top), Width, Height"
+		sMonStr := "MonIdx:	MonName,	X(left),	Y(top),	Width,	Height"
 		while iMonIdx <= iMonNum
 		{
 		;	ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
 		;	sMonStr := sMonStr . "`n" . Format("monitor={1}: left={2}, top={3}, right={4}, bottom={5}", iMonIdx, Left, Top, Right, Bottom)
-			
 			clsMonPosSizeInfo := GetMonitorPosInfo( iMonIdx )
-		;	sMonStr := sMonStr . "`n" . Format("monitor={1}: X(left)={2}, Y(top)={3}, Width={4}, Height={5}", iMonIdx, clsMonPosSizeInfo.iX, clsMonPosSizeInfo.iY, clsMonPosSizeInfo.iWidth, clsMonPosSizeInfo.iHeight)
-			sMonStr := sMonStr . "`n" . Format("{1}: {2}, {3}, {4}, {5}", iMonIdx, clsMonPosSizeInfo.iX, clsMonPosSizeInfo.iY, clsMonPosSizeInfo.iWidth, clsMonPosSizeInfo.iHeight)
+			sMonStr := sMonStr . "`n" . Format("{1}:	{2},	{3},	{4},	{5},	{6}", iMonIdx, MonitorGetName(iMonIdx), clsMonPosSizeInfo.iX, clsMonPosSizeInfo.iY, clsMonPosSizeInfo.iWidth, clsMonPosSizeInfo.iHeight)
 			
 			iMonIdx += 1
 		}
 		MsgBox sMonStr
 	} ; }}}
-
-	; Clock display - supports multiple instances
-	class ClockGui { ; {{{
-		__New(iX, iY, iFontSize := 60, iWidth := 300, iHeight := 0) {
-			this.gui := Gui("+AlwaysOnTop -Caption +ToolWindow")
-			this.gui.BackColor := "Black"
-			this.gui.MarginX := 0
-			this.gui.MarginY := 0
-			this.gui.SetFont("s" iFontSize, "Segoe UI")
-			this.clockText := this.gui.AddText("cWhite Center w" iWidth, "")
-			; Make black background fully transparent — only the white text is visible
-			WinSetTransColor("Black 220", this.gui.Hwnd)
-			; iHeight=0: auto-size; iHeight>0: set explicit window height
-			sShowOpt := "x" iX " y" iY
-			if (iHeight > 0)
-				sShowOpt .= " h" iHeight
-			this.gui.Show(sShowOpt)
-			this.Update()
-		}
-		Update() {
-			this.clockText.Text := FormatTime(, "HH:mm:ss")
-		}
-		CheckMouseOver() {
-			MouseGetPos(&mx, &my)
-			WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
-			if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
-				WinSetTransColor("Black 30", this.gui.Hwnd)   ; fade text on hover
-			else
-				WinSetTransColor("Black 220", this.gui.Hwnd)  ; restore text opacity
-		}
-		IsHwnd(hwnd) {
-			return hwnd = this.gui.Hwnd
-		}
-	} ; }}}
-
-	; Create clock instances (x, y, fontSize, width[, height])
-	; height=0 (default): auto-sized to font; height>0: explicit window height
-	clocks := [
-		ClockGui(1738, 742, 30, 200),
-		ClockGui(851, 2345, 30, 200),
-		ClockGui(3025, -449, 50, 300),
-		ClockGui(4539, -552, 90, 450),
-	]
-
-	; Allow dragging each clock window with Ctrl+drag
-	OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
-	WM_NCHITTEST(wParam, lParam, msg, hwnd) {
-		global clocks
-		for clock in clocks {
-			if clock.IsHwnd(hwnd) && GetKeyState("Ctrl")
-				return 2  ; HTCAPTION - treat entire window as title bar to enable dragging
-		}
-	}
-
-	; Make clocks transparent on mouse hover (polling-based)
-	SetTimer(CheckMouseOverAllClocks, 100)
-	CheckMouseOverAllClocks() {
-		global clocks
-		for clock in clocks
-			clock.CheckMouseOver()
-	}
-
-	; Update all clocks every second
-	SetTimer(UpdateAllClocks, 1000)
-	UpdateAllClocks() {
-		global clocks
-		for clock in clocks
-			clock.Update()
-	}

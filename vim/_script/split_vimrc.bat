@@ -1,2 +1,2 @@
-_split_text_file.vbs ..\..\linux\.vimrc キーバインド設定 ..\_vimrc ..\_gvimrc
+_split_text_file.vbs ..\..\linux\_dotfiles\.vimrc キーバインド設定 ..\_vimrc ..\_gvimrc
 pause

@@ -1294,6 +1294,19 @@ function setenv() { # {{{
         
     } # }}}
 # }}}
+function addpath() { # {{{
+    # Add environment variable PATH without duplication
+    if [ $# -ne 1 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : addpath <path>"
+        return 1
+    fi
+    path=$1
+    if [ -e ${path} ]; then
+        setenv PATH ${path}
+    fi
+    # echopath "PATH"
+} # }}}
 function unsetenv() { # {{{
     # Unset environment variable
     if [ $# -ne 2 ]; then
@@ -2599,7 +2612,9 @@ function ignvisurdf() {
     CMD1="export IGN_GAZEBO_RESOURCE_PATH=${MODEL_DIR_PATH}; vglrun ign gazebo empty.sdf"
     CMD2="sleep 5; ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --timeout 1000 --req \"sdf_filename: \\\"${URDF_FILE_PATH}\\\", name: \\\"${MODEL_NAME}\\\", pose: {position: {x: 0.0, y: 0.0, z:0.0}, orientation: {x:0.0, y:0.0, z:0.0, w:1.0}}\""
     check_urdf ${URDF_FILE_PATH} && xpanes -e "${CMD1}" "${CMD2}"
-}
+} # }}}
+
+addpath ~/.local/bin
 
 # Environment dependent settings
 bashrc_env=${HOME}/.bashrc_env
