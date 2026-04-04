@@ -1,2 +1,3 @@
 @echo off
-start %MYDIRPATH_PRG_EXE%\AutoHotkey2\AutoHotkey64.exe %MYDIRPATH_CODES%\ahk\UserDefHotKey2.ahk /mute
+set cur_dir=%~dp0
+start %MYDIRPATH_PRG_EXE%\AutoHotkey2\AutoHotkey64.exe %cur_dir%\UserDefHotKey2.ahk /mute

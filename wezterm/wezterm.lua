@@ -16,7 +16,18 @@ local yellow = "#D7650C"
 config.automatically_reload_config = true
 config.window_close_confirmation = "NeverPrompt"
 config.default_cursor_style = "BlinkingBar"
-config.default_domain = 'WSL:Ubuntu-22.04'
+-- config.default_domain = 'WSL:Ubuntu-22.04'
+local function set_default_domain_if_exists(target)
+  for _, domain in ipairs(mux.all_domains()) do
+    local name = domain:name()
+    -- wezterm.log_info("found domain: " .. name)
+    if name == target then
+      mux.set_default_domain(domain)
+      return
+    end
+  end
+end
+set_default_domain_if_exists('WSL:Ubuntu-22.04')
 
 -- フォント設定
 -- config.font = wezterm.font("JetBrains Mono", { weight = "Bold" })
