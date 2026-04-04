@@ -53,7 +53,8 @@ global gfKITCHENTIMER_SNOOZE_INIT_SEC := 0.5
 global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
 global gbALARMTIMER_INITTIME_CUR := false
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
-global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
+;global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
+global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
@@ -82,12 +83,12 @@ class eWINSNAP_MON_IDX { ; OutputMonitorInfos()で確認可能
 	static DUALUP := 3
 	static MOBILE := 4
 }
-global _WINSIZEINFO_MN :=
+global _WINSIZEINFO_1MON :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_MN_4K :=
+global _WINSIZEINFO_2MON :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
@@ -95,14 +96,26 @@ global _WINSIZEINFO_MN_4K :=
 	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_MN_4K_DU :=
+global _WINSIZEINFO_3MON_FULL :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_MN_4K_DU_MB :=
+global _WINSIZEINFO_3MON_HALF :=
+[
+	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.15,								1.0,			0.7,						),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+;	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+]
+global _WINSIZEINFO_4MON_FULL :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
@@ -110,7 +123,7 @@ global _WINSIZEINFO_MN_4K_DU_MB :=
 	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
 	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_MN_4K_DU_MB_HALF :=
+global _WINSIZEINFO_4MON_HALF :=
 [
 	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
@@ -123,8 +136,8 @@ global _WINSIZEINFO_MN_4K_DU_MB_HALF :=
 ]
 global gaWINSNAP_WIN_SIZE_INFO := [
 	; MonNum=1,				MonNum=2,				MonNum=3,					MonNum=4
-	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_DU,		_WINSIZEINFO_MN_4K_DU_MB,		],	; PATTEN0
-	[ _WINSIZEINFO_MN,		_WINSIZEINFO_MN_4K,		_WINSIZEINFO_MN_4K_DU,		_WINSIZEINFO_MN_4K_DU_MB_HALF,	],	; PATTEN1
+	[ _WINSIZEINFO_1MON,	_WINSIZEINFO_2MON,		_WINSIZEINFO_3MON_FULL,		_WINSIZEINFO_4MON_FULL,		],	; PATTEN0
+	[ _WINSIZEINFO_1MON,	_WINSIZEINFO_2MON,		_WINSIZEINFO_3MON_HALF,		_WINSIZEINFO_4MON_HALF,		],	; PATTEN1
 ]
 ; }}}
 
@@ -263,15 +276,15 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#todo.smmx", 1 )
 			SimpleMind_FocusCentralTopicAndWinCenter()
 		}
-		~^+!#Space::	StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.txt" )													; #note.txt
+		~^+!Space::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.txt" )													; #note.txt
 		~^+!n::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.xlsm" )													; #note.xlsm
 		~^+!#n::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.drawio", 1 )												; #note.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\200_【財務】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
 		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\400_【教育】自己啓発\勉強\words.xlsx" )							; 用語集
-		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#prompt.txt" )													; #prompt.txt
-		^+!g::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "120_【書類】デジタルデータ\#gripes.txt" )						; #gripes.txt
-		^+!d::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "310_【生活】住居\200_DIY\DIY設計.xlsx" )							; DIY設計.xlsx
+		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#prompt.txt" )						; #prompt.txt
+		^+!g::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#gripes.txt" )						; #gripes.txt
+		^+!d::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\310_【生活】住居\200_DIY\DIY設計.xlsx" )						; DIY設計.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
@@ -279,19 +292,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		^+!u::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
-	; }}}
-	;ファイルオープン（仕事用） ; {{{
-		^+!Space::		StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.txt" )											; #memo.txt
-		^+!m::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.xlsm" )										; #memo.xlsm
-		^+!#m::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo.drawio", 1 )									; #memo.drawio
-		^+!@::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#memo_image.drawio", 1 )								; #memo_image.drawio
-		^+!-::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\#timemng.xlsm" )										; #timemng.xlsm
-		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
-		^+!^::			Run "https://app.box.com/file/2126286932741"																	; NEDOパソコン使用簿
-		^+!0::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230901_教育_キャッチアップ\#memo_キャッチアップ.xlsm" )
-		^+!9::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\#memo_シミュレーション環境構築.xlsm" )
-		^+!8::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260305_工程間搬送ユースケース具体化検討\工程間搬送ユースケース具体化検討\工程間搬送ユースケース具体化検討.drawio" )
-		^+!7::			StartProgramAndActivateFile( gsUSER_PROFILE_PATH . "\_root\10_workitem\230922_開発_シミュレーション環境構築\20_output\260315_シーケンスエディタ検討\シーケンスエディタ検討\シーケンスエディタ検討.drawio" )
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期

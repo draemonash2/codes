@@ -9,10 +9,10 @@
 global gsDESKTOPCLOCK_INFO := [
 	; ClockGui(x, y, fontSize, width[, height])
 	;   height=0 (default): auto-sized to font; height>0: explicit window height
-	ClockGui(1732, 742, 33, 200),		; Main
+;	ClockGui(1732, 742, 33, 200),		; Main
 ;	ClockGui(851, 2350, 30, 200),		; Mobile
 ;	ClockGui(3025, -449, 50, 300),		; DualUp
-	ClockGui(4539, -552, 90, 450),		; 4K
+	ClockGui(4539, -612, 90, 450),		; 4K
 ]
 
 StartDesktopClock()
