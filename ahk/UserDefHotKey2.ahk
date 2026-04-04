@@ -281,12 +281,12 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		~^+!#n::		StartProgramAndActivateFile( gsDOC_DIR_PATH . "\#note.drawio", 1 )												; #note.drawio
 		^+!\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\200_【財務】家計\100_予算管理.xlsm" )							; 予算管理.xlsm
 		^+!#\::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\..\000_Public\家計\ライフプラン.xlsx" )							; ライフプラン.xlsx
-		^+!/::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\400_【教育】自己啓発\勉強\words.xlsx" )							; 用語集
 		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#prompt.txt" )						; #prompt.txt
 		^+!g::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#gripes.txt" )						; #gripes.txt
 		^+!d::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\310_【生活】住居\200_DIY\DIY設計.xlsx" )						; DIY設計.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
+		^+!/::			StartProgramAndActivateFile( "C:\other\words\words.xlsx" )														; 用語集
 		^+!c::			StartProgramAndActivateFile( "C:\other\言語チートシート.xlsx" )													; 言語チートシート
 		^+!s::			StartProgramAndActivateFile( "C:\other\ショートカットキー一覧.xlsx" )											; ショートカットキー一覧
 		^+!u::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
