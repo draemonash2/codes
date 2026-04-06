@@ -53,86 +53,73 @@ global gfKITCHENTIMER_SNOOZE_INIT_SEC := 0.5
 global giALARMTIMER_TRAYTIP_DURATION_MS := 5000
 global gbALARMTIMER_INITTIME_CUR := false
 global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下」「60の約数である」をすべて満たす必要がある
-;global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [2, 3, 4, 5, 6] ; 1:Sun, 2:Mon, ... 7:Sat
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
-;global gsDESKTOPCLOCK_INFO := [
-;	; ClockGui(x, y, fontSize, width[, height])
-;	;   height=0 (default): auto-sized to font; height>0: explicit window height
-;	ClockGui(1732, 742, 33, 200),		; Main
-;;	ClockGui(851, 2350, 30, 200),		; Mobile
-;;	ClockGui(3025, -449, 50, 300),		; DualUp
-;	ClockGui(4539, -552, 90, 450),		; 4K
-;]
+global giMON_POSSIZE_INFOS :=
+[
+	;				sMonName,	iX(left),	iY(top),	iWidth,	iHeight
+	MonPosSizeInfo( "MAIN",		0,			0,			1739,	1201	),
+	MonPosSizeInfo( "4K",		4480,		-1103,		2161,	3760	),
+	MonPosSizeInfo( "MOBILE",	0,			1200,		1921,	1161	),
+	MonPosSizeInfo( "DUALUP",	1920,		-373,		2561,	2800	)
+]
+global giMON_POS_TORELANCE := 100 ; [pxl]
+global giMON_SIZE_TORELANCE := 100 ; [pxl]
 global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
 global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giWINSNAP_4K_HEIGHT_RATE := 0.81 ; 0～1
-class eWINSNAP_MON_IDX { ; OutputMonitorInfos()で確認可能
-;	static MAIN := 1
-;	static 4K := 2
-;	static MOBILE := 3
-;	static DUALUP := 4
-;	static MAIN := 1
-;	static MOBILE := 2
-;	static DUALUP := 3
-;	static 4K := 4
-	static MAIN := 1
-	static 4K := 2
-	static MOBILE := 3
-	static DUALUP := 4
-}
 global _WINSIZEINFO_1MON :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
 ]
 global _WINSIZEINFO_2MON :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
 ]
 global _WINSIZEINFO_3MON_FULL :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
+;	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
 global _WINSIZEINFO_3MON_HALF :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.15,								1.0,			0.7,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
-;	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			0.5,						),
+	MonSnapInfo(	"DUALUP",		0.0,			0.5,								1.0,			0.5,						),
+	MonSnapInfo(	"DUALUP",		0.0,			0.15,								1.0,			0.7,						),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
+;	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
 global _WINSIZEINFO_4MON_FULL :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
 global _WINSIZEINFO_4MON_HALF :=
 [
-	;				iMonIdx,					dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.0,								1.0,			0.5,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.5,								1.0,			0.5,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.DUALUP,	0.0,			0.15,								1.0,			0.7,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.4K,		0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MAIN,		0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	eWINSNAP_MON_IDX.MOBILE,	0.0,			0.0,								1.0,			1.0,						),
+	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
+	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			0.5,						),
+	MonSnapInfo(	"DUALUP",		0.0,			0.5,								1.0,			0.5,						),
+	MonSnapInfo(	"DUALUP",		0.0,			0.15,								1.0,			0.7,						),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
+	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
+	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
 global gaWINSNAP_WIN_SIZE_INFO := [
 	; MonNum=1,				MonNum=2,				MonNum=3,					MonNum=4
@@ -151,6 +138,7 @@ if (gbEnableMute) {
 }
 StoreCurYearMonths()
 InitScreenBrightness()
+CorrectMonIndexMap()
 InitWinSnapIdx()
 InitSleepPreventing()
 ;InitRAltAppsKeyMode()
@@ -771,8 +759,8 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	; Windowスナップ
 	; {{{
 	class MonSnapInfo {
-		__New(iMonIdx, dXStartPosRate, dYStartPosRate, dMonWidthRate, dMonHeightRate) {
-			this.iMonIdx := iMonIdx
+		__New(sMonName, dXStartPosRate, dYStartPosRate, dMonWidthRate, dMonHeightRate) {
+			this.sMonName := sMonName
 			this.dXStartPosRate := dXStartPosRate	; 0.0(LeftSide) ~ 1.0(RightSide)
 			this.dYStartPosRate := dYStartPosRate	; 0.0(TopSide) ~ 1.0(BottomSide)
 			this.dMonWidthRate := dMonWidthRate		; 0.0(Thin) ~ 1.0(Thick)
@@ -853,9 +841,11 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		global giWinSnapIdx
 		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
+		global gmMonIdxMap
 		
 		iMonNumIdx := GetMonitorNum()
-		iMonIdx := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].iMonIdx
+		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].sMonName
+		iMonIdx := gmMonIdxMap[sMonName]
 		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dXStartPosRate
 		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dYStartPosRate
 		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dMonWidthRate
@@ -2094,65 +2084,6 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		} ; }}}
 	} ; }}}
 
-;	; デスクトップ時計
-;	class ClockGui { ; {{{
-;		__New(iX, iY, iFontSize := 60, iWidth := 300, iHeight := 0) {
-;			this.gui := Gui("+AlwaysOnTop -Caption +ToolWindow")
-;			this.gui.BackColor := "Black"
-;			this.gui.MarginX := 0
-;			this.gui.MarginY := 0
-;			this.gui.SetFont("s" iFontSize, "Segoe UI")
-;			this.clockText := this.gui.AddText("cWhite Center w" iWidth, "")
-;			; Make black background fully transparent — only the white text is visible
-;			WinSetTransColor("Black 220", this.gui.Hwnd)
-;			; iHeight=0: auto-size; iHeight>0: set explicit window height
-;			sShowOpt := "x" iX " y" iY
-;			if (iHeight > 0)
-;				sShowOpt .= " h" iHeight
-;			this.gui.Show(sShowOpt)
-;			this.Update()
-;		}
-;		Update() {
-;			this.clockText.Text := FormatTime(, "HH:mm:ss")
-;		}
-;		CheckMouseOver() {
-;			MouseGetPos(&mx, &my)
-;			WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
-;			if (mx >= wx && mx < wx + ww && my >= wy && my < wy + wh)
-;				WinSetTransColor("Black 30", this.gui.Hwnd)   ; fade text on hover
-;			else
-;				WinSetTransColor("Black 220", this.gui.Hwnd)  ; restore text opacity
-;		}
-;		IsHwnd(hwnd) {
-;			return hwnd = this.gui.Hwnd
-;		}
-;	}
-;	StartDesktopClock() {
-;		OnMessage(0x0084, WM_NCHITTEST)  ; WM_NCHITTEST
-;		SetTimer(_CheckMouseOverAllClocks, 100)
-;		SetTimer(_UpdateAllClocks, 1000)
-;	}
-;	; Make gsDESKTOPCLOCK_INFO transparent on mouse hover (polling-based)
-;	_CheckMouseOverAllClocks() {
-;		global gsDESKTOPCLOCK_INFO
-;		for clock in gsDESKTOPCLOCK_INFO
-;			clock.CheckMouseOver()
-;	}
-;	; Update all gsDESKTOPCLOCK_INFO every second
-;	_UpdateAllClocks() {
-;		global gsDESKTOPCLOCK_INFO
-;		for clock in gsDESKTOPCLOCK_INFO
-;			clock.Update()
-;	}
-;	; Allow dragging each clock window with Ctrl+drag
-;	WM_NCHITTEST(wParam, lParam, msg, hwnd) {
-;		global gsDESKTOPCLOCK_INFO
-;		for clock in gsDESKTOPCLOCK_INFO {
-;			if clock.IsHwnd(hwnd) && GetKeyState("Ctrl")
-;				return 2  ; HTCAPTION - treat entire window as title bar to enable dragging
-;		}
-;	} ; }}}
-
 	; SimpleMind固有
 	SimpleMind_FocusCentralTopic() ; {{{
 	{
@@ -2209,7 +2140,8 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	} ; }}}
 	; モニタ情報取得
 	class MonPosSizeInfo { ; {{{
-		__New(iX:=0, iY:=0, iWidth:=0, iHeight:=0) {
+		__New(sMonName:="", iX:=0, iY:=0, iWidth:=0, iHeight:=0) {
+			this.sMonName := sMonName
 			this.iX := iX
 			this.iY := iY
 			this.iWidth := iWidth
@@ -2255,11 +2187,13 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 	; モニタ情報出力
 	OutputMonitorInfos() ; {{{
 	{
+		global gmMonIdxMap
 		iMonNum := GetMonitorNum()
 		iMonIdx := 1
 		sMonStr := ""
 		
-		sMonStr := "MonIdx:	MonName,	X(left),	Y(top),	Width,	Height"
+		sMonStr := sMonStr . "`n" . "### Monitor size and positions"
+		sMonStr := sMonStr . "`n" . "MonIdx:	MonName,	X(left),	Y(top),	Width,	Height"
 		while iMonIdx <= iMonNum
 		{
 		;	ActualN := MonitorGetWorkArea(iMonIdx, &Left, &Top, &Right, &Bottom)
@@ -2269,5 +2203,31 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 			
 			iMonIdx += 1
 		}
+		
+		sMonStr := sMonStr . "`n"
+		sMonStr := sMonStr . "`n" . "### Monitor names"
+		For sMonName, iMonIdx in gmMonIdxMap {
+			sMonStr := sMonStr . "`n" . sMonName . ": " . iMonIdx
+		}
+		
 		MsgBox sMonStr
+	} ; }}}
+	; モニタ番号収集
+	CorrectMonIndexMap() { ; {{{
+		global gmMonIdxMap := Map()  ; sMonName: iMonIdx
+		iMonNum := GetMonitorNum()
+		Loop iMonNum {
+			iMonIdx := A_Index
+			clsMon := GetMonitorPosInfo(iMonIdx)
+			for , mon_possize_info in giMON_POSSIZE_INFOS {
+				if (
+					((mon_possize_info.iX - giMON_POS_TORELANCE) <= clsMon.iX) and (clsMon.iX <= (mon_possize_info.iX + giMON_POS_TORELANCE)) and
+					((mon_possize_info.iY - giMON_POS_TORELANCE) <= clsMon.iY) and (clsMon.iY <= (mon_possize_info.iY + giMON_POS_TORELANCE)) and
+					((mon_possize_info.iWidth - giMON_SIZE_TORELANCE) <= clsMon.iWidth) and (clsMon.iWidth <= (mon_possize_info.iWidth + giMON_SIZE_TORELANCE)) and
+					((mon_possize_info.iHeight - giMON_SIZE_TORELANCE) <= clsMon.iHeight) and (clsMon.iHeight <= (mon_possize_info.iHeight + giMON_SIZE_TORELANCE))
+				) {
+					gmMonIdxMap[mon_possize_info.sMonName] := iMonIdx
+				}
+			}
+		}
 	} ; }}}
