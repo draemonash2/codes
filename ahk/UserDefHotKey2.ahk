@@ -80,8 +80,8 @@ class eWINSNAP_MON_IDX { ; OutputMonitorInfos()で確認可能
 ;	static 4K := 4
 	static MAIN := 1
 	static 4K := 2
-	static DUALUP := 3
-	static MOBILE := 4
+	static MOBILE := 3
+	static DUALUP := 4
 }
 global _WINSIZEINFO_1MON :=
 [
