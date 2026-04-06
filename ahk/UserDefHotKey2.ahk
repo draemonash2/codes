@@ -70,39 +70,7 @@ global giMON_SIZE_TORELANCE := 100 ; [pxl]
 global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
 global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giWINSNAP_4K_HEIGHT_RATE := 0.81 ; 0～1
-global _WINSIZEINFO_1MON :=
-[
-	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
-]
-global _WINSIZEINFO_2MON :=
-[
-	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
-]
-global _WINSIZEINFO_3MON_FULL :=
-[
-	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			1.0,						),
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE,	),
-	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
-;	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
-]
-global _WINSIZEINFO_3MON_HALF :=
-[
-	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
-	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			0.5,						),
-	MonSnapInfo(	"DUALUP",		0.0,			0.5,								1.0,			0.5,						),
-	MonSnapInfo(	"DUALUP",		0.0,			0.15,								1.0,			0.7,						),
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	"4K",			0.0,			1.0-giWINSNAP_4K_HEIGHT_RATE/2,		1.0,			giWINSNAP_4K_HEIGHT_RATE/2,	),
-	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
-;	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
-]
-global _WINSIZEINFO_4MON_FULL :=
+global _WINSIZEINFO_FULL :=
 [
 	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			1.0,						),
@@ -110,7 +78,7 @@ global _WINSIZEINFO_4MON_FULL :=
 	MonSnapInfo(	"MAIN",			0.0,			0.0,								1.0,			1.0,						),
 	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
-global _WINSIZEINFO_4MON_HALF :=
+global _WINSIZEINFO_HALF :=
 [
 	;				sMonName,		dXStartPosRate,	dYStartPosRate,						dMonWidthRate,	dMonHeightRate
 	MonSnapInfo(	"DUALUP",		0.0,			0.0,								1.0,			0.5,						),
@@ -122,9 +90,8 @@ global _WINSIZEINFO_4MON_HALF :=
 	MonSnapInfo(	"MOBILE",		0.0,			0.0,								1.0,			1.0,						),
 ]
 global gaWINSNAP_WIN_SIZE_INFO := [
-	; MonNum=1,				MonNum=2,				MonNum=3,					MonNum=4
-	[ _WINSIZEINFO_1MON,	_WINSIZEINFO_2MON,		_WINSIZEINFO_3MON_FULL,		_WINSIZEINFO_4MON_FULL,		],	; PATTEN0
-	[ _WINSIZEINFO_1MON,	_WINSIZEINFO_2MON,		_WINSIZEINFO_3MON_HALF,		_WINSIZEINFO_4MON_HALF,		],	; PATTEN1
+	_WINSIZEINFO_FULL,	; PATTEN0
+	_WINSIZEINFO_HALF,	; PATTEN1
 ]
 ; }}}
 
@@ -805,11 +772,17 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		global giWinSnapIdx
 		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
-		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
-		giWinSnapIdx += 1
-		if ( giWinSnapIdx > iWinSnapIdxMax ) {
-			giWinSnapIdx := 1
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
+		
+		Loop {
+			giWinSnapIdx += 1
+			if ( giWinSnapIdx > iWinSnapIdxMax ) {
+				giWinSnapIdx := 1
+			}
+			sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
+			if gmMonIdxMap.Has(sMonName) {
+				break
+			}
 		}
 	;	MsgBox "[DBG] IncrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
@@ -818,11 +791,17 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		global giWinSnapIdx
 		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
-		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
-		giWinSnapIdx -= 1
-		if ( giWinSnapIdx < 1 ) {
-			giWinSnapIdx := iWinSnapIdxMax
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
+		
+		Loop {
+			giWinSnapIdx -= 1
+			if ( giWinSnapIdx < 1 ) {
+				giWinSnapIdx := iWinSnapIdxMax
+			}
+			sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
+			if gmMonIdxMap.Has(sMonName) {
+				break
+			}
 		}
 	;	MsgBox "[DBG] DecrementWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
@@ -831,9 +810,12 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		global giWinSnapIdx
 		global giWinSnapPattern
 		global gaWINSNAP_WIN_SIZE_INFO
-		iMonNumIdx := GetMonitorNum()
-		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx].Length
+		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
 		giWinSnapIdx := CropValue(iWinSnapIdx, 1, iWinSnapIdxMax)
+		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
+		if !!gmMonIdxMap.Has(sMonName) {
+			MsgBox "[error] Unknown iWinSnapIdx: " . iWinSnapIdx
+		}
 	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
 	} ; }}}
 	ApplyWinSnap() ; {{{
@@ -843,13 +825,12 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		global gaWINSNAP_WIN_SIZE_INFO
 		global gmMonIdxMap
 		
-		iMonNumIdx := GetMonitorNum()
-		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].sMonName
+		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
 		iMonIdx := gmMonIdxMap[sMonName]
-		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dXStartPosRate
-		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dYStartPosRate
-		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dMonWidthRate
-		dMonHeightRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][iMonNumIdx][giWinSnapIdx].dMonHeightRate
+		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dXStartPosRate
+		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dYStartPosRate
+		dMonWidthRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dMonWidthRate
+		dMonHeightRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dMonHeightRate
 		
 		clsMonPosInfo := GetMonitorPosInfo(iMonIdx)
 		iWinX := Integer(clsMonPosInfo.iX + (clsMonPosInfo.iWidth * dXStartPosRate))
