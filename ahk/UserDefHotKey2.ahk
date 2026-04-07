@@ -66,7 +66,7 @@ global giMON_POSSIZE_INFOS :=
 	MonPosSizeInfo( "DUALUP",	1920,		-373,		2561,	2800	)
 ]
 global giMON_POS_TORELANCE := 100 ; [pxl]
-global giMON_SIZE_TORELANCE := 100 ; [pxl]
+global giMON_SIZE_TORELANCE := 200 ; [pxl]
 global giWINSNAP_IDX_CLEAR_INTERVAL_MS := 10000
 global giWINSNAP_WIN_NARROW_SIZE := 2 ; [px]
 global giWINSNAP_4K_HEIGHT_RATE := 0.81 ; 0～1
