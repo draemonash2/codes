@@ -24,12 +24,12 @@ If InStr(sDiffProgramPath, "%") > 0 then
     WScript.Quit
 End if
 
-Dim vAnswer
-vAnswer = MsgBox("ローカルフォルダとGithubのフォルダを比較します。", vbOkCancel, sOutputMsg)
-If vAnswer = vbCancel Then
-    MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sOutputMsg
-    WScript.Quit
-End If
+'Dim vAnswer
+'vAnswer = MsgBox("ローカルフォルダとGithubのフォルダを比較します。", vbOkCancel, sOutputMsg)
+'If vAnswer = vbCancel Then
+'    MsgBox "キャンセルが押されたため、処理を中断します。", vbExclamation, sOutputMsg
+'    WScript.Quit
+'End If
 
 'フォルダ比較対象走査＆フォルダ比較実行
 Dim vDirPath
@@ -72,7 +72,7 @@ For Each oFile In oFolder.Files
     End If
 Next
 
-MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg
+'MsgBox "比較/マージが完了したらOKを押してください。", vbOkOnly, sOutputMsg
 
 'MsgBox "完了！", vbOkOnly, WScript.ScriptName
 
