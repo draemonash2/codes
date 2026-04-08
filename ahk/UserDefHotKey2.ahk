@@ -813,7 +813,7 @@ ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
 		giWinSnapIdx := CropValue(iWinSnapIdx, 1, iWinSnapIdxMax)
 		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
-		if !!gmMonIdxMap.Has(sMonName) {
+		if !gmMonIdxMap.Has(sMonName) {
 			MsgBox "[error] Unknown iWinSnapIdx: " . iWinSnapIdx
 		}
 	;	MsgBox "[DBG] SetWinSnapIdx()" . "`ngiWinSnapIdx = " . giWinSnapIdx
