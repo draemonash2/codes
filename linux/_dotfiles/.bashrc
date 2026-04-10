@@ -2065,7 +2065,7 @@ if [ -f /.dockerenv ]; then
 fi
 
 ### ROS2
-alias gsetup="source /opt/ros/humble/setup.bash"
+alias gsetup="source /opt/ros/$ROS_DISTRO/setup.bash"
 alias lsetup="source install/setup.bash"
 #export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
 export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message}"
@@ -2079,7 +2079,7 @@ function killros2() { # {{{
     ps a -u ${USER} | grep -v " 0:00 bash" | grep -v " 0:00 ps a -u "
     killprocessall ros2 &> /dev/null
     killprocessall "--ros-args" &> /dev/null
-    killprocessall "/opt/ros/humble" &> /dev/null
+    killprocessall "/opt/ros/$ROS_DISTRO" &> /dev/null
     killprocessall "ros2cli.daemon" &> /dev/null
     killprocessall ign &> /dev/null
     echo ### after ###

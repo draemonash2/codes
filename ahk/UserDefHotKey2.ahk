@@ -99,7 +99,7 @@ global gaWINSNAP_WIN_SIZE_INFO := [
 ;* Preprocess
 ;* ***************************************************************
 ; {{{
-;TraySetIcon "UserDefHotKey2.ico"
+TraySetIcon "UserDefHotKey2.ico"
 if (gbEnableMute) {
 	SoundSetMute true	; 起動時自動ミュート
 }

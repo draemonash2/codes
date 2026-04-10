@@ -5,8 +5,7 @@
 	#SingleInstance force			; このスクリプトが再度呼び出されたらリロードして置き換え
 	#WinActivateForce				; ウィンドウのアクティブ化時に、穏やかな方法を試みるのを省略して常に強制的な方法でアクティブ化を行う。（タスクバーアイコンが点滅する現象が起こらなくなる）
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
-
-TraySetIcon "DesktopClock.ico"
+	TraySetIcon "DesktopClock.ico"
 
 global gsDESKTOPCLOCK_INFO := [
 	; ClockGui(x, y, fontSize, width[, height])
@@ -23,7 +22,7 @@ global gsDESKTOPDATE_INFO := [
 ;	DateGui(1732, 700, 20, 200),		; Main
 ;	DateGui(851, 2320, 18, 200),		; Mobile
 ;	DateGui(3025, -490, 30, 300),		; DualUp
-	DateGui(4499, -680, 50, 450),		; 4K
+	DateGui(4479, -680, 50, 450),		; 4K
 ]
 
 StartDesktopClock()
