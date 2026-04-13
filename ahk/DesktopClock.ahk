@@ -35,6 +35,7 @@ class ClockGui {
 		this.gui.MarginX := 0
 		this.gui.MarginY := 0
 		this.gui.SetFont("s" iFontSize, "Segoe UI")
+	;	this.gui.SetFont("s" iFontSize, "DSEG7 Classic-Bold")
 		this.clockText := this.gui.AddText("cWhite Center w" iWidth, "")
 		; Make black background fully transparent — only the white text is visible
 		WinSetTransColor("Black 220", this.gui.Hwnd)
