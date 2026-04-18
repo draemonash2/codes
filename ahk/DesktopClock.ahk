@@ -7,6 +7,14 @@
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 	TraySetIcon "DesktopClock.ico"
 
+^+!Enter::ReloadMe()
+ReloadMe() ; {{{
+{
+	Reload
+	Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
+	MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
+} ; }}}
+
 global gsDESKTOPCLOCK_INFO := [
 	; ClockGui(x, y, fontSize, width[, height])
 	;   height=0 (default): auto-sized to font; height>0: explicit window height
