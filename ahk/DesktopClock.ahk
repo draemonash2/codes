@@ -7,14 +7,6 @@
 	SendMode "Input"				; WindowsAPIの SendInput関数を利用してシステムに一連の操作イベントをまとめて送り込む方式。
 	TraySetIcon "DesktopClock.ico"
 
-^+!Enter::ReloadMe()
-ReloadMe() ; {{{
-{
-	Reload
-	Sleep 1000 ; リロードに成功した場合、リロードはスリープ中にこのインスタンスを閉じるので、以下の行に到達することはない
-	MsgBox "スクリプト" . A_ScriptName . "の再読み込みに失敗しました"
-} ; }}}
-
 global gsDESKTOPCLOCK_INFO := [
 	; ClockGui(x, y, fontSize, width[, height])
 	;   height=0 (default): auto-sized to font; height>0: explicit window height
@@ -57,6 +49,9 @@ class ClockGui {
 	Update() {
 		this.clockText.Text := FormatTime(, "HH:mm:ss")
 	}
+	BringToTop() {
+		WinSetAlwaysOnTop(1, "ahk_id " this.gui.Hwnd)
+	}
 	CheckMouseOver() {
 		MouseGetPos(&mx, &my)
 		WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
@@ -91,6 +86,9 @@ class DateGui {
 		static dayNames := ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 		this.dateText.Text := FormatTime(, "MM/dd") " (" dayNames[A_WDay] ")"
 	}
+	BringToTop() {
+		WinSetAlwaysOnTop(1, "ahk_id " this.gui.Hwnd)
+	}
 	CheckMouseOver() {
 		MouseGetPos(&mx, &my)
 		WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " this.gui.Hwnd)
@@ -119,10 +117,14 @@ _CheckMouseOverAllClocks() {
 ; Update all gsDESKTOPCLOCK_INFO / gsDESKTOPDATE_INFO every second
 _UpdateAllClocks() {
 	global gsDESKTOPCLOCK_INFO, gsDESKTOPDATE_INFO
-	for clock in gsDESKTOPCLOCK_INFO
+	for clock in gsDESKTOPCLOCK_INFO {
 		clock.Update()
-	for date in gsDESKTOPDATE_INFO
+		clock.BringToTop()
+	}
+	for date in gsDESKTOPDATE_INFO {
 		date.Update()
+		date.BringToTop()
+	}
 }
 ; Allow dragging each clock/date window with Ctrl+drag
 WM_NCHITTEST(wParam, lParam, msg, hwnd) {
