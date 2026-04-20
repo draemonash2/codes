@@ -98,12 +98,11 @@ If vAnswer = vbYes Then
         End If
         Dim sCmd
         If sAuthType = "0" Then ' Password
-            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sLinuxUserName & ":" & sKey & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & sRelPathLinux & " " & sDownloadTrgtDirPath & "\" & sRelPathWin & """ ""exit"""
+            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sLinuxUserName & ":" & sKey & "@" & sLoginServerName & """ ""get """"" & sHomeDirPath & "/" & sRelPathLinux & """"" """"" & sDownloadTrgtDirPath & "\" & sRelPathWin & """"""" ""exit"""
         Else                    ' PrivateKey
-            sCmd = """" & sScpProgramPath & """ /console /privatekey=" & sKey & " /command ""option batch on"" ""open " & sLinuxUserName & "@" & sLoginServerName & """ ""get " & sHomeDirPath & "/" & sRelPathLinux & " " & sDownloadTrgtDirPath & "\" & sRelPathWin & """ ""exit"""
+            sCmd = """" & sScpProgramPath & """ /console /privatekey=""""" & sKey & """"" /command ""option batch on"" ""open " & sLinuxUserName & "@" & sLoginServerName & """ ""get """"" & sHomeDirPath & "/" & sRelPathLinux & """"" """"" & sDownloadTrgtDirPath & "\" & sRelPathWin & """"""" ""exit"""
         End If
         objWshShell.Run sCmd, 0, True
-        'MsgBox sCmd
         If objFSO.FileExists(sDownloadTrgtDirPath & "\" & sRelPathWin) Then
             'Do Nothing
         Else
@@ -139,9 +138,9 @@ If vAnswer = vbYes Then
         sRelPathWin = Replace(csSyncTrgtFiles(iIdx), "/", "\")
         sRelPathLinux = Replace(csSyncTrgtFiles(iIdx), "\", "/")
         If sAuthType = "0" Then ' Password
-            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sLinuxUserName & ":" & sKey & "@" & sLoginServerName & """ ""put " & sDownloadTrgtDirPath & "\" & sRelPathWin & " " & sHomeDirPath & "/" & sRelPathLinux & """ ""exit"""
+            sCmd = """" & sScpProgramPath & """ /console /command ""option batch on"" ""open " & sLinuxUserName & ":" & sKey & "@" & sLoginServerName & """ ""put """"" & sDownloadTrgtDirPath & "\" & sRelPathWin & """"" """"" & sHomeDirPath & "/" & sRelPathLinux & """"""" ""exit"""
         Else                    ' PrivateKey
-            sCmd = """" & sScpProgramPath & """ /console /privatekey=" & sKey & " /command ""option batch on"" ""open " & sLinuxUserName & "@" & sLoginServerName & """ ""put " & sDownloadTrgtDirPath & "\" & sRelPathWin & " " & sHomeDirPath & "/" & sRelPathLinux & """ ""exit"""
+            sCmd = """" & sScpProgramPath & """ /console /privatekey=""""" & sKey & """"" /command ""option batch on"" ""open " & sLinuxUserName & "@" & sLoginServerName & """ ""put """"" & sDownloadTrgtDirPath & "\" & sRelPathWin & """"" """"" & sHomeDirPath & "/" & sRelPathLinux & """"""" ""exit"""
         End If
         objWshShell.Run sCmd, 0, True
         'MsgBox sCmd
