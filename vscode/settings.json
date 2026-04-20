@@ -16,7 +16,7 @@
         "editor.formatOnType": true
     },
     "editor.minimap.enabled": false,
-    "markdown-preview-enhanced.previewTheme": "github-dark.css",
+    "markdown-preview-enhanced.previewTheme": "atom-light.css",
     "git.openRepositoryInParentFolders": "never",
     "[markdown]": {
         "editor.wordWrap": "off"
