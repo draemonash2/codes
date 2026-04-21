@@ -309,6 +309,8 @@ alias sbr='. ~/.bashrc'
 alias vr='vim ~/.vimrc'
 alias ir='vim ~/.inputrc; bind -f ~/.inputrc'
 alias sr='vim ~/.screenrc'
+alias cldr='vim ~/.claude/CLAUDE.md'
+alias gmnr='vim ~/.gemini/GEMINI.md'
 function alias_agt() {
     file=~/_dotfiles/.ai_agents/AGENTS.md
     if [ -f "${file}" ]; then
@@ -2594,7 +2596,7 @@ function exportsdf() { # {{{
     sed -i 's/^\n//g' ${sdf_file_path}
     sed -i '1i <?xml version="1.0" ?>' ${sdf_file_path}
 } # }}}
-function ignvisurdf() {
+function ignvisurdf() { # {{{
     if [ $# -ne 2 ]; then
         echo "[error] wrong number of arguments."
         echo "  usage : ignvisurdf <model_dir_path> <urdf_file_path>"
