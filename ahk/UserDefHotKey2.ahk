@@ -865,6 +865,16 @@ MinimizeWindows()
 	} ; }}}
 	; }}}
 
+	; Window一括最小化
+	MinimizeWindows() { ; {{{
+		for exe in gasMINIMIZE_EXE_LIST {
+			hwndList := WinGetList("ahk_exe " exe)
+			for hwnd in hwndList {
+				WinMinimize("ahk_id " hwnd)
+			}
+		}
+	} ; }}}
+
 	; ファイル名取得
 	ExtractFileName( sFilePath ) ; {{{
 	{
