@@ -93,6 +93,7 @@ global gaWINSNAP_WIN_SIZE_INFO := [
 	_WINSIZEINFO_FULL,	; PATTEN0
 	_WINSIZEINFO_HALF,	; PATTEN1
 ]
+global gasMINIMIZE_EXE_LIST := ["Slack.exe", "ms-teams.exe", "olk.exe"]
 ; }}}
 
 ;* ***************************************************************
@@ -117,6 +118,7 @@ RestartKitchenTimer()
 SetEveryDayAlermTimer()
 ShowAutoHideTrayTip("", A_ScriptName . " is loaded.", 2000)
 ;StartDesktopClock()
+MinimizeWindows()
 ; }}}
 
 ;* ***************************************************************
