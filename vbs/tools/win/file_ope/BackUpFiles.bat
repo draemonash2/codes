@@ -2,7 +2,7 @@
 set tm=%time: =0%
 set dt=%date:/=%
 set BACKUP_LOG="%MYDIRPATH_DESKTOP%\backup_executed_at_%dt:~2,6%-%tm:~0,2%%tm:~3,2%%tm:~6,2%.log"
-set CUR_DIR=%~dp0
+set CUR_DIR=%CD%
 ::echo %BACKUP_LOG%
 ::echo %CUR_DIR%
 

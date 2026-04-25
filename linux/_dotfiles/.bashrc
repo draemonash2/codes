@@ -417,16 +417,18 @@ function _is_exist_str() { # {{{
     #          _is_exist_str aaa_atest btes  # -> 1 (not exist)
     target=$1
     searchword=$2
-    if [[ "${target}" =~ "${searchword}" ]]; then
-        return 0 # exist
+    if [[ "${target}" == *"${searchword}"* ]]; then
+        return 0  # exist
     else
-        return 1 # not exist
+        return 1  # not exist
     fi
 }
     function _test_is_exist_str() { #{{{
-        _is_exist_str aaa_atest atest; echo $?  # -> 0 (exist)
-        _is_exist_str aaa_atest btest; echo $?  # -> 1 (not exist)
-        _is_exist_str aaa aaa; echo $?          # -> 0 (exist)
+        _is_exist_str aaa_atest atest; echo $?                                          # -> 0 (exist)
+        _is_exist_str aaa_atest btest; echo $?                                          # -> 1 (not exist)
+        _is_exist_str aaa aaa; echo $?                                                  # -> 0 (exist)
+        _is_exist_str "/mnt/c/Program Files (x86)/" "/Program Files (x86)/"; echo $?    # -> 0 (exist)
+        _is_exist_str "/mnt/c/Program Files (x86)/" "/Program Files (x8)/"; echo $?     # -> 1 (not exist)
     } #}}}
 # }}}
 function _is_str_pos_head() { # {{{
@@ -434,24 +436,23 @@ function _is_str_pos_head() { # {{{
     #          _is_str_pos_head aaa_atest aaa_   # -> 0 (head)
     #          _is_str_pos_head aaa_atest aa_    # -> 1 (not head)
     #          _is_str_pos_head aaa_atest ab     # -> 1 (not exist)
-    target=$1
-    searchword=$2
-    if [[ "${target}" =~ "${searchword}" ]]; then
-        matchpos=$(expr length \( ${target} : "\(.*\)${searchword}" \))
-        if [ ${matchpos} = 0 ]; then
-            return 0 # head
-        else
-            return 1 # not head
-        fi
+    target="$1"
+    searchword="$2"
+    if [[ "${target}" == "${searchword}"* ]]; then
+        return 0  # head
+    elif [[ "${target}" == *"${searchword}"* ]]; then
+        return 1  # not head (but exists)
     else
-        return 1 # not exist
+        return 1  # not exist
     fi
 }
     function _test_is_str_pos_head() { #{{{
-        _is_str_pos_head aaa_atest aaa_; echo $?  # -> 0 (head)
-        _is_str_pos_head aaa_atest aa_; echo $?   # -> 1 (not head)
-        _is_str_pos_head aaa_atest ab; echo $?    # -> 1 (not exist)
-        _is_str_pos_head aaa aaa; echo $?         # -> 0 (head)
+        _is_str_pos_head aaa_atest aaa_; echo $?                                        # -> 0 (head)
+        _is_str_pos_head aaa_atest aa_; echo $?                                         # -> 1 (not head)
+        _is_str_pos_head aaa_atest ab; echo $?                                          # -> 1 (not exist)
+        _is_str_pos_head aaa aaa; echo $?                                               # -> 0 (head)
+        _is_str_pos_head "Program Files (x86)/aaa" "Program Files (x86)/"; echo $?      # -> 0 (exist)
+        _is_str_pos_head "/mnt/c/Program Files (x86)/" "/Program Files (x86)/"; echo $? # -> 1 (not exist)
     } #}}}
 # }}}
 function _is_str_pos_tail() { # {{{
@@ -461,24 +462,23 @@ function _is_str_pos_tail() { # {{{
     #          _is_str_pos_tail aaa_atest btest  # -> 1 (not exist)
     target=$1
     searchword=$2
-    if [[ "${target}" =~ "${searchword}" ]]; then
-        matchpos=$(expr length \( ${target} : "\(.*\)${searchword}" \))
-        target_len=${#target}
-        searchword_len=${#searchword}
-        if [ ${target_len} = $((${matchpos} + ${searchword_len})) ]; then
-            return 0 # tail
+    if [[ "${target}" == *"${searchword}"* ]]; then
+        if [[ "${target}" == *"${searchword}" ]]; then
+            return 0  # tail
         else
-            return 1 # not tail
+            return 1  # not tail
         fi
     else
-        return 1 # not exist
+        return 1  # not exist
     fi
 }
     function _test_is_str_pos_tail() { #{{{
-        _is_str_pos_tail aaa_atest atest; echo $?  # -> 0 (tail)
-        _is_str_pos_tail aaa_atest ates; echo $?   # -> 1 (not tail)
-        _is_str_pos_tail aaa_atest btest; echo $?  # -> 1 (not exist)
-        _is_str_pos_tail aaa aaa; echo $?          # -> 0 (tail)
+        _is_str_pos_tail aaa_atest atest; echo $?                                       # -> 0 (tail)
+        _is_str_pos_tail aaa_atest ates; echo $?                                        # -> 1 (not tail)
+        _is_str_pos_tail aaa_atest btest; echo $?                                       # -> 1 (not exist)
+        _is_str_pos_tail aaa aaa; echo $?                                               # -> 0 (tail)
+        _is_str_pos_tail "/mnt/c/Program Files (x86)/" "/Program Files (x86)/"; echo $? # -> 0 (tail)
+        _is_str_pos_tail "/mnt/c/Program Files (x86)/" "/Program Files (x6)/"; echo $?  # -> 1 (not exist)
     } #}}}
 # }}}
 function _get_scp_config() { # {{{
@@ -1238,7 +1238,11 @@ function setenv() { # {{{
     env_var_name=$1
     env_value_target=$2
     env_value_base=$(printenv ${env_var_name})
-    if [ -z ${env_value_base} ]; then
+    # echo ${env_var_name}
+    # echo ${env_value_target}
+    # echo ${env_value_base}
+    echo ""
+    if [ -z "${env_value_base}" ]; then
         export ${env_var_name}="${env_value_target}"
     else
         _true=0
@@ -1268,7 +1272,7 @@ function setenv() { # {{{
             fi
         fi
     fi
-#   echo "${env_var_name}=$(printenv ${env_var_name})"
+    # echo "${env_var_name}=$(printenv ${env_var_name})"
 }
     function _test_setenv() { # {{{
         echo ""
@@ -1304,8 +1308,8 @@ function addpath() { # {{{
         return 1
     fi
     path=$1
-    if [ -e ${path} ]; then
-        setenv PATH ${path}
+    if [ -e "${path}" ]; then
+        setenv PATH "${path}"
     fi
     # echopath "PATH"
 } # }}}
