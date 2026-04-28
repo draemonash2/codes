@@ -382,6 +382,9 @@ MinimizeWindows()
 			MsgBox sMonStr
 		}
 		*/
+		/*
+		^1::Send "^!{SC146}"
+		*/
 	; }}}
 
 ;***** ホットキー(Software local) *****
