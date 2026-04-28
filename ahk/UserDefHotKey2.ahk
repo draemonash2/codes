@@ -56,6 +56,10 @@ global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下�
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
+global gbALTTABFLASH_ENABLE := True
+global giALTTABFLASH_COUNT := 2
+global giALTTABFLASH_TRANSPARANCY := 0
+global giALTTABFLASH_INTERVAL := 20
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
 [
@@ -113,6 +117,7 @@ InitSleepPreventing()
 InitKitchenTimer()
 InitAlermTimer()
 InitWinTempHide()
+InitAltTab()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -292,6 +297,7 @@ MinimizeWindows()
 		#[::			BrightenScreen()																								; 画面の明るさを下げる
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
 		#h::			ToggleWinTempHide()																								; Windows一時非表示
+		~!Tab::			PressAltTab()																									; Alt+Tab ウィンドウ切り替え検出
 	; }}}
 	;その他 ; {{{
 		^+!Enter::		ReloadMe()																										; スクリプトリロード
@@ -2095,6 +2101,32 @@ MinimizeWindows()
 		SimpleMind_WinCenter()
 	} ; }}}
 
+	; Alt+Tab後にアクティブウィンドウをフラッシュ
+	InitAltTab() { ; {{{
+		global gbAltTabbing
+		gbAltTabbing := false
+	} ; }}}
+	PressAltTab() { ; {{{
+		if (!gbALTTABFLASH_ENABLE) {
+			return
+		}
+		global gbAltTabbing
+		if (!gbAltTabbing) {
+			gbAltTabbing := true
+			SetTimer(CheckAltTabEnd, 30)
+		}
+	} ; }}}
+	CheckAltTabEnd() { ; {{{
+		global gbAltTabbing
+		if (GetKeyState("Alt", "P")) {
+			return
+		}
+		SetTimer(CheckAltTabEnd, 0)
+		gbAltTabbing := false
+		Sleep 80
+		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARANCY, giALTTABFLASH_INTERVAL)
+	} ; }}}
+
 ;* ***************************************************************
 ;* Functions (common)
 ;* ***************************************************************
@@ -2225,5 +2257,18 @@ MinimizeWindows()
 					gmMonIdxMap[mon_possize_info.sMonName] := iMonIdx
 				}
 			}
+		}
+	} ; }}}
+	; アクティブウィンドウフラッシュ
+	FlashActiveWindow(iCount:=1, iTransparancy:=10, iInterval:=80) { ; {{{
+		hwnd := WinExist("A")
+		if (!hwnd) {
+			return
+		}
+		Loop iCount {
+			WinSetTransparent(iTransparancy, hwnd)
+			Sleep iInterval
+			WinSetTransparent("Off", hwnd)
+			Sleep iInterval
 		}
 	} ; }}}
