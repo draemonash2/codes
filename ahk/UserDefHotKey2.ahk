@@ -58,7 +58,7 @@ global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gbALTTABFLASH_ENABLE := True
 global giALTTABFLASH_COUNT := 2
-global giALTTABFLASH_TRANSPARANCY := 150 ; 0(透明) ～ 255(不透明)
+global giALTTABFLASH_TRANSPARENCY := 150 ; 0(透明) ～ 255(不透明)
 global giALTTABFLASH_INTERVAL := 40
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
@@ -2103,29 +2103,29 @@ MinimizeWindows()
 
 	; Alt+Tab後にアクティブウィンドウをフラッシュ
 	InitAltTab() { ; {{{
-		global gbAltTabbing
-		gbAltTabbing := false
+		global isAltTabDown
+		isAltTabDown := false
 	} ; }}}
 	PressAltTab() { ; {{{
 		if (!gbALTTABFLASH_ENABLE) {
 			return
 		}
-		global gbAltTabbing
-		if (!gbAltTabbing) {
-			gbAltTabbing := true
-			SetTimer(CheckAltTabEnd, 30)
+		global isAltTabDown
+		if (!isAltTabDown) {
+			isAltTabDown := true
+			SetTimer(CheckAltTabUp, 30)
 		}
 	} ; }}}
-	CheckAltTabEnd() { ; {{{
-		global gbAltTabbing
-		global giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARANCY, giALTTABFLASH_INTERVAL
+	CheckAltTabUp() { ; {{{
+		global isAltTabDown
+		global giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARENCY, giALTTABFLASH_INTERVAL
 		if (GetKeyState("Alt", "P")) {
 			return
 		}
-		SetTimer(CheckAltTabEnd, 0)
-		gbAltTabbing := false
+		SetTimer(CheckAltTabUp, 0)
+		isAltTabDown := false
 		Sleep 80
-		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARANCY, giALTTABFLASH_INTERVAL)
+		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARENCY, giALTTABFLASH_INTERVAL)
 	} ; }}}
 
 ;* ***************************************************************
@@ -2261,15 +2261,21 @@ MinimizeWindows()
 		}
 	} ; }}}
 	; アクティブウィンドウフラッシュ
-	FlashActiveWindow(iCount:=1, iTransparancy:=10, iInterval:=80) { ; {{{
+	FlashActiveWindow(iCount:=1, iTransparency:=150, iInterval:=80) { ; {{{
 		hwnd := WinExist("A")
 		if (!hwnd) {
 			return
 		}
+		WinGetPos(&x, &y, &w, &h, hwnd)
+		; Create black click-through overlay (+E0x20 = WS_EX_TRANSPARENT)
+		oGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20")
+		oGui.BackColor := "000000"
+		WinSetTransparent(iTransparency, oGui)
 		Loop iCount {
-			WinSetTransparent(iTransparancy, hwnd)
+			oGui.Show("x" x " y" y " w" w " h" h " NoActivate")
 			Sleep iInterval
-			WinSetTransparent("Off", hwnd)
+			oGui.Hide()
 			Sleep iInterval
 		}
+		oGui.Destroy()
 	} ; }}}
