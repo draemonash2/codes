@@ -60,6 +60,7 @@ global gbALTTABFLASH_ENABLE := True
 global giALTTABFLASH_COUNT := 2
 global giALTTABFLASH_TRANSPARENCY := 150 ; 0(透明) ～ 255(不透明)
 global giALTTABFLASH_INTERVAL := 40
+global giALTTABFLASH_COLOR := "004000"
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
 [
@@ -2125,7 +2126,7 @@ MinimizeWindows()
 		SetTimer(CheckAltTabUp, 0)
 		isAltTabDown := false
 		Sleep 80
-		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARENCY, giALTTABFLASH_INTERVAL)
+		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARENCY, giALTTABFLASH_INTERVAL, giALTTABFLASH_COLOR)
 	} ; }}}
 
 ;* ***************************************************************
@@ -2261,7 +2262,7 @@ MinimizeWindows()
 		}
 	} ; }}}
 	; アクティブウィンドウフラッシュ
-	FlashActiveWindow(iCount:=1, iTransparency:=150, iInterval:=80) { ; {{{
+	FlashActiveWindow(iCount:=1, iTransparency:=150, iInterval:=80, sColor:="000000") { ; {{{
 		hwnd := WinExist("A")
 		if (!hwnd) {
 			return
@@ -2269,7 +2270,7 @@ MinimizeWindows()
 		WinGetPos(&x, &y, &w, &h, hwnd)
 		; Create black click-through overlay (+E0x20 = WS_EX_TRANSPARENT)
 		oGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20")
-		oGui.BackColor := "000000"
+		oGui.BackColor := sColor
 		WinSetTransparent(iTransparency, oGui)
 		Loop iCount {
 			oGui.Show("x" x " y" y " w" w " h" h " NoActivate")
