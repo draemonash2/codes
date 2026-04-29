@@ -58,8 +58,8 @@ global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
 global gbALTTABFLASH_ENABLE := True
 global giALTTABFLASH_COUNT := 2
-global giALTTABFLASH_TRANSPARANCY := 0
-global giALTTABFLASH_INTERVAL := 20
+global giALTTABFLASH_TRANSPARANCY := 150 ; 0(透明) ～ 255(不透明)
+global giALTTABFLASH_INTERVAL := 40
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
 [
@@ -2118,6 +2118,7 @@ MinimizeWindows()
 	} ; }}}
 	CheckAltTabEnd() { ; {{{
 		global gbAltTabbing
+		global giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARANCY, giALTTABFLASH_INTERVAL
 		if (GetKeyState("Alt", "P")) {
 			return
 		}
