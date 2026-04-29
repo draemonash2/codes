@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Fetch(:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(diff:*)",
+      "Bash(wget:*)",
+      "Bash(cmake:*)",
+      "Bash(make:*)",
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(flake8:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(colcon build:*)",
+      "Bash(colcon test:*)",
+      "Bash(ros2 topic:*)",
+      "Bash(ros2 node:*)",
+      "Bash(ros2 service:*)",
+      "Bash(ros2 param:*)",
+      "Bash(ros2 pkg:*)"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Read(id_rsa)",
+      "Read(**/*token*)",
+      "Read(**/*key*)",
+      "Write(**/secrets/**)"
+    ]
+  }
+}

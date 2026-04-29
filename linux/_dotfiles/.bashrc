@@ -2071,11 +2071,7 @@ if [ -f /.dockerenv ]; then
 fi
 
 ### ROS2
-ROS_DISTRO=${ROS_DISTRO:-"humble"}
-alias gsetup="source /opt/ros/${ROS_DISTRO}/setup.bash"
-if [ -f "/opt/ros/${ROS_DISTRO}/setup.bash" ]; then
-    gsetup
-fi
+alias gsetup="source /opt/ros/$ROS_DISTRO/setup.bash"
 alias lsetup="source install/setup.bash"
 #export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message} ({function_name}() at {file_name}:{line_number})"
 export RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{time}] [{name}]: {message}"
