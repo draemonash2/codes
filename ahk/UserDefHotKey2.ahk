@@ -56,7 +56,7 @@ global giALARMTIMER_INITTIME_MIN_STEP := 30 ;「0より大きい」「60以下�
 global aiALARMTIMER_EVERYDAY_TRGT_WEEKDAY := [] ; 1:Sun, 2:Mon, ... 7:Sat
 global giALARMTIMER_SNOOZE_MSG_DURATION_SEC := 10
 global gfALARMTIMER_SNOOZE_INIT_SEC := 0.5
-global gbALTTABFLASH_ENABLE := True
+global gbALTTABFLASH_ENABLE := False
 global giALTTABFLASH_COUNT := 2
 global giALTTABFLASH_TRANSPARENCY := 150 ; 0(透明) ～ 255(不透明)
 global giALTTABFLASH_INTERVAL := 40
@@ -65,10 +65,14 @@ global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
 [
 	;				sMonName,	iX(left),	iY(top),	iWidth,	iHeight
-	MonPosSizeInfo( "MAIN",		0,			0,			1739,	1201	),
-	MonPosSizeInfo( "4K",		4480,		-1103,		2161,	3760	),
-	MonPosSizeInfo( "MOBILE",	0,			1200,		1921,	1161	),
-	MonPosSizeInfo( "DUALUP",	1920,		-373,		2561,	2800	)
+;	MonPosSizeInfo( "MAIN",		0,			0,			1739,	1201	),
+;	MonPosSizeInfo( "4K",		4480,		-1103,		2161,	3760	),
+;	MonPosSizeInfo( "MOBILE",	0,			1200,		1921,	1161	),
+;	MonPosSizeInfo( "DUALUP",	1920,		-373,		2561,	2800	)
+	MonPosSizeInfo( "MAIN",		-1927,		454,		1739,	1201	),
+	MonPosSizeInfo( "4K",		2561,		-645,		2161,	3760	),
+	MonPosSizeInfo( "MOBILE",	-1928,		1646,		1921,	1161	),
+	MonPosSizeInfo( "DUALUP",	0,			0,			2561,	2800	)
 ]
 global giMON_POS_TORELANCE := 100 ; [pxl]
 global giMON_SIZE_TORELANCE := 200 ; [pxl]
@@ -255,6 +259,9 @@ MinimizeWindows()
 		^+!u::			StartProgramAndActivateFile( "C:\other\PC移行時チェックリスト.xlsx" )											; PC移行時チェックリスト.xlsx
 		^+!VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.jpg" )											; ショートカットキー配列表.jpg
 		^+!#VKE2::		StartProgramAndActivateFile( "C:\other\ショートカットキー配列表.drawio", 1 )									; ショートカットキー配列表.drawio
+	; }}}
+	;ファイルオープン（仕事用） ; {{{
+		^+!#-::			Run "https://platform.levtech.jp/p/workreport/"																	; レバテック作業報告書
 	; }}}
 	;プログラム起動 ; {{{
 		^+!y::			StartProgramAndActivateFile( EnvGet("MYDIRPATH_CODES") . "\_sync_github-codes-remote.bat" )						; codes同期

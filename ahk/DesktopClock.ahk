@@ -13,7 +13,7 @@ global gsDESKTOPCLOCK_INFO := [
 ;	ClockGui(1732, 742, 33, 200),		; Main
 ;	ClockGui(851, 2350, 30, 200),		; Mobile
 ;	ClockGui(3025, -449, 50, 300),		; DualUp
-	ClockGui(4539, -612, 90, 450),		; 4K
+	ClockGui(2590, -185, 90, 450),		; 4K
 ]
 
 global gsDESKTOPDATE_INFO := [
@@ -22,7 +22,7 @@ global gsDESKTOPDATE_INFO := [
 ;	DateGui(1732, 700, 20, 200),		; Main
 ;	DateGui(851, 2320, 18, 200),		; Mobile
 ;	DateGui(3025, -490, 30, 300),		; DualUp
-	DateGui(4479, -680, 50, 450),		; 4K
+	DateGui(2572 ,-246, 50, 450),		; 4K
 ]
 
 StartDesktopClock()
