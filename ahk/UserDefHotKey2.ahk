@@ -123,7 +123,6 @@ InitKitchenTimer()
 InitAlermTimer()
 InitWinTempHide()
 InitAltTab()
-;InitVK1DFirstPress()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -184,23 +183,6 @@ MinimizeWindows()
 		}
 		
 		VK1D::VK1D																					; 単押しはそのまま機能させる
-	;	VK1D::																						; 単押しはそのまま機能させる（リピートは抑制）
-	;	{
-	;		global gbVK1D_firstPress
-	;		if !gbVK1D_firstPress {
-	;			return
-	;		}
-	;		gbVK1D_firstPress := false
-	;		Send "{VK1D}"
-	;	}
-	;	VK1D up::
-	;	{
-	;		global gbVK1D_firstPress
-	;		gbVK1D_firstPress := true
-	;	}
-	;	InitVK1DFirstPress() {
-	;		global gbVK1D_firstPress := true  ; suppress VK1D key repeat to prevent IME interference
-	;	}
 		
 		VK1D & VKF3::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
 		VK1D & VKF4::Send "{Esc}"																	; 無変換+半角/全角 -> Esc
