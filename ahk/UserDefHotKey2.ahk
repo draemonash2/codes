@@ -410,29 +410,29 @@ MinimizeWindows()
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe msedge.exe") ; {{{
 	;	RButton::RButton
-		~RButton & WheelUp::SendInput "{Blind}^+{Tab}"
-		~RButton & WheelDown::SendInput "{Blind}^{Tab}"
+		~RButton & WheelUp::Send "{Blind}^+{Tab}"
+		~RButton & WheelDown::Send "{Blind}^{Tab}"
 		^!t::	;タブを複製して、Webページを和訳
 		{
 		;	;タブを複製
-		;	SendInput "^+k"
+		;	Send "^+k"
 		;	sleep 1000
 			;Webページを和訳
-			SendInput "{F5}"
+			Send "{F5}"
 			sleep 1000
-			SendInput "{AppsKey}"
+			Send "{AppsKey}"
 			sleep 300
-			SendInput "t"
+			Send "t"
 		}
 	;	^+1::	; Windows Difender Smartscreen 回避
 	;	{
-	;		SendInput "{Tab 2}"
+	;		Send "{Tab 2}"
 	;		sleep 100
-	;		SendInput "{Enter}"
+	;		Send "{Enter}"
 	;		sleep 100
-	;		SendInput "{Tab 4}"
+	;		Send "{Tab 4}"
 	;		sleep 100
-	;		SendInput "{Enter}"
+	;		Send "{Enter}"
 	;	}
 		^+1::
 		{
@@ -447,15 +447,15 @@ MinimizeWindows()
 		}
 			ReplaceFavUrl()
 			{
-				SendInput "{Appskey}"
+				Send "{Appskey}"
 				sleep 100
-				SendInput "e"
+				Send "e"
 				sleep 100
-				SendInput "{Tab}{Home}"
+				Send "{Tab}{Home}"
 				sleep 100
-				SendInput "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
+				Send "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
 				sleep 100
-				SendInput "{Up}"
+				Send "{Up}"
 			}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
@@ -492,33 +492,33 @@ MinimizeWindows()
 			if (IME_GET() == 1) {
 				IME_SET(0)
 				Sleep 50
-				SendInput "+{Space}"
+				Send "+{Space}"
 				Sleep 50
 				IME_SET(1)
 			} else {
-				SendInput "+{Space}"
+				Send "+{Space}"
 			}
 		}
 	;	;Ctrl+Shift+ホイールUp/Downで右/左スクロール（旧Excel用）
 	;	^+WheelUp::
 	;	{
 	;		SetScrollLockState True
-	;		SendInput "{Left 5}"
+	;		Send "{Left 5}"
 	;		SetScrollLockState False
 	;	}
 	;	^+WheelDown::
 	;	{
 	;		SetScrollLockState True
-	;		SendInput "{Right 5}"
+	;		Send "{Right 5}"
 	;		SetScrollLockState False
 	;	}
 		^+1::	; 選択した文字列を上付き文字にする
 		{
-			SendInput "^1"
+			Send "^1"
 			Sleep 100
-			SendInput "!e"
+			Send "!e"
 			Sleep 100
-			SendInput "{Enter}"
+			Send "{Enter}"
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe SimpleMindPro.exe") ; {{{
@@ -535,22 +535,22 @@ MinimizeWindows()
 		Esc::!F4	;Escで終了
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe XF.exe") ; {{{
-		^WheelUp::SendInput "^+{Tab}"	; Next tab.
-		^WheelDown::SendInput "^{Tab}"	; Previous tab.
-	;	~RButton & WheelUp::SendInput "{Blind}^+{Tab}"	; Next tab.
-	;	~RButton & WheelDown::SendInput "{Blind}^{Tab}"	; Previous tab.
+		^WheelUp::Send "^+{Tab}"	; Next tab.
+		^WheelDown::Send "^{Tab}"	; Previous tab.
+	;	~RButton & WheelUp::Send "{Blind}^+{Tab}"	; Next tab.
+	;	~RButton & WheelDown::Send "{Blind}^{Tab}"	; Previous tab.
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe chrome.exe") ; {{{
-	;	^WheelUp::SendInput ^+{Tab}		; Next tab.
-	;	^WheelDown::SendInput ^{Tab}	; Previous tab.
+	;	^WheelUp::Send ^+{Tab}		; Next tab.
+	;	^WheelDown::Send ^{Tab}	; Previous tab.
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_class MPC-BE") ; {{{
 		]::Send "{Space}"
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe PDFXEdit.exe") ; {{{
-		MButton::	SendInput "^z" ;元に戻す
-		XButton1::	SendInput "!5" ;下線
-		XButton2::	SendInput "!4" ;テキストハイライト
+		MButton::	Send "^z" ;元に戻す
+		XButton1::	Send "!5" ;下線
+		XButton2::	Send "!4" ;テキストハイライト
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe java.exe") and WinActive("TurboVNC: ") ; {{{
 		; 特定位置へカーソル移動
@@ -714,32 +714,12 @@ MinimizeWindows()
 	; 今押している修飾キーと共にキー送信する
 	SendKeyWithModKeyCurPressing( sSendKey, bBlind:=true ) ; {{{
 	{
-		bIsPressShift := GetKeyState("Shift","P")
-		bIsPressCtrl := GetKeyState("Ctrl","P")
-		bIsPressAlt := GetKeyState("Alt","P")
-		if (bBlind) {
-			sBlind := "{Blind}"
-		} else {
-			sBlind := ""
-		}
-		if(bIsPressShift and bIsPressCtrl and bIsPressAlt){
-			SendEvent sBlind . "!^+{" . sSendKey . "}"
-		} else if(bIsPressShift and bIsPressCtrl){
-			SendEvent sBlind . "^+{" . sSendKey . "}"
-		} else if(bIsPressShift and bIsPressAlt){
-			SendEvent sBlind . "!+{" . sSendKey . "}"
-		} else if(bIsPressAlt and bIsPressCtrl){
-			SendEvent sBlind . "!^{" . sSendKey . "}"
-		} else if(bIsPressAlt){
-			SendEvent sBlind . "!{" . sSendKey . "}"
-		} else if(bIsPressCtrl){
-			SendEvent sBlind . "^{" . sSendKey . "}"
-		} else if(bIsPressShift){
-			SendEvent sBlind . "+{" . sSendKey . "}"
-		} else {
-			SendEvent sBlind . "{" . sSendKey . "}"
-		}
-		return
+		sBlind := (bBlind) ? "{Blind}" : ""
+		sShift := GetKeyState("Shift","P") ? "+" : ""
+		sCtrl := GetKeyState("Ctrl","P") ? "^" : ""
+		sAlt := GetKeyState("Alt","P") ? "!" : ""
+		sWin := GetKeyState("LWin","P") ? "#" : ""
+		SendEvent sBlind . sShift . sCtrl . sAlt . sWin . "{" . sSendKey . "}"
 	} ; }}}
 
 	; Windowスナップ
@@ -2097,11 +2077,11 @@ MinimizeWindows()
 	; SimpleMind固有
 	SimpleMind_FocusCentralTopic() ; {{{
 	{
-		SendInput "^a{Esc}"
+		Send "^a{Esc}"
 	} ; }}}
 	SimpleMind_WinCenter() ; {{{
 	{
-		SendInput "!c"
+		Send "!c"
 	} ; }}}
 	SimpleMind_FocusCentralTopicAndWinCenter() ; {{{
 	{
