@@ -2169,6 +2169,29 @@ function! s:MoveFilePortable(src, dst) abort
 endfunction
 " }}}
 
+" ==============================================================================
+" tmux コピー整形
+"   vim で開いたソースコードを tmux のコピー機能でコピーした際に付与される
+"   行頭の行番号と行末の "$" を除去する。
+" Usage :
+"   :Ctc            " バッファ全体に適用
+"   :'<,'>Ctc       " 選択範囲のみに適用（ヴィジュアル選択後に実行）
+" ==============================================================================
+" {{{
+	command! -range=% Ctc <line1>,<line2>call s:CleanTmuxCopy()
+	function! s:CleanTmuxCopy() range
+		let l:save_pos = getpos('.')
+		let l:save_search = @/
+		" Strip leading line number with optional sign char (e.g. "     1 ", "   a 115 ", "   < 124 ")
+		execute a:firstline . ',' . a:lastline . 's/\v^\s*(\S\s+)?\d+\s//e'
+		" Strip trailing "$" (tmux's listchars eol marker)
+		execute a:firstline . ',' . a:lastline . 's/\$$//e'
+		let @/ = l:save_search
+		call setpos('.', l:save_pos)
+		nohlsearch
+	endfunction
+" }}}
+
 " **************************************************************************************************
 " *****										プラグイン設定									   *****
 " **************************************************************************************************

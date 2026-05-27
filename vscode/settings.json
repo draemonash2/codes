@@ -39,5 +39,8 @@
         ".\\\\_custom.css"
     ],
     "workbench.settings.openDefaultKeybindings": true,
-    "markdown-pdf.scale": 0.8
+    "markdown-pdf.scale": 0.8,
+    "hediet.vscode-drawio.resizeImages": null,
+    "hediet.vscode-drawio.theme": "kennedy",
+    "hediet.vscode-drawio.appearance": "light"
 }

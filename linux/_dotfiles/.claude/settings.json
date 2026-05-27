@@ -30,14 +30,14 @@
       "Bash(ros2 pkg:*)"
     ],
     "deny": [
-      "Bash(sudo:*)",
       "Read(./.env)",
       "Read(./.env.*)",
-      "Bash(git reset:*)",
-      "Bash(git rebase:*)",
       "Read(id_rsa)",
       "Read(**/*token*)",
       "Read(**/*key*)",
+      "Bash(sudo:*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
       "Write(**/secrets/**)"
     ]
   }
