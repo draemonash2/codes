@@ -1,0 +1,7 @@
+# Build outputs
+bin/
+obj/
+publish/
+
+# Crash/diagnostic logs
+*.crash.txt
