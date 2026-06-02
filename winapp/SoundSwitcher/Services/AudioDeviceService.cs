@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Management;
 using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
@@ -53,6 +52,9 @@ public class AudioDeviceService : IMMNotificationClient, IDisposable
             (DeviceState.Unplugged, ConnectionState.Disconnected),
         };
 
+        // One PnP snapshot per refresh; reused for every endpoint's battery match.
+        var batteries = DeviceBattery.Snapshot();
+
         var seen = new HashSet<string>();
         foreach (var (state, connState) in deviceStates)
         {
@@ -70,12 +72,15 @@ public class AudioDeviceService : IMMNotificationClient, IDisposable
                 var name = GetFriendlyName(dev);
                 if (string.IsNullOrEmpty(name)) continue;
 
-                var battery = connState == ConnectionState.Connected ? GetBatteryLevel(name) : null;
+                var battery = connState == ConnectionState.Connected
+                    ? DeviceBattery.Match(name, batteries)
+                    : null;
                 target.Add(new AudioDevice
                 {
                     Id = id,
                     Name = name,
                     Kind = kind,
+                    FormFactor = GetFormFactor(dev, kind),
                     IsDefault = id == defaultId,
                     BatteryPercent = battery,
                     ConnectionState = connState,
@@ -84,30 +89,41 @@ public class AudioDeviceService : IMMNotificationClient, IDisposable
         }
     }
 
+    // PKEY_AudioEndpoint_FormFactor {1da5d803-d492-4edd-8c23-e0c0ffee7f0e}, 0
+    private static readonly PropertyKey PkeyFormFactor =
+        new(new Guid("1da5d803-d492-4edd-8c23-e0c0ffee7f0e"), 0);
+
+    private static DeviceFormFactor GetFormFactor(MMDevice dev, DeviceKind kind)
+    {
+        int ff = -1;
+        try
+        {
+            if (dev.Properties.Contains(PkeyFormFactor))
+                ff = Convert.ToInt32(dev.Properties[PkeyFormFactor].Value);
+        }
+        catch { }
+
+        // Windows EndpointFormFactor enum:
+        // 1=Speakers, 2=LineLevel, 3=Headphones, 4=Microphone, 5=Headset,
+        // 6=Handset, 9=DigitalAudioDisplayDevice (HDMI/DisplayPort).
+        return ff switch
+        {
+            1 => DeviceFormFactor.Speakers,
+            2 => DeviceFormFactor.LineLevel,
+            3 => DeviceFormFactor.Headphones,
+            4 => DeviceFormFactor.Microphone,
+            5 => DeviceFormFactor.Headset,
+            9 => DeviceFormFactor.Display,
+            _ => kind == DeviceKind.Recording ? DeviceFormFactor.Microphone : DeviceFormFactor.Speakers,
+        };
+    }
+
     private static string GetFriendlyName(MMDevice dev)
     {
         try { return dev.FriendlyName; } catch { }
         try { return dev.DeviceFriendlyName; } catch { }
         return "";
     }
-
-    private static int? GetBatteryLevel(string deviceName)
-    {
-        try
-        {
-            using var searcher = new ManagementObjectSearcher(
-                $"SELECT * FROM Win32_Battery WHERE Name LIKE '%{EscapeWql(deviceName)}%'");
-            foreach (ManagementObject bat in searcher.Get())
-            {
-                if (bat["EstimatedChargeRemaining"] is ushort pct)
-                    return pct;
-            }
-        }
-        catch { }
-        return null;
-    }
-
-    private static string EscapeWql(string s) => s.Replace("'", "\\'").Replace("\\", "\\\\");
 
     public void SetDefaultDevice(AudioDevice device)
     {

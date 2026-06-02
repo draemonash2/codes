@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -43,13 +43,6 @@ public class BoolToVisibilityConverter : IValueConverter
         if (p is string s && s == "invert") b = !b;
         return b ? Visibility.Visible : Visibility.Collapsed;
     }
-    public object ConvertBack(object v, Type t, object p, CultureInfo c) => throw new NotImplementedException();
-}
-
-public class DeviceKindToIconConverter : IValueConverter
-{
-    public object Convert(object value, Type t, object p, CultureInfo c)
-        => value is DeviceKind.Recording ? "" : ""; // Microphone : Volume
     public object ConvertBack(object v, Type t, object p, CultureInfo c) => throw new NotImplementedException();
 }
 

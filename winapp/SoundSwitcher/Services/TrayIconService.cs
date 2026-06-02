@@ -20,6 +20,7 @@ public sealed class TrayIconService : IDisposable
     private readonly WinForms.NotifyIcon _icon;
     private readonly Window _window;
     private IntPtr _hIcon;
+    private bool _disposed;
 
     public TrayIconService(Window window, Action onRefresh)
     {
@@ -47,7 +48,7 @@ public sealed class TrayIconService : IDisposable
         menu.Items.Add("表示 / 非表示", null, (_, _) => ToggleWindow());
         menu.Items.Add(new WinForms.ToolStripSeparator());
         menu.Items.Add("更新", null, (_, _) => onRefresh());
-        menu.Items.Add("終了", null, (_, _) => Application.Current.Shutdown());
+        menu.Items.Add("終了", null, (_, _) => Exit());
         _icon.ContextMenuStrip = menu;
 
         // Left click toggles window visibility.
@@ -55,6 +56,17 @@ public sealed class TrayIconService : IDisposable
         {
             if (e.Button == WinForms.MouseButtons.Left) ToggleWindow();
         };
+
+        // Safety net: remove the icon even if the app exits without closing the window.
+        Application.Current.Exit += (_, _) => Dispose();
+    }
+
+    private void Exit()
+    {
+        // Remove the tray icon while the message pump is still alive so the shell
+        // processes NIM_DELETE immediately (otherwise a ghost icon can linger).
+        Dispose();
+        Application.Current.Shutdown();
     }
 
     private void ToggleWindow()
@@ -98,7 +110,10 @@ public sealed class TrayIconService : IDisposable
 
     public void Dispose()
     {
-        _icon.Visible = false;
+        if (_disposed) return;
+        _disposed = true;
+
+        _icon.Visible = false;   // sends NIM_DELETE
         _icon.Icon?.Dispose();
         _icon.Dispose();
         if (_hIcon != IntPtr.Zero)

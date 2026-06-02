@@ -5,6 +5,7 @@
         xmlns:models="clr-namespace:SoundSwitcher.Models"
         xmlns:local="clr-namespace:SoundSwitcher"
         Title="Sound Switcher"
+        FontFamily="Meiryo UI"
         Width="600" Height="520"
         MinWidth="420" MinHeight="360"
         ResizeMode="CanResize"
@@ -30,7 +31,6 @@
         <local:BoolToAccentBrushConverter x:Key="BoolToAccent"/>
         <local:BatteryColorConverter x:Key="BatteryColor"/>
         <local:BoolToVisibilityConverter x:Key="BoolToVis"/>
-        <local:DeviceKindToIconConverter x:Key="KindToIcon"/>
         <local:BatteryArcPointConverter x:Key="ArcPoint"/>
         <local:BatteryIsLargeArcConverter x:Key="ArcIsLarge"/>
 
@@ -104,21 +104,11 @@
                             </Ellipse.Fill>
                         </Ellipse>
 
-                        <!-- Device kind icon -->
-                        <TextBlock Text="{Binding Kind, Converter={StaticResource KindToIcon}}"
+                        <!-- Device type icon (varies by form factor) -->
+                        <TextBlock Text="{Binding IconGlyph}"
                                    FontFamily="Segoe MDL2 Assets" FontSize="24"
                                    Foreground="{Binding IsDefault, Converter={StaticResource BoolToAccent}}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-                        <!-- Default blue dot -->
-                        <Ellipse Width="8" Height="8"
-                                 Fill="#4F8EF7"
-                                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                 Margin="0,0,5,5">
-                            <Ellipse.Visibility>
-                                <Binding Path="IsDefault" Converter="{StaticResource BoolToVis}"/>
-                            </Ellipse.Visibility>
-                        </Ellipse>
 
                     </Grid>
 
@@ -162,8 +152,9 @@
         </Border.ContextMenu>
 
         <!-- Content (whole window is draggable) -->
+        <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="20,20,20,20">
+            <StackPanel Margin="20,20,20,52">
                 <!-- Playback -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                               Margin="0,0,0,18">
@@ -201,5 +192,36 @@
                 </ScrollViewer>
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Open Windows Sound settings -->
+        <Button x:Name="SettingsButton"
+                Click="SettingsButton_Click"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,16,14"
+                Width="34" Height="34"
+                Cursor="Hand"
+                ToolTip="Windows のサウンド設定を開く">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush2}"
+                            BorderThickness="1"
+                            CornerRadius="17">
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="15"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#282B36"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        </Grid>
     </Border>
 </Window>

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -125,6 +126,15 @@ public partial class MainWindow : Window
     }
 
     private void ExitMenu_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo("ms-settings:sound") { UseShellExecute = true });
+        }
+        catch { }
+    }
 
     // --- Resize hit-testing ---
 

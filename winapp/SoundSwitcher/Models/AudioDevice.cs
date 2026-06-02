@@ -1,10 +1,13 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace SoundSwitcher.Models;
 
 public enum DeviceKind { Playback, Recording }
 public enum ConnectionState { Connected, Disconnected, NotPresent }
+
+/// <summary>Device type, derived from the Windows endpoint form factor.</summary>
+public enum DeviceFormFactor { Unknown, Speakers, Headphones, Headset, Microphone, Display, LineLevel }
 
 public class AudioDevice : INotifyPropertyChanged
 {
@@ -15,7 +18,19 @@ public class AudioDevice : INotifyPropertyChanged
     public string Id { get; init; } = "";
     public string Name { get; init; } = "";
     public DeviceKind Kind { get; init; }
-    public string IconPath { get; init; } = "";
+    public DeviceFormFactor FormFactor { get; init; }
+
+    // Segoe MDL2 Assets glyph matching the device type (like the Windows Sound panel).
+    public string IconGlyph => FormFactor switch
+    {
+        DeviceFormFactor.Headphones => "\uE7F6", // Headphone
+        DeviceFormFactor.Headset => "\uE7F6",    // Headset -> headphone glyph
+        DeviceFormFactor.Display => "\uE7F4",     // HDMI/DisplayPort -> monitor
+        DeviceFormFactor.Microphone => "\uE720",  // Microphone
+        DeviceFormFactor.Speakers => "\uE995",    // Speakers
+        DeviceFormFactor.LineLevel => "\uE995",   // Line level -> speaker
+        _ => Kind == DeviceKind.Recording ? "\uE720" : "\uE995",
+    };
 
     public bool IsDefault
     {
