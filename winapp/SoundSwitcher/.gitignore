@@ -2,6 +2,10 @@
 bin/
 obj/
 publish/
+pub/
+dist/
+publish-fd/
+publish-fd-folder/
 
 # Crash/diagnostic logs
 *.crash.txt
