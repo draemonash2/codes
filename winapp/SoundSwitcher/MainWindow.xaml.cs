@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Threading;
 using SoundSwitcher.Services;
 using SoundSwitcher.ViewModels;
 
@@ -13,10 +15,38 @@ public partial class MainWindow : Window
     // shadow margin (12px) so the grab zone reaches the visible card edge.
     private const double ResizeBorder = 14.0;
 
+    private TrayIconService? _tray;
+
     public MainWindow()
     {
         InitializeComponent();
         DataContext = new MainViewModel();
+
+        // Live in the notification area (system tray); ShowInTaskbar is off in XAML.
+        _tray = new TrayIconService(this,
+            onRefresh: () => (DataContext as MainViewModel)?.RefreshCommand.Execute(null));
+
+        // Resident utility: shrink the working set whenever the window isn't in use.
+        // Pages fault back in on the next interaction (negligible for a click). This
+        // keeps the idle footprint that Task Manager reports very small.
+        Loaded += (_, _) => Dispatcher.BeginInvoke(
+            new Action(TrimWorkingSet), DispatcherPriority.ApplicationIdle);
+        Deactivated += (_, _) => TrimWorkingSet();
+        StateChanged += (_, _) => { if (WindowState == WindowState.Minimized) TrimWorkingSet(); };
+    }
+
+    [DllImport("kernel32.dll")]
+    private static extern bool SetProcessWorkingSetSize(IntPtr handle, IntPtr min, IntPtr max);
+
+    private static void TrimWorkingSet()
+    {
+        try
+        {
+            SetProcessWorkingSetSize(
+                System.Diagnostics.Process.GetCurrentProcess().Handle,
+                new IntPtr(-1), new IntPtr(-1));
+        }
+        catch { }
     }
 
     private void Window_SourceInitialized(object? sender, EventArgs e)
@@ -50,6 +80,10 @@ public partial class MainWindow : Window
             Height = b.Height,
         };
         s.Save();
+
+        // Remove the tray icon so it doesn't linger after exit.
+        _tray?.Dispose();
+        _tray = null;
     }
 
     private bool IsOnScreen(double left, double top)
@@ -63,15 +97,34 @@ public partial class MainWindow : Window
         return virt.Contains(new Point(left + 40, top + 20));
     }
 
-    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    // Drag the window from anywhere on the background. Clicks that land on an
+    // interactive control (a device card button or a scrollbar) are left alone so
+    // they keep working. Handled at the window root (tunneling Preview) so it fires
+    // no matter where in the chrome-less window the user presses.
+    private void Window_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (IsInteractive(e.OriginalSource as DependencyObject))
+            return;
+
         if (e.ClickCount == 2)
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         else
             DragMove();
     }
 
-    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+    private static bool IsInteractive(DependencyObject? source)
+    {
+        for (var d = source; d != null; d = VisualTreeHelper.GetParent(d))
+        {
+            if (d is System.Windows.Controls.Primitives.ButtonBase ||
+                d is System.Windows.Controls.Primitives.ScrollBar ||
+                d is System.Windows.Controls.Primitives.Thumb)
+                return true;
+        }
+        return false;
+    }
+
+    private void ExitMenu_Click(object sender, RoutedEventArgs e) => Close();
 
     // --- Resize hit-testing ---
 

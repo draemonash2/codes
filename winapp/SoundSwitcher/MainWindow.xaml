@@ -12,8 +12,10 @@
         AllowsTransparency="True"
         Background="#02000000"
         Topmost="False"
+        ShowInTaskbar="False"
         SourceInitialized="Window_SourceInitialized"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        PreviewMouseLeftButtonDown="Window_PreviewMouseLeftButtonDown">
 
     <Window.Resources>
         <SolidColorBrush x:Key="BgBrush" Color="#1A1C22"/>
@@ -31,18 +33,6 @@
         <local:DeviceKindToIconConverter x:Key="KindToIcon"/>
         <local:BatteryArcPointConverter x:Key="ArcPoint"/>
         <local:BatteryIsLargeArcConverter x:Key="ArcIsLarge"/>
-
-        <!-- Icon button template -->
-        <ControlTemplate x:Key="IconButtonTemplate" TargetType="Button">
-            <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="6">
-                <ContentPresenter/>
-            </Border>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="#2E3140"/>
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
 
         <!-- Device card -->
         <DataTemplate x:Key="DeviceCardTemplate" DataType="{x:Type models:AudioDevice}">
@@ -130,18 +120,6 @@
                             </Ellipse.Visibility>
                         </Ellipse>
 
-                        <!-- Disconnected X badge -->
-                        <Border Width="16" Height="16" CornerRadius="8"
-                                Background="#CC3333"
-                                HorizontalAlignment="Right" VerticalAlignment="Top"
-                                Margin="0,4,4,0">
-                            <Border.Visibility>
-                                <Binding Path="IsConnected" Converter="{StaticResource BoolToVis}" ConverterParameter="invert"/>
-                            </Border.Visibility>
-                            <TextBlock Text="&#xE894;" FontFamily="Segoe MDL2 Assets"
-                                       FontSize="8" Foreground="White"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
                     </Grid>
 
                     <!-- Battery % -->
@@ -174,54 +152,19 @@
             <DropShadowEffect Color="Black" BlurRadius="28" ShadowDepth="6" Opacity="0.55"/>
         </Border.Effect>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <!-- Right-click menu replaces the removed title-bar buttons -->
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="更新" Command="{Binding RefreshCommand}"/>
+                <Separator/>
+                <MenuItem Header="終了" Click="ExitMenu_Click"/>
+            </ContextMenu>
+        </Border.ContextMenu>
 
-            <!-- Title bar (draggable) -->
-            <Border Grid.Row="0" CornerRadius="16,16,0,0" Padding="20,12,20,12"
-                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="&#xE995;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="17" Foreground="{StaticResource AccentBrush}"
-                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <TextBlock Text="Sound Switcher" FontSize="15" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <Button Grid.Column="1" Template="{StaticResource IconButtonTemplate}"
-                            Command="{Binding RefreshCommand}" Margin="0,0,4,0"
-                            ToolTip="Refresh" Cursor="Hand">
-                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"/>
-                    </Button>
-
-                    <Button Grid.Column="2" Template="{StaticResource IconButtonTemplate}"
-                            Click="CloseButton_Click" Cursor="Hand" ToolTip="Close">
-                        <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"/>
-                    </Button>
-                </Grid>
-            </Border>
-
-            <!-- Content -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="20,16,20,20">
-                <!-- Divider -->
-                <Rectangle Height="1" Fill="{StaticResource BorderBrush2}" Margin="0,0,0,16"/>
-
+        <!-- Content (whole window is draggable) -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20,20,20,20">
                 <!-- Playback -->
-                <TextBlock Text="PLAYBACK" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                               Margin="0,0,0,18">
                     <ItemsControl ItemsSource="{Binding PlaybackDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
@@ -238,10 +181,10 @@
                     </ItemsControl>
                 </ScrollViewer>
 
+                <!-- Divider between playback and recording -->
+                <Rectangle Height="1" Fill="{StaticResource BorderBrush2}" Margin="0,0,0,18"/>
+
                 <!-- Recording -->
-                <Rectangle Height="1" Fill="{StaticResource BorderBrush2}" Margin="0,0,0,16"/>
-                <TextBlock Text="RECORDING" FontSize="12" FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <ItemsControl ItemsSource="{Binding RecordingDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
                         <ItemsControl.ItemsPanel>
@@ -257,7 +200,6 @@
                     </ItemsControl>
                 </ScrollViewer>
             </StackPanel>
-            </ScrollViewer>
-        </Grid>
+        </ScrollViewer>
     </Border>
 </Window>
