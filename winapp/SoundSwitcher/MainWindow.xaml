@@ -34,6 +34,66 @@
         <local:BatteryArcPointConverter x:Key="ArcPoint"/>
         <local:BatteryIsLargeArcConverter x:Key="ArcIsLarge"/>
 
+        <!-- Vertical volume slider: a thin rounded track, accent fill from the
+             bottom, and a round thumb. Min=0 (bottom) mutes; Max=1 is full. -->
+        <Style x:Key="VolumeSlider" TargetType="Slider">
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="1"/>
+            <Setter Property="SmallChange" Value="0.02"/>
+            <Setter Property="LargeChange" Value="0.1"/>
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="IsMoveToPointEnabled" Value="True"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <!-- Track background -->
+                            <Border Width="6" CornerRadius="3"
+                                    HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                                    Background="{StaticResource BorderBrush2}"/>
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <!-- Filled portion (below the thumb) -->
+                                    <RepeatButton Command="Slider.DecreaseLarge">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Width="6" CornerRadius="3"
+                                                        HorizontalAlignment="Center"
+                                                        Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <!-- Empty portion (above the thumb) -->
+                                    <RepeatButton Command="Slider.IncreaseLarge">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Width="6" Background="Transparent"
+                                                        HorizontalAlignment="Center"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Width="14" Height="14"
+                                                         Fill="{StaticResource TextPrimaryBrush}"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Device card -->
         <DataTemplate x:Key="DeviceCardTemplate" DataType="{x:Type models:AudioDevice}">
             <Button Command="{Binding DataContext.SetDefaultCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -153,12 +213,94 @@
 
         <!-- Content (whole window is draggable) -->
         <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left edge: output / input volume bars. Bottom = mute.
+             Each block (icon + slider) is boxed to the matching device card's
+             height, so icon + slider together line up with a card. -->
+        <StackPanel Grid.Column="0" Width="48" Margin="10,20,0,0" VerticalAlignment="Top">
+            <!-- Output -->
+            <Grid Height="{Binding ActualHeight, ElementName=PlaybackItems}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE767;" FontFamily="Segoe MDL2 Assets"
+                           FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" Margin="0,0,0,8"
+                           ToolTip="出力音量"/>
+                <Slider Grid.Row="1" Grid.Column="0" Style="{StaticResource VolumeSlider}"
+                        VerticalAlignment="Stretch"
+                        Value="{Binding OutputVolume.Volume, Mode=TwoWay}"
+                        IsEnabled="{Binding OutputVolume.HasDevice}"
+                        HorizontalAlignment="Center"
+                        ToolTip="出力音量"/>
+                <!-- Output level meter (fills from the bottom) -->
+                <Border Grid.Row="1" Grid.Column="1" Width="6" Margin="7,0,0,0"
+                        CornerRadius="3" Background="{StaticResource BorderBrush2}"
+                        VerticalAlignment="Stretch" ToolTip="出力レベル">
+                    <Border CornerRadius="3">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#8890A4" Offset="0"/>
+                                <GradientStop Color="#8890A4" Offset="{Binding OutputVolume.Peak}"/>
+                                <GradientStop Color="Transparent" Offset="{Binding OutputVolume.Peak}"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                </Border>
+            </Grid>
+
+            <!-- Input -->
+            <Grid Height="{Binding ActualHeight, ElementName=RecordingItems}" Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE720;" FontFamily="Segoe MDL2 Assets"
+                           FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" Margin="0,0,0,8"
+                           ToolTip="入力音量"/>
+                <Slider Grid.Row="1" Grid.Column="0" Style="{StaticResource VolumeSlider}"
+                        VerticalAlignment="Stretch"
+                        Value="{Binding InputVolume.Volume, Mode=TwoWay}"
+                        IsEnabled="{Binding InputVolume.HasDevice}"
+                        HorizontalAlignment="Center"
+                        ToolTip="入力音量"/>
+                <!-- Input level meter (fills from the bottom) -->
+                <Border Grid.Row="1" Grid.Column="1" Width="6" Margin="7,0,0,0"
+                        CornerRadius="3" Background="{StaticResource BorderBrush2}"
+                        VerticalAlignment="Stretch" ToolTip="入力レベル">
+                    <Border CornerRadius="3">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                <GradientStop Color="#8890A4" Offset="0"/>
+                                <GradientStop Color="#8890A4" Offset="{Binding InputVolume.Peak}"/>
+                                <GradientStop Color="Transparent" Offset="{Binding InputVolume.Peak}"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                </Border>
+            </Grid>
+        </StackPanel>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="20,20,20,52">
                 <!-- Playback -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                               Margin="0,0,0,18">
-                    <ItemsControl ItemsSource="{Binding PlaybackDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
+                    <ItemsControl x:Name="PlaybackItems" ItemsSource="{Binding PlaybackDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal"/>
@@ -172,12 +314,9 @@
                     </ItemsControl>
                 </ScrollViewer>
 
-                <!-- Divider between playback and recording -->
-                <Rectangle Height="1" Fill="{StaticResource BorderBrush2}" Margin="0,0,0,18"/>
-
                 <!-- Recording -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding RecordingDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
+                    <ItemsControl x:Name="RecordingItems" ItemsSource="{Binding RecordingDevices}" ItemTemplate="{StaticResource DeviceCardTemplate}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal"/>
@@ -195,6 +334,7 @@
 
         <!-- Open Windows Sound settings -->
         <Button x:Name="SettingsButton"
+                Grid.Column="1"
                 Click="SettingsButton_Click"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 Margin="0,0,16,14"

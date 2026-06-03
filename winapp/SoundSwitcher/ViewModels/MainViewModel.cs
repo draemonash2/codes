@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Threading;
+using NAudio.CoreAudioApi;
 using SoundSwitcher.Models;
 using SoundSwitcher.Services;
 
@@ -21,6 +23,13 @@ public class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<AudioDevice> PlaybackDevices => _service.PlaybackDevices;
     public ObservableCollection<AudioDevice> RecordingDevices => _service.RecordingDevices;
 
+    // Master volume of the default output (playback) and input (recording) endpoints.
+    public EndpointVolume OutputVolume { get; } = new();
+    public EndpointVolume InputVolume { get; } = new();
+
+    // Drives the level meters. Runs only while the window is visible (see Start/Stop).
+    private readonly DispatcherTimer _meterTimer;
+
     public ICommand SetDefaultCommand { get; }
     public ICommand RefreshCommand { get; }
 
@@ -29,6 +38,30 @@ public class MainViewModel : INotifyPropertyChanged
         _service = new AudioDeviceService();
         SetDefaultCommand = new RelayCommand(SetDefault);
         RefreshCommand = new RelayCommand(_ => _service.Refresh());
+
+        // Re-point the volume sliders whenever the default device changes.
+        _service.DevicesChanged += AttachVolumes;
+        AttachVolumes();
+
+        _meterTimer = new DispatcherTimer(DispatcherPriority.Render)
+        {
+            Interval = TimeSpan.FromMilliseconds(33), // ~30 fps
+        };
+        _meterTimer.Tick += (_, _) =>
+        {
+            OutputVolume.SamplePeak();
+            InputVolume.SamplePeak();
+        };
+    }
+
+    /// <summary>Begin/stop sampling the level meters (tie to window visibility).</summary>
+    public void StartMetering() => _meterTimer.Start();
+    public void StopMetering() => _meterTimer.Stop();
+
+    private void AttachVolumes()
+    {
+        OutputVolume.Attach(_service.GetDefaultDevice(DataFlow.Render));
+        InputVolume.Attach(_service.GetDefaultDevice(DataFlow.Capture));
     }
 
     private void SetDefault(object? parameter)

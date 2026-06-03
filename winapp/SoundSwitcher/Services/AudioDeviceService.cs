@@ -31,6 +31,15 @@ public class AudioDeviceService : IMMNotificationClient, IDisposable
 
         AddDevices(DataFlow.Render, DeviceKind.Playback, defaultPlaybackId);
         AddDevices(DataFlow.Capture, DeviceKind.Recording, defaultRecordingId);
+
+        DevicesChanged?.Invoke();
+    }
+
+    /// <summary>The current default endpoint for a flow, or null. Caller owns disposal.</summary>
+    public MMDevice? GetDefaultDevice(DataFlow flow)
+    {
+        try { return _enumerator.GetDefaultAudioEndpoint(flow, Role.Multimedia); }
+        catch { return null; }
     }
 
     private string GetDefaultDeviceId(DataFlow flow)

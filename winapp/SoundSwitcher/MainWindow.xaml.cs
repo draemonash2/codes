@@ -34,6 +34,15 @@ public partial class MainWindow : Window
             new Action(TrimWorkingSet), DispatcherPriority.ApplicationIdle);
         Deactivated += (_, _) => TrimWorkingSet();
         StateChanged += (_, _) => { if (WindowState == WindowState.Minimized) TrimWorkingSet(); };
+
+        // Run the level meters only while the window is actually shown (it lives in
+        // the tray and is hidden when not in use), so we don't poll in the background.
+        IsVisibleChanged += (_, e) =>
+        {
+            var vm = DataContext as MainViewModel;
+            if ((bool)e.NewValue) vm?.StartMetering();
+            else vm?.StopMetering();
+        };
     }
 
     [DllImport("kernel32.dll")]
@@ -67,7 +76,22 @@ public partial class MainWindow : Window
         // AllowsTransparency) window via custom hit-testing.
         var src = (HwndSource)PresentationSource.FromVisual(this)!;
         src.AddHook(WndProc);
+
+        // Hide from the Alt+Tab switcher (and Task View). A tool window doesn't
+        // appear in the task switcher; combined with ShowInTaskbar=False this keeps
+        // the resident utility out of both lists.
+        int ex = GetWindowLong(src.Handle, GWL_EXSTYLE);
+        SetWindowLong(src.Handle, GWL_EXSTYLE, ex | WS_EX_TOOLWINDOW);
     }
+
+    private const int GWL_EXSTYLE = -20;
+    private const int WS_EX_TOOLWINDOW = 0x00000080;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern int GetWindowLong(IntPtr hwnd, int index);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
 
     private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
