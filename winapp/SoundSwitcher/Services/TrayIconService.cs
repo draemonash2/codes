@@ -15,14 +15,14 @@ namespace SoundSwitcher.Services;
 public sealed class TrayIconService : IDisposable
 {
     private const string Glyph = ""; // volume glyph (Segoe MDL2 Assets)
-    private static readonly Color Accent = Color.FromArgb(0x4F, 0x8E, 0xF7);
+    private static readonly Color Accent = Color.FromArgb(0x6E, 0xAA, 0xFF);
 
     private readonly WinForms.NotifyIcon _icon;
     private readonly Window _window;
     private IntPtr _hIcon;
     private bool _disposed;
 
-    public TrayIconService(Window window, Action onRefresh)
+    public TrayIconService(Window window)
     {
         _window = window;
 
@@ -47,7 +47,6 @@ public sealed class TrayIconService : IDisposable
         var menu = new WinForms.ContextMenuStrip();
         menu.Items.Add("表示 / 非表示", null, (_, _) => ToggleWindow());
         menu.Items.Add(new WinForms.ToolStripSeparator());
-        menu.Items.Add("更新", null, (_, _) => onRefresh());
         menu.Items.Add("終了", null, (_, _) => Exit());
         _icon.ContextMenuStrip = menu;
 

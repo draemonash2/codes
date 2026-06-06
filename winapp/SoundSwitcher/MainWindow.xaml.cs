@@ -23,9 +23,14 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = new MainViewModel();
 
+        // Persist the level-meter toggle as soon as the user flips it.
+        ((MainViewModel)DataContext).PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(MainViewModel.MetersVisible)) SaveSettings();
+        };
+
         // Live in the notification area (system tray); ShowInTaskbar is off in XAML.
-        _tray = new TrayIconService(this,
-            onRefresh: () => (DataContext as MainViewModel)?.RefreshCommand.Execute(null));
+        _tray = new TrayIconService(this);
 
         // Resident utility: shrink the working set whenever the window isn't in use.
         // Pages fault back in on the next interaction (negligible for a click). This
@@ -38,11 +43,7 @@ public partial class MainWindow : Window
         // Run the level meters only while the window is actually shown (it lives in
         // the tray and is hidden when not in use), so we don't poll in the background.
         IsVisibleChanged += (_, e) =>
-        {
-            var vm = DataContext as MainViewModel;
-            if ((bool)e.NewValue) vm?.StartMetering();
-            else vm?.StopMetering();
-        };
+            (DataContext as MainViewModel)?.SetWindowVisible((bool)e.NewValue);
     }
 
     [DllImport("kernel32.dll")]
@@ -95,20 +96,26 @@ public partial class MainWindow : Window
 
     private void Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        // Persist the *restored* bounds so a maximized window saves its normal size.
+        SaveSettings();
+
+        // Remove the tray icon so it doesn't linger after exit.
+        _tray?.Dispose();
+        _tray = null;
+    }
+
+    // Persist window placement + the level-meter toggle. Uses the *restored* bounds so
+    // a maximized window saves its normal size.
+    private void SaveSettings()
+    {
         var b = RestoreBounds;
-        var s = new WindowSettings
+        new WindowSettings
         {
             Left = b.Left,
             Top = b.Top,
             Width = b.Width,
             Height = b.Height,
-        };
-        s.Save();
-
-        // Remove the tray icon so it doesn't linger after exit.
-        _tray?.Dispose();
-        _tray = null;
+            MetersVisible = (DataContext as MainViewModel)?.MetersVisible ?? false,
+        }.Save();
     }
 
     private bool IsOnScreen(double left, double top)
@@ -151,11 +158,20 @@ public partial class MainWindow : Window
 
     private void ExitMenu_Click(object sender, RoutedEventArgs e) => Close();
 
-    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    private void OpenSoundSettings_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             Process.Start(new ProcessStartInfo("ms-settings:sound") { UseShellExecute = true });
+        }
+        catch { }
+    }
+
+    private void OpenBluetoothSettings_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo("ms-settings:bluetooth") { UseShellExecute = true });
         }
         catch { }
     }

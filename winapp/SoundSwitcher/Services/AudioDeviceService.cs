@@ -42,6 +42,29 @@ public class AudioDeviceService : IMMNotificationClient, IDisposable
         catch { return null; }
     }
 
+    /// <summary>
+    /// Re-reads Bluetooth battery levels and updates the existing device cards in place
+    /// (no list rebuild, so no UI flicker). Battery changes aren't pushed by the OS, so
+    /// this is polled periodically while the window is visible.
+    /// </summary>
+    public void RefreshBatteries()
+    {
+        var batteries = DeviceBattery.Snapshot();
+        UpdateBatteries(PlaybackDevices, batteries);
+        UpdateBatteries(RecordingDevices, batteries);
+    }
+
+    private static void UpdateBatteries(IEnumerable<AudioDevice> devices,
+        List<(string Name, int Battery)> batteries)
+    {
+        foreach (var d in devices)
+        {
+            // Only connected devices report a battery; leave others as-is (null).
+            if (d.ConnectionState != ConnectionState.Connected) continue;
+            d.BatteryPercent = DeviceBattery.Match(d.Name, batteries);
+        }
+    }
+
     private string GetDefaultDeviceId(DataFlow flow)
     {
         try

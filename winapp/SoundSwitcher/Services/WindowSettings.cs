@@ -10,6 +10,9 @@ public class WindowSettings
     public double Width { get; set; } = 600;
     public double Height { get; set; } = 520;
 
+    // Whether the level meters are shown. Default off (they cost CPU during calls).
+    public bool MetersVisible { get; set; } = false;
+
     private static string SettingsPath
     {
         get

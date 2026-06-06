@@ -172,17 +172,6 @@
 
                     </Grid>
 
-                    <!-- Battery % -->
-                    <TextBlock Text="{Binding BatteryPercent, StringFormat={}{0}%}"
-                               FontSize="11"
-                               Foreground="{Binding BatteryPercent, Converter={StaticResource BatteryColor}}"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,4">
-                        <TextBlock.Visibility>
-                            <Binding Path="HasBattery" Converter="{StaticResource BoolToVis}"/>
-                        </TextBlock.Visibility>
-                    </TextBlock>
-
                     <!-- Device name -->
                     <TextBlock Text="{Binding Name}"
                                FontSize="12"
@@ -205,7 +194,10 @@
         <!-- Right-click menu replaces the removed title-bar buttons -->
         <Border.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="更新" Command="{Binding RefreshCommand}"/>
+                <MenuItem Header="サウンド設定" Click="OpenSoundSettings_Click"/>
+                <MenuItem Header="Bluetooth設定" Click="OpenBluetoothSettings_Click"/>
+                <MenuItem Header="レベルメーターを表示" IsCheckable="True"
+                          IsChecked="{Binding MetersVisible, Mode=TwoWay}"/>
                 <Separator/>
                 <MenuItem Header="終了" Click="ExitMenu_Click"/>
             </ContextMenu>
@@ -221,7 +213,8 @@
         <!-- Left edge: output / input volume bars. Bottom = mute.
              Each block (icon + slider) is boxed to the matching device card's
              height, so icon + slider together line up with a card. -->
-        <StackPanel Grid.Column="0" Width="48" Margin="10,20,0,0" VerticalAlignment="Top">
+        <!-- Auto width so hiding the meters shrinks this strip and the cards reflow left. -->
+        <StackPanel Grid.Column="0" Margin="10,20,0,0" VerticalAlignment="Top">
             <!-- Output -->
             <Grid Height="{Binding ActualHeight, ElementName=PlaybackItems}">
                 <Grid.ColumnDefinitions>
@@ -242,18 +235,17 @@
                         IsEnabled="{Binding OutputVolume.HasDevice}"
                         HorizontalAlignment="Center"
                         ToolTip="出力音量"/>
-                <!-- Output level meter (fills from the bottom) -->
+                <!-- Output level meter: a solid fill scaled from the bottom (cheaper to
+                     re-render each frame than animating a gradient under software rendering). -->
                 <Border Grid.Row="1" Grid.Column="1" Width="6" Margin="7,0,0,0"
                         CornerRadius="3" Background="{StaticResource BorderBrush2}"
-                        VerticalAlignment="Stretch" ToolTip="出力レベル">
-                    <Border CornerRadius="3">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
-                                <GradientStop Color="#8890A4" Offset="0"/>
-                                <GradientStop Color="#8890A4" Offset="{Binding OutputVolume.Peak}"/>
-                                <GradientStop Color="Transparent" Offset="{Binding OutputVolume.Peak}"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
+                        VerticalAlignment="Stretch" ClipToBounds="True" ToolTip="出力レベル"
+                        Visibility="{Binding MetersVisible, Converter={StaticResource BoolToVis}}">
+                    <Border Background="{StaticResource TextSecondaryBrush}" CornerRadius="3"
+                            VerticalAlignment="Stretch" RenderTransformOrigin="0.5,1">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleY="{Binding OutputVolume.Peak}"/>
+                        </Border.RenderTransform>
                     </Border>
                 </Border>
             </Grid>
@@ -278,25 +270,24 @@
                         IsEnabled="{Binding InputVolume.HasDevice}"
                         HorizontalAlignment="Center"
                         ToolTip="入力音量"/>
-                <!-- Input level meter (fills from the bottom) -->
+                <!-- Input level meter: a solid fill scaled from the bottom (cheaper to
+                     re-render each frame than animating a gradient under software rendering). -->
                 <Border Grid.Row="1" Grid.Column="1" Width="6" Margin="7,0,0,0"
                         CornerRadius="3" Background="{StaticResource BorderBrush2}"
-                        VerticalAlignment="Stretch" ToolTip="入力レベル">
-                    <Border CornerRadius="3">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
-                                <GradientStop Color="#8890A4" Offset="0"/>
-                                <GradientStop Color="#8890A4" Offset="{Binding InputVolume.Peak}"/>
-                                <GradientStop Color="Transparent" Offset="{Binding InputVolume.Peak}"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
+                        VerticalAlignment="Stretch" ClipToBounds="True" ToolTip="入力レベル"
+                        Visibility="{Binding MetersVisible, Converter={StaticResource BoolToVis}}">
+                    <Border Background="{StaticResource TextSecondaryBrush}" CornerRadius="3"
+                            VerticalAlignment="Stretch" RenderTransformOrigin="0.5,1">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleY="{Binding InputVolume.Peak}"/>
+                        </Border.RenderTransform>
                     </Border>
                 </Border>
             </Grid>
         </StackPanel>
 
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="20,20,20,52">
+            <StackPanel Margin="20,20,20,20">
                 <!-- Playback -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                               Margin="0,0,0,18">
@@ -332,36 +323,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Open Windows Sound settings -->
-        <Button x:Name="SettingsButton"
-                Grid.Column="1"
-                Click="SettingsButton_Click"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                Margin="0,0,16,14"
-                Width="34" Height="34"
-                Cursor="Hand"
-                ToolTip="Windows のサウンド設定を開く">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border x:Name="Bd"
-                            Background="{StaticResource SurfaceBrush}"
-                            BorderBrush="{StaticResource BorderBrush2}"
-                            BorderThickness="1"
-                            CornerRadius="17">
-                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets"
-                                   FontSize="15"
-                                   Foreground="{StaticResource TextSecondaryBrush}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#282B36"/>
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
         </Grid>
     </Border>
 </Window>

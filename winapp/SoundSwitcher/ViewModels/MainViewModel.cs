@@ -27,17 +27,28 @@ public class MainViewModel : INotifyPropertyChanged
     public EndpointVolume OutputVolume { get; } = new();
     public EndpointVolume InputVolume { get; } = new();
 
-    // Drives the level meters. Runs only while the window is visible (see Start/Stop).
+    // Drives the level meters. Runs only while the window is visible AND meters are on.
     private readonly DispatcherTimer _meterTimer;
+    // Re-reads Bluetooth battery levels periodically while the window is visible
+    // (the OS doesn't push battery changes).
+    private readonly DispatcherTimer _batteryTimer;
+    private bool _windowShown;
+    private bool _metersVisible = WindowSettings.Load().MetersVisible; // persisted; default off
+
+    /// <summary>Toggles the level meters (UI + the sampling timer). Off removes their
+    /// entire cost, which is handy for isolating their CPU use.</summary>
+    public bool MetersVisible
+    {
+        get => _metersVisible;
+        set { if (_metersVisible == value) return; _metersVisible = value; OnPropertyChanged(); UpdateMetering(); }
+    }
 
     public ICommand SetDefaultCommand { get; }
-    public ICommand RefreshCommand { get; }
 
     public MainViewModel()
     {
         _service = new AudioDeviceService();
         SetDefaultCommand = new RelayCommand(SetDefault);
-        RefreshCommand = new RelayCommand(_ => _service.Refresh());
 
         // Re-point the volume sliders whenever the default device changes.
         _service.DevicesChanged += AttachVolumes;
@@ -45,18 +56,44 @@ public class MainViewModel : INotifyPropertyChanged
 
         _meterTimer = new DispatcherTimer(DispatcherPriority.Render)
         {
-            Interval = TimeSpan.FromMilliseconds(33), // ~30 fps
+            Interval = TimeSpan.FromMilliseconds(100), // ~10 fps (keeps CPU low during calls)
         };
         _meterTimer.Tick += (_, _) =>
         {
             OutputVolume.SamplePeak();
             InputVolume.SamplePeak();
         };
+
+        _batteryTimer = new DispatcherTimer(DispatcherPriority.Background)
+        {
+            Interval = TimeSpan.FromSeconds(30),
+        };
+        _batteryTimer.Tick += (_, _) => _service.RefreshBatteries();
     }
 
-    /// <summary>Begin/stop sampling the level meters (tie to window visibility).</summary>
-    public void StartMetering() => _meterTimer.Start();
-    public void StopMetering() => _meterTimer.Stop();
+    /// <summary>Called by the window when it is shown/hidden (it lives in the tray).</summary>
+    public void SetWindowVisible(bool shown)
+    {
+        _windowShown = shown;
+        UpdateMetering();
+
+        if (shown)
+        {
+            _service.RefreshBatteries(); // refresh immediately on show, then every 30 s
+            _batteryTimer.Start();
+        }
+        else
+        {
+            _batteryTimer.Stop();
+        }
+    }
+
+    // The timer runs only when the window is shown and the meters are enabled.
+    private void UpdateMetering()
+    {
+        if (_windowShown && _metersVisible) _meterTimer.Start();
+        else _meterTimer.Stop();
+    }
 
     private void AttachVolumes()
     {
