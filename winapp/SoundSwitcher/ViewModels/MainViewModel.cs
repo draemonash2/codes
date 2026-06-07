@@ -44,11 +44,15 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     public ICommand SetDefaultCommand { get; }
+    public ICommand ToggleOutputMuteCommand { get; }
+    public ICommand ToggleInputMuteCommand { get; }
 
     public MainViewModel()
     {
         _service = new AudioDeviceService();
         SetDefaultCommand = new RelayCommand(SetDefault);
+        ToggleOutputMuteCommand = new RelayCommand(_ => OutputVolume.ToggleMute());
+        ToggleInputMuteCommand = new RelayCommand(_ => InputVolume.ToggleMute());
 
         // Re-point the volume sliders whenever the default device changes.
         _service.DevicesChanged += AttachVolumes;

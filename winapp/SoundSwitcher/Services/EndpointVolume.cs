@@ -82,7 +82,29 @@ public sealed class EndpointVolume : INotifyPropertyChanged, IDisposable
             catch { }
             finally { _applying = false; }
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsMuted));
         }
+    }
+
+    /// <summary>Whether the endpoint is currently muted.</summary>
+    public bool IsMuted
+    {
+        get
+        {
+            if (_endpoint == null) return false;
+            try { return _endpoint.Mute; } catch { return false; }
+        }
+    }
+
+    /// <summary>Toggle mute, preserving the underlying volume level.</summary>
+    public void ToggleMute()
+    {
+        if (_endpoint == null) return;
+        _applying = true;
+        try { _endpoint.Mute = !_endpoint.Mute; } catch { }
+        finally { _applying = false; }
+        OnPropertyChanged(nameof(Volume));
+        OnPropertyChanged(nameof(IsMuted));
     }
 
     /// <summary>Point this controller at a new endpoint (e.g. after the default changes).</summary>
@@ -113,13 +135,18 @@ public sealed class EndpointVolume : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(Volume));
         OnPropertyChanged(nameof(HasDevice));
         OnPropertyChanged(nameof(Peak));
+        OnPropertyChanged(nameof(IsMuted));
     }
 
     // Fired on a COM thread when the volume/mute changes elsewhere; marshal to the UI.
     private void OnNotify(AudioVolumeNotificationData data)
     {
         if (_applying) return;
-        App.Current?.Dispatcher.BeginInvoke(() => OnPropertyChanged(nameof(Volume)));
+        App.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(Volume));
+            OnPropertyChanged(nameof(IsMuted));
+        });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

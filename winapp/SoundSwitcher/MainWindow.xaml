@@ -94,6 +94,29 @@
             </Setter>
         </Style>
 
+        <!-- Clickable icon above each slider (toggles mute). Chrome-less so it reads
+             as just the glyph; a ButtonBase so it doesn't start a window drag. -->
+        <Style x:Key="MuteIconButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.75"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Device card -->
         <DataTemplate x:Key="DeviceCardTemplate" DataType="{x:Type models:AudioDevice}">
             <Button Command="{Binding DataContext.SetDefaultCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -225,10 +248,25 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE767;" FontFamily="Segoe MDL2 Assets"
-                           FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"
-                           HorizontalAlignment="Center" Margin="0,0,0,8"
-                           ToolTip="出力音量"/>
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource MuteIconButton}"
+                        Command="{Binding ToggleOutputMuteCommand}"
+                        Margin="0,0,0,8" ToolTip="クリックで出力をミュート切替">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="15"
+                               HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="&#xE767;"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding OutputVolume.IsMuted}" Value="True">
+                                        <Setter Property="Text" Value="&#xE74F;"/>
+                                        <Setter Property="Foreground" Value="#E53E3E"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Button>
                 <Slider Grid.Row="1" Grid.Column="0" Style="{StaticResource VolumeSlider}"
                         VerticalAlignment="Stretch"
                         Value="{Binding OutputVolume.Volume, Mode=TwoWay}"
@@ -260,10 +298,24 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="&#xE720;" FontFamily="Segoe MDL2 Assets"
-                           FontSize="15" Foreground="{StaticResource TextSecondaryBrush}"
-                           HorizontalAlignment="Center" Margin="0,0,0,8"
-                           ToolTip="入力音量"/>
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource MuteIconButton}"
+                        Command="{Binding ToggleInputMuteCommand}"
+                        Margin="0,0,0,8" ToolTip="クリックで入力をミュート切替">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="15"
+                               HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="&#xE720;"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding InputVolume.IsMuted}" Value="True">
+                                        <Setter Property="Foreground" Value="#E53E3E"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Button>
                 <Slider Grid.Row="1" Grid.Column="0" Style="{StaticResource VolumeSlider}"
                         VerticalAlignment="Stretch"
                         Value="{Binding InputVolume.Volume, Mode=TwoWay}"
