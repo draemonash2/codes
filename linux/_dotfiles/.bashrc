@@ -143,6 +143,9 @@ else
 fi
 unset color_prompt force_color_prompt
 
+_set_blinking_cursor() { printf '\e[1 q'; }
+PROMPT_COMMAND="_set_blinking_cursor${PROMPT_COMMAND:+; ${PROMPT_COMMAND}}"
+
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
