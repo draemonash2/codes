@@ -61,6 +61,10 @@ global giALTTABFLASH_COUNT := 2
 global giALTTABFLASH_TRANSPARENCY := 150 ; 0(透明) ～ 255(不透明)
 global giALTTABFLASH_INTERVAL := 40
 global giALTTABFLASH_COLOR := "004000"
+global gbACTWINBORDER_ENABLE := False			; アクティブウィンドウ赤枠表示の有効/無効
+global giACTWINBORDER_INTERVAL_MS := 200		; 監視間隔 [ms]
+global giACTWINBORDER_THICKNESS := 6			; 枠の太さ [px]
+global gsACTWINBORDER_COLOR := "FF0000"		; 枠の色（HTMLカラーコード）
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
 global giMON_POSSIZE_INFOS :=
 [
@@ -123,6 +127,7 @@ InitKitchenTimer()
 InitAlermTimer()
 InitWinTempHide()
 InitAltTab()
+InitActiveWindowBorder()
 RestartAlermTimer()
 RestartKitchenTimer()
 SetEveryDayAlermTimer()
@@ -306,6 +311,11 @@ MinimizeWindows()
 		#]::			DarkenScreen()																									; 画面の明るさを上げる
 		#h::			ToggleWinTempHide()																								; Windows一時非表示
 		~!Tab::			PressAltTab()																									; Alt+Tab ウィンドウ切り替え検出
+		^!SC146::																														; RDP切り替え
+		{
+			WinActivate "ahk_exe mstsc.exe"
+			SendEvent "^!{SC146}"
+		}
 	; }}}
 	;その他 ; {{{
 		^+!Enter::		ReloadMe()																										; スクリプトリロード
@@ -2115,6 +2125,64 @@ MinimizeWindows()
 		Sleep 80
 		FlashActiveWindow(giALTTABFLASH_COUNT, giALTTABFLASH_TRANSPARENCY, giALTTABFLASH_INTERVAL, giALTTABFLASH_COLOR)
 	} ; }}}
+
+	; アクティブウィンドウ赤枠表示
+	; {{{
+	; 0.2s毎にアクティブウィンドウを監視し、四辺に赤枠（クリック透過のオーバーレイ）を表示する。
+	InitActiveWindowBorder() { ; {{{
+		global gaActWinBorderGui := []	; [top, bottom, left, right]
+		if (!gbACTWINBORDER_ENABLE) {
+			return
+		}
+		; 四辺分のクリック透過オーバーレイを生成（+E0x20 = WS_EX_TRANSPARENT）
+		Loop 4 {
+			oGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20 -DPIScale")
+			oGui.BackColor := gsACTWINBORDER_COLOR
+			gaActWinBorderGui.Push(oGui)
+		}
+		SetTimer(UpdateActiveWindowBorder, giACTWINBORDER_INTERVAL_MS)
+		Return
+	} ; }}}
+	UpdateActiveWindowBorder() { ; {{{
+		global gaActWinBorderGui
+		global giACTWINBORDER_THICKNESS
+		hwnd := WinExist("A")
+		if (!hwnd) {
+			HideActiveWindowBorder()
+			return
+		}
+		; 自身（枠オーバーレイ）がアクティブになった場合は更新しない
+		for oGui in gaActWinBorderGui {
+			if (hwnd == oGui.Hwnd) {
+				return
+			}
+		}
+		Try {
+			if (WinGetMinMax("ahk_id " hwnd) == -1) {	; 最小化中は非表示
+				HideActiveWindowBorder()
+				return
+			}
+			WinGetPos(&x, &y, &w, &h, "ahk_id " hwnd)
+		} Catch {
+			HideActiveWindowBorder()
+			return
+		}
+		t := giACTWINBORDER_THICKNESS
+		; ウィンドウの内側を囲うように四辺を配置する
+		gaActWinBorderGui[1].Show("NA x" x			" y" y			" w" w	" h" t)			; 上辺
+		gaActWinBorderGui[2].Show("NA x" x			" y" (y + h - t)	" w" w	" h" t)			; 下辺
+		gaActWinBorderGui[3].Show("NA x" x			" y" y			" w" t	" h" h)			; 左辺
+		gaActWinBorderGui[4].Show("NA x" (x + w - t)	" y" y			" w" t	" h" h)			; 右辺
+		Return
+	} ; }}}
+	HideActiveWindowBorder() { ; {{{
+		global gaActWinBorderGui
+		for oGui in gaActWinBorderGui {
+			oGui.Hide()
+		}
+		Return
+	} ; }}}
+	; }}}
 
 ;* ***************************************************************
 ;* Functions (common)
