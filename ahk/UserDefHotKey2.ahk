@@ -783,7 +783,7 @@ MinimizeWindows()
 		global gaWINSNAP_WIN_SIZE_INFO
 		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
 		
-		Loop {
+		Loop iWinSnapIdxMax {
 			giWinSnapIdx += 1
 			if ( giWinSnapIdx > iWinSnapIdxMax ) {
 				giWinSnapIdx := 1
@@ -802,7 +802,7 @@ MinimizeWindows()
 		global gaWINSNAP_WIN_SIZE_INFO
 		iWinSnapIdxMax := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern].Length
 		
-		Loop {
+		Loop iWinSnapIdxMax {
 			giWinSnapIdx -= 1
 			if ( giWinSnapIdx < 1 ) {
 				giWinSnapIdx := iWinSnapIdxMax
@@ -835,6 +835,9 @@ MinimizeWindows()
 		global gmMonIdxMap
 		
 		sMonName := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].sMonName
+		if !gmMonIdxMap.Has(sMonName) {	; 該当モニタなし（スナップ先未検出）：何もしない
+			return
+		}
 		iMonIdx := gmMonIdxMap[sMonName]
 		dXStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dXStartPosRate
 		dYStartPosRate := gaWINSNAP_WIN_SIZE_INFO[giWinSnapPattern][giWinSnapIdx].dYStartPosRate
@@ -2290,11 +2293,18 @@ MinimizeWindows()
 		}
 		
 		sMonStr := sMonStr . "`n"
+		sMonStr := sMonStr . "`n" . "### giMON_POSSIZE_INFOS"
+		sMonStr := sMonStr . "`n" . "	MonName,	X(left),	Y(top),	Width,	Height"
+		for , mon_possize_info in giMON_POSSIZE_INFOS {
+			sMonStr := sMonStr . "`n" . Format("	{1},		{2},	{3},	{4},	{5}", mon_possize_info.sMonName, mon_possize_info.iX, mon_possize_info.iY, mon_possize_info.iWidth, mon_possize_info.iHeight)
+		}
+
+		sMonStr := sMonStr . "`n"
 		sMonStr := sMonStr . "`n" . "### Monitor names"
 		For sMonName, iMonIdx in gmMonIdxMap {
 			sMonStr := sMonStr . "`n" . sMonName . ": " . iMonIdx
 		}
-		
+
 		MsgBox sMonStr
 	} ; }}}
 	; モニタ番号収集
@@ -2316,7 +2326,7 @@ MinimizeWindows()
 			}
 		}
 		if (gmMonIdxMap.Count = 0) {
-			MsgBox "CorrectMonIndexMap(): モニタ情報の照合に失敗しました。`n gmMonIdxMap が空です。", "Error", "OK Icon!"
+			gmMonIdxMap["MAIN"] := MonitorGetPrimary()
 		}
 	} ; }}}
 	; アクティブウィンドウフラッシュ
