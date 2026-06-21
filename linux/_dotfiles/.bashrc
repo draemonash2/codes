@@ -2530,6 +2530,37 @@ function packagenames() { # {{{
         echo "${package_name}: ${dir_name}"
     done
 } # }}}
+function tfecho() { # {{{
+    # ros2 run tf2_ros tf2_echo <source_frame> <target_frame>
+    if [ $# -lt 2 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : tfecho <parent> <child>"
+        return 1
+    fi
+    parent=$1
+    child=$2
+    lsetup
+    ros2 run tf2_ros tf2_echo ${parent} ${child}
+} # }}}
+function tfpub() { # {{{
+    # ros2 run tf2_ros static_transform_publisher --x 0 --y 0 --z 1 --roll 0 --pitch 0 --yaw 0 --frame-id world --child-frame-id base_link
+    parent=$1
+    child=$2
+    x=$3
+    y=$4
+    z=$5
+    R=$6
+    P=$7
+    Y=$8
+    lsetup
+    echo "ros2 run tf2_ros static_transform_publisher --x ${x} --y ${y} --z ${z} --roll ${R} --pitch ${P} --yaw ${Y} --frame-id ${parent} --child-frame-id ${child}"
+    ros2 run tf2_ros static_transform_publisher --x ${x} --y ${y} --z ${z} --roll ${R} --pitch ${P} --yaw ${Y} --frame-id ${parent} --child-frame-id ${child}
+} # }}}
+function tfgraph() { # {{{
+    # ros2 run tf2_tools view_frames
+    lsetup
+    ros2 run tf2_tools view_frames
+} # }}}
 
 ### Ignition Gazebo
 alias igngc='vim ~/.ignition/gazebo/6/gui.config'
