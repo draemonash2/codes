@@ -716,6 +716,59 @@ function cpd() { # {{{
         ll ${dstpath}
     } # }}}
 # }}}
+function mvd() { # {{{
+    if [ $# -ne 2 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : mvd <src> <dst>"
+        return 1
+    fi
+    srcpathraw=${1}
+    dstpathraw=${2}
+    srcpath=`_remove_tail_slash ${srcpathraw}`
+    dstpath=`_remove_tail_slash ${dstpathraw}`
+    dstpardirpath=${dstpath%/*}
+    echo ${dstpardirpath}
+    if [ -f ${srcpath} ] || [ -d ${srcpath} ]; then
+        if [ ! -d ${dstpardirpath} ]; then
+            echo "mkdir -p ${dstpardirpath}"
+            mkdir -p ${dstpardirpath}
+        fi
+        echo "\mv -f ${srcpath} ${dstpath}"
+        \mv -f ${srcpath} ${dstpath}
+        return 0
+    else
+        echo "[error] specified path does not exists."
+        return 1
+    fi
+}
+# }}}
+function mvdr() { # {{{
+    if [ $# -ne 2 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : mvdr <src> <dst_dir>"
+        return 1
+    fi
+    srcpathraw=${1}
+    dstdirraw=${2}
+    srcpath=`_remove_tail_slash ${srcpathraw}`
+    dstdir=`_remove_tail_slash ${dstdirraw}`
+    if [ -f ${srcpath} ] || [ -d ${srcpath} ]; then
+        dstpath=${dstdir}/${srcpath}
+        dstpardirpath=${dstpath%/*}
+        echo ${dstpardirpath}
+        if [ ! -d ${dstpardirpath} ]; then
+            echo "mkdir -p ${dstpardirpath}"
+            mkdir -p ${dstpardirpath}
+        fi
+        echo "\mv -f ${srcpath} ${dstpath}"
+        \mv -f ${srcpath} ${dstpath}
+        return 0
+    else
+        echo "[error] specified path does not exists."
+        return 1
+    fi
+}
+# }}}
 function catrange() { # {{{
     if [ $# -ne 3 ]; then
         echo "[error] wrong number of arguments."
@@ -2651,6 +2704,17 @@ function ignvisurdf() { # {{{
     
     CMD1="export IGN_GAZEBO_RESOURCE_PATH=${MODEL_DIR_PATH}; vglrun ign gazebo empty.sdf"
     CMD2="sleep 5; ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --timeout 1000 --req \"sdf_filename: \\\"${URDF_FILE_PATH}\\\", name: \\\"${MODEL_NAME}\\\", pose: {position: {x: 0.0, y: 0.0, z:0.0}, orientation: {x:0.0, y:0.0, z:0.0, w:1.0}}\""
+    
+    # Visualize placeable regions (<meta>/<receive>) as translucent blue boxes.
+    REGION_SCRIPT=${HOME}/_script/python/urdf_placeable_region_to_sdf.py
+    REGION_MODEL_NAME=${URDF_FILE_NAME%%.*}_regions_0001
+    REGION_SDF_PATH=$(mktemp "/tmp/${REGION_MODEL_NAME}.XXXXXX.sdf")
+    if python3 "${REGION_SCRIPT}" "${URDF_FILE_PATH}" "${REGION_SDF_PATH}" "${REGION_MODEL_NAME}"; then
+        CMD2="${CMD2}; ign service -s /world/empty/create --reqtype ignition.msgs.EntityFactory --reptype ignition.msgs.Boolean --timeout 1000 --req \"sdf_filename: \\\"${REGION_SDF_PATH}\\\", name: \\\"${REGION_MODEL_NAME}\\\", pose: {position: {x: 0.0, y: 0.0, z:0.0}, orientation: {x:0.0, y:0.0, z:0.0, w:1.0}}\""
+    else
+        rm -f "${REGION_SDF_PATH}"
+    fi
+    
     check_urdf ${URDF_FILE_PATH} && xpanes -e "${CMD1}" "${CMD2}"
 } # }}}
 

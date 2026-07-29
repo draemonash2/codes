@@ -11,6 +11,15 @@ Const lSLEEP_MS = 10000
 '===============================================================================
 Const sSCRIPT_NAME = "定期キー送信"
 
+Dim bForce
+bForce = False
+Dim i
+For i = 0 To WScript.Arguments.Count - 1
+    If LCase(WScript.Arguments.Item(i)) = "-f" Then
+        bForce = True
+    End If
+Next
+
 Dim oRes
 Set oRes = CreateObject("WbemScripting.SWbemLocator").ConnectServer.ExecQuery( _
         "Select * FROM Win32_Process WHERE (Caption = 'wscript.exe' OR Caption = 'cscript.exe') AND " _
@@ -29,7 +38,11 @@ If oRes.Count > 1 Then
     Next
 Else
     Dim vAnswer
-    vAnswer = MsgBox(CStr(lSLEEP_MS/1000) & "秒毎に" & sSEND_KEY &"を送信します。" , vbYesNo + vbQuestion, sSCRIPT_NAME)
+    If bForce Then
+        vAnswer = vbYes
+    Else
+        vAnswer = MsgBox(CStr(lSLEEP_MS/1000) & "秒毎に" & sSEND_KEY &"を送信します。" , vbYesNo + vbQuestion, sSCRIPT_NAME)
+    End If
     If vAnswer = vbYes Then
         Dim objWshShell
         Set objWshShell = CreateObject("Wscript.Shell")
@@ -42,4 +55,3 @@ Else
 End If
 
 MsgBox "キー送信処理を停止しました。", vbOkOnly, sSCRIPT_NAME
-

@@ -898,7 +898,7 @@ endif
 " {{{
 	augroup HilightsForce
 		autocmd!
-		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\v(TODO|NOTE|INFO|XXX|TEMP|FIXME|ASK|QUESTION)(\([a-zA-Z0-9_-]+\))?:')
+		autocmd WinEnter,BufRead,BufNew,Syntax * :silent! call matchadd('Todo', '\v(TODO|NOTE|INFO|XXX|TBD|TEMP|FIXME|ASK|QUESTION)(\([a-zA-Z0-9_-]+\))?:')
 		autocmd WinEnter,BufRead,BufNew,Syntax * highlight Todo guibg=Red guifg=White ctermbg=Red ctermfg=White
 	augroup END
 " }}}
