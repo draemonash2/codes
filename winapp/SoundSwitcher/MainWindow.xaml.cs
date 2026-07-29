@@ -129,31 +129,14 @@ public partial class MainWindow : Window
         return virt.Contains(new Point(left + 40, top + 20));
     }
 
-    // Drag the window from anywhere on the background. Clicks that land on an
-    // interactive control (a device card button or a scrollbar) are left alone so
-    // they keep working. Handled at the window root (tunneling Preview) so it fires
-    // no matter where in the chrome-less window the user presses.
-    private void Window_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    // The window is moved only via the drag handle on the right edge, so grabbing the
+    // volume bars (or anything else) never moves the window by accident.
+    private void DragStrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (IsInteractive(e.OriginalSource as DependencyObject))
-            return;
-
         if (e.ClickCount == 2)
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         else
             DragMove();
-    }
-
-    private static bool IsInteractive(DependencyObject? source)
-    {
-        for (var d = source; d != null; d = VisualTreeHelper.GetParent(d))
-        {
-            if (d is System.Windows.Controls.Primitives.ButtonBase ||
-                d is System.Windows.Controls.Primitives.ScrollBar ||
-                d is System.Windows.Controls.Primitives.Thumb)
-                return true;
-        }
-        return false;
     }
 
     private void ExitMenu_Click(object sender, RoutedEventArgs e) => Close();

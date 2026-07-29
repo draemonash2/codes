@@ -15,8 +15,7 @@
         Topmost="False"
         ShowInTaskbar="False"
         SourceInitialized="Window_SourceInitialized"
-        Closing="Window_Closing"
-        PreviewMouseLeftButtonDown="Window_PreviewMouseLeftButtonDown">
+        Closing="Window_Closing">
 
     <Window.Resources>
         <SolidColorBrush x:Key="BgBrush" Color="#1A1C22"/>
@@ -226,11 +225,13 @@
             </ContextMenu>
         </Border.ContextMenu>
 
-        <!-- Content (whole window is draggable) -->
+        <!-- Content. The window is moved only from the drag handle on the right edge
+             (Column 2), so dragging the volume bars no longer moves the window. -->
         <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <!-- Left edge: output / input volume bars. Bottom = mute.
@@ -374,6 +375,20 @@
                 </ScrollViewer>
             </StackPanel>
         </ScrollViewer>
+
+        <!-- Right-edge drag handle: the only place that moves the window. -->
+        <Border Grid.Column="2" Width="16" Background="Transparent"
+                Cursor="SizeAll" ToolTip="ドラッグでウィンドウを移動"
+                MouseLeftButtonDown="DragStrip_MouseLeftButtonDown">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Ellipse Width="3" Height="3" Margin="0,2"
+                         Fill="{StaticResource TextSecondaryBrush}" Opacity="0.55"/>
+                <Ellipse Width="3" Height="3" Margin="0,2"
+                         Fill="{StaticResource TextSecondaryBrush}" Opacity="0.55"/>
+                <Ellipse Width="3" Height="3" Margin="0,2"
+                         Fill="{StaticResource TextSecondaryBrush}" Opacity="0.55"/>
+            </StackPanel>
+        </Border>
 
         </Grid>
     </Border>
