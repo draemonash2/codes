@@ -10,7 +10,7 @@ Option Explicit
 '  ※ 引数で時刻(HH:MM)を渡した場合は入力を省略できる
 '
 '<<仕様>>
-'  ・PeriodicKeyTransmission.vbs -f を起動してスリープを抑止する
+'  ・PeriodicKeyTransmission.vbs を起動してスリープを抑止する
 '  ・Shutdown.vbs <時刻> を起動してシャットダウンを予約する
 '  ・連携スクリプトは本スクリプトと同一フォルダに配置されていること
 '  ・PeriodicKeyTransmission.vbs は多重起動時に先行プロセスを停止する仕様のため、
@@ -96,7 +96,7 @@ Public Sub Main()
     'いずれも常駐するため、戻りを待たずに起動する
     Dim objWshShell
     Set objWshShell = CreateObject("WScript.Shell")
-    objWshShell.Run "wscript.exe """ & sKeyScriptPath & """ -f", 0, False
+    objWshShell.Run "wscript.exe """ & sKeyScriptPath & """", 0, False
     objWshShell.Run "wscript.exe """ & sShutdownScriptPath & """ " & sInputTime, 0, False
 End Sub
 
