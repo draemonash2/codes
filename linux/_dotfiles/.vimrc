@@ -1205,8 +1205,10 @@ endif
 " ==============================================================================
 " {{{
 	if !has('unix')
-		set shell=wsl.exe
-		set shellcmdflag=-e
+		" system() や :! が copy, del, start(cmd.exe 内部コマンド)を使うため cmd.exe に固定する。
+		" :terminal で WSL を使う場合は Tc/Tv/Th 側で明示指定する。
+		set shell=cmd.exe
+		set shellcmdflag=/c
 	endif
 " }}}
 
@@ -1859,9 +1861,9 @@ endif
 " ターミナル起動
 " ==============================================================================
 " {{{
-	command! -nargs=? Tc terminal ++curwin
-	command! -nargs=? Tv vert terminal
-	command! -nargs=? Th bo terminal
+	command! -nargs=? Tc terminal ++curwin wsl.exe
+	command! -nargs=? Tv vert terminal wsl.exe
+	command! -nargs=? Th bo terminal wsl.exe
 " }}}
 
 " ==============================================================================
