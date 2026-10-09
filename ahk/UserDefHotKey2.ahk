@@ -66,6 +66,11 @@ global giACTWINBORDER_INTERVAL_MS := 200		; 監視間隔 [ms]
 global giACTWINBORDER_THICKNESS := 6			; 枠の太さ [px]
 global gsACTWINBORDER_COLOR := "FF0000"		; 枠の色（HTMLカラーコード）
 global gasWINTEMPHIDE_TARGETS := ["msedge.exe", "mpc-be64.exe"]
+global giTEAMSCAPTURE_COPYAREA_X_LT := 3		; コピー領域左上X＠Teams
+global giTEAMSCAPTURE_COPYAREA_Y_LT := 124		; コピー領域左上Y＠Teams
+global giTEAMSCAPTURE_COPYAREA_X_RB := 1603		; コピー領域右下X＠Teams
+global giTEAMSCAPTURE_COPYAREA_Y_RB := 1153		; コピー領域右下Y＠Teams
+global giTEAMSCAPTURE_PASTESIZE := 21			; ペースト画像サイズ＠Excel
 global giMON_POSSIZE_INFOS :=
 [
 	;				sMonName,	iX(left),	iY(top),	iWidth,	iHeight
@@ -529,6 +534,16 @@ MinimizeWindows()
 			Send "!e"
 			Sleep 100
 			Send "{Enter}"
+		}
+		^+!q::	; Teamsビデオ領域スクショ＆Excel貼り付け
+		{
+			CaptureTeamsVideoToClipboard(
+				giTEAMSCAPTURE_COPYAREA_X_LT,
+				giTEAMSCAPTURE_COPYAREA_Y_LT,
+				giTEAMSCAPTURE_COPYAREA_X_RB,
+				giTEAMSCAPTURE_COPYAREA_Y_RB
+			)
+			PasteCaptureImgAndResize(giTEAMSCAPTURE_PASTESIZE)
 		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe SimpleMindPro.exe") ; {{{
@@ -2186,6 +2201,85 @@ MinimizeWindows()
 		Return
 	} ; }}}
 	; }}}
+
+	; Teamsビデオ領域スクショ＆Excel貼り付け
+	CaptureTeamsVideoToClipboard(iX1, iY1, iX2, iY2) ; {{{
+	{
+		;*** 対象ウィンドウの特定 ***
+		;   アクティブウィンドウを優先し、無ければ TeamsWebView の全ウィンドウから最初のものを使う
+		hWin := WinActive("ahk_class TeamsWebView")
+		if (!hWin) {
+			for , hw in WinGetList("ahk_class TeamsWebView") {
+				hWin := hw
+				break
+			}
+		}
+		if (!hWin) {
+			ShowAutoHideToolTip("[ERROR] ahk_class TeamsWebView が見つかりません", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+			return False
+		}
+		
+		;*** クライアント座標 → スクリーン座標へ変換 ***
+		pt := Buffer(8, 0)
+		NumPut("Int", iX1, "Int", iY1, pt)
+		if (!DllCall("ClientToScreen", "Ptr", hWin, "Ptr", pt)) {
+			ShowAutoHideToolTip("[ERROR] ClientToScreen に失敗しました", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+			return False
+		}
+		iX := NumGet(pt, 0, "Int")
+		iY := NumGet(pt, 4, "Int")
+		iW := iX2 - iX1
+		iH := iY2 - iY1
+		if (iW <= 0 or iH <= 0) {
+			ShowAutoHideToolTip("[ERROR] 対象領域のサイズが不正です (" . iW . "x" . iH . ")", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+			return False
+		}
+		
+		;*** 画面からビットマップへコピー (GDI) ***
+		hdcScreen := DllCall("GetDC", "Ptr", 0, "Ptr")
+		hdcMem := DllCall("CreateCompatibleDC", "Ptr", hdcScreen, "Ptr")
+		hBmp := DllCall("CreateCompatibleBitmap", "Ptr", hdcScreen, "Int", iW, "Int", iH, "Ptr")
+		hBmpOld := DllCall("SelectObject", "Ptr", hdcMem, "Ptr", hBmp, "Ptr")
+		; SRCCOPY(0x00CC0020) | CAPTUREBLT(0x40000000): レイヤードウィンドウも含めて取得
+		bBlt := DllCall("BitBlt", "Ptr", hdcMem, "Int", 0, "Int", 0, "Int", iW, "Int", iH, "Ptr", hdcScreen, "Int", iX, "Int", iY, "UInt", 0x40CC0020)
+		DllCall("SelectObject", "Ptr", hdcMem, "Ptr", hBmpOld)
+		DllCall("DeleteDC", "Ptr", hdcMem)
+		DllCall("ReleaseDC", "Ptr", 0, "Ptr", hdcScreen)
+		if (!bBlt) {
+			DllCall("DeleteObject", "Ptr", hBmp)
+			ShowAutoHideToolTip("[ERROR] BitBlt に失敗しました", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+			return False
+		}
+		
+		;*** クリップボードへ設定 (CF_BITMAP = 2) ***
+		;   SetClipboardData 成功後はビットマップの所有権がシステムへ移るため DeleteObject しない
+		bOk := False
+		Loop 10 {
+			if (DllCall("OpenClipboard", "Ptr", A_ScriptHwnd)) {
+				DllCall("EmptyClipboard")
+				bOk := DllCall("SetClipboardData", "UInt", 2, "Ptr", hBmp, "Ptr") ? True : False
+				DllCall("CloseClipboard")
+				break
+			}
+			Sleep 50
+		}
+		if (!bOk) {
+			DllCall("DeleteObject", "Ptr", hBmp)
+			ShowAutoHideToolTip("[ERROR] クリップボードへの設定に失敗しました", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+			return False
+		}
+		
+		ShowAutoHideToolTip("Teams ビデオ領域をコピーしました (" . iW . "x" . iH . ")", giSTART_PRG_TOOLTIP_SHOW_TIME_MS)
+		return True
+	} ; }}}
+	PasteCaptureImgAndResize(iSize) ; {{{
+	{
+		xl := ComObjActive("Excel.Application")
+		xl.ActiveSheet.Paste()
+		sr := xl.Selection.ShapeRange
+		sr.LockAspectRatio := -1                   ; msoTrue
+		sr.Width := xl.CentimetersToPoints(iSize)
+	} ; }}}
 
 ;* ***************************************************************
 ;* Functions (common)
