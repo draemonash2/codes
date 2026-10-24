@@ -1,0 +1,87 @@
+# セットアップ手順 (新環境):
+#   1. herdr をインストール (https://herdr.dev 参照)
+#   2. 本ファイルを ~/.config/herdr/config.toml に配置 (シンボリックリンク推奨)
+#   3. herdr integration install claude    # Claude Code 連携フック (~/.claude/hooks/ と settings.json) を生成
+#   4. sudo apt install xclip tig          # prefix+p (貼り付け) / prefix+alt+g (tig ポップアップ) で使用
+#   5. herdr config check                  # 設定の検証
+#   ※ host_cursor = "native" は WSL 向けの設定。他環境では要確認
+#
+# 反映: herdr server reload-config  または  prefix -> r
+# 検証: herdr config check
+
+onboarding = false
+
+# === 共通設定 ===
+[terminal]
+default_shell = "/bin/bash"													# 新規ペインで起動するシェル
+new_cwd = "follow"															# 新規ペイン/タブを現在のペインのディレクトリで開く
+
+[theme]
+name = "terminal"															# UI の配色をホストターミナルの ANSI カラーパレットに合わせる
+auto_switch = false															# ホストターミナルのライト/ダーク切り替えに追従してテーマを自動変更しない
+
+[ui]
+mouse_capture = true														# マウス操作 (ペイン選択・スクロール・リサイズ) を有効化
+copy_on_select = false														# マウスドラッグで選択してもクリップボードにコピーしない
+tab_bar_position = "bottom"													# タブバーを画面下部に表示
+tab_bar_right = [															# タブバー右側にホスト名と日時 (月/日(曜) 時:分) を表示
+  { type = "hostname" },
+  { type = "datetime", format = "%m/%d(%a) %H:%M" },
+]
+tab_bar_right_separator = " | "												# タブバー右側の各項目 (ホスト名と日時) の間に入れる区切り文字
+accent = "green"															# 強調色 (アクティブペインの枠など)
+host_cursor = "native"														# ホストターミナル本来のカーソルを使う (vim 挿入モードの縦棒など形状・点滅が反映され、日本語 IME の変換位置も合う。WSL 既定の drawn は形状が変わらない)
+agent_panel_sort = "priority"												# エージェント一覧を要対応(確認待ち・完了)順に並べる
+status_indicators = "symbols"												# エージェント状態を色の点ではなく状態別の記号で表示
+show_agent_labels_on_pane_borders = true									# 分割ペインの枠にエージェント名を表示
+
+[ui.toast]
+delivery = "herdr"															# 裏のエージェントの完了・確認待ちを画面内トーストで通知 (prefix+o で該当ペインへ移動)
+
+[ui.sidebar.agents.rows_by_agent]
+claude = [																	# サイドバーの表示書式設定
+  ["state_icon", "terminal_title_stripped"],
+  [{ token = "workspace", bold = false }, "tab"],
+]
+
+[experimental]
+pane_history = true															# ペインの表示内容を保存し、セッション復元時に再表示
+
+# === キーバインド（プレフィクス） ===
+[keys]
+prefix = "ctrl+space"														# プレフィクスキー
+reload_config = "prefix+r"													# 設定ファイルを再読み込み
+resize_mode = "prefix+shift+r"												# 既定の prefix+r を reload_config に譲るため移動
+copy_mode = ["prefix+[", "prefix+v", "prefix+space"]						# コピーモードに入る
+focus_pane_left = ["prefix+h", "prefix+ctrl+h", "prefix+backspace"]			# 左のペインへ移動
+focus_pane_down = ["prefix+j", "prefix+ctrl+j"]								# 下のペインへ移動
+focus_pane_up = ["prefix+k", "prefix+ctrl+k"]								# 上のペインへ移動
+focus_pane_right = ["prefix+l", "prefix+ctrl+l"]							# 右のペインへ移動
+split_vertical = ["prefix+|", "prefix+\\"]									# ペインを左右に分割
+split_horizontal = "prefix+minus"											# ペインを上下に分割
+next_tab = ["prefix+n", "prefix+ctrl+n"]									# 次のタブへ移動
+previous_tab = "prefix+ctrl+p"												# 前のタブへ移動 (prefix+p はペーストに使用)
+move_tab_previous = "prefix+left"											# タブを左へ移動 (並び順を入れ替え)
+move_tab_next = "prefix+right"												# タブを右へ移動 (並び順を入れ替え)
+next_agent = "prefix+period"												# サイドバーの次のエージェントへ移動
+previous_agent = "prefix+comma"												# サイドバーの前のエージェントへ移動
+toggle_sidebar = "prefix+b"													# サイドバー表示/非表示
+focus_agent = "prefix+alt+1..9"												# サイドバーの N 番目のエージェントへ移動
+last_pane = "prefix+semicolon"												# 直前にいたペインへ移動
+detach = ["prefix+q", "prefix+d"]											# セッションからデタッチ
+
+# クリップボードの内容をアクティブペインに貼り付け
+[[keys.command]]
+key = "prefix+p"
+type = "shell"
+command = "\"$HERDR_BIN_PATH\" pane send-text \"$HERDR_ACTIVE_PANE_ID\" \"$(xclip -out -selection clipboard)\""
+description = "paste clipboard (xclip)"
+
+# tig をポップアップで表示 (レイアウトを崩さずに git 履歴を確認)
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "tig"
+width = "90%"
+height = "90%"
+description = "tig (popup)"
