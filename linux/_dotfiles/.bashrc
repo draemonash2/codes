@@ -2121,6 +2121,66 @@ fi
 #export PROMPT_COMMAND="add_session_list_to_cmplist; ${PROMPT_COMMAND}"
 #setenv PROMPT_COMMAND add_session_list_to_cmplist
 
+### Herdr
+alias hdc='vim ~/.config/herdr/config.toml'
+alias hdl='herdr session list'
+alias hdb="export HERDR_ENV="
+
+function hda() { # {{{
+    # HerDr Attach
+    if [ "${HERDR_ENV}" = "1" ]; then
+        echo "[error] cannot be run on herdr."
+        return 1
+    fi
+    if [ $# -eq 1 ]; then
+        session_name=${1}
+        herdr --session ${session_name}
+    else
+        herdr
+    fi
+}
+    complete -F _complete_hdsession hda # {{{
+    function _complete_hdsession() { local cur; _get_comp_words_by_ref -n : cur; COMPREPLY=( $(compgen -W "$(herdr session list 2>/dev/null | awk 'NR>1{print $1}')" -- "${cur}") ); } # }}}
+# }}}
+function hds() { # {{{
+    # HerDr Stop
+    if [ $# -ne 1 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : hds <session_name>"
+        return 1
+    fi
+    session_name=${1}
+    herdr session stop ${session_name}
+}
+    complete -F _complete_hdsession hds
+# }}}
+function hdk() { # {{{
+    # HerDr Kill
+    if [ $# -ne 1 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : hdk <session_name>"
+        return 1
+    fi
+    session_name=${1}
+    hds ${session_name}
+    herdr session delete ${session_name}
+}
+    complete -F _complete_hdsession hdk
+# }}}
+function hdr() { # {{{
+    # HerDr Restart
+    if [ $# -ne 1 ]; then
+        echo "[error] wrong number of arguments."
+        echo "  usage : hdr <session_name>"
+        return 1
+    fi
+    session_name=${1}
+    hdk ${session_name}
+    hda ${session_name}
+}
+    complete -F _complete_hdsession hdr
+# }}}
+
 ### Docker
 if [ -f /.dockerenv ]; then
     export TERM=screen-256color

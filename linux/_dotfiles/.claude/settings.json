@@ -38,7 +38,7 @@
       "Bash(sudo:*)",
       "Bash(git reset:*)",
       "Bash(git rebase:*)",
-      "Write(**/secrets/**)"
+      "Edit(**/secrets/**)"
     ]
   }
 }

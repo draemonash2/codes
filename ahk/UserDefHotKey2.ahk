@@ -261,6 +261,7 @@ MinimizeWindows()
 		^+!p::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#prompt.txt" )						; #prompt.txt
 		^+!g::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\120_【書類】デジタルデータ\#gripes.txt" )						; #gripes.txt
 		^+!d::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\310_【生活】住居\200_DIY\DIY設計.xlsx" )						; DIY設計.xlsx
+		^+!0::			StartProgramAndActivateFile( gsDOC_DIR_PATH . "\320_【生活】車\900_他\車探し_YYMMDD\車検討.xlsx" )				; 車検討.xlsx
 		^+!i::			StartProgramAndActivateFile( "C:\github_io\index.md" )															; github_io\index.md
 		^+!o::			StartProgramAndActivateFile( "C:\other\template\#object.xlsm" )													; #object.xlsm
 		^+!/::			StartProgramAndActivateFile( "C:\other\words\words.xlsx" )														; 用語集
@@ -449,29 +450,29 @@ MinimizeWindows()
 	;		sleep 100
 	;		Send "{Enter}"
 	;	}
-		^+1::
-		{
-			; URI置換
-			iCnt := 0
-			iMax := 1
-			while iMax > iCnt
-			{
-				ReplaceFavUrl()
-				iCnt := iCnt + 1
-			}
-		}
-			ReplaceFavUrl()
-			{
-				Send "{Appskey}"
-				sleep 100
-				Send "e"
-				sleep 100
-				Send "{Tab}{Home}"
-				sleep 100
-				Send "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
-				sleep 100
-				Send "{Up}"
-			}
+	;	^+1::
+	;	{
+	;		; URI置換
+	;		iCnt := 0
+	;		iMax := 1
+	;		while iMax > iCnt
+	;		{
+	;			ReplaceFavUrl()
+	;			iCnt := iCnt + 1
+	;		}
+	;	}
+	;		ReplaceFavUrl()
+	;		{
+	;			Send "{Appskey}"
+	;			sleep 100
+	;			Send "e"
+	;			sleep 100
+	;			Send "{Tab}{Home}"
+	;			sleep 100
+	;			Send "^{Right}^{Right}{Left}{Del 3}123.com{Enter}"
+	;			sleep 100
+	;			Send "{Up}"
+	;		}
 	#HotIf ; }}}
 	#HotIf WinActive("ahk_exe explorer.exe") ; {{{
 		+F1::	Run EnvGet("MYDIRPATH_CODES") . "\vbs\tools\wimmerge\CompareWithWinmerge.vbs " . GetSelFilePathAtExplorer(1)		; winmergeで開く
